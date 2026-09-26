@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gera os 5 slides da aula — só esta pasta (sem importar outras aulas).
+"""Gera os 5 slides da aula — só esta pasta.
 
     uv run python scripts/gerar_slides.py
 """
@@ -14,7 +14,6 @@ from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN
 from pptx.util import Emu, Inches, Pt
 
-# Identidade: carvão + verde-água (artesanato + serviço). Sem roxo genérico.
 TINTA = RGBColor(0x1A, 0x1A, 0x1A)
 PAPEL = RGBColor(0xF7, 0xF5, 0xF0)
 ESCURO = RGBColor(0x1E, 0x2A, 0x2E)
@@ -32,14 +31,13 @@ L, A = Inches(13.333), Inches(7.5)
 SAIDA = Path(__file__).resolve().parent.parent / "slides" / "recomendador-bentoml.pptx"
 
 
-def _run(par, texto, tam, *, cor=TINTA, fonte=SANS, negrito=False, italico=False):
+def _run(par, texto, tam, *, cor=TINTA, fonte=SANS, negrito=False):
     r = par.add_run()
     r.text = texto
     r.font.name = fonte
     r.font.size = Pt(tam)
     r.font.color.rgb = cor
     r.font.bold = negrito
-    r.font.italic = italico
     return r
 
 
@@ -71,29 +69,17 @@ def retangulo(slide, x, y, w, h, preenchimento, *, borda=None):
     return sh
 
 
-def rotulo_em(shape, texto, tam, *, cor=CLARO, negrito=True, fonte=SANS):
-    tf = shape.text_frame
-    tf.word_wrap = True
-    tf.auto_size = None
-    tf.paragraphs[0].alignment = PP_ALIGN.CENTER
-    tf.paragraphs[0].clear()
-    # vertical center approx via anchor
-    try:
-        tf.paragraphs[0].space_before = Pt(6)
-    except Exception:
-        pass
-    _run(tf.paragraphs[0], texto, tam, cor=cor, fonte=fonte, negrito=negrito)
-    shape.text_frame.word_wrap = True
-
-
 def seta_h(slide, x1, x2, y):
-    """Linha horizontal com triângulo à direita."""
-    linha = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x1, y - Emu(20000), x2 - x1 - Inches(0.12), Emu(40000))
+    linha = slide.shapes.add_shape(
+        MSO_SHAPE.RECTANGLE, x1, y - Emu(20000), x2 - x1 - Inches(0.12), Emu(40000)
+    )
     linha.fill.solid()
     linha.fill.fore_color.rgb = ACENTO
     linha.line.fill.background()
     linha.shadow.inherit = False
-    tri = slide.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, x2 - Inches(0.22), y - Inches(0.12), Inches(0.28), Inches(0.24))
+    tri = slide.shapes.add_shape(
+        MSO_SHAPE.RIGHT_ARROW, x2 - Inches(0.22), y - Inches(0.12), Inches(0.28), Inches(0.24)
+    )
     tri.fill.solid()
     tri.fill.fore_color.rgb = ACENTO
     tri.line.fill.background()
@@ -105,229 +91,250 @@ def fundo(slide, cor):
     f.fill.solid()
     f.fill.fore_color.rgb = cor
     f.line.fill.background()
-    # send to back
     spTree = slide.shapes._spTree
     sp = f._element
     spTree.remove(sp)
     spTree.insert(2, sp)
 
 
-def slide1_texto(prs):
-    """Único slide predominantemente textual."""
+def slide1_objetivo(prs):
+    """Único slide textual: objetivo, entrada, saída."""
     s = prs.slides.add_slide(prs.slide_layouts[6])
     fundo(s, ESCURO)
     caixa_texto(
-        s, Inches(0.9), Inches(1.4), Inches(11.5), Inches(1.0),
-        "Recomendação como serviço",
-        40, cor=CLARO, fonte=SERIFA, negrito=True,
+        s, Inches(0.8), Inches(0.55), Inches(11.7), Inches(0.7),
+        "Objetivo desta aula", 36, cor=CLARO, fonte=SERIFA, negrito=True,
     )
     caixa_texto(
-        s, Inches(0.9), Inches(2.5), Inches(11.5), Inches(3.8),
+        s, Inches(0.8), Inches(1.45), Inches(11.7), Inches(1.2),
         [
-            "Hoje subimos um baseline honesto: mesma técnica do produto âncora,",
-            "ordenado por popularidade, com fallback pelos mais pedidos.",
-            "",
-            "Não é filtragem colaborativa. Não há histórico real de navegação.",
-            "O contrato HTTP (BentoML) é o que a vitrine vai consumir depois.",
-            "",
-            "Objetivo da aula: treinar o artefato, servir em localhost:3000,",
-            "ler o JSON e saber repetir as contas do score no papel.",
+            "Fazer o computador sugerir outros produtos quando o cliente",
+            "abre a página de um produto — e publicar isso como serviço HTTP.",
         ],
-        22, cor=RGBColor(0xD5, 0xE0, 0xDE), fonte=SANS, espaco=6,
+        22, cor=RGBColor(0xD5, 0xE0, 0xDE), fonte=SANS, espaco=4,
     )
+
+    # three boxes: goal already said; input; output
+    retangulo(s, Inches(0.8), Inches(3.0), Inches(5.5), Inches(2.8), CODIGO_BG)
     caixa_texto(
-        s, Inches(0.9), Inches(6.7), Inches(11.5), Inches(0.4),
-        "1 / 5  ·  texto",
-        12, cor=APAGADO, fonte=SANS,
+        s, Inches(1.0), Inches(3.15), Inches(5.1), Inches(2.5),
+        [
+            "ENTRADA",
+            "",
+            "• produto_na_pagina  (ex.: p01)",
+            "• limite  (ex.: 4)",
+            "• excluir  (lista de ids)",
+        ],
+        18, cor=CLARO, fonte=SANS, espaco=4,
     )
+    retangulo(s, Inches(6.9), Inches(3.0), Inches(5.5), Inches(2.8), ACENTO)
+    caixa_texto(
+        s, Inches(7.1), Inches(3.15), Inches(5.1), Inches(2.5),
+        [
+            "SAÍDA",
+            "",
+            "• lista de produtos",
+            "• cada um com nome, nota",
+            "  e posição na lista",
+        ],
+        18, cor=CLARO, fonte=SANS, espaco=4,
+    )
+    caixa_texto(s, Inches(0.8), Inches(6.7), Inches(12), Inches(0.35),
+                "1 / 5", 12, cor=APAGADO)
 
 
-def slide2_diagrama(prs):
+def slide2_fluxo_codigo(prs):
+    """Diagrama: workflow paired with code files."""
     s = prs.slides.add_slide(prs.slide_layouts[6])
     fundo(s, PAPEL)
-    caixa_texto(s, Inches(0.7), Inches(0.35), Inches(12), Inches(0.6),
-                "Do catálogo ao HTTP", 32, fonte=SERIFA, negrito=True)
-    caixa_texto(s, Inches(0.7), Inches(0.95), Inches(12), Inches(0.4),
-                "Fluxo desta pasta — nada de outro repositório", 16, cor=APAGADO)
+    caixa_texto(
+        s, Inches(0.6), Inches(0.3), Inches(12), Inches(0.55),
+        "Fluxo e onde está no código", 30, fonte=SERIFA, negrito=True,
+    )
 
-    etapas = [
-        ("dados/\ncatalogo.json", CAIXA, TINTA),
-        ("treino.py\nartefato", ACENTO, CLARO),
-        ("model store\nBentoML", ESCURO, CLARO),
-        ("service.py\nPOST /recomendar", ACENTO, CLARO),
-        ("JSON\nitems[]", CAIXA, TINTA),
+    pares = [
+        ("1. Ler catálogo\ne cestas", "dados/\ncatalogo.json"),
+        ("2. Calcular notas\ne gravar", "treino.py"),
+        ("3. Guardar\nartefato", "model store\nBentoML"),
+        ("4. Receber HTTP\ne montar lista", "service.py\nrecomendar()"),
+        ("5. Devolver\nJSON", "resposta\nitems[]"),
     ]
-    y = Inches(2.6)
-    w, h = Inches(2.0), Inches(1.35)
-    gap = Inches(0.35)
-    x0 = Inches(0.55)
-    for i, (rotulo, fill, cor_txt) in enumerate(etapas):
+    y_top, y_bot = Inches(1.5), Inches(4.0)
+    w, h = Inches(2.15), Inches(1.45)
+    gap = Inches(0.28)
+    x0 = Inches(0.45)
+    for i, (fluxo, codigo) in enumerate(pares):
         x = x0 + i * (w + gap)
-        sh = retangulo(s, x, y, w, h, fill)
-        tf = sh.text_frame
-        tf.word_wrap = True
+        sh1 = retangulo(s, x, y_top, w, h, ACENTO if i % 2 == 0 else ESCURO)
+        tf = sh1.text_frame
         tf.clear()
-        p = tf.paragraphs[0]
-        p.alignment = PP_ALIGN.CENTER
-        for j, linha in enumerate(rotulo.split("\n")):
-            par = p if j == 0 else tf.add_paragraph()
-            par.alignment = PP_ALIGN.CENTER
-            _run(par, linha, 14, cor=cor_txt, fonte=SANS, negrito=True)
-        if i < len(etapas) - 1:
-            seta_h(s, x + w, x + w + gap, y + h / 2)
+        for j, linha in enumerate(fluxo.split("\n")):
+            p = tf.paragraphs[0] if j == 0 else tf.add_paragraph()
+            p.alignment = PP_ALIGN.CENTER
+            _run(p, linha, 13, cor=CLARO, fonte=SANS, negrito=True)
+        sh2 = retangulo(s, x, y_bot, w, h, CAIXA, borda=ACENTO)
+        tf2 = sh2.text_frame
+        tf2.clear()
+        for j, linha in enumerate(codigo.split("\n")):
+            p = tf2.paragraphs[0] if j == 0 else tf2.add_paragraph()
+            p.alignment = PP_ALIGN.CENTER
+            _run(p, linha, 13, cor=TINTA, fonte=MONO, negrito=True)
+        # vertical connector
+        conn = s.shapes.add_shape(
+            MSO_SHAPE.RECTANGLE, x + w / 2 - Emu(15000), y_top + h,
+            Emu(30000), y_bot - (y_top + h),
+        )
+        conn.fill.solid()
+        conn.fill.fore_color.rgb = ACENTO
+        conn.line.fill.background()
+        conn.shadow.inherit = False
+        if i < len(pares) - 1:
+            seta_h(s, x + w, x + w + gap, y_top + h / 2)
 
     caixa_texto(
-        s, Inches(0.7), Inches(4.5), Inches(12), Inches(2.0),
-        [
-            "Regra em linguagem natural",
-            "1. Filtrar mesma técnica · 2. Ordenar por pedidos (+ co-ocorrência) ·",
-            "3. Se faltar vaga, completar com os mais pedidos do catálogo.",
-        ],
-        18, cor=TINTA, espaco=4,
+        s, Inches(0.6), Inches(5.8), Inches(12), Inches(0.7),
+        "Linha de cima = o que acontece · linha de baixo = arquivo ou peça do sistema",
+        16, cor=APAGADO,
     )
-    caixa_texto(s, Inches(0.7), Inches(6.7), Inches(12), Inches(0.4),
-                "2 / 5  ·  diagrama", 12, cor=APAGADO)
+    caixa_texto(s, Inches(0.6), Inches(6.7), Inches(12), Inches(0.35),
+                "2 / 5", 12, cor=APAGADO)
 
 
 def slide3_exemplo(prs):
+    """Worked example with product names, not jargon."""
     s = prs.slides.add_slide(prs.slide_layouts[6])
     fundo(s, PAPEL)
-    caixa_texto(s, Inches(0.7), Inches(0.3), Inches(12), Inches(0.55),
-                "Conta trabalhada — âncora p01 (cerâmica)", 28, fonte=SERIFA, negrito=True)
-
-    # left: formulas
-    retangulo(s, Inches(0.55), Inches(1.1), Inches(6.0), Inches(5.2), CAIXA, borda=ACENTO)
     caixa_texto(
-        s, Inches(0.75), Inches(1.25), Inches(5.6), Inches(4.9),
-        [
-            "pop_norm = pedidos / 42",
-            "p02: 28/42 ≈ 0,6667",
-            "p03: 19/42 ≈ 0,4524",
-            "",
-            "sim(p01,p02)=1,00  sim(p01,p03)≈0,67",
-            "",
-            "mesma técnica:",
-            "score = 0,7·pop_norm + 0,3·sim",
-            "",
-            "p02: 0,7·0,6667 + 0,3·1 = 0,7667",
-            "p03: 0,7·0,4524 + 0,3·0,67 ≈ 0,5167",
-            "",
-            "Só 2 cerâmicas → fallback",
-            "p04, p07 com score = 0,5·pop_norm",
-        ],
-        16, fonte=MONO, espaco=3,
+        s, Inches(0.55), Inches(0.25), Inches(12.2), Inches(0.5),
+        "Exemplo: cliente abriu o Jarro de barro", 26, fonte=SERIFA, negrito=True,
+    )
+    caixa_texto(
+        s, Inches(0.55), Inches(0.8), Inches(12.2), Inches(0.4),
+        "produto_na_pagina = p01 · técnica = cerâmica · pedimos 4 sugestões",
+        15, cor=APAGADO,
     )
 
-    # right: ranked list
-    retangulo(s, Inches(6.9), Inches(1.1), Inches(5.8), Inches(5.2), ESCURO)
+    # left narrative steps
+    retangulo(s, Inches(0.5), Inches(1.35), Inches(6.2), Inches(4.9), CAIXA, borda=ACENTO)
     caixa_texto(
-        s, Inches(7.1), Inches(1.3), Inches(5.4), Inches(4.8),
+        s, Inches(0.7), Inches(1.5), Inches(5.8), Inches(4.6),
         [
-            "Resposta (ordem)",
+            "1. Outros de cerâmica: Prato, Boneca",
+            "   (só 2 — ainda faltam vagas)",
             "",
-            "1  p02  mesma_tecnica   0,7667",
-            "2  p03  mesma_tecnica   0,5167",
-            "3  p04  fallback        0,4167",
-            "4  p07  fallback        0,3690",
+            "2. Nota = 0,7×popularidade + 0,3×juntos",
+            "   Prato ≈ 0,77 · Boneca ≈ 0,52",
             "",
-            "fallback_used = true",
+            "3. Completar com os mais pedidos:",
+            "   Rendeira ≈ 0,42 · Xilogravura ≈ 0,37",
             "",
-            "Detalhe: material/",
-            "calculos-trabalhados.md",
+            "Detalhe das contas:",
+            "material/calculos-trabalhados.md",
         ],
-        17, cor=CLARO, fonte=MONO, espaco=4,
+        15, fonte=SANS, espaco=3,
     )
-    caixa_texto(s, Inches(0.7), Inches(6.7), Inches(12), Inches(0.4),
-                "3 / 5  ·  exemplo numérico", 12, cor=APAGADO)
+
+    retangulo(s, Inches(7.0), Inches(1.35), Inches(5.7), Inches(4.9), ESCURO)
+    caixa_texto(
+        s, Inches(7.2), Inches(1.55), Inches(5.3), Inches(4.5),
+        [
+            "Lista devolvida",
+            "",
+            "1  Prato esmaltado",
+            "2  Boneca de barro",
+            "3  Rendeira Alto do Moura",
+            "4  Xilogravura Pilar",
+            "",
+            "just curl-exemplo",
+        ],
+        17, cor=CLARO, fonte=SANS, espaco=5,
+    )
+    caixa_texto(s, Inches(0.55), Inches(6.7), Inches(12), Inches(0.35),
+                "3 / 5", 12, cor=APAGADO)
 
 
 def slide4_codigo(prs):
     s = prs.slides.add_slide(prs.slide_layouts[6])
     fundo(s, ESCURO)
-    caixa_texto(s, Inches(0.7), Inches(0.3), Inches(12), Inches(0.5),
-                "Código comentado — o miolo do serviço", 28, cor=CLARO, fonte=SERIFA, negrito=True)
-
-    codigo = [
-        "@bentoml.api",
-        "def recomendar(self, produto_ancora, limite=4, excluir=None):",
-        "    # 1) candidatos = mesma técnica, sem âncora/excluir",
-        "    # 2) ordena por (pedidos, similaridade)",
-        "    # 3) se len < limite → completa com populares",
-        "    # 4) score = 0.7*pop_n + 0.3*sim   (ou 0.5*pop_n)",
-        "    return {\"items\": [...], \"fallback_used\": ...}",
-    ]
-    retangulo(s, Inches(0.7), Inches(1.1), Inches(12.0), Inches(3.6), CODIGO_BG)
     caixa_texto(
-        s, Inches(0.95), Inches(1.3), Inches(11.5), Inches(3.3),
-        codigo, 18, cor=RGBColor(0xB8, 0xE0, 0xD8), fonte=MONO, espaco=6,
+        s, Inches(0.6), Inches(0.3), Inches(12), Inches(0.5),
+        "Mesmos passos no código", 28, cor=CLARO, fonte=SERIFA, negrito=True,
     )
+    retangulo(s, Inches(0.6), Inches(1.0), Inches(12.1), Inches(5.2), CODIGO_BG)
     caixa_texto(
-        s, Inches(0.7), Inches(5.0), Inches(12), Inches(1.4),
+        s, Inches(0.85), Inches(1.2), Inches(11.6), Inches(4.8),
         [
-            "treino.py grava o dicionário (produtos, popularidade, similaridade) no store.",
-            "service.py só carrega o pickle e aplica a regra — fácil de trocar depois",
-            "por um modelo treinado sem mudar o contrato HTTP.",
+            "# service.py — função recomendar",
+            "",
+            "# passo 1  candidatos = mesma técnica do produto_na_pagina",
+            "# passo 2  ordenar por pedidos (+ “juntos” nas cestas)",
+            "# passo 3  se ainda faltar vaga → pegar os mais pedidos",
+            "# passo 4  montar items[] com nome, score, reason, rank",
+            "",
+            "# treino.py — roda antes, uma vez",
+            "# lê catalogo.json  →  grava popularidade e similaridade",
         ],
-        16, cor=RGBColor(0xC5, 0xD0, 0xCE), espaco=4,
+        17, cor=RGBColor(0xB8, 0xE0, 0xD8), fonte=MONO, espaco=5,
     )
-    caixa_texto(s, Inches(0.7), Inches(6.7), Inches(12), Inches(0.4),
-                "4 / 5  ·  código", 12, cor=APAGADO)
+    caixa_texto(s, Inches(0.6), Inches(6.7), Inches(12), Inches(0.35),
+                "4 / 5", 12, cor=APAGADO)
 
 
-def slide5_mapa_ia(prs):
+def slide5_mapa(prs):
     s = prs.slides.add_slide(prs.slide_layouts[6])
     fundo(s, PAPEL)
-    caixa_texto(s, Inches(0.7), Inches(0.25), Inches(12), Inches(0.5),
-                "Onde isso entra no mapa da IA", 28, fonte=SERIFA, negrito=True)
+    caixa_texto(
+        s, Inches(0.6), Inches(0.25), Inches(12), Inches(0.5),
+        "Onde isso fica no mapa da Inteligência Artificial", 24, fonte=SERIFA, negrito=True,
+    )
 
     blocos = [
-        (Inches(0.55), "IA simbólica\n/ regras",
-         "Nosso baseline\nvive aqui hoje", ACENTO, CLARO),
+        (Inches(0.5), "Regras\nexplícitas",
+         "Hoje: mesma técnica\n+ mais pedidos", ACENTO),
         (Inches(4.7), "Aprendizado\nde máquina",
-         "Supervisionado,\nnão supervisionado,\npor reforço", ESCURO, CLARO),
-        (Inches(8.85), "IA generativa\n/ LLMs",
-         "Texto, código,\nagentes — outro\ncanto do mapa", CAIXA, TINTA),
+         "O computador ajusta\nparâmetros com dados\ne métricas", ESCURO),
+        (Inches(8.9), "IA generativa",
+         "Texto, imagens,\nagentes conversando", CAIXA),
     ]
-    for x, titulo, sub, fill, cor in blocos:
-        sh = retangulo(s, x, Inches(1.15), Inches(3.7), Inches(2.6), fill)
+    for x, titulo, sub, fill in blocos:
+        cor = CLARO if fill != CAIXA else TINTA
+        sh = retangulo(s, x, Inches(1.1), Inches(3.7), Inches(2.7), fill, borda=ACENTO if fill == CAIXA else None)
         tf = sh.text_frame
         tf.clear()
-        p = tf.paragraphs[0]
-        p.alignment = PP_ALIGN.CENTER
         for j, linha in enumerate(titulo.split("\n")):
-            par = p if j == 0 else tf.add_paragraph()
-            par.alignment = PP_ALIGN.CENTER
-            _run(par, linha, 18, cor=cor, fonte=SANS, negrito=True)
+            p = tf.paragraphs[0] if j == 0 else tf.add_paragraph()
+            p.alignment = PP_ALIGN.CENTER
+            _run(p, linha, 18, cor=cor, fonte=SANS, negrito=True)
         for linha in sub.split("\n"):
-            par = tf.add_paragraph()
-            par.alignment = PP_ALIGN.CENTER
-            _run(par, linha, 13, cor=cor, fonte=SANS)
+            p = tf.add_paragraph()
+            p.alignment = PP_ALIGN.CENTER
+            _run(p, linha, 13, cor=cor, fonte=SANS)
 
     caixa_texto(
-        s, Inches(0.7), Inches(4.1), Inches(12), Inches(2.3),
+        s, Inches(0.6), Inches(4.2), Inches(12.1), Inches(2.2),
         [
-            "Recomendação “de verdade” no AM costuma ser: conteúdo, colaborativa,",
-            "ou híbrida — com dados de interação e métricas (precisão@k, recall@k).",
+            "Os três campos se misturam em produtos reais. Nesta aula ficamos no",
+            "primeiro: uma regra clara, testável, servida por HTTP.",
             "",
-            "Próximo passo de estudo (módulo Microsoft Learn, pt-BR): fundamentos",
-            "de AM para evoluir esta regra até um modelo treinado — mantendo o BentoML.",
-            "Antes disso: ligar esta API à vitrine do marketplace da primeira aula.",
+            "Depois: (1) ligar à vitrine do marketplace · (2) estudar fundamentos",
+            "de aprendizado de máquina (Microsoft Learn, pt-BR) para trocar a regra",
+            "por um modelo treinado — sem mudar o contrato da API.",
         ],
         16, cor=TINTA, espaco=3,
     )
-    caixa_texto(s, Inches(0.7), Inches(6.7), Inches(12), Inches(0.4),
-                "5 / 5  ·  mapa IA / AM", 12, cor=APAGADO)
+    caixa_texto(s, Inches(0.6), Inches(6.7), Inches(12), Inches(0.35),
+                "5 / 5", 12, cor=APAGADO)
 
 
 def main() -> None:
     prs = Presentation()
     prs.slide_width = L
     prs.slide_height = A
-    slide1_texto(prs)
-    slide2_diagrama(prs)
+    slide1_objetivo(prs)
+    slide2_fluxo_codigo(prs)
     slide3_exemplo(prs)
     slide4_codigo(prs)
-    slide5_mapa_ia(prs)
+    slide5_mapa(prs)
     SAIDA.parent.mkdir(parents=True, exist_ok=True)
     prs.save(SAIDA)
     print(f"escrito {SAIDA}  ({SAIDA.stat().st_size} bytes)")

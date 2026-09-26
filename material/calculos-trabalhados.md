@@ -1,124 +1,99 @@
-# Cálculos trabalhados — baseline de recomendação
+# Contas trabalhadas — com nomes de produtos
 
-Complemento da aula. Todas as contas usam o catálogo em `dados/catalogo.json`.
-Nada de rede neural: só normalização, co-ocorrência e a fórmula do *score*.
+Usamos o catálogo em `dados/catalogo.json`. O cliente **abriu a página** do
+produto **Jarro barro Tracunhaém** (id `p01`, técnica *ceramica*).
 
-## 1. Popularidade normalizada
+Pedimos **4** sugestões. Não excluimos ninguém ainda (`excluir = []`).
 
-Para cada produto \(i\):
+## Passo A — popularidade em 0…1
 
-\[
-\mathrm{pop\_norm}(i) = \frac{\mathrm{pedidos}(i)}{\max_j \mathrm{pedidos}(j)}
-\]
+Dividimos os pedidos de cada produto pelo maior número de pedidos do catálogo
+(**42**, o próprio jarro).
 
-No catálogo, o máximo de pedidos é **42** (`p01`).
-
-| ID | Pedidos | \(\mathrm{pop\_norm}\) |
+| Produto | Pedidos | Nota de popularidade |
 | --- | ---: | ---: |
-| `p01` | 42 | \(42/42 = 1{,}0000\) |
-| `p02` | 28 | \(28/42 \approx 0{,}6667\) |
-| `p03` | 19 | \(19/42 \approx 0{,}4524\) |
-| `p04` | 35 | \(35/42 \approx 0{,}8333\) |
-| `p05` | 22 | \(22/42 \approx 0{,}5238\) |
-| `p06` | 11 | \(11/42 \approx 0{,}2619\) |
+| Jarro barro Tracunhaém (`p01`) | 42 | \(42/42 = 1{,}00\) |
+| Prato esmaltado Tracunhaém (`p02`) | 28 | \(28/42 \approx 0{,}67\) |
+| Boneca de barro (`p03`) | 19 | \(19/42 \approx 0{,}45\) |
+| Rendeira Alto do Moura (`p04`) | 35 | \(35/42 \approx 0{,}83\) |
+| Xilogravura Pilar (`p07`) | 31 | \(31/42 \approx 0{,}74\) |
 
-## 2. Co-ocorrência nas cestas (similaridade)
+## Passo B — “aparecem juntos” nas cestas de exemplo
 
-Cada cesta é um conjunto de ids. Para cada par \(\{a,b\}\) na mesma cesta,
-somamos \(1\) em ambas as direções. Depois, para cada âncora \(a\), dividimos
-pelo **máximo** entre os vizinhos de \(a\) (fica entre 0 e 1).
+Olhamos as cestas do JSON em que o jarro (`p01`) entra. Contamos quantas vezes
+cada outro produto aparece **na mesma cesta** que ele. Depois dividimos pelo
+maior contador (fica entre 0 e 1).
 
-Exemplo parcial com as cestas que envolvem `p01`:
+| Outro produto | Vezes junto do jarro | Nota “juntos” |
+| --- | ---: | ---: |
+| Prato esmaltado (`p02`) | 3 | \(3/3 = 1{,}00\) |
+| Boneca de barro (`p03`) | 2 | \(2/3 \approx 0{,}67\) |
 
-| Cesta | Pares que tocam `p01` |
-| --- | --- |
-| `p01, p02, p03` | (`p01`,`p02`), (`p01`,`p03`) |
-| `p01, p02` | (`p01`,`p02`) |
-| `p01, p10` | (`p01`,`p10`) |
-| `p02, p03, p01` | (`p01`,`p02`), (`p01`,`p03`) |
+(O `treino.py` faz isso para todos os pares; aqui só o necessário para o exemplo.)
 
-Contagens brutas a partir de `p01` (só estes pares):
+## Passo C — candidatos da mesma técnica
 
-| Vizinho | Contagem |
+Técnica do jarro = *ceramica*. Outros de cerâmica (sem o próprio jarro):
+
+- Prato esmaltado (`p02`)
+- Boneca de barro (`p03`)
+
+Só **dois**. Pedimos **quatro** → vamos precisar completar depois.
+
+## Passo D — nota de cada candidato da mesma técnica
+
+Fórmula usada no código:
+
+\[
+\mathrm{score} = 0{,}7 \times (\text{popularidade}) + 0{,}3 \times (\text{juntos})
+\]
+
+**Prato (`p02`):**
+
+\[
+0{,}7 \times 0{,}67 + 0{,}3 \times 1{,}00 \approx 0{,}47 + 0{,}30 = 0{,}77
+\]
+
+**Boneca (`p03`):**
+
+\[
+0{,}7 \times 0{,}45 + 0{,}3 \times 0{,}67 \approx 0{,}32 + 0{,}20 = 0{,}52
+\]
+
+Ordem até aqui: Prato → Boneca.
+
+## Passo E — completar até 4 com os mais pedidos
+
+Faltam 2 vagas. Pegamos os produtos com **mais pedidos no catálogo inteiro**,
+exceto o jarro e os já escolhidos:
+
+1. Rendeira (`p04`, 35 pedidos)
+2. Xilogravura (`p07`, 31 pedidos)
+
+Para esses, a nota no código é só metade da popularidade:
+
+\[
+\mathrm{score} = 0{,}5 \times (\text{popularidade})
+\]
+
+| Produto | Score |
 | --- | ---: |
-| `p02` | 3 |
-| `p03` | 2 |
-| `p10` | 1 |
+| Rendeira (`p04`) | \(0{,}5 \times 0{,}83 \approx 0{,}42\) |
+| Xilogravura (`p07`) | \(0{,}5 \times 0{,}74 \approx 0{,}37\) |
 
-Máximo = 3 → similaridade:
+## Lista final (o que a API devolve)
 
-| Vizinho | \(\mathrm{sim}(\mathrm{p01}, \cdot)\) |
-| --- | ---: |
-| `p02` | \(3/3 = 1{,}00\) |
-| `p03` | \(2/3 \approx 0{,}67\) |
-| `p10` | \(1/3 \approx 0{,}33\) |
+| # | Produto | Motivo (`reason`) | Score |
+| ---: | --- | --- | ---: |
+| 1 | Prato esmaltado Tracunhaém | `mesma_tecnica` | ≈ 0,77 |
+| 2 | Boneca de barro | `mesma_tecnica` | ≈ 0,52 |
+| 3 | Rendeira Alto do Moura | `complemento_popularidade` | ≈ 0,42 |
+| 4 | Xilogravura Pilar | `complemento_popularidade` | ≈ 0,37 |
 
-(O `treino.py` calcula isso para **todas** as cestas do JSON.)
+Campo `complemento_usado`: **true** (porque só havia 2 cerâmicas).
 
-## 3. Score na mesma técnica
-
-Se o candidato tem a **mesma técnica** da âncora:
-
-\[
-\mathrm{score} = 0{,}7 \cdot \mathrm{pop\_norm} + 0{,}3 \cdot \mathrm{sim}
-\]
-
-Âncora **`p01`** (cerâmica). Candidatos cerâmica: `p02`, `p03`.
-
-**`p02`:**
-
-\[
-0{,}7 \times 0{,}6667 + 0{,}3 \times 1{,}00 = 0{,}4667 + 0{,}3000 = 0{,}7667
-\]
-
-**`p03`:**
-
-\[
-0{,}7 \times 0{,}4524 + 0{,}3 \times 0{,}6667 \approx 0{,}3167 + 0{,}2000 = 0{,}5167
-\]
-
-Ordem: `p02` (0,7667) → `p03` (0,5167).
-
-## 4. Fallback por popularidade global
-
-Pedimos `limite = 4`, mas só há **2** outros produtos de cerâmica. Faltam 2
-vagas → `fallback_used = true`.
-
-Completamos com os mais pedidos do catálogo **excluindo** a âncora e os já
-escolhidos. Os líderes são `p01` (excluído), depois `p04` (35) e `p07` (31).
-
-Para *fallback*, o código usa:
-
-\[
-\mathrm{score} = 0{,}5 \cdot \mathrm{pop\_norm}
-\]
-
-| ID | \(\mathrm{pop\_norm}\) | Score *fallback* | `reason` |
-| --- | ---: | ---: | --- |
-| `p04` | 0,8333 | 0,4167 | `fallback_popularidade` |
-| `p07` | \(31/42 \approx 0{,}7381\) | 0,3690 | `fallback_popularidade` |
-
-Lista final para `p01`, `limite=4`, `excluir=[]`:
-
-1. `p02` — `mesma_tecnica` — 0,7667  
-2. `p03` — `mesma_tecnica` — 0,5167  
-3. `p04` — `fallback_popularidade` — 0,4167  
-4. `p07` — `fallback_popularidade` — 0,3690  
-
-Confira com:
+Conferir no ar:
 
 ```bash
-just curl-ancora
+just curl-exemplo
 ```
-
-## 5. Por que isso ainda não é “AM clássico”
-
-- Os pesos \(0{,}7\) e \(0{,}3\) foram **escolhidos à mão**, não estimados por
-  perda / gradiente.
-- Não há conjunto de treino/teste com rótulo de “clicou / comprou”.
-- A co-ocorrência é uma tabela de contagem, não um modelo ajustado.
-
-Nas aulas seguintes, o módulo
-[Fundamentos do aprendizado de máquina](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/)
-serve para substituir essa regra por um modelo treinado — sem abandonar o
-contrato HTTP do BentoML.

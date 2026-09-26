@@ -1,10 +1,4 @@
-"""Monta o baseline de recomendação e guarda no model store do BentoML.
-
-Baseline (regra, não rede neural):
-1. Mesma técnica do produto âncora, ordenado por popularidade (pedidos).
-2. Se faltar candidatos, completa com os mais pedidos do catálogo.
-3. Opcional: score de co-ocorrência nas cestas sintéticas (só para ranquear).
-"""
+"""Lê o catálogo, calcula popularidade e co-ocorrência, guarda no BentoML."""
 
 from __future__ import annotations
 
@@ -20,7 +14,7 @@ ARTEFATO = "model.pkl"
 
 
 def _coocorrencia(cestas: list[list[str]]) -> dict[str, dict[str, float]]:
-    """Contagem de pares nas cestas → similaridade simples (contagem normalizada)."""
+    """Quantas vezes dois produtos aparecem juntos nas cestas de exemplo."""
     pares: dict[str, dict[str, float]] = defaultdict(lambda: defaultdict(float))
     for cesta in cestas:
         unicos = list(dict.fromkeys(cesta))
@@ -48,12 +42,12 @@ def main() -> None:
         "popularidade": popularidade,
         "popularidade_norm": popularidade_norm,
         "similaridade": similaridade,
-        "estrategia": "baseline_tecnica_popularidade",
+        "estrategia": "mesma_tecnica_mais_pedidos",
     }
 
     with bentoml.models.create(
         "recomendador",
-        labels={"aula": "ads032-recomendador", "baseline": "tecnica+popularidade"},
+        labels={"aula": "recomendador-bentoml", "regra": "tecnica+pedidos"},
         metadata={
             "n_produtos": len(produtos),
             "n_cestas": len(bruto["cestas"]),

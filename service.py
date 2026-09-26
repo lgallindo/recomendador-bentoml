@@ -1,4 +1,4 @@
-"""Serve recomendações: mesma técnica + popularidade, com fallback."""
+"""Serve recomendações: mesma técnica + popularidade, com complemento por pedidos."""
 
 from __future__ import annotations
 
@@ -21,32 +21,32 @@ class Recomendador:
     @bentoml.api
     def recomendar(
         self,
-        produto_ancora: str,
+        produto_na_pagina: str,
         limite: int = 4,
         excluir: list[str] | None = None,
     ) -> dict:
-        """Baseline de recomendação (mesma técnica + popularidade).
+        """Devolve outros produtos a partir do produto que o cliente está vendo.
 
         Entrada:
-          - produto_ancora: id do produto na ficha
-          - limite: quantos itens devolver (padrão 4)
-          - excluir: ids já vistos / já comprados na sessão
+          - produto_na_pagina: id do produto aberto na tela (ex.: \"p01\")
+          - limite: quantos produtos sugerir (padrão 4)
+          - excluir: ids que não devem voltar (já vistos / já comprados)
         """
         produtos = self.artefato["produtos"]
-        if produto_ancora not in produtos:
+        if produto_na_pagina not in produtos:
             return {
-                "erro": "produto_ancora_inexistente",
-                "produto_ancora": produto_ancora,
+                "erro": "produto_inexistente",
+                "produto_na_pagina": produto_na_pagina,
                 "items": [],
             }
 
         excluidos = set(excluir or [])
-        excluidos.add(produto_ancora)
-        ancora = produtos[produto_ancora]
-        tecnica = ancora["tecnica"]
+        excluidos.add(produto_na_pagina)
+        atual = produtos[produto_na_pagina]
+        tecnica = atual["tecnica"]
         pop = self.artefato["popularidade"]
         pop_n = self.artefato["popularidade_norm"]
-        sim = self.artefato["similaridade"].get(produto_ancora, {})
+        sim = self.artefato["similaridade"].get(produto_na_pagina, {})
 
         mesma = [
             pid
@@ -59,10 +59,10 @@ class Recomendador:
         )
 
         escolhidos: list[str] = mesma[: max(limite, 0)]
-        fallback = False
+        usou_complemento = False
 
         if len(escolhidos) < limite:
-            fallback = True
+            usou_complemento = True
             resto = [
                 pid
                 for pid in sorted(produtos, key=lambda x: pop[x], reverse=True)
@@ -86,7 +86,7 @@ class Recomendador:
                         else 0.5 * pop_n[pid],
                         4,
                     ),
-                    "reason": "mesma_tecnica" if mesma_tec else "fallback_popularidade",
+                    "reason": "mesma_tecnica" if mesma_tec else "complemento_popularidade",
                     "rank": rank,
                 }
             )
@@ -94,11 +94,12 @@ class Recomendador:
         return {
             "items": items,
             "strategy": self.artefato["estrategia"],
-            "fallback_used": fallback,
-            "anchor": {
-                "product_id": produto_ancora,
+            "complemento_usado": usou_complemento,
+            "produto_na_pagina": {
+                "product_id": produto_na_pagina,
+                "nome": atual["nome"],
                 "tecnica": tecnica,
-                "regiao": ancora["regiao"],
+                "regiao": atual["regiao"],
             },
             "modelo": str(modelo.tag),
         }

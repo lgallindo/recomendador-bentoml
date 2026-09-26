@@ -1,80 +1,64 @@
-# Recomendador baseline no BentoML
+# Recomendador no BentoML
 
-Pasta **autossuficiente** (pt-BR): dados, treino, serviço e material da aula vivem aqui.
+Pasta **autossuficiente** (pt-BR): dados, treino, serviço e material da aula.
 
-## O que é
+## Objetivo
 
-Baseline de recomendação (mesma técnica + popularidade, com *fallback* pelos mais
-pedidos) exposto como API HTTP com [BentoML](https://docs.bentoml.com/). Dois
-arquivos Python: `treino.py` monta o artefato; `service.py` serve o endpoint.
+Dado o **produto que o cliente está vendo na página**, devolver uma lista curta
+de **outros produtos** (mesma técnica artesanal, priorizando os mais pedidos).
+Se não houver candidatos suficientes, completar com os mais pedidos do catálogo.
 
-**Não é** filtragem colaborativa por comportamento real. O catálogo e as cestas
-em `dados/catalogo.json` são **sintéticos** (artesanato / PE).
+## Entrada e saída
 
-## Subir em 2 comandos
+**Entrada** (`POST /recomendar`):
 
-Na raiz **desta** pasta:
+| Campo | Exemplo | Significado |
+| --- | --- | --- |
+| `produto_na_pagina` | `"p01"` | Id do produto aberto na tela |
+| `limite` | `4` | Quantos produtos sugerir |
+| `excluir` | `[]` | Ids que não devem aparecer (já vistos / já comprados) |
+
+**Saída:** JSON com `items` (id, nome, técnica, região, nota `score`, motivo
+`reason`, posição `rank`).
+
+## Como subir
 
 ```bash
 just treino
 just serve
 ```
 
-Swagger: <http://127.0.0.1:3000>. Ou:
+Swagger: <http://127.0.0.1:3000> · demo: `just curl-exemplo`
 
-```bash
-just curl-ancora
-```
+## Fluxo ↔ arquivos
+
+| Passo | Arquivo |
+| --- | --- |
+| Catálogo e cestas de exemplo | `dados/catalogo.json` |
+| Calcular popularidade / co-ocorrência e gravar | `treino.py` |
+| Receber pedido HTTP e montar a lista | `service.py` |
+| Empacotar depois (opcional) | `bentofile.yaml` |
 
 ## Material da aula
 
 | Arquivo | Conteúdo |
 | --- | --- |
-| [`slides/recomendador-bentoml.pptx`](slides/recomendador-bentoml.pptx) | 5 slides (objetivo, diagrama, cálculo, código, mapa IA/AM) |
-| [`material/calculos-trabalhados.md`](material/calculos-trabalhados.md) | Contas passo a passo do *score* e da co-ocorrência |
+| [`slides/recomendador-bentoml.pptx`](slides/recomendador-bentoml.pptx) | 5 slides |
+| [`material/calculos-trabalhados.md`](material/calculos-trabalhados.md) | Contas com nomes de produtos |
 | [`scripts/gerar_slides.py`](scripts/gerar_slides.py) | Regenera o `.pptx` |
-
-## Contrato da API
-
-`POST /recomendar`
-
-| Campo | Tipo | Papel |
-| --- | --- | --- |
-| `produto_ancora` | string | Produto na ficha (`p01` … `p12`) |
-| `limite` | int | Quantos itens (padrão 4) |
-| `excluir` | list[string] | Já vistos / já comprados na sessão |
-
-Resposta: `items[]` com `product_id`, `score`, `reason`, `rank`, mais `strategy`
-e `fallback_used`.
-
-## Arquivos do serviço
-
-| Arquivo | Função |
-| --- | --- |
-| `dados/catalogo.json` | Catálogo + cestas sintéticas |
-| `treino.py` | Monta artefato e salva no *store* BentoML |
-| `service.py` | `@bentoml.service` / `@bentoml.api` |
-| `bentofile.yaml` | Empacote futuro (`bentoml build`) |
-| `justfile` | `treino`, `serve`, *curls* de demo |
-
-## O que o baseline **não** aprende
-
-- Histórico real de navegação
-- Preferências individuais além da lista `excluir`
-- “Quem comprou X também comprou Y” em produção (as cestas só ajudam o *score*
-  dentro da mesma técnica)
 
 ## Próximas aulas (fora deste repositório)
 
-1. **Integrar a API com a vitrine** do marketplace da primeira aula (frontend
-   local de catálogo/produto) — o serviço HTTP já existe; a WEB só precisa
-   chamar `POST /recomendar`.
-2. **Evoluir o baseline para um modelo de aprendizado de máquina** com o módulo
-   Microsoft Learn (pt-BR):
-   [Fundamentos do aprendizado de máquina](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/).
+1. Ligar esta API à vitrine do marketplace da primeira aula.
+2. Evoluir a regra para um modelo de AM com
+   [Fundamentos do aprendizado de máquina](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/)
+   (Microsoft Learn, pt-BR).
 
 Este repositório **não depende** desses passos para rodar.
 
 ## Licença
 
-MIT — ver [`LICENSE`](LICENSE).
+**GPL-3.0** — ver [`LICENSE`](LICENSE).
+
+Dependências principais (licenças próprias, não alteram a licença deste código):
+BentoML (Apache-2.0), python-pptx (MIT, só para gerar slides).

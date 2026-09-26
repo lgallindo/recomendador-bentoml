@@ -10,18 +10,19 @@ slides:
     uv run python scripts/gerar_slides.py
 
 # Exemplos (com o serve no ar em :3000)
-curl-ancora:
+curl-exemplo:
+    # Cliente abriu o jarro de barro (p01)
     curl -sS -X POST http://127.0.0.1:3000/recomendar \
       -H 'Content-Type: application/json' \
-      -d '{"produto_ancora":"p01","limite":4,"excluir":[]}' | python3 -m json.tool
+      -d '{"produto_na_pagina":"p01","limite":4,"excluir":[]}' | python3 -m json.tool
 
-curl-fallback:
-    # Âncora com poucos pares na técnica + exclusões → dispara fallback
+curl-complemento:
+    # Poucos da mesma técnica → completa com os mais pedidos
     curl -sS -X POST http://127.0.0.1:3000/recomendar \
       -H 'Content-Type: application/json' \
-      -d '{"produto_ancora":"p12","limite":4,"excluir":["p10","p11"]}' | python3 -m json.tool
+      -d '{"produto_na_pagina":"p12","limite":4,"excluir":["p10","p11"]}' | python3 -m json.tool
 
 curl-inexistente:
     curl -sS -X POST http://127.0.0.1:3000/recomendar \
       -H 'Content-Type: application/json' \
-      -d '{"produto_ancora":"nao-existe","limite":4}' | python3 -m json.tool
+      -d '{"produto_na_pagina":"nao-existe","limite":4}' | python3 -m json.tool
