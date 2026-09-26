@@ -104,12 +104,33 @@ usa `pop` no score.
 
 ### Co-ocorrência
 
-**Co-ocorrência** é quão frequentemente dois produtos aparecem **juntos** nas
-`cestas` de exemplo (como se fossem a mesma compra). Aqui sim usamos o array
-`cestas` da seção anterior — e **não** o campo `pedidos`. Para cada produto
-âncora, contamos os parceiros e normalizamos pelo parceiro mais frequente daquele
-âncora, também em 0…1. “Aparecem juntos” ≠ “são da mesma técnica”; técnica é outro
-filtro (aplicado depois, no serviço).
+**Co-ocorrência** mede, para cada produto A, quão frequentemente outro produto B
+sai **na mesma cesta** de exemplo (a mesma compra fictícia do dataset). Neste passo
+usamos só o array `cestas` — o campo `pedidos` não entra.
+
+Como contamos: se uma cesta traz `[p01, p02, p03]`, registramos que `p01` apareceu
+com `p02` e com `p03`, que `p02` apareceu com `p01` e `p03`, e assim por diante
+(o par é simétrico). No fim, para cada produto A, dividimos essas contagens pelo
+parceiro que mais apareceu junto com A. O resultado fica entre 0 e 1: o parceiro
+mais comum de A vale 1,0; os outros ficam abaixo.
+
+Isso **não** olha a técnica artesanal. Dois produtos podem sair juntos muitas vezes
+e ter técnicas diferentes; ou ser da mesma técnica e nunca terem saído na mesma
+cesta. A técnica é um filtro **à parte**, aplicado depois em `service.py`, quando
+a vitrine já pediu recomendações para o produto da página.
+
+```mermaid
+sequenceDiagram
+  participant JSON as catalogo.json
+  participant T as treino.py
+  participant C as conta / cooc
+  JSON->>T: cestas (listas de ids)
+  loop cada cesta
+    T->>C: para cada par (A, B) na cesta: conta[A][B] += 1
+  end
+  T->>C: para cada A: cooc[A][B] = conta[A][B] / max_parceiro(A)
+  Note over C: Artefato guarda cooc (0…1), não as cestas crus
+```
 
 Pseudocódigo a partir do JSON:
 
@@ -120,9 +141,9 @@ Pseudocódigo a partir do JSON:
 #   cesta    — uma compra de exemplo (lista de ids)
 #   ids      — ids únicos dentro de uma cesta
 #   a, b     — dois ids distintos formando um par
-#   conta    — mapa âncora → (vizinho → contagem bruta)
-#   m        — máximo de conta[a][*] para a âncora a
-#   cooc     — mapa âncora → (vizinho → co-ocorrência em 0…1)
+#   conta    — mapa produto_ref → (vizinho → contagem bruta)
+#   m        — máximo de conta[a][*] para o produto de referência a
+#   cooc     — mapa produto_ref → (vizinho → co-ocorrência em 0…1)
 
 cestas ← catalogo["cestas"]
 
@@ -133,8 +154,8 @@ para cada cesta em cestas:
         conta[a][b] ← conta[a][b] + 1
         conta[b][a] ← conta[b][a] + 1
 
-# normalização por âncora
-para cada âncora a:
+# normalização por produto de referência (cada linha do mapa)
+para cada produto de referência a:
     m ← máximo de conta[a][*]
     para cada vizinho b:
         cooc[a][b] ← conta[a][b] / m
@@ -173,6 +194,32 @@ flowchart LR
   service --> jsonOut["JSON<br/>(items, reason, score)"]
 ```
 
+Quem fala com quem, no tempo:
+
+```mermaid
+sequenceDiagram
+  actor Dev as Quem dá aula / squad
+  participant JSON as catalogo.json
+  participant Treino as treino.py
+  participant Store as BentoML model store
+  participant Serve as service.py
+  participant Web as vitrine WEB
+
+  Dev->>Treino: just treino
+  Treino->>JSON: lê produtos + cestas
+  Treino->>Treino: pop e cooc
+  Treino->>Store: grava artefato recomendador:…
+
+  Dev->>Serve: just serve
+  Serve->>Store: carrega recomendador:latest
+
+  loop cada página de produto
+    Web->>Serve: POST /recomendar (pagina, limite, excluir)
+    Serve->>Serve: regra sobre o artefato (sem reler o JSON)
+    Serve-->>Web: JSON (items, reason, score)
+  end
+```
+
 Mudou o JSON? Rode `just treino` de novo e reinicie (ou deixe o `--reload` do serve
 pegar a tag `latest`).
 
@@ -188,6 +235,29 @@ flowchart TD
   falta -->|sim| comp["4. Complemento<br/>por popularidade"]
   falta -->|não| resp["5. Resposta JSON"]
   comp --> resp
+```
+
+O mesmo caminho, como troca de mensagens dentro de **um** pedido:
+
+```mermaid
+sequenceDiagram
+  participant Web as vitrine WEB
+  participant API as recomendar()
+  participant Art as artefato (pop, cooc, produtos)
+
+  Web->>API: produto_na_pagina, limite, excluir
+  API->>Art: lê produto da página
+  API->>API: excluir ∪ {pagina}
+  API->>Art: candidatos = mesma tecnica, fora de excluir
+  loop cada candidato c
+    API->>Art: pop[c], cooc[pagina][c]
+    API->>API: score[c] = 0,7×pop + 0,3×cooc
+  end
+  API->>API: ordena; corta em limite
+  alt ainda faltam vagas
+    API->>Art: completa com mais pedidos do catálogo
+  end
+  API-->>Web: items[], reason, complemento_usado
 ```
 
 
@@ -217,9 +287,9 @@ flowchart TD
    ```
 
    Assim a popularidade também fica entre 0 e 1 (o jarro com 42 pedidos vira 1,0; quem
-   tem 21 vira 0,5). A co-ocorrência já nasce normalizada por âncora: para o produto da
-   página, contamos quantas vezes cada vizinho apareceu na mesma cesta e dividimos pelo
-   vizinho mais frequente daquele âncora.
+   tem 21 vira 0,5). A co-ocorrência já nasce normalizada **por produto de referência**:
+   para o produto da página, contamos quantas vezes cada vizinho saiu na mesma cesta e
+   dividimos pelo vizinho mais frequente daquele produto.
 
    Pseudocódigo (mesmo grupo, após filtrar técnica e exclusões):
 
@@ -227,7 +297,7 @@ flowchart TD
    # Variáveis:
    #   produtos   — mapa id → registro (já no artefato)
    #   pop        — mapa id → popularidade 0…1 (artefato.pop)
-   #   cooc       — mapa âncora → (vizinho → 0…1) (artefato.cooc)
+   #   cooc       — mapa produto_ref → (vizinho → 0…1) (artefato.cooc)
    #   pagina     — id do produto_na_pagina
    #   excluir    — conjunto de ids a omitir (mais a própria pagina)
    #   candidatos — lista de ids mesma tecnica, fora de excluir
@@ -390,7 +460,8 @@ Deve devolver `erro: "produto_inexistente"` e `items` vazio, sem inventar produt
    \mathrm{pop}_i = \frac{\mathrm{pedidos}_i}{\max_j \mathrm{pedidos}_j}
    ```
 2. **Co-ocorrência.** Nas cestas de exemplo, contamos quantas vezes dois produtos
-   aparecem juntos; para cada âncora, normalizamos pelo vizinho mais frequente.
+   saem juntos; para cada produto de referência, normalizamos pelo vizinho mais
+   frequente daquele produto.
 3. **Candidatos.** Todos os produtos com a **mesma técnica** do item da página,
    exceto ele próprio e os ids em `excluir`.
 4. **Ordenação (mesma técnica).**
@@ -492,7 +563,7 @@ nem métrica de erro do preditor).
 
 <a id="ds-para-ml-microsoft-learn"></a>
 
-Módulo âncora:
+Módulo de referência:
 [Introdução aos conceitos de Machine Learning](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/)
 (11 unidades). A própria introdução do módulo diz que ML fica na interseção de
 **ciência de dados** e **engenharia de software**: dados do passado → modelo
@@ -544,4 +615,21 @@ Links em pt-BR, mesma ordem do módulo.
 Caminho Microsoft Learn seguinte (já com exercícios scikit-learn), quando forem
 implementar de verdade:
 [Criar modelos de machine learning](https://learn.microsoft.com/pt-br/training/paths/create-machine-learn-models/).
+
+## Diagramas neste README
+
+Índice do que cada figura responde (fluxo = *quem depende de quem*; sequência =
+*quem fala com quem, na ordem*).
+
+| Diagrama | Seção | Tipo | Pergunta que responde |
+| --- | --- | --- | --- |
+| Contagem → `cooc` | Co-ocorrência | sequência | Como `cestas` viram o mapa `cooc` no treino? |
+| Artefato + API | Workflow | fluxo | Onde entram JSON, pickle e a vitrine? |
+| Treino depois serve | Workflow | sequência | Em que ordem rodam `just treino` e `just serve`? |
+| Cinco passos da lista | Visão geral | fluxo | Quais decisões montam o top‑k? |
+| Um `POST /recomendar` | Visão geral | sequência | O que a API consulta no artefato a cada clique? |
+
+Não incluímos diagrama de sequência de *usuário anônimo na loja real* (login,
+carrinho, pixel de impressão): este pacote não tem esses atores. Também não
+desenhamos MF / rede neural — ficaria mentira sobre o baseline.
 
