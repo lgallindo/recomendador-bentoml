@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gera os 5 slides da aula — só esta pasta.
+"""Gera os 5 slides da aula.
 
     uv run python scripts/gerar_slides.py
 """

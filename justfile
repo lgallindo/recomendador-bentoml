@@ -1,4 +1,4 @@
-# Baseline de recomendação no BentoML (esta pasta só)
+# Baseline de recomendação no BentoML
 
 treino:
     uv run python treino.py

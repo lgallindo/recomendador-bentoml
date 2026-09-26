@@ -1,6 +1,6 @@
 # Recomendador no BentoML
 
-Pasta **autossuficiente** (pt-BR): dados, treino, serviço e material da aula.
+Material de aula em pt-BR: dados, treino, serviço e slides.
 
 ## Objetivo
 
