@@ -1,0 +1,11 @@
+service: "service:Recomendador"
+labels:
+  aula: ads032-recomendador
+include:
+  - "*.py"
+  - "dados/*.json"
+python:
+  packages:
+    - bentoml
+models:
+  - recomendador:latest
