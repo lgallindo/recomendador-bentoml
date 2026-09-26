@@ -681,7 +681,7 @@ irmãs com artefato BentoML e porta HTTP próprios (não sobrescrevem
 
 - **Entrada:** `produto_na_pagina`, `limite`, `excluir`.
 - **Regra:** candidatos da mesma `tecnica`;  
-  \(\mathrm{score} = 0{,}7\times\mathrm{pop} + 0{,}3\times\mathrm{cooc}\); se faltarem
+  $`\mathrm{score} = 0.7 \times \mathrm{pop} + 0.3 \times \mathrm{cooc}`$; se faltarem
   vagas, completa com os mais pedidos (`complemento_popularidade`).
 - **Subir:** `just treino` · `just serve` · `just curl-exemplo`.
 - **Leitura:** seções [Cesta](#cesta-de-compra) → [Workflow](#workflow) → [API](#o-que-a-api-espera-e-o-que-ela-devolve).
@@ -692,7 +692,7 @@ irmãs com artefato BentoML e porta HTTP próprios (não sobrescrevem
 - **Dados extras:** `clientes[]` (faixa etária, técnicas e polos preferidos) e
   `compras[]` (histórico sintético por cliente).
 - **Regra (mesma técnica):**  
-  \(0{,}45\times\mathrm{pop} + 0{,}25\times\mathrm{cooc} + 0{,}30\times\mathrm{demo}\),  
+  $`0.45 \times \mathrm{pop} + 0.25 \times \mathrm{cooc} + 0.30 \times \mathrm{demo}`$,  
   onde `demo` mistura preferências declaradas e popularidade do produto **na faixa
   etária** do cliente.
 - **Sem `cliente_id`:** `demo = 0` (primo do baseline, pesos diferentes).
@@ -721,7 +721,7 @@ irmãs com artefato BentoML e porta HTTP próprios (não sobrescrevem
 | “E se soubermos quem é o cliente?” | `variante-demografica/` |
 | “E se agruparmos por atributos e misturarmos com a cesta?” | `variante-clustering/` |
 
-Nenhuma variante é aprendificado de máquina supervisionado ainda — ver
+Nenhuma variante é aprendizado de máquina supervisionado ainda — ver
 [Do Data Science à Machine Learning](#ds-para-ml-microsoft-learn). Para **predição
 de demanda** (outro problema: prever `pedidos`, não montar top‑k), use o
 repositório irmão
