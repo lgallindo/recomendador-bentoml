@@ -1,0 +1,16 @@
+service: "service:RecomendadorCluster"
+labels:
+  aula: ads032-recomendador
+  variante: clustering
+include:
+  - "*.py"
+  - "dados/*.json"
+  - "material/*.png"
+python:
+  packages:
+    - bentoml
+    - scikit-learn
+    - scipy
+    - matplotlib
+models:
+  - recomendador-cluster:latest

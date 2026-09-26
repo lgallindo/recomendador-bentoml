@@ -1,0 +1,21 @@
+# Variante clustering — porta 3002 (baseline :3000, demo :3001)
+
+treino:
+    uv run --project .. python treino.py
+
+serve:
+    uv run --project .. bentoml serve service:RecomendadorCluster --reload --port 3002
+
+curl-exemplo:
+    # p07 tem cluster grande o bastante para intercalação completa em limite=4
+    curl -sS -X POST http://127.0.0.1:3002/recomendar \
+      -H 'Content-Type: application/json' \
+      -d '{"produto_na_pagina":"p07","limite":4,"excluir":[]}' \
+      | python3 -m json.tool
+
+curl-fallback:
+    # p01: cluster pequeno (só cerâmicas) → rank 4 pode cair em cesta
+    curl -sS -X POST http://127.0.0.1:3002/recomendar \
+      -H 'Content-Type: application/json' \
+      -d '{"produto_na_pagina":"p01","limite":4,"excluir":[]}' \
+      | python3 -m json.tool

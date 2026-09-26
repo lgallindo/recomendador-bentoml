@@ -18,9 +18,14 @@ peças pernambucanas, um treino que calcula popularidade e “aparecem juntos”
 serviço HTTP no BentoML que responde a essas sugestões. Você sobe com dois comandos,
 confere no Swagger ou no `curl`, e depois lê as contas no caderno e nos slides.
 
-Há também uma **variante com demografia** (perfil do cliente + compras por faixa
-etária) em [`variante-demografica/`](variante-demografica/) — artefato e porta
-HTTP separados, para não misturar com este baseline.
+## Variantes
+
+Pastas irmãs do baseline — cada uma com artefato BentoML e porta HTTP próprios:
+
+| Pasta | Sinal extra | Porta | Artefato |
+| --- | --- | --- | --- |
+| [`variante-demografica/`](variante-demografica/) | perfil do cliente + compras por faixa etária | 3001 | `recomendador-demo` |
+| [`variante-clustering/`](variante-clustering/) | cluster hierárquico + lista intercalada cesta/cluster | 3002 | `recomendador-cluster` |
 
 ## Cesta de compra
 
@@ -180,14 +185,23 @@ normalizada do candidato dado o produto da página (0 se nunca apareceram juntos
 
 ## Workflow
 
-Dois momentos distintos, nesta ordem:
+Dois momentos distintos — e, em MLOps, dois **papéis** distintos. Não misture na
+mesma sequência: quem treina não é quem clica na vitrine.
 
-1. **Offline (`just treino`).** Lê [`dados/catalogo.json`](dados/catalogo.json), calcula
-   popularidade e co-ocorrência (seção anterior), grava um artefato no store do BentoML
-   (`recomendador:…`). Sem isso, o serviço não tem o que carregar.
-2. **Online (`just serve`).** Sobe o HTTP. A cada `POST /recomendar`, a vitrine manda o
-   produto da página; o serviço monta a lista e devolve JSON. Não recalcula o catálogo
-   inteiro a cada clique — só aplica a regra sobre o artefato já treinado.
+| Momento | Em MLOps | Neste repo | Quem age | Frequência |
+| --- | --- | --- | --- | --- |
+| **Treino** (offline) | *training* / *batch* — a partir dos dados, produz um artefato | `just treino` → `treino.py` | Operador (você na aula, CI/CD ou job agendado em produção) | Rara: quando o catálogo ou a regra mudam |
+| **Inferência** (online) | *inference* / *serving* — aplica o artefato a um pedido novo | `just serve` → `POST /recomendar` | A vitrine (cliente HTTP); o serviço só responde | A cada página de produto |
+
+**Treino** lê o histórico (aqui: `catalogo.json`), calcula `pop` e `cooc`, e **grava**
+o pickle no model store (`recomendador:…`). Sem esse passo, o serviço não tem o que
+carregar.
+
+**Inferência** sobe o HTTP uma vez (`just serve`), carrega `recomendador:latest`, e
+em cada clique aplica a regra já pronta — **não** relê o JSON nem recalcula o
+catálogo. A saída é JSON para a WEB desenhar a faixa de sugestões.
+
+No mapa de dependências (ainda juntos, só para ver a seta do artefato):
 
 ```mermaid
 flowchart LR
@@ -198,24 +212,39 @@ flowchart LR
   service --> jsonOut["JSON<br/>(items, reason, score)"]
 ```
 
-Quem fala com quem, no tempo:
+### Sequência 1 — só o treino (offline)
+
+Aqui o ator é quem prepara o artefato. A vitrine **não** aparece.
 
 ```mermaid
 sequenceDiagram
-  actor Op as Operador local
+  actor Op as Operador (treino)
   participant JSON as catalogo.json
   participant Treino as treino.py
+  participant Store as BentoML model store
+
+  Op->>Treino: just treino
+  Treino->>JSON: lê produtos + cestas
+  Treino->>Treino: calcula pop e cooc
+  Treino->>Store: grava artefato recomendador:…
+  Treino-->>Op: imprime tag no store
+```
+
+### Sequência 2 — só a inferência (online)
+
+Outro momento, outros atores: sobe o serviço (ainda o operador, uma vez) e depois
+só a vitrine conversa com a API. O treino **não** roda de novo a cada clique.
+
+```mermaid
+sequenceDiagram
+  actor Op as Operador (serve)
   participant Store as BentoML model store
   participant Serve as service.py
   participant Web as vitrine WEB
 
-  Op->>Treino: just treino
-  Treino->>JSON: lê produtos + cestas
-  Treino->>Treino: pop e cooc
-  Treino->>Store: grava artefato recomendador:…
-
   Op->>Serve: just serve
   Serve->>Store: carrega recomendador:latest
+  Note over Serve: processo HTTP fica no ar
 
   loop cada página de produto
     Web->>Serve: POST /recomendar (pagina, limite, excluir)
@@ -224,8 +253,9 @@ sequenceDiagram
   end
 ```
 
-Mudou o JSON? Rode `just treino` de novo e reinicie (ou deixe o `--reload` do serve
-pegar a tag `latest`).
+Mudou o JSON? Isso é de novo **treino**: rode `just treino` e reinicie o serve (ou
+deixe o `--reload` pegar a tag `latest`). Enquanto o catálogo não muda, só a
+sequência 2 se repete.
 
 ## Visão geral do algoritmo
 
@@ -492,6 +522,7 @@ não usa região na ordenação**.
 | [`slides/recomendador-bentoml.pptx`](slides/recomendador-bentoml.pptx) | Slides da aula |
 | [`scripts/gerar_slides.py`](scripts/gerar_slides.py) | Regenera o `.pptx` (`just slides`) |
 | [`variante-demografica/`](variante-demografica/) | Variante com `clientes` + `compras` e score demográfico |
+| [`variante-clustering/`](variante-clustering/) | Cluster hierárquico + intercalação `cesta` / `cluster` |
 
 ### Dependências e ambiente
 
@@ -629,7 +660,8 @@ implementar de verdade:
 | --- | --- | --- | --- |
 | Contagem → `cooc` | Co-ocorrência | sequência | Como `cestas` viram o mapa `cooc` no treino? |
 | Artefato + API | Workflow | fluxo | Onde entram JSON, pickle e a vitrine? |
-| Treino depois serve | Workflow | sequência | Em que ordem rodam `just treino` e `just serve`? |
+| Só o treino (offline) | Workflow | sequência | Quem prepara o artefato — sem a vitrine? |
+| Só a inferência (online) | Workflow | sequência | Quem fala na hora do clique — sem o treino? |
 | Cinco passos da lista | Visão geral | fluxo | Quais decisões montam o top‑k? |
 | Um `POST /recomendar` | Visão geral | sequência | O que a API consulta no artefato a cada clique? |
 
