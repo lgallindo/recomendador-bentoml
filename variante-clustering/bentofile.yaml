@@ -1,6 +1,6 @@
 service: "service:RecomendadorCluster"
 labels:
-  aula: ads032-recomendador
+  aula: recomendador-bentoml
   variante: clustering
 include:
   - "*.py"

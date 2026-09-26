@@ -1,6 +1,6 @@
 service: "service:RecomendadorDemo"
 labels:
-  aula: ads032-recomendador
+  aula: recomendador-bentoml
   variante: demografica
 include:
   - "*.py"
