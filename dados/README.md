@@ -74,17 +74,17 @@ Mudou o JSON? Rode `just treino` de novo na raiz do repositório.
 ## Montar o mesmo formato a partir de um marketplace real
 
 O `catalogo.json` da aula é **sintético**. Em um marketplace de verdade (Postgres,
-MySQL, export CSV da WEB/BD da squad), você coleta as mesmas peças e **escreve o
+MySQL, export CSV da WEB ou do banco), você coleta as mesmas peças e **escreve o
 mesmo formato**. O serviço e o treino não mudam — só o arquivo em `dados/`.
 
 ### O que você precisa extrair
 
-| Peça no JSON | Origem tipica na loja | Observação |
+| Peça no JSON | Origem típica na loja | Observação |
 | --- | --- | --- |
 | `produtos[].id` | PK do produto (UUID ou inteiro) | Pode manter o UUID; a API só exige string estável |
 | `produtos[].nome` | Título / nome de vitrine | Texto curto |
 | `produtos[].tecnica` | Categoria, tag ou atributo “técnica” | **Um** rótulo por produto, em minúsculas sem acento se quiser alinhar ao exemplo |
-| `produtos[].regiao` | Região do artesão / polo | Pode ir vazio `""` se a loja ainda não tiver; a regra atual não ordena por região |
+| `produtos[].regiao` | Região do artesão / polo | Pode ir vazio `""` se a loja ainda não tiver |
 | `produtos[].pedidos` | Contagem de linhas de pedido (ou vendas) daquele produto | Inteiro ≥ 0; janela de tempo: escolha uma (ex.: últimos 90 dias) e documente |
 | `cestas[]` | Cada **pedido concluído** → lista dos `product_id` daquele pedido | Pedidos com um único item geram cesta de um elemento (não ajudam co-ocorrência, mas são válidos) |
 
@@ -112,7 +112,7 @@ mesmo formato**. O serviço e o treino não mudam — só o arquivo em `dados/`.
 
 ### Exemplos de consulta (SQL ilustrativo)
 
-Ajuste nomes de tabela/coluna ao schema da squad.
+Ajuste nomes de tabela/coluna ao schema do banco.
 
 ```sql
 -- Catálogo (+ demanda no período)
@@ -169,5 +169,5 @@ Se a fonte for **CSV** (export do admin):
 ## Limites do arquivo de exemplo da aula
 
 - Demanda e cestas do `catalogo.json` commitado são **inventadas para a aula**.
-- `regiao` viaja até a resposta da API, mas a regra atual **não ordena por região**.
+- `regiao` aparece na resposta da API; a ordenação deste baseline não a usa.
 - Não há usuários, timestamps nem estoque: só catálogo + cestas.

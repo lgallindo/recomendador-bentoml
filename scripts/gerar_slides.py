@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gera os 5 slides da aula.
+"""Gera os 6 slides da aula.
 
     uv run python scripts/gerar_slides.py
 """
@@ -98,7 +98,7 @@ def fundo(slide, cor):
 
 
 def slide1_objetivo(prs):
-    """Único slide textual: objetivo, entrada, saída."""
+    """Slide 1: objetivo, entrada e saída."""
     s = prs.slides.add_slide(prs.slide_layouts[6])
     fundo(s, ESCURO)
     caixa_texto(
@@ -114,7 +114,6 @@ def slide1_objetivo(prs):
         22, cor=RGBColor(0xD5, 0xE0, 0xDE), fonte=SANS, espaco=4,
     )
 
-    # three boxes: goal already said; input; output
     retangulo(s, Inches(0.8), Inches(3.0), Inches(5.5), Inches(2.8), CODIGO_BG)
     caixa_texto(
         s, Inches(1.0), Inches(3.15), Inches(5.1), Inches(2.5),
@@ -144,7 +143,7 @@ def slide1_objetivo(prs):
 
 
 def slide2_fluxo_codigo(prs):
-    """Diagrama: workflow paired with code files."""
+    """Slide 2: workflow emparelhado com arquivos do repo."""
     s = prs.slides.add_slide(prs.slide_layouts[6])
     fundo(s, PAPEL)
     caixa_texto(
@@ -179,7 +178,6 @@ def slide2_fluxo_codigo(prs):
             p = tf2.paragraphs[0] if j == 0 else tf2.add_paragraph()
             p.alignment = PP_ALIGN.CENTER
             _run(p, linha, 13, cor=TINTA, fonte=MONO, negrito=True)
-        # vertical connector
         conn = s.shapes.add_shape(
             MSO_SHAPE.RECTANGLE, x + w / 2 - Emu(15000), y_top + h,
             Emu(30000), y_bot - (y_top + h),
@@ -254,7 +252,7 @@ def slide3_treino(prs):
 
 
 def slide4_exemplo(prs):
-    """Worked example with product names, not jargon."""
+    """Slide 4: exemplo numérico com nomes de produtos."""
     s = prs.slides.add_slide(prs.slide_layouts[6])
     fundo(s, PAPEL)
     caixa_texto(
@@ -267,7 +265,6 @@ def slide4_exemplo(prs):
         15, cor=APAGADO,
     )
 
-    # left narrative steps
     retangulo(s, Inches(0.5), Inches(1.35), Inches(6.2), Inches(4.9), CAIXA, borda=ACENTO)
     caixa_texto(
         s, Inches(0.7), Inches(1.5), Inches(5.8), Inches(4.6),
@@ -320,7 +317,7 @@ def slide5_codigo(prs):
             "# service.py — função recomendar",
             "",
             "# passo 1  candidatos = mesma técnica do produto_na_pagina",
-            "# passo 2  ordenar por pedidos (+ “juntos” nas cestas)",
+            "# passo 2  ordenar por score (0,7×pop + 0,3×juntos)",
             "# passo 3  se ainda faltar vaga → pegar os mais pedidos",
             "# passo 4  montar items[] com nome, score, reason, rank",
             "",
@@ -369,9 +366,8 @@ def slide6_mapa(prs):
             "Os três campos se misturam em produtos reais. Nesta aula ficamos no",
             "primeiro: uma regra clara, testável, servida por HTTP.",
             "",
-            "Depois: (1) ligar à vitrine do marketplace · (2) estudar fundamentos",
-            "de aprendizado de máquina (Microsoft Learn, pt-BR) para trocar a regra",
-            "por um modelo treinado — sem mudar o contrato da API.",
+            "O contrato da API (POST /recomendar) pode permanecer o mesmo se, mais",
+            "tarde, a regra for trocada por um modelo treinado.",
         ],
         16, cor=TINTA, espaco=3,
     )

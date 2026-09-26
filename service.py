@@ -55,7 +55,10 @@ class Recomendador:
             if p["tecnica"] == tecnica and pid not in excluir_set
         ]
         candidatos.sort(
-            key=lambda pid: (pedidos_brutos[pid], cooc_pagina.get(pid, 0.0)),
+            key=lambda pid: (
+                0.7 * pop[pid] + 0.3 * cooc_pagina.get(pid, 0.0),
+                pedidos_brutos[pid],
+            ),
             reverse=True,
         )
 

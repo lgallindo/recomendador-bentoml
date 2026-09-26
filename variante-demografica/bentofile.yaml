@@ -1,0 +1,12 @@
+service: "service:RecomendadorDemo"
+labels:
+  aula: ads032-recomendador
+  variante: demografica
+include:
+  - "*.py"
+  - "dados/*.json"
+python:
+  packages:
+    - bentoml
+models:
+  - recomendador-demo:latest

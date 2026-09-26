@@ -1,5 +1,5 @@
 [project]
-name = "ads032-recomendador-bentoml"
+name = "recomendador-bentoml"
 version = "0.1.0"
 description = "Baseline de recomendação (popularidade + mesma técnica) servido com BentoML — material de aula pt-BR"
 requires-python = ">=3.13"
@@ -9,10 +9,6 @@ dependencies = [
 
 [tool.uv]
 package = false
-
-# Workspace vazio: esta pasta não é membro do projeto pai (venv própria).
-[tool.uv.workspace]
-members = []
 
 [dependency-groups]
 dev = [

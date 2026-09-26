@@ -1,0 +1,27 @@
+# Variante demográfica — porta 3001 para não colidir com o baseline (:3000)
+# uv/venv ficam na raiz do repositório (`--project ..`).
+
+treino:
+    uv run --project .. python treino.py
+
+serve:
+    uv run --project .. bentoml serve service:RecomendadorDemo --reload --port 3001
+
+curl-com-cliente:
+    curl -sS -X POST http://127.0.0.1:3001/recomendar \
+      -H 'Content-Type: application/json' \
+      -d '{"produto_na_pagina":"p01","cliente_id":"u01","limite":4,"excluir":[]}' \
+      | python3 -m json.tool
+
+curl-sem-cliente:
+    curl -sS -X POST http://127.0.0.1:3001/recomendar \
+      -H 'Content-Type: application/json' \
+      -d '{"produto_na_pagina":"p01","limite":4,"excluir":[]}' \
+      | python3 -m json.tool
+
+curl-outro-perfil:
+    # Bruno prefere xilogravura/cestaria — na página do jarro o demo puxa outro equilíbrio
+    curl -sS -X POST http://127.0.0.1:3001/recomendar \
+      -H 'Content-Type: application/json' \
+      -d '{"produto_na_pagina":"p01","cliente_id":"u02","limite":4,"excluir":[]}' \
+      | python3 -m json.tool

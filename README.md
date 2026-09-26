@@ -18,6 +18,10 @@ peças pernambucanas, um treino que calcula popularidade e “aparecem juntos”
 serviço HTTP no BentoML que responde a essas sugestões. Você sobe com dois comandos,
 confere no Swagger ou no `curl`, e depois lê as contas no caderno e nos slides.
 
+Há também uma **variante com demografia** (perfil do cliente + compras por faixa
+etária) em [`variante-demografica/`](variante-demografica/) — artefato e porta
+HTTP separados, para não misturar com este baseline.
+
 ## Cesta de compra
 
 Numa loja real, uma **cesta** (ou carrinho fechado) é o conjunto de produtos que a
@@ -198,19 +202,19 @@ Quem fala com quem, no tempo:
 
 ```mermaid
 sequenceDiagram
-  actor Dev as Quem dá aula / squad
+  actor Op as Operador local
   participant JSON as catalogo.json
   participant Treino as treino.py
   participant Store as BentoML model store
   participant Serve as service.py
   participant Web as vitrine WEB
 
-  Dev->>Treino: just treino
+  Op->>Treino: just treino
   Treino->>JSON: lê produtos + cestas
   Treino->>Treino: pop e cooc
   Treino->>Store: grava artefato recomendador:…
 
-  Dev->>Serve: just serve
+  Op->>Serve: just serve
   Serve->>Store: carrega recomendador:latest
 
   loop cada página de produto
@@ -267,24 +271,24 @@ sequenceDiagram
 2. **Mesma técnica.** Entre os demais itens do catálogo, ficam só os que têm a mesma
    `tecnica` artesanal (por exemplo, todos de *ceramica* se a página é um jarro de barro).
 3. **Nota e ordem nesse grupo.** Cada candidato recebe
-   $\mathrm{score} = 0{,}7 \times \text{popularidade} + 0{,}3 \times \text{co-ocorrência}$.
+   $`\mathrm{score} = 0.7 \times \mathrm{pop} + 0.3 \times \mathrm{cooc}`$.
    A popularidade vem dos `pedidos` normalizados; a co-ocorrência mede quantas vezes
    dois produtos apareceram juntos nas cestas de exemplo do dataset. Ordenamos do maior
    score para o menor e pegamos até `limite` itens. O motivo gravado é `mesma_tecnica`.
 
-   **Por que essa fórmula?** Queremos misturar dois sinais: “muita gente pede isso”
-   (popularidade) e “costuma sair junto com o produto da página” (co-ocorrência). O peso
-   **0,7 / 0,3** privilegia a demanda geral dentro da mesma técnica, sem ignorar o
-   histórico das cestas. Não é uma lei da natureza — é um baseline explícito e fácil de
-   mudar na aula (troque os pesos e compare o JSON).
+   **Por que essa fórmula?** Mistura dois sinais: “muita gente pede isso” (popularidade)
+   e “costuma sair junto com o produto da página” (co-ocorrência). O peso **0,7 / 0,3**
+   privilegia a demanda geral dentro da mesma técnica, sem ignorar o histórico das
+   cestas. Os pesos ficam em `service.py` — dá para trocá-los e comparar o JSON.
 
    **O que é “normalizado”?** Os `pedidos` brutos são contagens (8, 28, 42…). Se
    somássemos pedidos crus com co-ocorrência (que já está em 0…1), o número grande
    dominaria a nota. Normalizar aqui significa **dividir pelo máximo do catálogo**:
 
-   ```math
-   \mathrm{pop}_i = \frac{\mathrm{pedidos}_i}{\max_j \mathrm{pedidos}_j}
-   ```
+
+$$
+\mathrm{pop}_i = \frac{\mathrm{pedidos}_i}{\max_j \mathrm{pedidos}_j}
+$$
 
    Assim a popularidade também fica entre 0 e 1 (o jarro com 42 pedidos vira 1,0; quem
    tem 21 vira 0,5). A co-ocorrência já nasce normalizada **por produto de referência**:
@@ -319,7 +323,7 @@ sequenceDiagram
    ```
 4. **Complemento por popularidade.** Se ainda faltarem vagas (poucos produtos daquela
    técnica), completamos com os mais pedidos do catálogo inteiro, ainda respeitando
-   `excluir`. Nesses, $\mathrm{score} = 0{,}5 \times \text{popularidade}$ e o motivo é
+   `excluir`. Nesses, $`\mathrm{score} = 0.5 \times \mathrm{pop}`$ e o motivo é
    `complemento_popularidade`. O campo `complemento_usado` fica `true`.
 5. **Resposta.** Devolvemos a lista com id, nome, técnica, região, score, motivo e rank —
    pronta para a WEB desenhar a faixa “Você também pode gostar”.
@@ -456,23 +460,24 @@ Deve devolver `erro: "produto_inexistente"` e `items` vazio, sem inventar produt
 1. **Popularidade.** Cada produto tem um contador `pedidos` no JSON. No treino,
    normalizamos pelo máximo do catálogo:
 
-   ```math
-   \mathrm{pop}_i = \frac{\mathrm{pedidos}_i}{\max_j \mathrm{pedidos}_j}
-   ```
+
+$$
+\mathrm{pop}_i = \frac{\mathrm{pedidos}_i}{\max_j \mathrm{pedidos}_j}
+$$
+
 2. **Co-ocorrência.** Nas cestas de exemplo, contamos quantas vezes dois produtos
    saem juntos; para cada produto de referência, normalizamos pelo vizinho mais
    frequente daquele produto.
 3. **Candidatos.** Todos os produtos com a **mesma técnica** do item da página,
    exceto ele próprio e os ids em `excluir`.
 4. **Ordenação (mesma técnica).**
-   $\mathrm{score} = 0{,}7 \cdot \mathrm{pop} + 0{,}3 \cdot \mathrm{coocorrência}$.
+   $`\mathrm{score} = 0.7 \cdot \mathrm{pop} + 0.3 \cdot \mathrm{cooc}`$.
 5. **Complemento.** Se a lista ainda for menor que `limite`, completamos com os
    produtos de maior `pedidos` no catálogo (mesmo filtro de exclusão). Para esses,
-   $\mathrm{score} = 0{,}5 \cdot \mathrm{pop}$.
+   $`\mathrm{score} = 0.5 \cdot \mathrm{pop}`$.
 
-A região entra no JSON de saída (útil para a vitrine e para a especificação da
-disciplina), mas **esta versão não usa região na ordenação**. Se o requisito EARS
-da squad pedir reforço por região, esse é o próximo passo natural no código.
+O campo `regiao` vai no JSON de saída (a vitrine pode exibir), mas **esta versão
+não usa região na ordenação**.
 
 ### Mapa de arquivos
 
@@ -486,6 +491,7 @@ da squad pedir reforço por região, esse é o próximo passo natural no código
 | [`material/calculos-trabalhados.md`](material/calculos-trabalhados.md) | Contas do exemplo `p01` no papel |
 | [`slides/recomendador-bentoml.pptx`](slides/recomendador-bentoml.pptx) | Slides da aula |
 | [`scripts/gerar_slides.py`](scripts/gerar_slides.py) | Regenera o `.pptx` (`just slides`) |
+| [`variante-demografica/`](variante-demografica/) | Variante com `clientes` + `compras` e score demográfico |
 
 ### Dependências e ambiente
 
@@ -506,8 +512,8 @@ serviço. Mudou o catálogo? Rode `just treino` de novo e reinicie (ou confie no
 
 Não é aprendizado profundo, não é filtragem colaborativa com matriz de usuários
 reais, não autentica, não persiste log de impressões, não avalia Precision@k.
-É o **baseline honesto** que a especificação da AV1 já pede: técnica, popularidade,
-exclusões, JSON, motivo legível — servido como API para a WEB consumir.
+É um **baseline** com técnica, popularidade, exclusões, JSON e motivo legível —
+servido como API para a WEB consumir.
 
 ### Para onde ir depois (fora deste repositório)
 
@@ -534,25 +540,23 @@ No fim das contas, um marketplace precisa de recomendação pela mesma razão qu
 feira física coloca peças parecidas na mesma banca: a pessoa já mostrou um interesse
 (abriu um jarro) e a loja responde com vizinhança útil, sem obrigá-la a adivinhar o
 vocabulário do catálogo. Este projeto deixa essa ideia pequena, auditável e no ar —
-você vê o JSON, confere as contas no caderno e entende cada `reason`. Quando a
-vitrine do Origem (ou do Fiscalize, no caso da triagem) pedir o módulo de verdade,
-o contrato HTTP e a lógica de baseline já estão aqui para crescer.
+você vê o JSON, confere as contas no caderno e entende cada `reason`. O contrato HTTP
+e a lógica de baseline estão prontos para a vitrine consumir e, se quiser, evoluir.
 
 ## Nomes neste repo e na literatura de recomendação
 
-Os nomes da esquerda são os deste projeto. Os da coluna do meio são aproximações
-úteis ao ler livros e artigos de *recommender systems*. A coluna da direita evita
-superestimar o que o baseline faz.
+Os nomes da esquerda são os deste projeto. Os da direita são aproximações úteis ao
+ler livros e artigos de *recommender systems*.
 
-| Neste repo | Na literatura (aprox.) | Não confundir com |
-| --- | --- | --- |
-| `pop` / `pedidos_brutos` | *popularity baseline* (não personalizado) | ranking aprendido por usuário |
-| `cooc` / `cestas` | co-ocorrência item–item; sinal de associação | filtragem colaborativa plena (MF, kNN com usuários reais) |
-| filtro por `tecnica` | filtragem baseada em conteúdo (atributo do item) | perfil demográfico do usuário |
-| score `0,7×pop + 0,3×cooc` | combinação híbrida ponderada (regra fixa) | modelo com pesos aprendidos |
-| complemento por popularidade | *fallback* / preenchimento por cobertura | *re-ranking* treinado |
-| `reason` no JSON | explicabilidade por regra | *feature attribution* de modelo |
-| artefato + `POST /recomendar` | *offline compute* + *online inference* | treino online / aprendizado contínuo |
+| Neste repo | Na literatura (aprox.) |
+| --- | --- |
+| `pop` / `pedidos_brutos` | *popularity baseline* (não personalizado) |
+| `cooc` / `cestas` | co-ocorrência item–item; sinal de associação |
+| filtro por `tecnica` | filtragem baseada em conteúdo (atributo do item) |
+| score `0,7×pop + 0,3×cooc` | combinação híbrida ponderada (regra fixa) |
+| complemento por popularidade | *fallback* / preenchimento por cobertura |
+| `reason` no JSON | explicabilidade por regra |
+| artefato + `POST /recomendar` | *offline compute* + *online inference* |
 
 Este baseline é **ciência de dados + serviço**: agregamos contagens, aplicamos uma
 fórmula e servimos JSON. Ainda **não** é aprendizado de máquina no sentido do
@@ -608,7 +612,7 @@ Links em pt-BR, mesma ordem do módulo.
 2. Com log ou cestas como rótulo fraco, seguir **5** (binário) ou **4** (score);
    usar **7** se a dor for descobrir grupos além de `tecnica`.
 3. Avaliar com holdout (como o módulo mostra na regressão) antes de trocar a
-   regra no serviço — manter este baseline como braço A.
+   regra no serviço — manter este baseline disponível para comparar.
 4. Só então apontar `service.py` para o novo artefato; o contrato HTTP pode
    permanecer o mesmo.
 
@@ -628,8 +632,4 @@ implementar de verdade:
 | Treino depois serve | Workflow | sequência | Em que ordem rodam `just treino` e `just serve`? |
 | Cinco passos da lista | Visão geral | fluxo | Quais decisões montam o top‑k? |
 | Um `POST /recomendar` | Visão geral | sequência | O que a API consulta no artefato a cada clique? |
-
-Não incluímos diagrama de sequência de *usuário anônimo na loja real* (login,
-carrinho, pixel de impressão): este pacote não tem esses atores. Também não
-desenhamos MF / rede neural — ficaria mentira sobre o baseline.
 

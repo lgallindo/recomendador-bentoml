@@ -1,6 +1,6 @@
 service: "service:Recomendador"
 labels:
-  aula: ads032-recomendador
+  aula: recomendador-bentoml
 include:
   - "*.py"
   - "dados/*.json"
