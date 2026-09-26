@@ -276,22 +276,22 @@ O mesmo caminho, como troca de mensagens dentro de **um** pedido:
 ```mermaid
 sequenceDiagram
   participant Web as vitrine WEB
-  participant API as recomendar()
-  participant Art as artefato (pop, cooc, produtos)
+  participant API as recomendar
+  participant Art as artefato
 
   Web->>API: produto_na_pagina, limite, excluir
-  API->>Art: lê produto da página
-  API->>API: excluir ∪ {pagina}
-  API->>Art: candidatos = mesma tecnica, fora de excluir
-  loop cada candidato c
-    API->>Art: pop[c], cooc[pagina][c]
-    API->>API: score[c] = 0,7×pop + 0,3×cooc
+  API->>Art: le produto da pagina
+  API->>API: excluir = excluir + pagina
+  API->>Art: candidatos mesma tecnica fora de excluir
+  loop cada candidato
+    API->>Art: pop e cooc do candidato
+    API->>API: score = 0.7*pop + 0.3*cooc
   end
-  API->>API: ordena; corta em limite
+  API->>API: ordena e corta em limite
   alt ainda faltam vagas
-    API->>Art: completa com mais pedidos do catálogo
+    API->>Art: completa com mais pedidos do catalogo
   end
-  API-->>Web: items[], reason, complemento_usado
+  API-->>Web: items, reason, complemento_usado
 ```
 
 
@@ -664,4 +664,67 @@ implementar de verdade:
 | Só a inferência (online) | Workflow | sequência | Quem fala na hora do clique — sem o treino? |
 | Cinco passos da lista | Visão geral | fluxo | Quais decisões montam o top‑k? |
 | Um `POST /recomendar` | Visão geral | sequência | O que a API consulta no artefato a cada clique? |
+
+## Catálogo de variantes
+
+Três pacotes neste repositório. O **baseline** é a raiz; as outras pastas são
+irmãs com artefato BentoML e porta HTTP próprios (não sobrescrevem
+`recomendador:latest`).
+
+| ID | Pasta | Porta | Artefato | O que acrescenta |
+| --- | --- | ---: | --- | --- |
+| raiz | [`.`](.) (este README) | 3000 | `recomendador` | técnica + `pop` + `cooc` + complemento por popularidade |
+| demo | [`variante-demografica/`](variante-demografica/) | 3001 | `recomendador-demo` | `clientes` + `compras`; score com afinidade demográfica |
+| clus | [`variante-clustering/`](variante-clustering/) | 3002 | `recomendador-cluster` | cluster hierárquico (dendrograma); lista intercalada `cesta`/`cluster` |
+
+### Baseline (raiz)
+
+- **Entrada:** `produto_na_pagina`, `limite`, `excluir`.
+- **Regra:** candidatos da mesma `tecnica`;  
+  \(\mathrm{score} = 0{,}7\times\mathrm{pop} + 0{,}3\times\mathrm{cooc}\); se faltarem
+  vagas, completa com os mais pedidos (`complemento_popularidade`).
+- **Subir:** `just treino` · `just serve` · `just curl-exemplo`.
+- **Leitura:** seções [Cesta](#cesta-de-compra) → [Workflow](#workflow) → [API](#o-que-a-api-espera-e-o-que-ela-devolve).
+
+### Variante demográfica
+
+- **Entrada:** as mesmas do baseline **mais** `cliente_id` (opcional).
+- **Dados extras:** `clientes[]` (faixa etária, técnicas e polos preferidos) e
+  `compras[]` (histórico sintético por cliente).
+- **Regra (mesma técnica):**  
+  \(0{,}45\times\mathrm{pop} + 0{,}25\times\mathrm{cooc} + 0{,}30\times\mathrm{demo}\),  
+  onde `demo` mistura preferências declaradas e popularidade do produto **na faixa
+  etária** do cliente.
+- **Sem `cliente_id`:** `demo = 0` (primo do baseline, pesos diferentes).
+- **Subir:** `cd variante-demografica && just treino && just serve` (porta **3001**).
+- **Doc:** [`variante-demografica/README.md`](variante-demografica/README.md).
+
+### Variante clustering
+
+- **Entrada:** iguais ao baseline (`produto_na_pagina`, `limite`, `excluir`).
+- **Treino:** vetor one-hot `tecnica` + `regiao` + `pedidos` padronizado;
+  agglomerative **ward**, `n_clusters=4`; grava dendrograma em
+  [`variante-clustering/material/dendrograma.png`](variante-clustering/material/dendrograma.png).
+- **Lista:** ranks ímpares = fila **cesta** (`cooc` com a página); ranks pares =
+  fila **cluster** (mesmo grupo hierárquico, ordenado por `pop`). Se a fila da vez
+  esvaziar, usa a outra e mantém o `reason` verdadeiro (`cesta` ou `cluster`).
+- **Exemplo completo:** `produto_na_pagina=p07`, `limite=4` →  
+  `cesta`, `cluster`, `cesta`, `cluster` (`intercalacao_completa: true`).
+- **Subir:** `cd variante-clustering && just treino && just serve` (porta **3002**).
+- **Doc:** [`variante-clustering/README.md`](variante-clustering/README.md).
+
+### Como escolher na aula
+
+| Pergunta da turma | Pasta |
+| --- | --- |
+| “Só produto da página, regra auditável” | raiz |
+| “E se soubermos quem é o cliente?” | `variante-demografica/` |
+| “E se agruparmos por atributos e misturarmos com a cesta?” | `variante-clustering/` |
+
+Nenhuma variante é aprendificado de máquina supervisionado ainda — ver
+[Do Data Science à Machine Learning](#ds-para-ml-microsoft-learn). Para **predição
+de demanda** (outro problema: prever `pedidos`, não montar top‑k), use o
+repositório irmão
+[`predicao-demanda-bentoml`](https://github.com/lgallindo/predicao-demanda-bentoml)
+(quando publicado).
 
