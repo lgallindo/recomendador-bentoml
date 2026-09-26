@@ -140,7 +140,7 @@ def slide1_objetivo(prs):
         18, cor=CLARO, fonte=SANS, espaco=4,
     )
     caixa_texto(s, Inches(0.8), Inches(6.7), Inches(12), Inches(0.35),
-                "1 / 5", 12, cor=APAGADO)
+                "1 / 6", 12, cor=APAGADO)
 
 
 def slide2_fluxo_codigo(prs):
@@ -197,10 +197,63 @@ def slide2_fluxo_codigo(prs):
         16, cor=APAGADO,
     )
     caixa_texto(s, Inches(0.6), Inches(6.7), Inches(12), Inches(0.35),
-                "2 / 5", 12, cor=APAGADO)
+                "2 / 6", 12, cor=APAGADO)
 
 
-def slide3_exemplo(prs):
+def slide3_treino(prs):
+    """O que treino.py faz — entre o fluxo e o exemplo numérico."""
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    fundo(s, PAPEL)
+    caixa_texto(
+        s, Inches(0.55), Inches(0.25), Inches(12.2), Inches(0.5),
+        "O que treino.py faz", 30, fonte=SERIFA, negrito=True,
+    )
+    caixa_texto(
+        s, Inches(0.55), Inches(0.85), Inches(12.2), Inches(0.4),
+        "Roda uma vez antes de servir. Prepara números que o service.py só consulta.",
+        16, cor=APAGADO,
+    )
+
+    passos = [
+        ("Lê", "dados/catalogo.json\nprodutos + cestas"),
+        ("Calcula", "pedidos ÷ máximo\ne “juntos” nas cestas"),
+        ("Empacota", "um dicionário\nPython"),
+        ("Grava", "no store BentoML\n(recomendador:…)"),
+    ]
+    y, w, h = Inches(1.55), Inches(2.85), Inches(2.0)
+    gap = Inches(0.25)
+    x0 = Inches(0.55)
+    for i, (titulo, detalhe) in enumerate(passos):
+        x = x0 + i * (w + gap)
+        sh = retangulo(s, x, y, w, h, ACENTO if i % 2 == 0 else ESCURO)
+        tf = sh.text_frame
+        tf.clear()
+        p = tf.paragraphs[0]
+        p.alignment = PP_ALIGN.CENTER
+        _run(p, titulo, 20, cor=CLARO, fonte=SANS, negrito=True)
+        for linha in detalhe.split("\n"):
+            p2 = tf.add_paragraph()
+            p2.alignment = PP_ALIGN.CENTER
+            _run(p2, linha, 13, cor=CLARO, fonte=SANS)
+        if i < len(passos) - 1:
+            seta_h(s, x + w, x + w + gap, y + h / 2)
+
+    retangulo(s, Inches(0.55), Inches(4.0), Inches(12.2), Inches(2.2), CAIXA, borda=ACENTO)
+    caixa_texto(
+        s, Inches(0.75), Inches(4.2), Inches(11.8), Inches(1.9),
+        [
+            "Entrada do treino: o JSON do catálogo.",
+            "Saída do treino: arquivo no model store (popularidade, similaridade, nomes).",
+            "Na aula: just treino  →  depois  just serve.",
+            "O cliente HTTP nunca chama treino.py; só o endpoint recomendar.",
+        ],
+        16, fonte=SANS, espaco=4,
+    )
+    caixa_texto(s, Inches(0.55), Inches(6.7), Inches(12), Inches(0.35),
+                "3 / 6", 12, cor=APAGADO)
+
+
+def slide4_exemplo(prs):
     """Worked example with product names, not jargon."""
     s = prs.slides.add_slide(prs.slide_layouts[6])
     fundo(s, PAPEL)
@@ -250,10 +303,10 @@ def slide3_exemplo(prs):
         17, cor=CLARO, fonte=SANS, espaco=5,
     )
     caixa_texto(s, Inches(0.55), Inches(6.7), Inches(12), Inches(0.35),
-                "3 / 5", 12, cor=APAGADO)
+                "4 / 6", 12, cor=APAGADO)
 
 
-def slide4_codigo(prs):
+def slide5_codigo(prs):
     s = prs.slides.add_slide(prs.slide_layouts[6])
     fundo(s, ESCURO)
     caixa_texto(
@@ -277,10 +330,10 @@ def slide4_codigo(prs):
         17, cor=RGBColor(0xB8, 0xE0, 0xD8), fonte=MONO, espaco=5,
     )
     caixa_texto(s, Inches(0.6), Inches(6.7), Inches(12), Inches(0.35),
-                "4 / 5", 12, cor=APAGADO)
+                "5 / 6", 12, cor=APAGADO)
 
 
-def slide5_mapa(prs):
+def slide6_mapa(prs):
     s = prs.slides.add_slide(prs.slide_layouts[6])
     fundo(s, PAPEL)
     caixa_texto(
@@ -323,7 +376,7 @@ def slide5_mapa(prs):
         16, cor=TINTA, espaco=3,
     )
     caixa_texto(s, Inches(0.6), Inches(6.7), Inches(12), Inches(0.35),
-                "5 / 5", 12, cor=APAGADO)
+                "6 / 6", 12, cor=APAGADO)
 
 
 def main() -> None:
@@ -332,9 +385,10 @@ def main() -> None:
     prs.slide_height = A
     slide1_objetivo(prs)
     slide2_fluxo_codigo(prs)
-    slide3_exemplo(prs)
-    slide4_codigo(prs)
-    slide5_mapa(prs)
+    slide3_treino(prs)
+    slide4_exemplo(prs)
+    slide5_codigo(prs)
+    slide6_mapa(prs)
     SAIDA.parent.mkdir(parents=True, exist_ok=True)
     prs.save(SAIDA)
     print(f"escrito {SAIDA}  ({SAIDA.stat().st_size} bytes)")

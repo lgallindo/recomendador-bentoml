@@ -43,7 +43,7 @@ Swagger: <http://127.0.0.1:3000> · demo: `just curl-exemplo`
 
 | Arquivo | Conteúdo |
 | --- | --- |
-| [`slides/recomendador-bentoml.pptx`](slides/recomendador-bentoml.pptx) | 5 slides |
+| [`slides/recomendador-bentoml.pptx`](slides/recomendador-bentoml.pptx) | 6 slides |
 | [`material/calculos-trabalhados.md`](material/calculos-trabalhados.md) | Contas com nomes de produtos |
 | [`scripts/gerar_slides.py`](scripts/gerar_slides.py) | Regenera o `.pptx` |
 
