@@ -44,21 +44,91 @@ juntos”. Ordem dentro da lista não importa para o treino; o que importa é o
 região, pedidos) fica no array irmão `produtos` — detalhes em
 [`dados/README.md`](dados/README.md).
 
+## Popularidade e co-ocorrência
+
+Dois números que o treino tira do JSON e que o serviço usa na nota. Ambos acabam
+em escala **0…1**, para poderem entrar na mesma fórmula de score.
+
+### Popularidade
+
+**Popularidade** é quão pedido é cada produto. No dataset isso é o campo `pedidos`
+(contagem sintética em cada objeto de `produtos`). No treino viramos um número
+entre 0 e 1 dividindo pelo maior `pedidos` do catálogo — o item mais pedido fica
+em 1,0; os outros ficam abaixo.
+
+Pseudocódigo a partir do JSON:
+
+```text
+produtos ← catalogo["produtos"]          # lista de {id, nome, tecnica, regiao, pedidos}
+
+para cada p em produtos:
+    pedidos_brutos[p.id] ← p.pedidos
+
+max_pedidos ← máximo dos valores em pedidos_brutos
+para cada id:
+    pop[id] ← pedidos_brutos[id] / max_pedidos    # 0…1
+```
+
+No Python (`treino.py`, função `main`):
+
+| Pseudocódigo | Código |
+| --- | --- |
+| Ler `produtos` | `produtos = {p["id"]: p for p in bruto["produtos"]}` |
+| `pedidos_brutos` | `popularidade = {pid: float(p["pedidos"]) for …}` |
+| `max_pedidos` | `max_ped = max(popularidade.values()) or 1.0` |
+| `pop[id]` | `popularidade_norm = {pid: n / max_ped for …}` |
+
+O artefato guarda **os dois**: `popularidade` (cru) e `popularidade_norm` (0…1).
+O serviço usa a versão normalizada no score.
+
+### Co-ocorrência
+
+**Co-ocorrência** é quão frequentemente dois produtos aparecem **juntos** nas
+`cestas` de exemplo (como se fossem a mesma compra). Para cada produto âncora,
+contamos os parceiros e normalizamos pelo parceiro mais frequente daquele âncora,
+também em 0…1. “Aparecem juntos” ≠ “são da mesma técnica”; técnica é outro filtro
+(aplicado depois, no serviço).
+
+Pseudocódigo a partir do JSON:
+
+```text
+cestas ← catalogo["cestas"]              # lista de listas de id
+
+# contagem bruta de pares (simétrica)
+para cada cesta em cestas:
+    ids ← únicos na cesta                 # evita contar o mesmo id duas vezes
+    para cada par ordenado (a, b) com a ≠ b entre ids:
+        conta[a][b] ← conta[a][b] + 1
+        conta[b][a] ← conta[b][a] + 1
+
+# normalização por âncora
+para cada âncora a:
+    m ← máximo de conta[a][*]             # vizinho mais frequente de a
+    para cada vizinho b:
+        cooc[a][b] ← conta[a][b] / m      # 0…1
+```
+
+No Python isso é a função `_coocorrencia` + a chamada em `main`:
+
+| Pseudocódigo | Código |
+| --- | --- |
+| Percorrer `cestas` | `for cesta in cestas:` |
+| Únicos na cesta | `unicos = list(dict.fromkeys(cesta))` |
+| Incrementar pares | `pares[a][b] += 1.0` e `pares[b][a] += 1.0` |
+| Normalizar por âncora | `out[a] = {b: v / m for b, v in vizinhos.items()}` |
+| Guardar no artefato | `similaridade = _coocorrencia(bruto["cestas"])` |
+
+No artefato o mapa se chama `similaridade`: `similaridade[pagina][candidato]` é a
+co-ocorrência normalizada do candidato dado o produto da página (0 se nunca
+apareceram juntos).
+
 ## Workflow
 
 Dois momentos distintos, nesta ordem:
 
 1. **Offline (`just treino`).** Lê [`dados/catalogo.json`](dados/catalogo.json), calcula
-   popularidade e co-ocorrência, grava um artefato no store do BentoML
+   popularidade e co-ocorrência (seção anterior), grava um artefato no store do BentoML
    (`recomendador:…`). Sem isso, o serviço não tem o que carregar.
-
-   - **Popularidade:** quão pedido é cada produto. No dataset isso é o campo `pedidos`
-     (contagem sintética). No treino viramos um número entre 0 e 1 dividindo pelo maior
-     `pedidos` do catálogo — o item mais pedido fica em 1,0; os outros ficam abaixo.
-   - **Co-ocorrência:** quão frequentemente dois produtos aparecem **juntos** nas
-     `cestas` de exemplo (como se fossem a mesma compra). Para cada produto âncora,
-     contamos os parceiros e normalizamos pelo parceiro mais frequente daquele âncora,
-     também em 0…1. “Aparecem juntos” ≠ “são da mesma técnica”; técnica é outro filtro.
 2. **Online (`just serve`).** Sobe o HTTP. A cada `POST /recomendar`, a vitrine manda o
    produto da página; o serviço monta a lista e devolve JSON. Não recalcula o catálogo
    inteiro a cada clique — só aplica a regra sobre o artefato já treinado.
