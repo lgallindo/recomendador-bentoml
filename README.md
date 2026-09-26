@@ -18,13 +18,13 @@ peças pernambucanas, um treino que calcula popularidade e “aparecem juntos”
 serviço HTTP no BentoML que responde a essas sugestões. Você sobe com dois comandos,
 confere no Swagger ou no `curl`, e depois lê as contas no caderno e nos slides.
 
-## Cesta de compra (o que é e onde mora no JSON)
+## Cesta de compra
 
 Numa loja real, uma **cesta** (ou carrinho fechado) é o conjunto de produtos que a
 pessoa levou **na mesma compra**. Se alguém pediu jarro + prato + boneca juntos,
 esses três ids formam uma cesta. O recomendador usa isso para aprender
 “aparecem juntos”: produtos que compartilham cestas tendem a se reforçar na nota
-de co-ocorrência.
+de **co-ocorrência**.
 
 Neste material as cestas são **exemplos sintéticos** (não tickets de loja real).
 Elas vivem em [`dados/catalogo.json`](dados/catalogo.json), no array `cestas`:
@@ -41,32 +41,53 @@ cada elemento é uma lista de ids de produto.
 A primeira linha lê-se: “numa compra de exemplo saíram `p01`, `p02` e `p03`
 juntos”. Ordem dentro da lista não importa para o treino; o que importa é o
 **par** (a, b) aparecer na mesma cesta. O catálogo de itens (nome, técnica,
-região, pedidos) fica no array irmão `produtos` — detalhes em
+região, **`pedidos`**) fica no array irmão `produtos` — detalhes em
 [`dados/README.md`](dados/README.md).
 
 ## Popularidade e co-ocorrência
 
 Dois números que o treino tira do JSON e que o serviço usa na nota. Ambos acabam
-em escala **0…1**, para poderem entrar na mesma fórmula de score.
+em escala **0…1**, para poderem entrar na mesma fórmula de score. Vêm de **chaves
+diferentes** do mesmo arquivo:
+
+| Sinal | Array / campo no JSON | O que mede |
+| --- | --- | --- |
+| Popularidade | `produtos[].pedidos` | Quão pedido é o item (contagem por produto) |
+| Co-ocorrência | `cestas` | Quão frequentemente dois ids saem **na mesma** compra |
+
+Não misture: contar em quantas cestas um id aparece **não** é o que este baseline
+faz para popularidade. Aqui a demanda já veio agregada no campo `pedidos` de cada
+produto; as `cestas` servem só para pares.
 
 ### Popularidade
 
 **Popularidade** é quão pedido é cada produto. No dataset isso é o campo `pedidos`
-(contagem sintética em cada objeto de `produtos`). No treino viramos um número
+dentro de cada objeto de `produtos` — por exemplo `"pedidos": 42` no jarro `p01`.
+Não lemos `cestas` neste passo. No treino copiamos esses valores para um mapa
+(`pedidos_brutos` no pseudocódigo; `popularidade` no Python) e viramos um número
 entre 0 e 1 dividindo pelo maior `pedidos` do catálogo — o item mais pedido fica
 em 1,0; os outros ficam abaixo.
 
-Pseudocódigo a partir do JSON:
+Pseudocódigo a partir do JSON (`produtos` apenas):
 
 ```text
-produtos ← catalogo["produtos"]          # lista de {id, nome, tecnica, regiao, pedidos}
+# Variáveis:
+#   catalogo       — objeto JSON raiz (lido de catalogo.json)
+#   produtos       — lista catalogo["produtos"]
+#   p              — um registro {id, nome, tecnica, regiao, pedidos}
+#   pedidos_brutos — mapa id → pedidos crus (número)
+#   max_pedidos    — maior valor em pedidos_brutos
+#   pop            — mapa id → popularidade normalizada em 0…1
+#   id             — chave de produto
+
+produtos ← catalogo["produtos"]
 
 para cada p em produtos:
-    pedidos_brutos[p.id] ← p.pedidos
+    pedidos_brutos[p.id] ← p.pedidos     # campo pedidos; não vem de cestas
 
 max_pedidos ← máximo dos valores em pedidos_brutos
 para cada id:
-    pop[id] ← pedidos_brutos[id] / max_pedidos    # 0…1
+    pop[id] ← pedidos_brutos[id] / max_pedidos
 ```
 
 No Python (`treino.py`, função `main`):
@@ -78,34 +99,45 @@ No Python (`treino.py`, função `main`):
 | `max_pedidos` | `max_ped = max(popularidade.values()) or 1.0` |
 | `pop[id]` | `popularidade_norm = {pid: n / max_ped for …}` |
 
-O artefato guarda **os dois**: `popularidade` (cru) e `popularidade_norm` (0…1).
-O serviço usa a versão normalizada no score.
+O artefato guarda **os dois**: `popularidade` (cru, os `pedidos`) e
+`popularidade_norm` (0…1). O serviço usa a versão normalizada no score.
 
 ### Co-ocorrência
 
 **Co-ocorrência** é quão frequentemente dois produtos aparecem **juntos** nas
-`cestas` de exemplo (como se fossem a mesma compra). Para cada produto âncora,
-contamos os parceiros e normalizamos pelo parceiro mais frequente daquele âncora,
-também em 0…1. “Aparecem juntos” ≠ “são da mesma técnica”; técnica é outro filtro
-(aplicado depois, no serviço).
+`cestas` de exemplo (como se fossem a mesma compra). Aqui sim usamos o array
+`cestas` da seção anterior — e **não** o campo `pedidos`. Para cada produto
+âncora, contamos os parceiros e normalizamos pelo parceiro mais frequente daquele
+âncora, também em 0…1. “Aparecem juntos” ≠ “são da mesma técnica”; técnica é outro
+filtro (aplicado depois, no serviço).
 
 Pseudocódigo a partir do JSON:
 
 ```text
-cestas ← catalogo["cestas"]              # lista de listas de id
+# Variáveis:
+#   catalogo — objeto JSON raiz
+#   cestas   — lista catalogo["cestas"] (cada item = lista de ids)
+#   cesta    — uma compra de exemplo (lista de ids)
+#   ids      — ids únicos dentro de uma cesta
+#   a, b     — dois ids distintos formando um par
+#   conta    — mapa âncora → (vizinho → contagem bruta)
+#   m        — máximo de conta[a][*] para a âncora a
+#   cooc     — mapa âncora → (vizinho → co-ocorrência em 0…1)
+
+cestas ← catalogo["cestas"]
 
 # contagem bruta de pares (simétrica)
 para cada cesta em cestas:
-    ids ← únicos na cesta                 # evita contar o mesmo id duas vezes
+    ids ← únicos na cesta
     para cada par ordenado (a, b) com a ≠ b entre ids:
         conta[a][b] ← conta[a][b] + 1
         conta[b][a] ← conta[b][a] + 1
 
 # normalização por âncora
 para cada âncora a:
-    m ← máximo de conta[a][*]             # vizinho mais frequente de a
+    m ← máximo de conta[a][*]
     para cada vizinho b:
-        cooc[a][b] ← conta[a][b] / m      # 0…1
+        cooc[a][b] ← conta[a][b] / m
 ```
 
 No Python isso é a função `_coocorrencia` + a chamada em `main`:
@@ -179,15 +211,19 @@ O fluxo cabe em cinco passos, na ordem em que o serviço decide a lista:
    Pseudocódigo (mesmo grupo, após filtrar técnica e exclusões):
 
    ```text
-   max_pedidos ← máximo de pedidos entre todos os produtos
-   para cada produto i:
-       pop[i] ← pedidos[i] / max_pedidos          # 0…1
+   # Variáveis:
+   #   produtos   — mapa id → registro (já no artefato)
+   #   pop        — mapa id → popularidade 0…1 (artefato.popularidade_norm)
+   #   cooc       — mapa âncora → (vizinho → 0…1) (artefato.similaridade)
+   #   pagina     — id do produto_na_pagina
+   #   excluir    — conjunto de ids a omitir (mais a própria pagina)
+   #   candidatos — lista de ids mesma tecnica, fora de excluir
+   #   c          — um id candidato
+   #   score      — mapa id → nota composta
+   #   limite     — quantos itens devolver
+   #   escolhidos — lista final ordenada (até limite)
 
-   # no treino, para cada par (a, b) que aparece junto numa cesta:
-   #   conta[a][b] ← conta[a][b] + 1
-   # depois, para cada âncora a:
-   #   cooc[a][b] ← conta[a][b] / max_b conta[a][b]   # 0…1
-
+   # pop e cooc já vêm do artefato; aqui só a montagem da lista:
    candidatos ← produtos com mesma tecnica que pagina
                 e id ∉ excluir ∪ {pagina}
 
@@ -195,7 +231,7 @@ O fluxo cabe em cinco passos, na ordem em que o serviço decide a lista:
        score[c] ← 0.7 * pop[c] + 0.3 * cooc[pagina].get(c, 0)
 
    ordenar candidatos por score decrescente
-   escolhidos ← primeiros `limite` de candidatos
+   escolhidos ← primeiros limite de candidatos
    # reason ← "mesma_tecnica"
    ```
 4. **Complemento por popularidade.** Se ainda faltarem vagas (poucos produtos daquela
