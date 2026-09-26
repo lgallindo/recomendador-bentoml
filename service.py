@@ -33,40 +33,41 @@ class Recomendador:
           - excluir: ids que não devem voltar (já vistos / já comprados)
         """
         produtos = self.artefato["produtos"]
-        if produto_na_pagina not in produtos:
+        pagina = produto_na_pagina
+        if pagina not in produtos:
             return {
                 "erro": "produto_inexistente",
-                "produto_na_pagina": produto_na_pagina,
+                "produto_na_pagina": pagina,
                 "items": [],
             }
 
-        excluidos = set(excluir or [])
-        excluidos.add(produto_na_pagina)
-        atual = produtos[produto_na_pagina]
+        excluir_set = set(excluir or [])
+        excluir_set.add(pagina)
+        atual = produtos[pagina]
         tecnica = atual["tecnica"]
-        pop = self.artefato["popularidade"]
-        pop_n = self.artefato["popularidade_norm"]
-        sim = self.artefato["similaridade"].get(produto_na_pagina, {})
+        pedidos_brutos = self.artefato["pedidos_brutos"]
+        pop = self.artefato["pop"]
+        cooc_pagina = self.artefato["cooc"].get(pagina, {})
 
-        mesma = [
+        candidatos = [
             pid
             for pid, p in produtos.items()
-            if p["tecnica"] == tecnica and pid not in excluidos
+            if p["tecnica"] == tecnica and pid not in excluir_set
         ]
-        mesma.sort(
-            key=lambda pid: (pop[pid], sim.get(pid, 0.0)),
+        candidatos.sort(
+            key=lambda pid: (pedidos_brutos[pid], cooc_pagina.get(pid, 0.0)),
             reverse=True,
         )
 
-        escolhidos: list[str] = mesma[: max(limite, 0)]
-        usou_complemento = False
+        escolhidos: list[str] = candidatos[: max(limite, 0)]
+        complemento_usado = False
 
         if len(escolhidos) < limite:
-            usou_complemento = True
+            complemento_usado = True
             resto = [
                 pid
-                for pid in sorted(produtos, key=lambda x: pop[x], reverse=True)
-                if pid not in excluidos and pid not in escolhidos
+                for pid in sorted(produtos, key=lambda x: pedidos_brutos[x], reverse=True)
+                if pid not in excluir_set and pid not in escolhidos
             ]
             escolhidos.extend(resto[: limite - len(escolhidos)])
 
@@ -74,18 +75,18 @@ class Recomendador:
         for rank, pid in enumerate(escolhidos, start=1):
             p = produtos[pid]
             mesma_tec = p["tecnica"] == tecnica
+            score = (
+                (0.7 * pop[pid] + 0.3 * cooc_pagina.get(pid, 0.0))
+                if mesma_tec
+                else 0.5 * pop[pid]
+            )
             items.append(
                 {
                     "product_id": pid,
                     "nome": p["nome"],
                     "tecnica": p["tecnica"],
                     "regiao": p["regiao"],
-                    "score": round(
-                        (0.7 * pop_n[pid] + 0.3 * sim.get(pid, 0.0))
-                        if mesma_tec
-                        else 0.5 * pop_n[pid],
-                        4,
-                    ),
+                    "score": round(score, 4),
                     "reason": "mesma_tecnica" if mesma_tec else "complemento_popularidade",
                     "rank": rank,
                 }
@@ -94,9 +95,9 @@ class Recomendador:
         return {
             "items": items,
             "strategy": self.artefato["estrategia"],
-            "complemento_usado": usou_complemento,
+            "complemento_usado": complemento_usado,
             "produto_na_pagina": {
-                "product_id": produto_na_pagina,
+                "product_id": pagina,
                 "nome": atual["nome"],
                 "tecnica": tecnica,
                 "regiao": atual["regiao"],

@@ -243,7 +243,7 @@ def slide3_treino(prs):
         s, Inches(0.75), Inches(4.2), Inches(11.8), Inches(1.9),
         [
             "Entrada do treino: o JSON do catálogo.",
-            "Saída do treino: arquivo no model store (popularidade, similaridade, nomes).",
+            "Saída do treino: arquivo no model store (pedidos_brutos, pop, cooc, nomes).",
             "Na aula: just treino  →  depois  just serve.",
             "O cliente HTTP nunca chama treino.py; só o endpoint recomendar.",
         ],
@@ -325,7 +325,7 @@ def slide5_codigo(prs):
             "# passo 4  montar items[] com nome, score, reason, rank",
             "",
             "# treino.py — roda antes, uma vez",
-            "# lê catalogo.json  →  grava popularidade e similaridade",
+            "# lê catalogo.json  →  grava pedidos_brutos, pop e cooc",
         ],
         17, cor=RGBColor(0xB8, 0xE0, 0xD8), fonte=MONO, espaco=5,
     )

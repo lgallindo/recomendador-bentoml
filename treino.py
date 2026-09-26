@@ -13,35 +13,35 @@ DADOS = Path(__file__).resolve().parent / "dados" / "catalogo.json"
 ARTEFATO = "model.pkl"
 
 
-def _coocorrencia(cestas: list[list[str]]) -> dict[str, dict[str, float]]:
+def _cooc(cestas: list[list[str]]) -> dict[str, dict[str, float]]:
     """Quantas vezes dois produtos aparecem juntos nas cestas de exemplo."""
-    pares: dict[str, dict[str, float]] = defaultdict(lambda: defaultdict(float))
+    conta: dict[str, dict[str, float]] = defaultdict(lambda: defaultdict(float))
     for cesta in cestas:
-        unicos = list(dict.fromkeys(cesta))
-        for i, a in enumerate(unicos):
-            for b in unicos[i + 1 :]:
-                pares[a][b] += 1.0
-                pares[b][a] += 1.0
-    out: dict[str, dict[str, float]] = {}
-    for a, vizinhos in pares.items():
+        ids = list(dict.fromkeys(cesta))
+        for i, a in enumerate(ids):
+            for b in ids[i + 1 :]:
+                conta[a][b] += 1.0
+                conta[b][a] += 1.0
+    cooc: dict[str, dict[str, float]] = {}
+    for a, vizinhos in conta.items():
         m = max(vizinhos.values()) if vizinhos else 1.0
-        out[a] = {b: v / m for b, v in vizinhos.items()}
-    return out
+        cooc[a] = {b: v / m for b, v in vizinhos.items()}
+    return cooc
 
 
 def main() -> None:
-    bruto = json.loads(DADOS.read_text(encoding="utf-8"))
-    produtos = {p["id"]: p for p in bruto["produtos"]}
-    popularidade = {pid: float(p["pedidos"]) for pid, p in produtos.items()}
-    max_ped = max(popularidade.values()) or 1.0
-    popularidade_norm = {pid: n / max_ped for pid, n in popularidade.items()}
-    similaridade = _coocorrencia(bruto["cestas"])
+    catalogo = json.loads(DADOS.read_text(encoding="utf-8"))
+    produtos = {p["id"]: p for p in catalogo["produtos"]}
+    pedidos_brutos = {pid: float(p["pedidos"]) for pid, p in produtos.items()}
+    max_pedidos = max(pedidos_brutos.values()) or 1.0
+    pop = {pid: n / max_pedidos for pid, n in pedidos_brutos.items()}
+    cooc = _cooc(catalogo["cestas"])
 
     artefato = {
         "produtos": produtos,
-        "popularidade": popularidade,
-        "popularidade_norm": popularidade_norm,
-        "similaridade": similaridade,
+        "pedidos_brutos": pedidos_brutos,
+        "pop": pop,
+        "cooc": cooc,
         "estrategia": "mesma_tecnica_mais_pedidos",
     }
 
@@ -50,7 +50,7 @@ def main() -> None:
         labels={"aula": "recomendador-bentoml", "regra": "tecnica+pedidos"},
         metadata={
             "n_produtos": len(produtos),
-            "n_cestas": len(bruto["cestas"]),
+            "n_cestas": len(catalogo["cestas"]),
             "estrategia": artefato["estrategia"],
         },
     ) as model:

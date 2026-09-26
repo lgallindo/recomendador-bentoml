@@ -63,8 +63,8 @@ flowchart TD
 ```
 
 1. Lê `produtos` → dicionário por `id`.
-2. `popularidade = pedidos`; normaliza pelo máximo.
-3. Percorre `cestas` → matriz de co-ocorrência (pares na mesma cesta).
+2. `pedidos_brutos = pedidos`; `pop = pedidos_brutos / max`.
+3. Percorre `cestas` → `conta` → `cooc` (pares na mesma cesta).
 4. Grava tudo no artefato BentoML (`recomendador:…`).
 
 Mudou o JSON? Rode `just treino` de novo na raiz do repositório.

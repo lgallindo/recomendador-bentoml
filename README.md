@@ -64,9 +64,8 @@ produto; as `cestas` servem só para pares.
 **Popularidade** é quão pedido é cada produto. No dataset isso é o campo `pedidos`
 dentro de cada objeto de `produtos` — por exemplo `"pedidos": 42` no jarro `p01`.
 Não lemos `cestas` neste passo. No treino copiamos esses valores para um mapa
-(`pedidos_brutos` no pseudocódigo; `popularidade` no Python) e viramos um número
-entre 0 e 1 dividindo pelo maior `pedidos` do catálogo — o item mais pedido fica
-em 1,0; os outros ficam abaixo.
+`pedidos_brutos` e viramos um número entre 0 e 1 (`pop`) dividindo pelo maior
+`pedidos` do catálogo — o item mais pedido fica em 1,0; os outros ficam abaixo.
 
 Pseudocódigo a partir do JSON (`produtos` apenas):
 
@@ -90,17 +89,18 @@ para cada id:
     pop[id] ← pedidos_brutos[id] / max_pedidos
 ```
 
-No Python (`treino.py`, função `main`):
+No Python (`treino.py`, função `main`) os nomes batem com o pseudocódigo:
 
 | Pseudocódigo | Código |
 | --- | --- |
-| Ler `produtos` | `produtos = {p["id"]: p for p in bruto["produtos"]}` |
-| `pedidos_brutos` | `popularidade = {pid: float(p["pedidos"]) for …}` |
-| `max_pedidos` | `max_ped = max(popularidade.values()) or 1.0` |
-| `pop[id]` | `popularidade_norm = {pid: n / max_ped for …}` |
+| `catalogo` | `catalogo = json.loads(…)` |
+| Ler `produtos` | `produtos = {p["id"]: p for p in catalogo["produtos"]}` |
+| `pedidos_brutos` | `pedidos_brutos = {pid: float(p["pedidos"]) for …}` |
+| `max_pedidos` | `max_pedidos = max(pedidos_brutos.values()) or 1.0` |
+| `pop[id]` | `pop = {pid: n / max_pedidos for …}` |
 
-O artefato guarda **os dois**: `popularidade` (cru, os `pedidos`) e
-`popularidade_norm` (0…1). O serviço usa a versão normalizada no score.
+O artefato guarda **os dois**: `pedidos_brutos` (cru) e `pop` (0…1). O serviço
+usa `pop` no score.
 
 ### Co-ocorrência
 
@@ -140,19 +140,18 @@ para cada âncora a:
         cooc[a][b] ← conta[a][b] / m
 ```
 
-No Python isso é a função `_coocorrencia` + a chamada em `main`:
+No Python isso é a função `_cooc` + a chamada em `main`:
 
 | Pseudocódigo | Código |
 | --- | --- |
 | Percorrer `cestas` | `for cesta in cestas:` |
-| Únicos na cesta | `unicos = list(dict.fromkeys(cesta))` |
-| Incrementar pares | `pares[a][b] += 1.0` e `pares[b][a] += 1.0` |
-| Normalizar por âncora | `out[a] = {b: v / m for b, v in vizinhos.items()}` |
-| Guardar no artefato | `similaridade = _coocorrencia(bruto["cestas"])` |
+| `ids` (únicos) | `ids = list(dict.fromkeys(cesta))` |
+| `conta[a][b]` | `conta[a][b] += 1.0` e `conta[b][a] += 1.0` |
+| `cooc[a][b]` | `cooc[a] = {b: v / m for b, v in vizinhos.items()}` |
+| Guardar no artefato | `cooc = _cooc(catalogo["cestas"])` |
 
-No artefato o mapa se chama `similaridade`: `similaridade[pagina][candidato]` é a
-co-ocorrência normalizada do candidato dado o produto da página (0 se nunca
-apareceram juntos).
+No artefato o mapa se chama `cooc`: `cooc[pagina][candidato]` é a co-ocorrência
+normalizada do candidato dado o produto da página (0 se nunca apareceram juntos).
 
 ## Workflow
 
@@ -165,10 +164,13 @@ Dois momentos distintos, nesta ordem:
    produto da página; o serviço monta a lista e devolve JSON. Não recalcula o catálogo
    inteiro a cada clique — só aplica a regra sobre o artefato já treinado.
 
-```text
-catalogo.json ──► treino.py ──► model store (pickle)
-                                    │
-vitrine WEB ──POST /recomendar──► service.py ──► JSON (items, reason, score)
+```mermaid
+flowchart LR
+  catalogo["catalogo.json"] --> treino["treino.py"]
+  treino --> store["model store<br/>(pickle)"]
+  store --> service["service.py"]
+  web["vitrine WEB"] -->|"POST /recomendar"| service
+  service --> jsonOut["JSON<br/>(items, reason, score)"]
 ```
 
 Mudou o JSON? Rode `just treino` de novo e reinicie (ou deixe o `--reload` do serve
@@ -178,13 +180,24 @@ pegar a tag `latest`).
 
 O fluxo cabe em cinco passos, na ordem em que o serviço decide a lista:
 
+```mermaid
+flowchart TD
+  ctx["1. Contexto<br/>pagina, limite, excluir"] --> filtro["2. Mesma técnica<br/>candidatos"]
+  filtro --> nota["3. Score e ordem<br/>0,7×pop + 0,3×cooc"]
+  nota --> falta{"Faltam vagas?"}
+  falta -->|sim| comp["4. Complemento<br/>por popularidade"]
+  falta -->|não| resp["5. Resposta JSON"]
+  comp --> resp
+```
+
+
 1. **Contexto.** A vitrine manda o id do produto aberto (`produto_na_pagina`), quantas
    sugestões quer (`limite`) e ids a omitir (`excluir`). O próprio produto da página
    entra automaticamente na lista de omitidos.
 2. **Mesma técnica.** Entre os demais itens do catálogo, ficam só os que têm a mesma
    `tecnica` artesanal (por exemplo, todos de *ceramica* se a página é um jarro de barro).
 3. **Nota e ordem nesse grupo.** Cada candidato recebe
-   \(\mathrm{score} = 0{,}7 \times \text{popularidade} + 0{,}3 \times \text{co-ocorrência}\).
+   $\mathrm{score} = 0{,}7 \times \text{popularidade} + 0{,}3 \times \text{co-ocorrência}$.
    A popularidade vem dos `pedidos` normalizados; a co-ocorrência mede quantas vezes
    dois produtos apareceram juntos nas cestas de exemplo do dataset. Ordenamos do maior
    score para o menor e pegamos até `limite` itens. O motivo gravado é `mesma_tecnica`.
@@ -199,9 +212,9 @@ O fluxo cabe em cinco passos, na ordem em que o serviço decide a lista:
    somássemos pedidos crus com co-ocorrência (que já está em 0…1), o número grande
    dominaria a nota. Normalizar aqui significa **dividir pelo máximo do catálogo**:
 
-   \[
+   ```math
    \mathrm{pop}_i = \frac{\mathrm{pedidos}_i}{\max_j \mathrm{pedidos}_j}
-   \]
+   ```
 
    Assim a popularidade também fica entre 0 e 1 (o jarro com 42 pedidos vira 1,0; quem
    tem 21 vira 0,5). A co-ocorrência já nasce normalizada por âncora: para o produto da
@@ -213,8 +226,8 @@ O fluxo cabe em cinco passos, na ordem em que o serviço decide a lista:
    ```text
    # Variáveis:
    #   produtos   — mapa id → registro (já no artefato)
-   #   pop        — mapa id → popularidade 0…1 (artefato.popularidade_norm)
-   #   cooc       — mapa âncora → (vizinho → 0…1) (artefato.similaridade)
+   #   pop        — mapa id → popularidade 0…1 (artefato.pop)
+   #   cooc       — mapa âncora → (vizinho → 0…1) (artefato.cooc)
    #   pagina     — id do produto_na_pagina
    #   excluir    — conjunto de ids a omitir (mais a própria pagina)
    #   candidatos — lista de ids mesma tecnica, fora de excluir
@@ -236,7 +249,7 @@ O fluxo cabe em cinco passos, na ordem em que o serviço decide a lista:
    ```
 4. **Complemento por popularidade.** Se ainda faltarem vagas (poucos produtos daquela
    técnica), completamos com os mais pedidos do catálogo inteiro, ainda respeitando
-   `excluir`. Nesses, \(\mathrm{score} = 0{,}5 \times \text{popularidade}\) e o motivo é
+   `excluir`. Nesses, $\mathrm{score} = 0{,}5 \times \text{popularidade}$ e o motivo é
    `complemento_popularidade`. O campo `complemento_usado` fica `true`.
 5. **Resposta.** Devolvemos a lista com id, nome, técnica, região, score, motivo e rank —
    pronta para a WEB desenhar a faixa “Você também pode gostar”.
@@ -371,17 +384,20 @@ Deve devolver `erro: "produto_inexistente"` e `items` vazio, sem inventar produt
 ### Ideia da regra (baseline, sem rede neural)
 
 1. **Popularidade.** Cada produto tem um contador `pedidos` no JSON. No treino,
-   normalizamos pelo máximo do catálogo: \(\mathrm{pop}_i = \mathrm{pedidos}_i /
-   \max_j \mathrm{pedidos}_j\).
+   normalizamos pelo máximo do catálogo:
+
+   ```math
+   \mathrm{pop}_i = \frac{\mathrm{pedidos}_i}{\max_j \mathrm{pedidos}_j}
+   ```
 2. **Co-ocorrência.** Nas cestas de exemplo, contamos quantas vezes dois produtos
    aparecem juntos; para cada âncora, normalizamos pelo vizinho mais frequente.
 3. **Candidatos.** Todos os produtos com a **mesma técnica** do item da página,
    exceto ele próprio e os ids em `excluir`.
 4. **Ordenação (mesma técnica).**
-   \(\mathrm{score} = 0{,}7 \cdot \mathrm{pop} + 0{,}3 \cdot \mathrm{coocorrência}\).
+   $\mathrm{score} = 0{,}7 \cdot \mathrm{pop} + 0{,}3 \cdot \mathrm{coocorrência}$.
 5. **Complemento.** Se a lista ainda for menor que `limite`, completamos com os
    produtos de maior `pedidos` no catálogo (mesmo filtro de exclusão). Para esses,
-   \(\mathrm{score} = 0{,}5 \cdot \mathrm{pop}\).
+   $\mathrm{score} = 0{,}5 \cdot \mathrm{pop}$.
 
 A região entra no JSON de saída (útil para a vitrine e para a especificação da
 disciplina), mas **esta versão não usa região na ordenação**. Se o requisito EARS
@@ -426,7 +442,9 @@ exclusões, JSON, motivo legível — servido como API para a WEB consumir.
 
 1. Ligar `POST /recomendar` à vitrine do marketplace da disciplina.
 2. Incluir região (ou popularidade por polo) na ordenação, se o requisito exigir.
-3. Trocar a regra por um modelo de aprendizado de máquina, por exemplo seguindo
+3. Trocar a regra por um modelo de aprendizado de máquina — mapa concreto no fim
+   deste README ([Do Data Science à Machine Learning](#ds-para-ml-microsoft-learn)),
+   ancorado em
    [Fundamentos do aprendizado de máquina](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/)
    (Microsoft Learn, pt-BR).
 
@@ -448,3 +466,82 @@ vocabulário do catálogo. Este projeto deixa essa ideia pequena, auditável e n
 você vê o JSON, confere as contas no caderno e entende cada `reason`. Quando a
 vitrine do Origem (ou do Fiscalize, no caso da triagem) pedir o módulo de verdade,
 o contrato HTTP e a lógica de baseline já estão aqui para crescer.
+
+## Nomes neste repo e na literatura de recomendação
+
+Os nomes da esquerda são os deste projeto. Os da coluna do meio são aproximações
+úteis ao ler livros e artigos de *recommender systems*. A coluna da direita evita
+superestimar o que o baseline faz.
+
+| Neste repo | Na literatura (aprox.) | Não confundir com |
+| --- | --- | --- |
+| `pop` / `pedidos_brutos` | *popularity baseline* (não personalizado) | ranking aprendido por usuário |
+| `cooc` / `cestas` | co-ocorrência item–item; sinal de associação | filtragem colaborativa plena (MF, kNN com usuários reais) |
+| filtro por `tecnica` | filtragem baseada em conteúdo (atributo do item) | perfil demográfico do usuário |
+| score `0,7×pop + 0,3×cooc` | combinação híbrida ponderada (regra fixa) | modelo com pesos aprendidos |
+| complemento por popularidade | *fallback* / preenchimento por cobertura | *re-ranking* treinado |
+| `reason` no JSON | explicabilidade por regra | *feature attribution* de modelo |
+| artefato + `POST /recomendar` | *offline compute* + *online inference* | treino online / aprendizado contínuo |
+
+Este baseline é **ciência de dados + serviço**: agregamos contagens, aplicamos uma
+fórmula e servimos JSON. Ainda **não** é aprendizado de máquina no sentido do
+módulo Microsoft Learn abaixo (não há rótulo supervisionado, divisão treino/validação
+nem métrica de erro do preditor).
+
+## Do Data Science à Machine Learning (Microsoft Learn)
+
+<a id="ds-para-ml-microsoft-learn"></a>
+
+Módulo âncora:
+[Introdução aos conceitos de Machine Learning](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/)
+(11 unidades). A própria introdução do módulo diz que ML fica na interseção de
+**ciência de dados** e **engenharia de software**: dados do passado → modelo
+preditivo → *inferência* dentro de um serviço. Este repositório já cobre o lado
+“serviço” (BentoML) e o lado “explorar/agregar dados”; falta o miolo preditivo.
+
+### O que muda na formulação
+
+| Hoje (regra) | Amanhã (ML) |
+| --- | --- |
+| Candidatos + fórmula fixa | Observações com **recursos** (features) e **rótulo** (label) |
+| Um pickle de mapas | Artefato de modelo (ex.: scikit-learn) com parâmetros aprendidos |
+| Sem métrica de acerto | Treino / validação + MAE, acurácia, Precision@k, etc. |
+| `reason` = nome da regra | `reason` pode citar modelo + top features (ou continuar a regra como baseline A/B) |
+
+Um caminho natural para recomendação: cada linha de treino é um par
+`(pagina, candidato)` (e, se houver log, o usuário/sessão). O rótulo pode ser
+“foi clicado / foi comprado / apareceu na mesma cesta” (binário) ou um score de
+engajamento (regressão). Na inferência, o serviço ainda recebe `produto_na_pagina`
+e devolve top‑k — só a origem da `score` muda.
+
+### Mapa unidade → o que usar neste projeto
+
+Links em pt-BR, mesma ordem do módulo.
+
+| Unidade | Link | Como encaixa neste recomendador |
+| --- | --- | --- |
+| 1. Introdução | [1-introduction](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/1-introduction) | Vocabulário *features / labels / inferência*. Situar o baseline atual como preparação de dados + API, não como modelo treinado. |
+| 2. O que é um modelo | [2-what-is-machine-learning](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/2-what-is-machine-learning) | Contraste: hoje os “parâmetros” (0,7 / 0,3) são escolhidos à mão; no ML eles (ou outros) saem do treino. |
+| 3. Tipos de modelo | [3-types-of-machine-learning](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/3-types-of-machine-learning) | Escolher a família: supervisionado (há rótulo de clique/compra/cesta) vs não supervisionado (só atributos do catálogo). |
+| 4. Regressão | [4-regression](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/4-regression) | Predizer um **score numérico** (ex.: probabilidade calibrada, pedidos esperados, afinidade). Treino/validação + MAE / RMSE / R² como no módulo — no lugar de só ordenar por regra. |
+| 5. Classificação binária | [5-binary-classification](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/5-binary-classification) | Rótulo “este candidato é relevante dado `pagina`?” (clique, compra, par na cesta). Inferência: pontuar candidatos e ordenar pela probabilidade positiva. |
+| 6. Classificação multiclasse | [6-multiclass-classification](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/6-multiclass-classification) | Predizer o **próximo id** entre muitos — viável com catálogo pequeno de aula; em loja real costuma virar ranking / top‑k, não uma classe única. |
+| 7. Clustering | [7-clustering](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/7-clustering) | Substituir ou enriquecer o filtro manual por `tecnica`: agrupar produtos por atributos (e depois rotular clusters, se quiser classificação). |
+| 8. Aprendizado profundo | [8-deep-learning](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/8-deep-learning) | Opcional e **fora** do próximo passo deste baseline; só depois de haver rótulos, métricas e um modelo tabular simples. |
+| 9. Exercício (cenários) | [9-exercise](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/9-exercise) | Praticar o enquadramento: “sorvete/pinguim/diabetes” do módulo ↔ “par (página, candidato) → engajou?”. |
+
+### Ordem sugerida na prática (teórica → código)
+
+1. Ler unidades **1–3** e escrever no papel: features do par, rótulo, e o que o
+   `POST /recomendar` continua recebendo.
+2. Com log ou cestas como rótulo fraco, seguir **5** (binário) ou **4** (score);
+   usar **7** se a dor for descobrir grupos além de `tecnica`.
+3. Avaliar com holdout (como o módulo mostra na regressão) antes de trocar a
+   regra no serviço — manter este baseline como braço A.
+4. Só então apontar `service.py` para o novo artefato; o contrato HTTP pode
+   permanecer o mesmo.
+
+Caminho Microsoft Learn seguinte (já com exercícios scikit-learn), quando forem
+implementar de verdade:
+[Criar modelos de machine learning](https://learn.microsoft.com/pt-br/training/paths/create-machine-learn-models/).
+
