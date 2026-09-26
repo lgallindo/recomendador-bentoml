@@ -1,12 +1,18 @@
 # Slides (`slides/`)
 
-Apresentação curta da aula (gerada por código).
+Apresentação curta da aula (gerada por código). Os diagramas da sessão estão
+**dentro do deck**, não neste README.
 
 | Arquivo | Conteúdo |
 | --- | --- |
-| [`recomendador-bentoml.pptx`](recomendador-bentoml.pptx) | Deck da sessão: marketplace → regra → API → exemplo |
+| [`recomendador-bentoml.pptx`](recomendador-bentoml.pptx) | Objetivo, fluxo↔código, `treino.py`, exemplo do jarro, código, mapa IA |
 
-Regenerar a partir de [`../scripts/gerar_slides.py`](../scripts/gerar_slides.py):
+```mermaid
+flowchart LR
+  S["../scripts/gerar_slides.py"] -->|"just slides"| D["recomendador-bentoml.pptx"]
+```
+
+Regenerar:
 
 ```bash
 just slides
