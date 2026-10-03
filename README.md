@@ -16,9 +16,7 @@ devolve outros, cada um com uma nota e um motivo legível.
 Este repositório traz um catálogo pequeno de
 peças pernambucanas, um treino que calcula popularidade e “aparecem juntos”, e um
 serviço HTTP no BentoML que responde a essas sugestões. Você sobe com dois comandos,
-confere no Swagger ou no `curl`, e depois lê as contas no caderno e nos slides:
-[`slides/recomendador-bentoml.pptx`](slides/recomendador-bentoml.pptx)
-(regenerar com `just slides`; ver [`slides/README.md`](slides/README.md)).
+confere no Swagger ou no `curl`, e depois lê as contas no caderno e nos slides.
 
 Pastas irmãs (portas e artefatos) estão em [Variantes](#variantes), no fim deste
 README — depois do baseline.
@@ -658,8 +656,8 @@ não usa região na ordenação**.
 | [`bentofile.yaml`](bentofile.yaml) | Empacote opcional: o que entra no Bento / imagem |
 | [`justfile`](justfile) | Atalhos `treino`, `serve`, `imagem`, `serve-container`, curls |
 | [`material/calculos-trabalhados.md`](material/calculos-trabalhados.md) | Contas do exemplo `p01` no papel |
-| [`slides/recomendador-bentoml.pptx`](slides/recomendador-bentoml.pptx) | Slides (arco didático; ver [`slides/README.md`](slides/README.md)) |
-| [`scripts/gerar_slides.py`](scripts/gerar_slides.py) | Regenera o `.pptx` (`just slides`) |
+| [`slides/`](slides/) | Slides (arco didático; ver [`slides/README.md`](slides/README.md)) |
+| [`scripts/gerar_slides.py`](scripts/gerar_slides.py) | Regenera o deck (`just slides`) |
 | [`variante-demografica/`](variante-demografica/) | Variante com `clientes` + `compras` e score demográfico |
 | [`variante-clustering/`](variante-clustering/) | Cluster hierárquico + intercalação `cesta` / `cluster` |
 
