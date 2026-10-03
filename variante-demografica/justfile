@@ -1,11 +1,49 @@
 # Variante demográfica — porta 3001 para não colidir com o baseline (:3000)
 # uv/venv ficam na raiz do repositório (`--project ..`).
+#
+# Empacote (opcional): treino → build → containerize → serve-container
+# Imagem de aula: recomendador-demo:aula
+
+# ---------------------------------------------------------------------------
+# Offline — treino
+# ---------------------------------------------------------------------------
 
 treino:
     uv run --project .. python treino.py
 
+# ---------------------------------------------------------------------------
+# Online — processo local (sem Docker)
+# ---------------------------------------------------------------------------
+
 serve:
     uv run --project .. bentoml serve service:RecomendadorDemo --reload --port 3001
+
+# ---------------------------------------------------------------------------
+# Empacote — Bento → imagem OCI → container
+# ---------------------------------------------------------------------------
+
+build:
+    # Pré-requisito: `just treino` (modelo recomendador-demo:latest)
+    uv run --project .. bentoml build
+
+containerize:
+    uv run --project .. bentoml containerize RecomendadorDemo:latest --image-tag recomendador-demo:aula
+
+imagem: build containerize
+
+serve-container:
+    # Host 3001 → container 3000 (API padrão do BentoML dentro da imagem)
+    docker run --rm -p 3001:3000 recomendador-demo:aula serve
+
+listar-bentos:
+    uv run --project .. bentoml list
+
+listar-imagens:
+    docker images recomendador-demo
+
+# ---------------------------------------------------------------------------
+# Exemplos HTTP (serve local OU serve-container na :3001)
+# ---------------------------------------------------------------------------
 
 curl-com-cliente:
     curl -sS -X POST http://127.0.0.1:3001/recomendar \

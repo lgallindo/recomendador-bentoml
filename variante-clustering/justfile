@@ -1,10 +1,48 @@
 # Variante clustering — porta 3002 (baseline :3000, demo :3001)
+#
+# Empacote (opcional): treino → build → containerize → serve-container
+# Imagem de aula: recomendador-cluster:aula
+
+# ---------------------------------------------------------------------------
+# Offline — treino
+# ---------------------------------------------------------------------------
 
 treino:
     uv run --project .. python treino.py
 
+# ---------------------------------------------------------------------------
+# Online — processo local (sem Docker)
+# ---------------------------------------------------------------------------
+
 serve:
     uv run --project .. bentoml serve service:RecomendadorCluster --reload --port 3002
+
+# ---------------------------------------------------------------------------
+# Empacote — Bento → imagem OCI → container
+# ---------------------------------------------------------------------------
+
+build:
+    # Pré-requisito: `just treino` (modelo recomendador-cluster:latest)
+    uv run --project .. bentoml build
+
+containerize:
+    uv run --project .. bentoml containerize RecomendadorCluster:latest --image-tag recomendador-cluster:aula
+
+imagem: build containerize
+
+serve-container:
+    # Host 3002 → container 3000 (API padrão do BentoML dentro da imagem)
+    docker run --rm -p 3002:3000 recomendador-cluster:aula serve
+
+listar-bentos:
+    uv run --project .. bentoml list
+
+listar-imagens:
+    docker images recomendador-cluster
+
+# ---------------------------------------------------------------------------
+# Exemplos HTTP (serve local OU serve-container na :3002)
+# ---------------------------------------------------------------------------
 
 curl-exemplo:
     # p07 tem cluster grande o bastante para intercalação completa em limite=4

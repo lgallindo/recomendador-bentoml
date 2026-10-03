@@ -1,16 +1,25 @@
 # Dados (`dados/`)
 
+A pessoa abre a página de um jarro de Tracunhaém. Para a loja sugerir o prato, a
+boneca ou outra peça, alguém precisa ter **descrito o catálogo** e algumas compras
+de exemplo — antes do treino, antes do HTTP. Esta pasta é esse chão: o que a
+feira digital “sabe” sobre as peças e sobre o que costuma sair junto.
+
 Catálogo de exemplo usado pelo treino e pelo serviço. Um único arquivo:
 [`catalogo.json`](catalogo.json).
 
 ## Por que este conjunto existe
 
-O marketplace da aula precisa de produtos com **técnica**, **região** e um sinal de
-**demanda** (`pedidos`), mais algumas **cestas** (compras de exemplo) para medir
-“aparecem juntos”. O JSON é pequeno de propósito: dá para conferir as contas à mão e
-ainda assim exercitar a API de ponta a ponta.
+Da cena da vitrine ao ranqueador: o marketplace da aula precisa de produtos com
+**técnica**, **região** e um sinal de **demanda** (`pedidos`), mais algumas
+**cestas** (compras de exemplo) para medir “aparecem juntos”. O JSON é pequeno de
+propósito: dá para conferir as contas à mão e ainda assim exercitar a API de ponta
+a ponta.
 
 ## Forma do arquivo
+
+Duas listas na raiz — uma descreve as peças da banca; a outra registra compras
+fictícias. Juntas, alimentam popularidade e co-ocorrência no treino.
 
 ```json
 {
@@ -39,6 +48,9 @@ flowchart LR
 
 ## Conteúdo atual (resumo)
 
+Quatro famílias artesanais, três peças cada — o suficiente para o exemplo do jarro
+(`p01`) e para forçar o complemento por popularidade quando a técnica esgota.
+
 | Técnica | Quantidade | Exemplos |
 | --- | ---: | --- |
 | ceramica | 3 | Jarro, prato esmaltado, boneca de barro (Tracunhaém) |
@@ -51,6 +63,9 @@ ele é o **produto da página** do exemplo em
 [`../material/calculos-trabalhados.md`](../material/calculos-trabalhados.md).
 
 ## Como o treino usa estes dados
+
+Aqui o pipeline **offline** entra em cena: o JSON vira artefato. A vitrine ainda
+fica de fora — só o operador (ou o `just treino`) lê este arquivo.
 
 ```mermaid
 flowchart TD
@@ -69,9 +84,17 @@ flowchart TD
 
 Mudou o JSON? Rode `just treino` de novo na raiz do repositório.
 
+Quando as contas do jarro precisarem bater no papel, o próximo passo natural é
+[`../material/calculos-trabalhados.md`](../material/calculos-trabalhados.md) —
+depois do `just curl-exemplo`.
+
 ---
 
 ## Montar o mesmo formato a partir de um marketplace real
+
+A aula fecha o ciclo com dados inventados. O mesmo *formato* carrega a loja de
+verdade: você troca o conteúdo do arquivo; o treino e o `POST /recomendar`
+continuam iguais.
 
 O `catalogo.json` da aula é **sintético**. Em um marketplace de verdade (Postgres,
 MySQL, export CSV da WEB ou do banco), você coleta as mesmas peças e **escreve o
@@ -167,6 +190,10 @@ Se a fonte for **CSV** (export do admin):
 - Estoque e preço **não** entram neste formato; a API atual não os usa.
 
 ## Limites do arquivo de exemplo da aula
+
+Este JSON é o baseline da raiz. Perfis de cliente e clusters vivem em pastas
+irmãs, cada uma com o próprio `dados/` — um sinal novo por vez, quando a aula
+chegar lá.
 
 - Demanda e cestas do `catalogo.json` commitado são **inventadas para a aula**.
 - `regiao` aparece na resposta da API; a ordenação deste baseline não a usa.

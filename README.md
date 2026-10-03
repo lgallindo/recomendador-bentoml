@@ -18,22 +18,46 @@ peças pernambucanas, um treino que calcula popularidade e “aparecem juntos”
 serviço HTTP no BentoML que responde a essas sugestões. Você sobe com dois comandos,
 confere no Swagger ou no `curl`, e depois lê as contas no caderno e nos slides.
 
-## Variantes
+Pastas irmãs (portas e artefatos) estão em [Variantes](#variantes), no fim deste
+README — depois do baseline.
 
-Pastas irmãs do baseline — cada uma com artefato BentoML e porta HTTP próprios:
+## Sinais que a loja observa
 
-| Pasta | Sinal extra | Porta | Artefato |
-| --- | --- | --- | --- |
-| [`variante-demografica/`](variante-demografica/) | perfil do cliente + compras por faixa etária | 3001 | `recomendador-demo` |
-| [`variante-clustering/`](variante-clustering/) | cluster hierárquico + lista intercalada cesta/cluster | 3002 | `recomendador-cluster` |
+Antes de ranquear, a loja já acumula duas leituras do passado. Elas chegam ao
+recomendador como matéria-prima da nota:
+
+| Leitura | O que a loja vê | Para que serve na aula |
+| --- | --- | --- |
+| **Demanda** | Quantas vezes cada peça já foi pedida | Mostra o que a vitrine costuma vender bem |
+| **Compra conjunta** | Quais peças saíram na mesma compra | Mostra pares que andam juntos |
+
+Essas leituras viram as métricas da seção seguinte; a forma em JSON vem depois,
+na [cesta de compra](#cesta-de-compra) e em [Popularidade e co-ocorrência](#popularidade-e-co-ocorrência).
+
+## Métricas do projeto
+
+Linguagem comum da ordenação — o que cada número (e cada rótulo) significa na aula,
+ainda em prosa. O detalhe de cálculo e de campos JSON está nas seções seguintes.
+
+| Nome | Significado |
+| --- | --- |
+| **Popularidade** | Quão pedido é cada produto no histórico da loja. Vira um peso na ordenação. |
+| **Co-ocorrência** | Quão frequentemente dois produtos saem na mesma compra. Reforça pares que andam juntos. |
+| **Score** | Nota única que mistura esses sinais — e, nas variantes, sinais extras — para ranquear candidatos. |
+| **Reason** | Rótulo legível do motivo da sugestão (`mesma_tecnica`, `complemento_popularidade`, ou os rótulos das variantes). |
+
+A variante demográfica acrescenta **afinidade de perfil**; a de clustering acrescenta
+**vizinhança de grupo**. Detalhe operacional no fim, em [Variantes](#variantes) e no
+[Catálogo de variantes](#catálogo-de-variantes).
 
 ## Cesta de compra
 
-Numa loja real, uma **cesta** (ou carrinho fechado) é o conjunto de produtos que a
-pessoa levou **na mesma compra**. Se alguém pediu jarro + prato + boneca juntos,
-esses três ids formam uma cesta. O recomendador usa isso para aprender
-“aparecem juntos”: produtos que compartilham cestas tendem a se reforçar na nota
-de **co-ocorrência**.
+Na literatura de *market basket analysis*, a mesma ideia aparece como **cesta de
+mercado**: o conjunto de produtos que saíram juntos numa compra. Numa loja real, uma
+**cesta** (ou carrinho fechado) é esse conjunto. Se alguém pediu jarro + prato +
+boneca juntos, esses três ids formam uma cesta. O recomendador usa esse padrão para
+aprender associação entre itens: produtos que compartilham cestas tendem a se
+reforçar na nota de **co-ocorrência**.
 
 Neste material as cestas são **exemplos sintéticos** (não tickets de loja real).
 Elas vivem em [`dados/catalogo.json`](dados/catalogo.json), no array `cestas`:
@@ -211,6 +235,9 @@ flowchart LR
   web["vitrine WEB"] -->|"POST /recomendar"| service
   service --> jsonOut["JSON<br/>(items, reason, score)"]
 ```
+
+No mapa acima, à **esquerda** do model store fica o **treino**; à **direita**, a
+**inferência**. A vitrine fala com `service.py`; o JSON de dados alimenta o treino.
 
 ### Sequência 1 — só o treino (offline)
 
@@ -428,6 +455,10 @@ just treino    # lê dados/catalogo.json, grava o modelo no store do BentoML
 just serve     # sobe o serviço (deixe este terminal aberto)
 ```
 
+Quer a **mesma** API numa imagem Docker? Depois do treino:
+`just imagem` → `just serve-container` (detalhes em
+[Empacote e container](#empacote-e-container-bento--imagem-oci)).
+
 Em outro terminal, ou pela UI em <http://127.0.0.1:3000>:
 
 ### Exemplo 1 — página do jarro (`p01`), quatro sugestões
@@ -483,6 +514,121 @@ Deve devolver `erro: "produto_inexistente"` e `items` vazio, sem inventar produt
 
 ---
 
+## Empacote e container (Bento → imagem OCI)
+
+Até aqui o serviço sobe com `just serve`: processo Python na sua máquina, lendo o
+model store local. **Containerizar** é o passo seguinte — opcional na aula, útil
+quando a pergunta é: “como levo essa API para outro computador sem repetir o
+ambiente?”
+
+Três ideias, nesta ordem:
+
+| Nome | O que é | Comando neste repo |
+| --- | --- | --- |
+| **Modelo** | Artefato do treino (`recomendador:…` no store) | `just treino` |
+| **Bento** | Pacote do *serviço de inferência*: código + deps + referência ao modelo | `just build` |
+| **Imagem OCI** | Esse Bento virado container (Docker/Podman/…) | `just containerize` |
+
+O container embala o **pipeline online** (o que `service.py` faz). Ele **não**
+reexecuta o treino: quem gerou `pop` e `cooc` continua sendo `just treino` na
+máquina (ou no CI) *antes* do `build`.
+
+```mermaid
+flowchart LR
+  treino["just treino<br/>modelo no store"] --> build["just build<br/>Bento"]
+  build --> img["just containerize<br/>imagem OCI"]
+  img --> run["just serve-container<br/>docker run :3000"]
+  run --> curl["just curl-exemplo<br/>mesmo POST"]
+```
+
+### O que o `bentofile.yaml` congela
+
+Na raiz, [`bentofile.yaml`](bentofile.yaml) declara o que entra no Bento:
+
+| Campo | Neste baseline | Papel |
+| --- | --- | --- |
+| `service` | `service:Recomendador` | Classe HTTP a subir |
+| `include` | `*.py`, `dados/*.json` | Código e catálogo que viajam com o pacote |
+| `python.packages` | `bentoml` | Deps instaladas na imagem |
+| `models` | `recomendador:latest` | Artefato do treino embutido no Bento |
+
+Sem `just treino` antes, o `build` falha ou fica incompleto: não há
+`recomendador:latest` para embutir.
+
+### Demonstração na aula (baseline)
+
+Pré-requisitos extras: [Docker](https://docs.docker.com/get-docker/) (ou outro
+builder OCI) **rodando**. Pare um `just serve` local se ele já estiver na porta
+3000 — os dois não compartilham a mesma porta ao mesmo tempo.
+
+```bash
+just treino           # 1) modelo no store (se ainda não rodou)
+just imagem           # 2+3) build (Bento) + containerize (tag estável)
+just serve-container  # 4) docker run --rm -p 3000:3000 recomendador:aula serve
+```
+
+`just imagem` é só o atalho de `just build` seguido de `just containerize`. Os
+passos separados existem para a turma ver cada artefato:
+
+```bash
+just build            # cria o Bento Recomendador:…
+just listar-bentos    # confere no store de Bentos
+just containerize     # gera a imagem Docker recomendador:aula
+just listar-imagens   # confere no Docker local
+just serve-container
+```
+
+Em outro terminal, **os mesmos curls** do serve local:
+
+```bash
+just curl-exemplo
+just curl-complemento
+just curl-inexistente
+```
+
+O contrato HTTP não muda. O que muda é *onde* o processo roda: venv da pasta
+versus imagem OCI. Tag de aula fixa (`recomendador:aula`) evita decorar o hash
+que o BentoML atribui a cada build — na sala, o `docker run` fica legível.
+
+Equivalente sem `just` (mesmo fluxo dos slides):
+
+```bash
+uv run bentoml build
+uv run bentoml containerize Recomendador:latest --image-tag recomendador:aula
+docker run --rm -p 3000:3000 recomendador:aula serve
+```
+
+### Variantes
+
+Cada pasta irmã tem o próprio `bentofile.yaml`, artefato e tag de imagem. A
+porta no *host* continua a da variante; dentro do container a API escuta 3000,
+por isso o mapeamento `HOST:3000`.
+
+| Pasta | Receitas | Imagem de aula | Porta no host |
+| --- | --- | --- | ---: |
+| raiz | `just imagem` · `just serve-container` | `recomendador:aula` | 3000 |
+| [`variante-demografica/`](variante-demografica/) | idem, nessa pasta | `recomendador-demo:aula` | 3001 |
+| [`variante-clustering/`](variante-clustering/) | idem, nessa pasta | `recomendador-cluster:aula` | 3002 |
+
+Exemplo (clustering):
+
+```bash
+cd variante-clustering
+just treino
+just imagem
+just serve-container   # -p 3002:3000
+just curl-exemplo
+```
+
+### O que este passo não é
+
+Não é orquestração (Kubernetes), não é registro remoto (`docker push`), não é
+rebuild automático a cada clique. É a prova mínima de **portabilidade da
+inferência**: treinou uma vez, empacotou o serviço, subiu a imagem, bateu o
+mesmo `POST /recomendar`.
+
+---
+
 ## Mergulho técnico
 
 ### Ideia da regra (baseline, sem rede neural)
@@ -516,11 +662,11 @@ não usa região na ordenação**.
 | [`dados/catalogo.json`](dados/catalogo.json) | 12 produtos + cestas de exemplo |
 | [`treino.py`](treino.py) | Calcula popularidade e co-ocorrência; grava pickle no model store (`recomendador:…`) |
 | [`service.py`](service.py) | Classe BentoML `Recomendador`; API `recomendar` |
-| [`bentofile.yaml`](bentofile.yaml) | Empacote opcional (`bentoml build`) |
-| [`justfile`](justfile) | Atalhos `treino`, `serve`, curls |
+| [`bentofile.yaml`](bentofile.yaml) | Empacote opcional: o que entra no Bento / imagem |
+| [`justfile`](justfile) | Atalhos `treino`, `serve`, `imagem`, `serve-container`, curls |
 | [`material/calculos-trabalhados.md`](material/calculos-trabalhados.md) | Contas do exemplo `p01` no papel |
-| [`slides/recomendador-bentoml.pptx`](slides/recomendador-bentoml.pptx) | Slides da aula |
-| [`scripts/gerar_slides.py`](scripts/gerar_slides.py) | Regenera o `.pptx` (`just slides`) |
+| [`slides/recomendador-bentoml.pptx`](slides/recomendador-bentoml.pptx) | Slides da aula (arco didático; ver [`slides/README.md`](slides/README.md)) |
+| [`scripts/gerar_slides.py`](scripts/gerar_slides.py) | Regenera o `.pptx` pelo arco da aula (`just slides`) |
 | [`variante-demografica/`](variante-demografica/) | Variante com `clientes` + `compras` e score demográfico |
 | [`variante-clustering/`](variante-clustering/) | Cluster hierárquico + intercalação `cesta` / `cluster` |
 
@@ -538,6 +684,10 @@ de um modelo BentoML chamado `recomendador`. `service.py` faz
 `bentoml.models.get("recomendador:latest")` e carrega esse artefato na subida do
 serviço. Mudou o catálogo? Rode `just treino` de novo e reinicie (ou confie no
 `--reload` do `just serve`).
+
+Para levar o **mesmo** serviço numa imagem OCI (sem depender do venv da pasta),
+veja [Empacote e container](#empacote-e-container-bento--imagem-oci):
+`just treino` → `just imagem` → `just serve-container`.
 
 ### O que este material não é
 
@@ -614,6 +764,9 @@ preditivo → *inferência* dentro de um serviço. Este repositório já cobre o
 | Sem métrica de acerto | Treino / validação + MAE, acurácia, Precision@k, etc. |
 | `reason` = nome da regra | `reason` pode citar modelo + top features (ou continuar a regra como baseline A/B) |
 
+O **contrato HTTP** pode permanecer o mesmo: `POST /recomendar` com o mesmo I/O;
+o que muda é a **origem do score** (regra fixa hoje → modelo aprendido amanhã).
+
 Um caminho natural para recomendação: cada linha de treino é um par
 `(pagina, candidato)` (e, se houver log, o usuário/sessão). O rótulo pode ser
 “foi clicado / foi comprado / apareceu na mesma cesta” (binário) ou um score de
@@ -664,12 +817,14 @@ implementar de verdade:
 | Só a inferência (online) | Workflow | sequência | Quem fala na hora do clique — sem o treino? |
 | Cinco passos da lista | Visão geral | fluxo | Quais decisões montam o top‑k? |
 | Um `POST /recomendar` | Visão geral | sequência | O que a API consulta no artefato a cada clique? |
+| Bento → imagem → curl | Empacote e container | fluxo | Como o serve vira container sem mudar a API? |
+| Sinais da loja | Sinais que a loja observa | tabela | Demanda e compra conjunta antes das fórmulas? |
+| Métricas em prosa | Métricas do projeto | tabela | O que significam pop, cooc, score e reason? |
 
 ## Catálogo de variantes
 
-Três pacotes neste repositório. O **baseline** é a raiz; as outras pastas são
-irmãs com artefato BentoML e porta HTTP próprios (não sobrescrevem
-`recomendador:latest`).
+O **baseline** é a raiz; as pastas irmãs têm artefato BentoML e porta HTTP próprios
+(cada uma grava a própria tag — o baseline continua em `recomendador:latest`).
 
 | ID | Pasta | Porta | Artefato | O que acrescenta |
 | --- | --- | ---: | --- | --- |
@@ -677,41 +832,99 @@ irmãs com artefato BentoML e porta HTTP próprios (não sobrescrevem
 | demo | [`variante-demografica/`](variante-demografica/) | 3001 | `recomendador-demo` | `clientes` + `compras`; score com afinidade demográfica |
 | clus | [`variante-clustering/`](variante-clustering/) | 3002 | `recomendador-cluster` | cluster hierárquico (dendrograma); lista intercalada `cesta`/`cluster` |
 
-### Baseline (raiz)
+### Baseline (raiz) — só o produto da página
 
-- **Entrada:** `produto_na_pagina`, `limite`, `excluir`.
+A pessoa abre o jarro. A loja responde com o que já sabe do **catálogo** e das
+**compras de exemplo**: filtra pela mesma técnica artesanal, ordena por
+popularidade e co-ocorrência, e completa a lista com os mais pedidos se ainda
+houver vaga. O motivo de cada sugestão vem no campo `reason`
+(`mesma_tecnica` ou `complemento_popularidade`).
+
 - **Regra:** candidatos da mesma `tecnica`;  
   $`\mathrm{score} = 0.7 \times \mathrm{pop} + 0.3 \times \mathrm{cooc}`$; se faltarem
   vagas, completa com os mais pedidos (`complemento_popularidade`).
 - **Subir:** `just treino` · `just serve` · `just curl-exemplo`.
+- **Container:** `just imagem` · `just serve-container` · mesmos curls (ver [Empacote e container](#empacote-e-container-bento--imagem-oci)).
 - **Leitura:** seções [Cesta](#cesta-de-compra) → [Workflow](#workflow) → [API](#o-que-a-api-espera-e-o-que-ela-devolve).
 
-### Variante demográfica
+### Variante demográfica — a loja também sabe *quem* olha
 
-- **Entrada:** as mesmas do baseline **mais** `cliente_id` (opcional).
-- **Dados extras:** `clientes[]` (faixa etária, técnicas e polos preferidos) e
-  `compras[]` (histórico sintético por cliente).
+Mesma vitrine, e agora a aula traz um rosto sintético: faixa etária, técnicas e
+polos preferidos, mais um histórico curto de compras por cliente. O treino
+prepara `pop` / `cooc` **e** popularidade por faixa; a inferência mistura isso na
+nota `demo`. Com `cliente_id`, a lista puxa afinidade de perfil; sem
+`cliente_id`, a API ainda responde — a parte demográfica da nota fica em zero e
+os pesos do artefato seguem valendo.
+
+- **Dados extras:** `clientes[]` e `compras[]` em
+  [`variante-demografica/dados/`](variante-demografica/dados/).
 - **Regra (mesma técnica):**  
   $`0.45 \times \mathrm{pop} + 0.25 \times \mathrm{cooc} + 0.30 \times \mathrm{demo}`$,  
   onde `demo` mistura preferências declaradas e popularidade do produto **na faixa
   etária** do cliente.
-- **Sem `cliente_id`:** `demo = 0` (primo do baseline, pesos diferentes).
 - **Subir:** `cd variante-demografica && just treino && just serve` (porta **3001**).
+- **Container:** nessa pasta, `just imagem` · `just serve-container` (imagem `recomendador-demo:aula`, host **3001**).
 - **Doc:** [`variante-demografica/README.md`](variante-demografica/README.md).
 
-### Variante clustering
+### Variante clustering — cesta e grupo de atributos na mesma lista
 
-- **Entrada:** iguais ao baseline (`produto_na_pagina`, `limite`, `excluir`).
-- **Treino:** vetor one-hot `tecnica` + `regiao` + `pedidos` padronizado;
-  agglomerative **ward**, `n_clusters=4`; grava dendrograma em
-  [`variante-clustering/material/dendrograma.png`](variante-clustering/material/dendrograma.png).
-- **Lista:** ranks ímpares = fila **cesta** (`cooc` com a página); ranks pares =
-  fila **cluster** (mesmo grupo hierárquico, ordenado por `pop`). Se a fila da vez
-  esvaziar, usa a outra e mantém o `reason` verdadeiro (`cesta` ou `cluster`).
+Aqui a aula monta a faixa de sugestões **intercalando** dois fios. No treino, cada
+produto vira um vetor (técnica, região, pedidos) e o linkage *ward* corta o
+catálogo em grupos; o dendrograma fica em
+[`variante-clustering/material/dendrograma.png`](variante-clustering/material/dendrograma.png).
+Na inferência, ranks ímpares puxam a fila da **cesta** (co-ocorrência com a
+página); ranks pares puxam o **cluster** (mesmo grupo, ordenado por popularidade).
+Se a fila da vez esvaziar, a outra completa a vaga e o `reason` registra a fonte
+que de fato entrou (`cesta` ou `cluster`).
+
 - **Exemplo completo:** `produto_na_pagina=p07`, `limite=4` →  
   `cesta`, `cluster`, `cesta`, `cluster` (`intercalacao_completa: true`).
 - **Subir:** `cd variante-clustering && just treino && just serve` (porta **3002**).
+- **Container:** nessa pasta, `just imagem` · `just serve-container` (imagem `recomendador-cluster:aula`, host **3002**).
 - **Doc:** [`variante-clustering/README.md`](variante-clustering/README.md).
+
+### Entradas e saídas esperadas
+
+Contrato comum: `POST /recomendar` com `Content-Type: application/json`. Porta e
+artefato mudam por pasta (tabela do catálogo acima).
+
+#### Entradas (`POST /recomendar`)
+
+| Campo | Baseline `:3000` | Demográfica `:3001` | Clustering `:3002` |
+| --- | --- | --- | --- |
+| `produto_na_pagina` | obrigatório (string) | obrigatório | obrigatório |
+| `limite` | opcional (padrão `4`) | opcional (padrão `4`) | opcional (padrão `4`) |
+| `excluir` | opcional (lista de ids) | opcional | opcional |
+| `cliente_id` | — | opcional (string, ex. `"u01"`) | — |
+
+#### Saídas (sucesso)
+
+Campos presentes no JSON de resposta. “comum” = os três pacotes; o restante é
+específico da pasta.
+
+| Campo | Baseline | Demográfica | Clustering |
+| --- | --- | --- | --- |
+| `items[]` | comum | comum | comum |
+| `items[].product_id`, `nome`, `tecnica`, `regiao`, `rank` | comum | comum | comum |
+| `items[].score` | `0,7×pop+0,3×cooc` ou `0,5×pop` no complemento | mistura com `demo` quando há cliente | `cooc` se `reason=cesta`; `pop` se `reason=cluster` |
+| `items[].reason` | `mesma_tecnica` · `complemento_popularidade` | `mesma_tecnica` / `mesma_tecnica_demo` · `complemento_popularidade` / `complemento_demo` | `cesta` · `cluster` |
+| `items[].afinidade_demo` | — | sim (`0…1`) | — |
+| `items[].cluster_id`, `items[].cooc`, `items[].pop` | — | — | sim |
+| `strategy` | comum | comum | comum |
+| `modelo` | tag `recomendador:…` | tag `recomendador-demo:…` | tag `recomendador-cluster:…` |
+| `produto_na_pagina` (eco) | id, nome, técnica, região | igual | igual **+** `cluster_id` |
+| `complemento_usado` | bool | bool | — |
+| `pesos` | — | `{pop, cooc, demo}` | — |
+| `cliente_id` / `cliente` | — | eco; `cliente` só se o id existir | — |
+| `intercalacao_completa` | — | — | bool |
+| `n_clusters` | — | — | int (ex. `4`) |
+
+#### Saídas de erro
+
+| Situação | Baseline | Demográfica | Clustering |
+| --- | --- | --- | --- |
+| Produto inexistente | `erro: produto_inexistente`, `items: []` | igual | igual |
+| Cliente inexistente | — | `erro: cliente_inexistente`, `items: []` | — |
 
 ### Como escolher na aula
 
@@ -725,6 +938,16 @@ Nenhuma variante é aprendizado de máquina supervisionado ainda — ver
 [Do Data Science à Machine Learning](#ds-para-ml-microsoft-learn). Para **predição
 de demanda** (outro problema: prever `pedidos`, não montar top‑k), use o
 repositório irmão
-[`predicao-demanda-bentoml`](https://github.com/lgallindo/predicao-demanda-bentoml)
-(quando publicado).
+[`predicao-demanda-bentoml`](https://github.com/lgallindo/predicao-demanda-bentoml).
+
+## Variantes
+
+Pastas irmãs do baseline — cada uma com artefato BentoML e porta HTTP próprios:
+
+| Pasta | Sinal extra | Porta | Artefato |
+| --- | --- | --- | --- |
+| [`variante-demografica/`](variante-demografica/) | perfil do cliente + compras por faixa etária | 3001 | `recomendador-demo` |
+| [`variante-clustering/`](variante-clustering/) | cluster hierárquico + lista intercalada cesta/cluster | 3002 | `recomendador-cluster` |
+
+História de cada pacote, regra e tabelas de entrada/saída: [Catálogo de variantes](#catálogo-de-variantes), logo acima.
 

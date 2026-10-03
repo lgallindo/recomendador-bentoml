@@ -1,8 +1,15 @@
 # Dados da variante demográfica
 
+No baseline, a feira conhece as peças e as cestas. Aqui a história ganha
+**visitantes**: perfis sintéticos e um histórico curto de compras por pessoa.
+Esses arrays existem para a afinidade `demo` — o sinal novo desta pasta.
+
 Arquivo único: [`catalogo.json`](catalogo.json).
 
 ## Forma
+
+Quatro blocos na raiz. Os dois primeiros ecoam o baseline; os dois últimos são
+o que torna esta variante demográfica.
 
 ```json
 {
@@ -31,6 +38,10 @@ Há **12 produtos**, **6 clientes** e **12 compras** de exemplo.
 
 ## Como o treino usa a demografia
 
+Ainda é o pipeline **offline**: lê o JSON, agrega, grava o artefato
+`recomendador-demo`. A vitrine só entra depois, no `just serve`, quando manda
+`cliente_id` no `POST /recomendar`.
+
 1. `pop` e `cooc` como no baseline (campo `pedidos` + array `cestas`).
 2. Para cada `faixa_etaria`, conta quantas vezes cada produto aparece nas
    `compras` de clientes daquela faixa → normaliza pelo máximo da faixa →
@@ -41,3 +52,6 @@ Há **12 produtos**, **6 clientes** e **12 compras** de exemplo.
 `regiao_cliente` fica no artefato para a resposta JSON / explicabilidade; a nota
 `demo` usa `tecnicas_preferidas`, `polos_interesse` e `pop_faixa`, não a cidade
 do cliente (cidade ≠ polo do produto).
+
+O cálculo da nota na inferência e os curls da aula estão no
+[`../README.md`](../README.md) desta variante.

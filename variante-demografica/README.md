@@ -1,5 +1,15 @@
 # Variante demográfica
 
+O baseline da raiz já responde à pergunta da vitrine: *dado o produto da página,
+quais outros sugerir?* Nesta pasta a aula dá um passo a mais — **uma pergunta
+nova, sozinha**:
+
+> E se soubermos *quem* está olhando o jarro?
+
+O mesmo HTTP, o mesmo papel de treino e inferência, e um sinal extra: perfil do
+cliente (faixa etária, preferências) e compras de exemplo por pessoa. Enquanto
+você estiver aqui, o foco é só esse sinal.
+
 Pasta irmã do baseline em [`../`](../). Mesma ideia (técnica + popularidade +
 co-ocorrência + BentoML), **mais** um sinal de perfil do cliente.
 
@@ -15,6 +25,10 @@ e (b) popularidade do produto **dentro da faixa etária** do cliente, medida nas
 `compras` de exemplo.
 
 ## Subir
+
+Os dois pipelines continuam separados: `just treino` grava
+`recomendador-demo:…`; `just serve` sobe a inferência na porta **3001**. O
+ambiente Python (`uv` / `.venv`) fica na raiz do repositório.
 
 Na raiz do repositório o `uv` / `.venv` já existem. Desta pasta:
 
@@ -32,6 +46,10 @@ just curl-sem-cliente
 ```
 
 ## O que entra no JSON
+
+A cena da feira ganha rostos sintéticos: além do catálogo e das cestas, o arquivo
+traz *quem* compra e *o que* cada perfil já levou. Detalhe campo a campo em
+[`dados/README.md`](dados/README.md).
 
 Além de `produtos` e `cestas` (iguais à ideia do baseline):
 
@@ -53,6 +71,10 @@ Além de `produtos` e `cestas` (iguais à ideia do baseline):
 Detalhe dos campos: [`dados/README.md`](dados/README.md).
 
 ## Como a afinidade demográfica é calculada
+
+Na inferência, a nota `demo` junta o que a pessoa *declara* gostar com o que a
+faixa etária dela costuma pedir nas compras de exemplo. O treino só prepara
+`pop_faixa` e o mapa de clientes; o score abaixo roda a cada `POST /recomendar`.
 
 ```text
 # Variáveis:
@@ -97,6 +119,11 @@ treinado. O perfil demográfico é o próximo degrau pedagógico antes de rotula
 pares `(página, candidato, cliente)` — ver o mapa Microsoft Learn no
 [`../README.md`](../README.md#ds-para-ml-microsoft-learn).
 
+O contrato HTTP permanece familiar (`POST /recomendar`); muda a origem de parte
+do score e o campo opcional `cliente_id`. Para empacotar esta inferência em
+imagem OCI, use `just imagem` e `just serve-container` **nesta** pasta (tag
+`recomendador-demo:aula`).
+
 ## Mapa de arquivos
 
 | Arquivo | Papel |
@@ -105,3 +132,4 @@ pares `(página, candidato, cliente)` — ver o mapa Microsoft Learn no
 | [`treino.py`](treino.py) | pop, cooc, pop_faixa → `recomendador-demo` |
 | [`service.py`](service.py) | `RecomendadorDemo.recomendar` |
 | [`justfile`](justfile) | `treino`, `serve` (porta 3001), curls |
+| [`bentofile.yaml`](bentofile.yaml) | empacote Bento / container desta variante |

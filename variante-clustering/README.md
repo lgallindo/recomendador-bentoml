@@ -1,5 +1,14 @@
 # Variante clustering (cesta ⊕ cluster)
 
+O baseline filtra candidatos pela técnica artesanal e ordena por uma nota única.
+Nesta pasta a aula coloca **outra** pergunta — e só ela — no centro:
+
+> E se agruparmos as peças por atributos e misturarmos isso com a cesta?
+
+O treino forma clusters hierárquicos; a inferência **intercala** o que costuma
+sair junto na compra com o que caiu no mesmo grupo da página. Enquanto você
+estiver aqui, o foco é esse desenho de lista.
+
 Pasta irmã do baseline em [`../`](../). Monta a lista **intercalando** dois sinais:
 
 | Rank | Fonte | `reason` |
@@ -16,6 +25,10 @@ Pasta irmã do baseline em [`../`](../). Monta a lista **intercalando** dois sin
 
 ## Subir
 
+De novo os dois pipelines: treino grava `recomendador-cluster:…`; serve sobe a
+inferência na porta **3002**. O `uv` / `.venv` ficam na raiz (`--project ..` no
+`justfile`).
+
 ```bash
 just treino
 just serve
@@ -26,13 +39,21 @@ Swagger: `http://127.0.0.1:3002`.
 
 ## Cluster hierárquico (o desenho)
 
-No treino, cada produto vira um vetor: one-hot de `tecnica` + one-hot de `regiao` +
-`pedidos` padronizado. O linkage **ward** produz a árvore; cortamos em 4 grupos.
-O dendrograma gerado fica em:
+Primeiro o **treino** desenha a árvore — isso é o lado offline. Cada produto vira
+um vetor: one-hot de `tecnica` + one-hot de `regiao` + `pedidos` padronizado. O
+linkage **ward** produz a árvore; cortamos em 4 grupos. O dendrograma gerado
+fica em:
 
 ![Dendrograma do catálogo](material/dendrograma.png)
 
+Os dados de entrada (mesmo catálogo do baseline) estão descritos em
+[`dados/README.md`](dados/README.md).
+
 ## Intercalação
+
+Na **inferência**, a lista deixa de ser um único ranking: ranks ímpares puxam a
+fila da cesta; ranks pares, a do cluster. O pseudocódigo abaixo é o que
+`service.py` faz a cada pedido.
 
 ```text
 # Variáveis:
@@ -76,6 +97,14 @@ sequenceDiagram
   API-->>Web: items intercalados
 ```
 
+## Relação com o baseline e com ML
+
+A intercalação continua sendo regra + agregados (e um clustering clássico no
+treino). O degrau seguinte, com rótulo supervisionado e métrica de ranking, está
+mapeado no [`../README.md`](../README.md#ds-para-ml-microsoft-learn). Para
+imagem OCI desta inferência: `just imagem` · `just serve-container` nesta pasta
+(tag `recomendador-cluster:aula`).
+
 ## Mapa de arquivos
 
 | Arquivo | Papel |
@@ -85,3 +114,4 @@ sequenceDiagram
 | [`service.py`](service.py) | `RecomendadorCluster.recomendar` |
 | [`material/dendrograma.png`](material/dendrograma.png) | figura gerada no `just treino` |
 | [`justfile`](justfile) | treino / serve :3002 / curl |
+| [`bentofile.yaml`](bentofile.yaml) | empacote Bento / container desta variante |
