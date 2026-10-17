@@ -257,13 +257,16 @@ Jarro (`p01`) aparece nas cestas 1, 2, 8 e 10: `n(A)=4`.
 Prato (`p02`) aparece nas cestas 1, 2 e 10: `n(B)=3`.
 Ambos aparecem nas cestas 1, 2 e 10: `n(A ∪ B)=3`. Temos `N=10`.
 
-| Métrica | Cálculo | Resultado |
-| --- | --- | --- |
-| Suporte do antecedente | 4/10 | 40% |
-| Suporte do consequente | 3/10 | 30% |
-| Suporte da regra | 3/10 | 30% |
-| Confiança | 3/4 | 75% |
-| Lift | 0,75/0,30 | 2,50 |
+Aqui, `n(A)` e `n(B)` são contagens; os suportes são essas contagens divididas
+pelo total de transações `N`.
+
+| Métrica | Fórmula | Cálculo | Resultado |
+| --- | --- | --- | --- |
+| Suporte do antecedente | `n(A) / N` | 4/10 | 40% |
+| Suporte do consequente | `n(B) / N` | 3/10 | 30% |
+| Suporte da regra | `n(A ∪ B) / N` | 3/10 | 30% |
+| Confiança | `n(A ∪ B) / n(A)` | 3/4 | 75% |
+| Lift | `confiança(A → B) / suporte(B)` | 0,75/0,30 | 2,50 |
 
 **Relato:** “Jarro e Prato aparecem juntos em 3 das 10 cestas (suporte 30%).
 Das 4 cestas com Jarro, 3 também contêm Prato (confiança 75%). A frequência
