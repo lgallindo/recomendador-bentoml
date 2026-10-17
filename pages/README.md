@@ -22,10 +22,29 @@ não integram essa saída.
 
 ## Publicação
 
-O [workflow de Pages](../.github/workflows/pages.yml) reproduz e publica o site
-quando os arquivos relevantes mudam em `main`. Você também pode executá-lo
-manualmente na aba Actions. Ele usa Pages deste repositório; o repositório do
-site pessoal `lgallindo.github.io` tem publicação independente.
+O site publica os arquivos pré-construídos do branch `gh-pages`, pela opção
+**Deploy from a branch → gh-pages → / (root)** de Pages deste repositório.
+O repositório do site pessoal `lgallindo.github.io` tem publicação independente.
+
+Depois de revisar e registrar as mudanças de conteúdo em `main`, com Git, GitHub
+CLI e Pandoc disponíveis, você pode atualizar a publicação pela raiz:
+
+```bash
+python3 scripts/publicar_site_tutorial.py
+```
+
+O comando gera o site, clona `gh-pages` em uma pasta local, adiciona uma nova
+revisão e solicita a publicação. Ele preserva o histórico, não faz push forçado
+e não altera o site pessoal. Você precisa de permissão para publicar no `origin`
+e de autenticação no GitHub CLI. Confira o estado final com:
+
+```bash
+gh api repos/lgallindo/recomendador-bentoml/pages/builds/latest --jq .status
+```
+
+O [workflow opcional](../.github/workflows/pages.yml) permite gerar um artefato
+HTML pela aba Actions quando runners estiverem disponíveis; ele não é a rota
+de publicação do site. A publicação pelo branch não depende desse workflow.
 
 Os links para código e documentação complementar levam aos respectivos arquivos
 do repositório. Os gráficos e o explorador funcionam na própria página. Você pode
