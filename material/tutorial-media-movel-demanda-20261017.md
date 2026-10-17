@@ -23,6 +23,35 @@ cada seção separadamente.
 | 7 min | Interpretar resultados e limitações |
 | 10 min | Resolver o exercício |
 
+### Como este método se encaixa em IA e aprendizado de máquina
+
+**Inteligência artificial (IA)** é o campo amplo que estuda sistemas capazes
+de realizar tarefas como aprender, raciocinar, perceber e apoiar decisões.
+**Aprendizado de máquina (ML)** é uma área da IA em que algoritmos aprendem
+padrões a partir de dados. Nem todo sistema de IA aprende com dados e nem todo
+método estatístico de previsão é, por isso só, um modelo de ML.
+
+Previsão de demanda é um **problema**: estimar valores futuros com base em
+informações disponíveis. Há diferentes famílias de soluções. Estatística e
+previsão de séries temporais oferecem métodos como médias móveis; ML pode usar
+características e exemplos históricos para ajustar um modelo; regras de negócio
+também podem fornecer referências simples. Esses caminhos podem se complementar,
+mas não são nomes intercambiáveis.
+
+![Diagrama conceitual: IA contém ML; estatística e previsão de séries temporais aparecem como áreas relacionadas, mas não equivalentes a ML; média móvel está destacada como baseline estatístico para o problema de previsão de demanda.](imagens/mapa-ia-previsao-demanda.png)
+
+*Figura 1 — O problema de prever demanda pode ser abordado por métodos
+estatísticos ou de ML. A média móvel deste tutorial é um baseline estatístico
+transparente, não um modelo treinado de ML. O diagrama é conceitual; as formas
+não indicam proporções ou fronteiras formais entre disciplinas.*
+
+Neste tutorial, você calcula uma regra fixa: a média das últimas quatro semanas.
+Não há etapa de ajuste de parâmetros a partir de um conjunto rotulado, embora
+seja possível escolher o tamanho da janela comparando previsões em dados de
+desenvolvimento. Se depois comparar esse baseline com um modelo de regressão
+que aprende a partir de exemplos, estará usando a média móvel como **referência**
+para avaliar se a complexidade adicional traz ganho.
+
 ## 1. A pergunta de previsão
 
 Um marketplace de artesanato precisa planejar a próxima semana. Para cada
@@ -144,6 +173,16 @@ O validador verifica as 192 combinações de 16 semanas e 12 produtos, ausência
 de duplicatas, ids conhecidos, contagens não negativas e reconciliação das
 somas semanais com o catálogo.
 
+O gráfico abaixo mostra a série de `p01`, previsões de média móvel feitas
+somente com semanas anteriores e a previsão para a semana seguinte. Como a
+entrada é sintética, as oscilações ilustram a conta, não um padrão real de
+procura.
+
+![Gráfico da série sintética semanal do Jarro p01: linhas observadas, previsões de média móvel de quatro semanas feitas antes de cada semana e previsão final de 2,5 para a semana seguinte.](imagens/serie-media-movel-p01.png)
+
+*Figura 2 — A previsão de cada semana usa apenas as quatro semanas anteriores.
+O ponto final é a estimativa para a semana posterior ao histórico disponível.*
+
 ### Abrir os dados com pandas
 
 O código a seguir parte da raiz do repositório. Se pandas não estiver
@@ -245,6 +284,12 @@ Faremos uma avaliação **walk-forward** (origem deslizante): prever uma semana
 do período de teste usando apenas as semanas anteriores; depois, quando a
 semana real já é conhecida, incluí-la no histórico para prever a seguinte.
 Assim simulamos previsões semanais sucessivas sem usar observações futuras.
+
+![Fluxo de previsão walk-forward: observações semanais entram numa janela das quatro semanas anteriores; a média gera uma previsão para a semana seguinte; após observar a venda real, calcula-se o erro e avança a janela.](imagens/fluxo-walk-forward-demanda.png)
+
+*Figura 3 — A janela avança no tempo. Cada previsão é produzida antes de
+consultar o valor real daquela semana; a observação é usada somente nas
+previsões seguintes.*
 
 ### Erro absoluto médio
 
@@ -451,3 +496,16 @@ o método, não como evidência comercial.
 3. PANDAS. Documentação da operação `DataFrame.rolling`, para experimentar
    janelas móveis em dados tabulares.
    [Rolling window calculations](https://pandas.pydata.org/docs/user_guide/window.html).
+
+## Reproduzir as figuras
+
+Na raiz do repositório, execute:
+
+```bash
+uv run python scripts/gerar_figuras_demanda.py
+```
+
+O script lê `dados/vendas_semanais.csv` e recria as três figuras em
+`material/imagens/`. Ele usa Matplotlib, já declarado entre as dependências do
+projeto. A geração reproduz os gráficos a partir dos dados e não acrescenta
+observações nem valida a origem sintética da série.

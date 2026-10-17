@@ -1,7 +1,7 @@
-# Figuras do tutorial de associação
+# Figuras dos tutoriais
 
 Você pode abrir os PNGs separadamente ou acompanhar suas legendas e descrições
-no [tutorial](../tutorial-regras-associacao-20261017.md).
+nos tutoriais da pasta [material](../).
 
 | Arquivo | O que você pode observar |
 | --- | --- |
@@ -9,6 +9,12 @@ no [tutorial](../tutorial-regras-associacao-20261017.md).
 | [matriz-cestas.png](matriz-cestas.png) | Presenças nas dez transações originais e ocorrências conjuntas de Jarro e Prato |
 | [descoberta-validacao.png](descoberta-validacao.png) | Métricas da mesma regra em dois conjuntos sintéticos separados |
 | [marketing-artesanato.png](marketing-artesanato.png) | Ilustração de compras, sugestão de produtos e comparação de apresentações |
+| [bi-dispersao.png](bi-dispersao.png) | Suporte e confiança das regras, com contagem de coincidências e cor pelo maior lift de cada grupo |
+| [bi-matriz.png](bi-matriz.png) | Lift por conjunto antecedente e consequente; células ausentes não representam zeros |
+| [bi-rede.png](bi-rede.png) | Rede direcionada entre conjuntos inteiros, com confiança representada pela espessura |
+| [mapa-ia-previsao-demanda.png](mapa-ia-previsao-demanda.png) | Diferença conceitual entre IA/ML e abordagens estatísticas de previsão; média móvel em destaque |
+| [serie-media-movel-p01.png](serie-media-movel-p01.png) | Vendas semanais sintéticas de `p01`, previsões retrospectivas MA(4) e previsão seguinte |
+| [fluxo-walk-forward-demanda.png](fluxo-walk-forward-demanda.png) | Janela temporal, previsão, observação posterior e avanço da avaliação walk-forward |
 
 ## Reproduzir os diagramas e gráficos
 
@@ -23,6 +29,24 @@ uv run python scripts/gerar_figuras_associacao.py
 Os valores da matriz vêm de `dados/catalogo.json`. O gráfico compara essa base
 com `material/cestas-validacao-20261017.json`. O diagrama de inclusão é um mapa
 conceitual; seus tamanhos não representam medidas dos campos.
+
+Para reproduzir as três figuras de BI e os dados do
+[explorador interativo](../bi/README.md), execute:
+
+```bash
+uv run python scripts/gerar_bi_associacao.py
+```
+
+As figuras do tutorial de previsão são geradas separadamente pelo
+[script de demanda](../../scripts/gerar_figuras_demanda.py), a partir de
+`dados/vendas_semanais.csv`:
+
+```bash
+uv run python scripts/gerar_figuras_demanda.py
+```
+
+Os gráficos são visualizações das contagens sintéticas e da regra MA(4);
+nenhuma ilustração deve ser interpretada como evidência de vendas reais.
 
 ## Sobre a ilustração da loja
 
