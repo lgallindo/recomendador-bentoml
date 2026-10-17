@@ -10,6 +10,7 @@ junto com o código.
 
 | Arquivo | Conteúdo |
 | --- | --- |
+| [Versão web do tutorial](https://lgallindo.github.io/recomendador-bentoml/) | Tutorial com fórmulas, imagens e explorador BI incorporado na mesma página |
 | [`tutorial-regras-associacao-logs-autenticacao-20261017.md`](tutorial-regras-associacao-logs-autenticacao-20261017.md) | Variante independente: logs sintéticos, reconstrução de sessões, associação e validação |
 | [`logs-autenticacao/`](logs-autenticacao/) | Sessões auditáveis e CSVs reproduzíveis de descoberta e validação |
 | [`tutorial-regras-associacao-20261017.md`](tutorial-regras-associacao-20261017.md) | Estudo de 75 minutos: IA, aprendizado de máquina, sistemas especialistas, mineração, generalização, validação, BI e marketing |

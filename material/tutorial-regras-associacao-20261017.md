@@ -1,5 +1,7 @@
 # Marketing orientado por dados: como minerar e relatar regras de associação
 
+[Leia a versão web com o explorador interativo incorporado](https://lgallindo.github.io/recomendador-bentoml/).
+
 Ao concluir este tutorial, você deverá conseguir calcular suporte, confiança e
 lift, ler um relatório de regras, justificar quais padrões merecem investigação
 e transformar esses padrões em hipóteses de marketing. Você também produzirá
@@ -570,11 +572,12 @@ as contagens que sustentam uma recomendação. Um gráfico bem apresentado não
 dispensa validação nem demonstra que uma campanha funcionará.
 
 O [explorador de regras](bi/index.html) oferece tabela, dispersão, matriz,
-rede e comparação entre bases. Para executá-lo, abra esse HTML no navegador
-a partir de uma cópia local do repositório: a página do arquivo no GitHub exibe
-seu código. Consulte o [roteiro de exploração](bi/README.md). O painel funciona
-sem internet e sem instalar um serviço; as figuras abaixo também permitem
-estudar os resultados diretamente neste documento.
+rede e comparação entre bases. Você pode usá-lo incorporado à
+[versão web deste tutorial](https://lgallindo.github.io/recomendador-bentoml/#explorador-interativo).
+Para estudar offline, abra o HTML a partir de uma cópia local do repositório:
+a página do arquivo no GitHub exibe seu código. Consulte o
+[roteiro de exploração](bi/README.md). As figuras abaixo também permitem
+estudar os resultados diretamente na versão Markdown.
 
 ### Dispersão: alcance, frequência condicional e regras coincidentes
 

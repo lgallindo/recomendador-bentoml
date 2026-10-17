@@ -7,6 +7,10 @@ O painel apresenta associações; ele não executa campanhas nem demonstra seus 
 
 ## Abrir o explorador
 
+Você pode usar o painel diretamente na
+[versão web do tutorial](https://lgallindo.github.io/recomendador-bentoml/#explorador-interativo),
+incorporado às explicações, sem baixar arquivos.
+
 Com uma cópia local do repositório, abra [index.html](index.html) no navegador.
 JavaScript deve estar habilitado. Todos os recursos estão no repositório; você
 não precisa instalar um serviço nem acessar a internet. A página de um arquivo
