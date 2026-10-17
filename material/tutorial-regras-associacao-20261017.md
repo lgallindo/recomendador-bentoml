@@ -211,7 +211,7 @@ de cestas. `A ∪ B` reúne os itens dos dois lados.
 ### Suporte: com que frequência os dois lados aparecem juntos?
 
 $$
-\operatorname{suporte}(A\rightarrow B)=\frac{n(A\cup B)}{N}
+\mathrm{suporte}(A\rightarrow B)=\frac{n(A\cup B)}{N}
 $$
 
 O suporte da regra é o suporte do conjunto completo. Não confundir com
@@ -220,7 +220,7 @@ suporte do antecedente `n(A)/N` ou do consequente `n(B)/N`.
 ### Confiança: entre as cestas com A, quantas também contêm B?
 
 $$
-\operatorname{confianca}(A\rightarrow B)=\frac{n(A\cup B)}{n(A)}
+\mathrm{confianca}(A\rightarrow B)=\frac{n(A\cup B)}{n(A)}
 $$
 
 É a frequência condicional observada de B dado A. O denominador muda ao
@@ -229,8 +229,8 @@ inverter a regra, portanto a confiança pode mudar. Só calculamos quando `n(A)>
 ### Lift: quanto a confiança supera a frequência habitual de B?
 
 $$
-\operatorname{lift}(A\rightarrow B)
-=\frac{\operatorname{confianca}(A\rightarrow B)}{n(B)/N}
+\mathrm{lift}(A\rightarrow B)
+=\frac{\mathrm{confianca}(A\rightarrow B)}{n(B)/N}
 =\frac{N\,n(A\cup B)}{n(A)n(B)}
 $$
 
