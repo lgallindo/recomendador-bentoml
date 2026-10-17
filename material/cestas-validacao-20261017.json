@@ -1,0 +1,16 @@
+{
+  "descricao": "Dez transações sintéticas adicionais para recalcular uma regra fixa. Não são compras reais nem um período observado.",
+  "regra_avaliada": {"antecedente": ["p01"], "consequente": ["p02"]},
+  "cestas": [
+    ["p01", "p02"],
+    ["p01", "p03"],
+    ["p01", "p10"],
+    ["p01", "p04"],
+    ["p02", "p05"],
+    ["p02", "p07"],
+    ["p04", "p05"],
+    ["p07", "p08"],
+    ["p10", "p11"],
+    ["p04", "p06"]
+  ]
+}

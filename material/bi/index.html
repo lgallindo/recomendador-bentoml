@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore 14 regras de associação com suporte, confiança, lift e avaliação em dados sintéticos separados.">
+  <title>Das compras às decisões · Explorador de regras</title>
+  <link rel="stylesheet" href="painel.css">
+  <script src="dados.js" defer></script>
+  <script src="painel.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para os resultados</a>
+  <header class="hero">
+    <div><p class="eyebrow">Laboratório de marketing orientado por dados</p>
+      <h1>Das compras<br>às decisões.</h1>
+      <p>Explore as regras, confira a evidência e investigue o que muda em outras transações.</p>
+      <nav><a href="../../index.html#explorador-interativo" target="_top">Tutorial completo</a> <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi/README.md" target="_blank" rel="noopener">Como explorar</a></nav>
+    </div>
+    <img src="../imagens/marketing-artesanato.png" alt="Ilustração de uma lojista que usa registros de compras para investigar sugestões de produtos.">
+  </header>
+  <div class="layout">
+    <aside class="filters" aria-label="Filtros do relatório">
+      <p class="eyebrow">01 · Escolha sua pergunta</p><h2>Explore a evidência</h2>
+      <p>Os filtros selecionam entre as <strong>14 regras originais</strong>. Eles não mineram novas regras nem alteram as cestas.</p>
+      <label for="base">Base das métricas exibidas</label>
+      <select id="base"><option value="descoberta">Descoberta · 10 cestas</option><option value="avaliacao">Avaliação separada · 10 cestas</option></select>
+      <label for="busca">Produto ou conjunto</label><input id="busca" type="search" placeholder="Ex.: Jarro ou p01 + p03">
+      <label for="suporte">Suporte mínimo (%)</label><input id="suporte" type="number" min="0" max="100" step="1" value="20">
+      <label for="confianca">Confiança mínima (%)</label><input id="confianca" type="number" min="0" max="100" step="1" value="60">
+      <label for="lift">Lift estritamente maior que</label><input id="lift" type="number" min="0" step="0.1" value="1">
+      <label for="ordem">Ordenar regras por</label><select id="ordem"><option value="lift">Maior lift</option><option value="confianca">Maior confiança</option><option value="suporte">Maior suporte</option><option value="nome">Antecedente (A–Z)</option></select>
+      <button id="reset" type="button">Restaurar filtros originais</button>
+      <button id="todas" type="button" class="secondary">Ver toda a seleção original</button>
+      <p id="erro-filtros" role="alert"></p>
+      <div class="note"><strong>Duas bases sintéticas.</strong> Não são períodos reais. Os dados adicionais ilustram avaliação; não demonstram desempenho comercial.</div>
+    </aside>
+    <main id="conteudo">
+      <section class="summary" aria-label="Resumo da seleção">
+        <div><span id="n-regras">14</span><p>regras visíveis de 14 selecionadas</p></div>
+        <div><span id="n-cestas">10</span><p>cestas na base exibida</p></div>
+        <div><span id="nome-base">Descoberta</span><p>métricas por regra, sem médias</p></div>
+      </section>
+      <section class="panel detail" aria-labelledby="titulo-regra">
+        <p class="eyebrow">02 · Leia uma regra por inteiro</p>
+        <h2 id="titulo-regra"></h2><p id="ids-regra"></p>
+        <div class="actions"><button id="inverter" type="button">Ver regra inversa</button><span id="fora-filtro" role="status"></span></div>
+        <div class="table-scroll"><table id="comparacao"><caption>A mesma regra nas duas bases · critérios originais: suporte ≥ 20%, confiança ≥ 60%, lift &gt; 1</caption><thead><tr><th scope="col">Base</th><th scope="col">N</th><th scope="col">n(A)</th><th scope="col">n(B)</th><th scope="col">Juntos</th><th scope="col">Suporte</th><th scope="col">Confiança</th><th scope="col">Lift</th><th scope="col">Critérios</th></tr></thead><tbody></tbody></table></div>
+        <p id="formulas"></p><p id="interpretacao"></p>
+        <svg id="validacao" viewBox="0 0 780 255" role="img" aria-label="Comparação da regra selecionada entre descoberta e avaliação"></svg>
+        <button type="button" class="secondary export" data-svg="validacao">Baixar comparação em PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-dispersao">
+        <p class="eyebrow">03 · Compare alcance e frequência condicional</p><h2 id="titulo-dispersao">Suporte × confiança</h2>
+        <p>Cada posição pode conter várias regras. O número informa quantas; a cor representa o <strong>maior lift do grupo</strong>. Selecione a posição para consultar todas, sem médias.</p>
+        <div class="plot-scroll"><svg id="dispersao" viewBox="0 0 780 390" role="group" aria-label="Dispersão interativa de suporte e confiança"></svg></div>
+        <div id="grupo" aria-live="polite"></div>
+        <button type="button" class="secondary export" data-svg="dispersao">Baixar dispersão em PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-matriz">
+        <p class="eyebrow">04 · Observe a direção</p><h2 id="titulo-matriz">Antecedente → consequente</h2>
+        <p>Cada linha e coluna representa um conjunto completo. A célula mostra o lift; “—” indica regra ausente da seleção visível, não suporte zero. “n/d” indica lift indefinido por denominador zero. Selecione uma célula para ver suas contagens.</p>
+        <div class="plot-scroll"><svg id="matriz" role="group" aria-label="Matriz direcional interativa das regras"></svg></div>
+        <button type="button" class="secondary export" data-svg="matriz">Baixar matriz em PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-rede">
+        <p class="eyebrow">05 · Conecte os conjuntos</p><h2 id="titulo-rede">Uma rede de associações</h2>
+        <p>Os nós são conjuntos inteiros: {p01 + p03} exige os dois produtos. As setas preservam a direção e não indicam causalidade. Espessura = confiança; linha tracejada indica confiança indefinida. Selecione uma seta ou um conjunto.</p>
+        <div class="plot-scroll"><svg id="rede" role="group" aria-label="Rede direcionada entre conjuntos antecedentes e consequentes"></svg></div>
+        <button type="button" class="secondary export" data-svg="rede">Baixar rede em PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-tabela">
+        <div class="section-heading"><div><p class="eyebrow">06 · Audite e leve os resultados</p><h2 id="titulo-tabela">Relatório de regras</h2></div><button id="csv" type="button">Baixar seleção em CSV</button></div>
+        <p id="estado" role="status" aria-live="polite"></p>
+        <div class="table-scroll"><table id="regras"><caption>Contagens e métricas da base escolhida; selecione uma regra para compará-la nas duas bases.</caption><thead><tr><th>Regra</th><th>n(A)</th><th>n(B)</th><th>Juntos</th><th>Suporte</th><th>Confiança</th><th>Lift</th></tr></thead><tbody></tbody></table></div>
+        <details><summary>Consultar IDs e nomes dos produtos</summary><dl id="produtos"></dl></details>
+      </section>
+      <footer><p>BI torna a evidência explorável. Validação investiga a persistência do padrão; um experimento avalia o efeito de agir sobre ele.</p><p>Este explorador também está disponível para uso offline na cópia local do repositório.</p></footer>
+    </main>
+  </div>
+  <p id="export-status" role="status" aria-live="polite"></p>
+</body>
+</html>

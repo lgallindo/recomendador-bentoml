@@ -1,0 +1,1414 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutorial de associação, inteligência artificial, validação e marketing orientado por dados, com explorador interativo.">
+  <title>Regras de associação e marketing orientado por
+dados · Aprender com dados</title>
+  <link rel="stylesheet" href="assets/tutorial.css">
+  <script src="assets/tutorial.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+  <header class="site-header">
+    <a class="brand" href="./">Aprender com dados</a>
+    <nav aria-label="Navegação principal">
+      <a href="#explorador-interativo">Explorar as regras</a>
+      <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-regras-associacao-20261017.md">Versão Markdown</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="toc">
+      <details open><summary>Neste tutorial</summary><nav aria-label="Índice"><ul>
+<li><a
+href="#marketing-orientado-por-dados-como-minerar-e-relatar-regras-de-associação"
+id="toc-marketing-orientado-por-dados-como-minerar-e-relatar-regras-de-associação">Marketing
+orientado por dados: como minerar e relatar regras de associação</a>
+<ul>
+<li><a href="#1-da-inteligência-artificial-à-indução-de-regras"
+id="toc-1-da-inteligência-artificial-à-indução-de-regras">1. Da
+inteligência artificial à indução de regras</a></li>
+<li><a href="#2-a-pergunta-e-as-transações"
+id="toc-2-a-pergunta-e-as-transações">2. A pergunta e as
+transações</a></li>
+<li><a href="#3-três-perguntas-três-denominadores"
+id="toc-3-três-perguntas-três-denominadores">3. Três perguntas, três
+denominadores</a></li>
+<li><a href="#4-conta-completa-jarro--prato"
+id="toc-4-conta-completa-jarro--prato">4. Conta completa: Jarro →
+Prato</a></li>
+<li><a href="#5-como-as-regras-são-mineradas"
+id="toc-5-como-as-regras-são-mineradas">5. Como as regras são
+mineradas</a></li>
+<li><a href="#6-resultados-completos-e-comparação"
+id="toc-6-resultados-completos-e-comparação">6. Resultados completos e
+comparação</a></li>
+<li><a href="#7-como-validar-uma-regra-em-dados-separados"
+id="toc-7-como-validar-uma-regra-em-dados-separados">7. Como validar uma
+regra em dados separados</a></li>
+<li><a href="#8-como-escrever-o-relatório"
+id="toc-8-como-escrever-o-relatório">8. Como escrever o
+relatório</a></li>
+<li><a href="#9-como-bi-ajuda-você-a-visualizar-regras"
+id="toc-9-como-bi-ajuda-você-a-visualizar-regras">9. Como BI ajuda você
+a visualizar regras</a></li>
+<li><a href="#10-exercício-produza-seu-relatório"
+id="toc-10-exercício-produza-seu-relatório">10. Exercício: produza seu
+relatório</a></li>
+<li><a href="#referências-bibliográficas-e-roteiro-de-leitura"
+id="toc-referências-bibliográficas-e-roteiro-de-leitura">Referências
+bibliográficas e roteiro de leitura</a></li>
+</ul></li>
+</ul></nav></details>
+    </aside>
+    <main id="conteudo"><h1
+id="marketing-orientado-por-dados-como-minerar-e-relatar-regras-de-associação">Marketing
+orientado por dados: como minerar e relatar regras de associação</h1>
+<p><a href="https://lgallindo.github.io/recomendador-bentoml/">Leia a
+versão web com o explorador interativo incorporado</a>.</p>
+<p>Ao concluir este tutorial, você deverá conseguir calcular suporte,
+confiança e lift, ler um relatório de regras, justificar quais padrões
+merecem investigação e transformar esses padrões em hipóteses de
+marketing. Você também produzirá um breve relatório com contagens,
+métricas, interpretação e uma ação a testar. Além disso, você situará a
+indução de regras dentro da inteligência artificial, explicará sua
+relação com sistemas especialistas e distinguirá descoberta, validação
+em novos dados e teste de uma ação de marketing. As bases são
+sintéticas: a descoberta usa dez cestas e a comparação de validação usa
+dez cestas adicionais. Os resultados não constituem evidência sobre
+consumidores reais.</p>
+<h3 id="roteiro-de-estudo">Roteiro de estudo</h3>
+<p>Você pode seguir o roteiro abaixo em aproximadamente 75 minutos ou
+consultar cada seção separadamente para revisar os conceitos e
+reproduzir os resultados.</p>
+<table>
+<thead>
+<tr>
+<th>Tempo sugerido</th>
+<th>Atividade de estudo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10 min</td>
+<td>Situar regras, aprendizado de máquina, IA e sistemas
+especialistas</td>
+</tr>
+<tr>
+<td>5 min</td>
+<td>Ler as transações e formular a pergunta</td>
+</tr>
+<tr>
+<td>8 min</td>
+<td>Construir as três métricas a partir de contagens</td>
+</tr>
+<tr>
+<td>7 min</td>
+<td>Calcular uma regra e sua inversa</td>
+</tr>
+<tr>
+<td>7 min</td>
+<td>Minerar itemsets e gerar regras</td>
+</tr>
+<tr>
+<td>8 min</td>
+<td>Comparar resultados e escrever um relato</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Avaliar uma regra em transações separadas</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Explorar regras com BI e exportar uma evidência visual</td>
+</tr>
+<tr>
+<td>5 min</td>
+<td>Resolver o exercício e discutir a interpretação</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-da-inteligência-artificial-à-indução-de-regras">1. Da
+inteligência artificial à indução de regras</h2>
+<p><strong>Inteligência artificial (IA)</strong> é o campo que estuda e
+desenvolve sistemas capazes de realizar tarefas como raciocinar,
+aprender, perceber e tomar decisões. <strong>Aprendizado de
+máquina</strong>, ou <em>machine learning</em> (ML), é uma área da IA em
+que algoritmos extraem padrões dos dados para construir modelos ou
+regras. Você não precisa usar uma rede neural para trabalhar com
+aprendizado de máquina. Veja a <a
+href="https://www.ibm.com/br-pt/think/topics/machine-learning">introdução
+ao aprendizado de máquina da IBM</a>.</p>
+<p><img src="material/imagens/venn-ia-aprendizado-regras.png"
+alt="Diagrama de Venn com quatro círculos encaixados: inteligência artificial contém aprendizado de máquina, que contém aprendizado não supervisionado, que contém mineração de regras de associação. Sistemas especialistas clássicos aparecem na região de IA simbólica; validação é indicada como prática transversal." /></p>
+<p><em>Figura 1 — Diagrama de Venn com conjuntos encaixados, também
+chamado diagrama de inclusão ou de Euler. As áreas indicam
+pertencimento, não o tamanho relativo dos campos. O mapa destaca o
+caminho deste tutorial, sem enumerar toda a IA.</em></p>
+<p>Leia a figura de fora para dentro:</p>
+<ol type="1">
+<li><strong>Inteligência artificial:</strong> inclui abordagens que
+aprendem com dados e abordagens que representam conhecimento por
+símbolos e regras explícitas.</li>
+<li><strong>Aprendizado de máquina:</strong> aprende padrões a partir de
+exemplos. As pessoas ainda definem objetivos, dados, algoritmos e
+critérios de avaliação.</li>
+<li><strong>Aprendizado não supervisionado:</strong> procura estruturas
+nos dados sem uma resposta-alvo previamente rotulada para cada
+exemplo.</li>
+<li><strong>Mineração de regras de associação:</strong> encontra
+conjuntos frequentes e relações como <code>{Jarro} → {Prato}</code> nas
+transações. Você não fornece previamente uma lista de regras corretas
+para o algoritmo reproduzir.</li>
+</ol>
+<p>Essa classificação acompanha a <a
+href="https://www.ibm.com/br-pt/think/topics/unsupervised-learning">apresentação
+de aprendizado não supervisionado da IBM</a>, que inclui associação
+entre suas tarefas. A mineração também é estudada em mineração de dados
+e descoberta de conhecimento em bases de dados.</p>
+<p><strong>Induzir uma regra</strong> é partir de exemplos particulares
+para formular um padrão mais geral. Neste exercício, o algoritmo
+identifica quais conjuntos e relações aparecem nas cestas; as pessoas
+escolhem os limites de seleção. A existência da regra não garante que
+ela se mantenha em outras compras: essa é uma questão de validação.</p>
+<p>Indução de regras é mais ampla que associação: métodos
+supervisionados também podem aprender regras para prever uma classe
+conhecida, como “comprará” ou “não comprará”. O círculo menor localiza
+<strong>estas regras de associação</strong>, não todas as formas de
+aprendizado de regras. <strong>Validação é uma prática transversal do
+aprendizado de máquina</strong>, e não um nível adicional da hierarquia:
+ela avalia se regras e modelos funcionam além dos exemplos usados para
+construí-los.</p>
+<h3 id="regras-e-sistemas-especialistas">Regras e sistemas
+especialistas</h3>
+<p>Um <strong>sistema especialista</strong> é um sistema de IA que
+representa conhecimento de um domínio delimitado e usa mecanismos de
+inferência para apoiar conclusões ou recomendações que exigem
+conhecimento especializado. Na abordagem clássica baseada em regras,
+você encontra:</p>
+<ul>
+<li><strong>Base de conhecimento:</strong> fatos gerais e regras do
+domínio, muitas vezes escritas no formato <strong>SE condição ENTÃO
+conclusão ou ação</strong>.</li>
+<li><strong>Fatos do caso atual:</strong> informações disponíveis sobre
+a situação analisada.</li>
+<li><strong>Motor de inferência:</strong> mecanismo que verifica
+condições e aplica ou encadeia regras para chegar a conclusões, podendo
+registrar como elas foram obtidas.</li>
+</ul>
+<p>Sistemas especialistas pertencem à <strong>IA simbólica</strong> e
+podem funcionar com conhecimento fornecido por pessoas, sem aprender
+suas regras automaticamente. O artigo de <a
+href="https://www.scielo.br/j/ci/a/MqGHKkTLcPxhhjgpDz9ZNNd/?lang=pt">Mendes
+(1997)</a> apresenta essa tradição na gestão da informação.</p>
+<p>Você pode usar regras para definir o comportamento de um sistema
+especialista. Um exemplo simplificado para apoio à loja seria:</p>
+<pre class="text"><code>Fatos: o cliente consulta Jarro; Prato está em estoque;
+       a relação Jarro → Prato foi aprovada para uso.
+
+Regra: SE o cliente consulta Jarro
+       E Prato está em estoque
+       E a relação foi aprovada
+       ENTÃO incluir Prato entre as sugestões e registrar a justificativa.</code></pre>
+<p>Aqui, a condição sobre estoque e a decisão de sugerir são políticas
+definidas para a operação; a relação entre produtos pode ter origem em
+mineração e depois ser validada e revisada. Você combina aprendizado de
+máquina com conhecimento explícito em um <strong>sistema
+híbrido</strong>. Sistemas especialistas baseados em regras e sistemas
+que aprendem com dados são abordagens da IA que podem cooperar.</p>
+<p>Uma regra estatística <code>{Jarro} → {Prato}</code> descreve
+frequências; ela não prova a implicação lógica “todo comprador de Jarro
+compra Prato”. Antes de transformá-la em regra de ação, você precisa
+avaliar evidência, utilidade e condições de uso. Um CSV de associações
+ou um único filtro <code>if</code> também não constitui, por si só, um
+sistema especialista completo.</p>
+<h2 id="2-a-pergunta-e-as-transações">2. A pergunta e as transações</h2>
+<p>Uma loja de artesanato quer investigar: <strong>quais produtos tendem
+a aparecer juntos nas compras?</strong> Uma regra como
+<code>{Jarro} → {Prato}</code> resume uma associação entre presenças na
+mesma transação. A seta indica qual conjunto condiciona a análise; não
+indica ordem de compra nem causa.</p>
+<h3 id="como-os-dados-orientam-uma-decisão-de-marketing">Como os dados
+orientam uma decisão de marketing</h3>
+<p>A loja precisa decidir o que expor junto, que oferta combinada
+experimentar e qual sugestão apresentar no carrinho. Aqui,
+<strong>marketing centrado em dados</strong> significa tornar explícita
+a ligação entre pergunta comercial, registros de compra, critérios de
+análise, ação proposta e avaliação de resultado. As regras de associação
+ajudam a construir essa ligação: tornam um padrão de consumo mensurável,
+comunicável e verificável.</p>
+<p>Três perspectivas da literatura de marketing ajudam a compreender
+essa ligação: a pesquisa começa com um problema de decisão e organiza a
+coleta e a análise (Malhotra, 2019); as métricas relacionam decisões a
+desempenho (Farris et al., 2012); a tecnologia deve contribuir para o
+valor entregue na jornada do cliente (Kotler, Kartajaya e Setiawan,
+2021). As referências bibliográficas e os links de consulta estão ao
+final.</p>
+<p><img src="material/imagens/marketing-artesanato.png"
+alt="Uma lojista de artesanato consulta compras representadas por recibos, analisa uma sugestão de Jarro e Prato no computador e compara duas apresentações da loja." /></p>
+<p><em>Figura 2 — Dos registros de compra a uma hipótese de exposição de
+produtos. Ilustração gerada por IA; as barras são ilustrativas e não
+representam resultados medidos. Uma sugestão precisa ser avaliada antes
+de você atribuir a ela ganhos comerciais.</em></p>
+<table>
+<thead>
+<tr>
+<th>Passo</th>
+<th>Pergunta da equipe de marketing</th>
+<th>Entrega da análise</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Decisão</td>
+<td>Que combinação de produtos vale testar na vitrine?</td>
+<td>Objetivo comercial explícito</td>
+</tr>
+<tr>
+<td>Evidência</td>
+<td>Quais itens aparecem juntos nas compras registradas?</td>
+<td>Transações e contagens auditáveis</td>
+</tr>
+<tr>
+<td>Comparação</td>
+<td>O padrão é frequente? Supera a frequência habitual do item?</td>
+<td>Suporte, confiança e lift</td>
+</tr>
+<tr>
+<td>Ação</td>
+<td>Como transformar esse padrão em uma oferta relevante?</td>
+<td>Hipótese de exposição conjunta ou venda complementar</td>
+</tr>
+<tr>
+<td>Aprendizado</td>
+<td>A mudança melhorou o resultado para a loja e o cliente?</td>
+<td>Teste da ação com métricas definidas previamente</td>
+</tr>
+</tbody>
+</table>
+<p>O cadastro e o histórico de compras também aparecem no material
+brasileiro do <a
+href="https://meuatendimento.sebrae.com.br/sites/PortalSebrae/ufs/ap/artigos/como-elaborar-um-cadastro-de-clientes%2Cd1440d36ecfa1610VgnVCM1000004c00210aRCRD">Sebrae
+sobre cadastro de clientes</a> como insumos para identificar
+oportunidades de vendas. Para calcular as regras deste tutorial basta o
+conjunto de itens por transação; identificar pessoas é
+desnecessário.</p>
+<p>Usaremos somente <code>cestas</code> de <a
+href="dados/catalogo.json"><code>dados/catalogo.json</code></a>. Cada
+linha é uma transação. A ordem dos produtos dentro dela não importa;
+repetir um produto na mesma cesta não aumenta sua contagem. Duas linhas
+com os mesmos itens contam como duas transações, pois representam
+compras distintas.</p>
+<table>
+<thead>
+<tr>
+<th>Cesta</th>
+<th>Itens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>p01, p02, p03</td>
+</tr>
+<tr>
+<td>2</td>
+<td>p01, p02</td>
+</tr>
+<tr>
+<td>3</td>
+<td>p04, p05, p06</td>
+</tr>
+<tr>
+<td>4</td>
+<td>p04, p05</td>
+</tr>
+<tr>
+<td>5</td>
+<td>p07, p08</td>
+</tr>
+<tr>
+<td>6</td>
+<td>p07, p08, p09</td>
+</tr>
+<tr>
+<td>7</td>
+<td>p10, p11</td>
+</tr>
+<tr>
+<td>8</td>
+<td>p01, p10</td>
+</tr>
+<tr>
+<td>9</td>
+<td>p04, p07</td>
+</tr>
+<tr>
+<td>10</td>
+<td>p02, p03, p01</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Produto</th>
+<th style="text-align: right;">Número de cestas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p01</td>
+<td>Jarro barro Tracunhaém</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td>p02</td>
+<td>Prato esmaltado Tracunhaém</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>p03</td>
+<td>Boneca de barro</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>p04</td>
+<td>Rendeira Alto do Moura</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>p05</td>
+<td>Toalha de renda</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>p06</td>
+<td>Caminho de mesa renda</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>p07</td>
+<td>Xilogravura Pilar</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>p08</td>
+<td>Cordel ilustrado</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>p09</td>
+<td>Quadro xilo colorido</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>p10</td>
+<td>Cesto de palha</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>p11</td>
+<td>Bolsa de palha</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>p12</td>
+<td>Sousplat de palha</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Há 12 produtos cadastrados, mas apenas 11 observados nas cestas.
+<code>p12</code> tem suporte zero nesta amostra. Os campos
+<code>pedidos</code> e a série de vendas semanais não participam das
+contas: todas as frequências abaixo vêm destas dez transações.</p>
+<p><img src="material/imagens/matriz-cestas.png"
+alt="Matriz das dez cestas com os doze produtos do catálogo. Jarro está em quatro linhas, Prato em três, e os dois juntos nas cestas 1, 2 e 10, destacadas por contornos." /></p>
+<p><em>Figura 3 — Cada linha representa uma transação; cada coluna, um
+produto. Conte as presenças nas colunas de Jarro e Prato para reproduzir
+os denominadores das métricas. O contorno marca as três ocorrências
+conjuntas.</em></p>
+<h2 id="3-três-perguntas-três-denominadores">3. Três perguntas, três
+denominadores</h2>
+<p>Sejam A e B conjuntos de itens não vazios e sem itens em comum.
+<code>n(A)</code> é o número de cestas contendo <strong>todos</strong>
+os itens de A; <code>N</code> é o total de cestas. <code>A ∪ B</code>
+reúne os itens dos dois lados.</p>
+<h3
+id="suporte-com-que-frequência-os-dois-lados-aparecem-juntos">Suporte:
+com que frequência os dois lados aparecem juntos?</h3>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">s</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">p</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">e</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo>→</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><mi>n</mi><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo>∪</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo></mrow><mi>N</mi></mfrac></mrow><annotation encoding="application/x-tex">
+\mathrm{suporte}(A\rightarrow B)=\frac{n(A\cup B)}{N}
+</annotation></semantics></math></p>
+<p>O suporte da regra é o suporte do conjunto completo. Não confundir
+com suporte do antecedente <code>n(A)/N</code> ou do consequente
+<code>n(B)/N</code>.</p>
+<h3
+id="confiança-entre-as-cestas-com-a-quantas-também-contêm-b">Confiança:
+entre as cestas com A, quantas também contêm B?</h3>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">f</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">a</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo>→</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><mi>n</mi><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo>∪</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mi>n</mi><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+\mathrm{confianca}(A\rightarrow B)=\frac{n(A\cup B)}{n(A)}
+</annotation></semantics></math></p>
+<p>É a frequência condicional observada de B dado A. O denominador muda
+ao inverter a regra, portanto a confiança pode mudar. Só calculamos
+quando <code>n(A)&gt;0</code>.</p>
+<h3 id="lift-quanto-a-confiança-supera-a-frequência-habitual-de-b">Lift:
+quanto a confiança supera a frequência habitual de B?</h3>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">l</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">f</mi><mi mathvariant="normal">t</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo>→</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">f</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">a</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo>→</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mi>n</mi><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mi>N</mi></mrow></mfrac><mo>=</mo><mfrac><mrow><mi>N</mi><mspace width="0.167em"></mspace><mi>n</mi><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo>∪</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mi>n</mi><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo stretchy="false" form="postfix">)</mo><mi>n</mi><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+\mathrm{lift}(A\rightarrow B)
+=\frac{\mathrm{confianca}(A\rightarrow B)}{n(B)/N}
+=\frac{N\,n(A\cup B)}{n(A)n(B)}
+</annotation></semantics></math></p>
+<table>
+<thead>
+<tr>
+<th>Valor</th>
+<th>Leitura na amostra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lift &gt; 1</td>
+<td>Os conjuntos ocorrem juntos mais que o esperado sob
+independência</td>
+</tr>
+<tr>
+<td>Lift = 1</td>
+<td>A co-presença coincide com a frequência esperada sob
+independência</td>
+</tr>
+<tr>
+<td>Lift &lt; 1</td>
+<td>Os conjuntos ocorrem juntos menos que o esperado sob
+independência</td>
+</tr>
+</tbody>
+</table>
+<p>Na discussão de marketing, suporte informa o alcance observado do
+padrão; confiança informa a frequência de B entre as compras com A; lift
+compara essa frequência com uma referência. Nenhuma das três mede, por
+si, lucro ou retorno de campanha. Em especial, o <strong>lift da regra
+não é o aumento de vendas causado por uma campanha</strong>: ele
+descreve uma associação nas transações analisadas.</p>
+<p>Lift 2,5 significa <strong>2,5 vezes a frequência de
+referência</strong>, não 2,5% nem aumento de 250%. Suporte e confiança
+ficam entre 0 e 1; lift pode ultrapassar 1. Essas interpretações seguem
+as definições da <a
+href="https://rasbt.github.io/mlxtend/user_guide/frequent_patterns/association_rules/">documentação
+de regras de associação do mlxtend</a>.</p>
+<h2 id="4-conta-completa-jarro--prato">4. Conta completa: Jarro →
+Prato</h2>
+<p>Jarro (<code>p01</code>) aparece nas cestas 1, 2, 8 e 10:
+<code>n(A)=4</code>. Prato (<code>p02</code>) aparece nas cestas 1, 2 e
+10: <code>n(B)=3</code>. Ambos aparecem nas cestas 1, 2 e 10:
+<code>n(A ∪ B)=3</code>. Temos <code>N=10</code>.</p>
+<p>Aqui, <code>n(A)</code> e <code>n(B)</code> são contagens; os
+suportes são essas contagens divididas pelo total de transações
+<code>N</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Métrica</th>
+<th>Fórmula</th>
+<th>Cálculo</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Suporte do antecedente</td>
+<td><code>n(A) / N</code></td>
+<td>4/10</td>
+<td>40%</td>
+</tr>
+<tr>
+<td>Suporte do consequente</td>
+<td><code>n(B) / N</code></td>
+<td>3/10</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Suporte da regra</td>
+<td><code>n(A ∪ B) / N</code></td>
+<td>3/10</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Confiança</td>
+<td><code>n(A ∪ B) / n(A)</code></td>
+<td>3/4</td>
+<td>75%</td>
+</tr>
+<tr>
+<td>Lift</td>
+<td><code>confiança(A → B) / suporte(B)</code></td>
+<td>0,75/0,30</td>
+<td>2,50</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Relato:</strong> “Jarro e Prato aparecem juntos em 3 das 10
+cestas (suporte 30%). Das 4 cestas com Jarro, 3 também contêm Prato
+(confiança 75%). A frequência de Prato nesse grupo é 2,5 vezes sua
+frequência geral de 30% (lift 2,50).”</p>
+<p>Agora inverta: <strong>Prato → Jarro</strong>. O suporte permanece
+30%, a confiança passa a <code>3/3=100%</code> e o lift é
+<code>1/0,40=2,50</code>. Para a regra inversa, suporte e lift são
+iguais, mas a confiança pode diferir. Os 100% descrevem apenas três
+casos; não garantem o comportamento da próxima compra.</p>
+<h2 id="5-como-as-regras-são-mineradas">5. Como as regras são
+mineradas</h2>
+<p>Neste conjunto de dados, aplique os seguintes critérios de
+seleção:</p>
+<ul>
+<li>Suporte mínimo <strong>20%</strong>, inclusive: pelo menos 2 das 10
+cestas.</li>
+<li>Confiança mínima <strong>60%</strong>, inclusive.</li>
+<li>Lift <strong>estritamente maior que 1</strong>, para relatar
+associações positivas.</li>
+</ul>
+<p>Esses limites permitem explorar padrões presentes em pelo menos duas
+cestas. Eles não são universais. Defina os critérios e o escopo antes de
+selecionar exemplos. Reduzir o suporte pode revelar padrões raros, mas
+também produz regras sustentadas por poucas observações.</p>
+<p>O processo tem duas etapas:</p>
+<ol type="1">
+<li><strong>Encontrar conjuntos frequentes.</strong> Contar itemsets e
+reter os que atendem ao suporte. <code>{p01,p02}</code> tem suporte 30%;
+<code>{p01,p02,p03}</code> tem suporte 20%.</li>
+<li><strong>Gerar e filtrar regras.</strong> Para cada conjunto
+frequente S com pelo menos dois itens, escolher cada subconjunto próprio
+não vazio A como antecedente e usar <code>B = S − A</code>. Calcular
+confiança e lift; aplicar os filtros.</li>
+</ol>
+<p>O trio <code>{p01,p02,p03}</code> gera seis candidatas, incluindo
+<code>{p01,p02} → {p03}</code> e <code>{p01} → {p02,p03}</code>. Um lado
+com vários itens exige que <strong>todos</strong> estejam presentes. A
+segunda candidata tem confiança <code>2/4=50%</code> e é descartada pelo
+limite de 60%.</p>
+<p>Apriori economiza trabalho usando a propriedade: <strong>todo
+subconjunto de um itemset frequente também é frequente</strong>. Assim,
+se um conjunto não alcança o suporte mínimo, seus superconjuntos podem
+ser podados. Veja a <a
+href="https://rasbt.github.io/mlxtend/user_guide/frequent_patterns/apriori/">documentação
+do Apriori</a>. O script deste tutorial enumera os subconjuntos
+observados diretamente; você pode acompanhar as contagens no código. Ele
+não implementa Apriori. O custo cresce exponencialmente com o tamanho da
+cesta, portanto use esta implementação apenas com bases de cestas
+pequenas como a deste exercício.</p>
+<h3 id="executar-e-abrir-o-relatório">Executar e abrir o relatório</h3>
+<p>Na raiz do repositório, com Python 3, sem instalar pacotes:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> scripts/minerar_regras_associacao.py</span></code></pre></div>
+<p>Resultado esperado: <strong>10 cestas; 14 regras</strong>. O arquivo
+<a
+href="material/regras-associacao-20261017.csv"><code>regras-associacao-20261017.csv</code></a>
+inclui nomes, IDs, contagens, métricas e os três limites usados. Suporte
+e confiança estão em proporções: <code>0.300000</code> significa 30%.
+Decimais usam ponto. Os filtros usam frações exatas; o CSV arredonda
+para seis casas somente na exportação.</p>
+<p>Para experimentar outro filtro e preservar o relatório original:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> scripts/minerar_regras_associacao.py <span class="at">--suporte-minimo</span> 0.3 <span class="at">--confianca-minima</span> 0.75 <span class="at">--saida</span> material/regras-experimento.csv</span></code></pre></div>
+<p>A ordenação do relatório é lift decrescente, depois confiança e
+suporte decrescentes, com desempate pelos IDs. Essa ordem facilita a
+inspeção e não define automaticamente a melhor ação comercial.</p>
+<h2 id="6-resultados-completos-e-comparação">6. Resultados completos e
+comparação</h2>
+<p>Abreviações: J = Jarro (<code>p01</code>), P = Prato
+(<code>p02</code>), B = Boneca (<code>p03</code>), R = Rendeira
+(<code>p04</code>), T = Toalha (<code>p05</code>), X = Xilogravura
+(<code>p07</code>), C = Cordel (<code>p08</code>). Chaves denotam
+conjuntos.</p>
+<table>
+<thead>
+<tr>
+<th>Regra</th>
+<th style="text-align: right;">n(A)</th>
+<th style="text-align: right;">n(B)</th>
+<th style="text-align: right;">Juntos</th>
+<th style="text-align: right;">Suporte</th>
+<th style="text-align: right;">Confiança</th>
+<th style="text-align: right;">Lift</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>{J,B} → P</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">3,33</td>
+</tr>
+<tr>
+<td>B → P</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">3,33</td>
+</tr>
+<tr>
+<td>B → {J,P}</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">3,33</td>
+</tr>
+<tr>
+<td>T → R</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">3,33</td>
+</tr>
+<tr>
+<td>C → X</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">3,33</td>
+</tr>
+<tr>
+<td>{J,P} → B</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">66,7%</td>
+<td style="text-align: right;">3,33</td>
+</tr>
+<tr>
+<td>P → B</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">66,7%</td>
+<td style="text-align: right;">3,33</td>
+</tr>
+<tr>
+<td>P → {J,B}</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">66,7%</td>
+<td style="text-align: right;">3,33</td>
+</tr>
+<tr>
+<td>R → T</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">66,7%</td>
+<td style="text-align: right;">3,33</td>
+</tr>
+<tr>
+<td>X → C</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">66,7%</td>
+<td style="text-align: right;">3,33</td>
+</tr>
+<tr>
+<td>P → J</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">30%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">2,50</td>
+</tr>
+<tr>
+<td>{P,B} → J</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">2,50</td>
+</tr>
+<tr>
+<td>B → J</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">2,50</td>
+</tr>
+<tr>
+<td>J → P</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">30%</td>
+<td style="text-align: right;">75%</td>
+<td style="text-align: right;">2,50</td>
+</tr>
+</tbody>
+</table>
+<p>Prato → Boneca tem lift maior que Jarro → Prato, mas ocorre em menos
+cestas. O primeiro destaca uma associação proporcionalmente mais forte;
+o segundo abrange mais transações. Relate ambos os aspectos antes de
+sugerir uma ação.</p>
+<p>Algumas regras são redundantes: nesta amostra, adicionar Jarro ao
+antecedente de Boneca → Prato não altera os casos cobertos nem as
+métricas. Um relatório curto pode priorizar a regra mais simples e
+declarar como removeu redundâncias. O CSV preserva todas as 14 para
+permitir auditoria.</p>
+<h3 id="por-que-confiança-alta-não-basta">Por que confiança alta não
+basta?</h3>
+<p><strong>Exemplo hipotético separado, fora do JSON:</strong> em 100
+cestas, B está em 90; A está em 10; ambos estão em 8. A regra A → B tem
+suporte 8%, confiança 80% e lift <code>0,80/0,90 ≈ 0,89</code>. Apesar
+dos 80%, B é menos frequente entre cestas com A que na amostra inteira.
+O lift revela essa diferença de referência.</p>
+<h2 id="7-como-validar-uma-regra-em-dados-separados">7. Como validar uma
+regra em dados separados</h2>
+<p>Calcular métricas nas mesmas cestas usadas para selecionar regras
+descreve a <strong>descoberta</strong>. Para investigar se o padrão se
+mantém, fixe a regra escolhida e recalcule suas métricas em transações
+que não participaram da seleção.</p>
+<table>
+<thead>
+<tr>
+<th>Etapa</th>
+<th>Pergunta</th>
+<th>Evidência</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Descoberta</td>
+<td>Que regras emergem das compras analisadas?</td>
+<td>Itemsets, contagens e métricas na base de descoberta</td>
+</tr>
+<tr>
+<td>Validação</td>
+<td>A regra selecionada mantém o padrão em dados separados?</td>
+<td>Métricas recalculadas para a mesma regra</td>
+</tr>
+<tr>
+<td>Experimento de marketing</td>
+<td>Agir com base na regra melhora o resultado?</td>
+<td>Comparação entre grupos com e sem a intervenção</td>
+</tr>
+</tbody>
+</table>
+<h3 id="um-padrão-pode-enfraquecer">Um padrão pode enfraquecer</h3>
+<p>Mantenha <strong>Jarro → Prato</strong> como regra fixa. Além das dez
+cestas originais, considere as dez transações sintéticas adicionais de
+<a
+href="material/cestas-validacao-20261017.json"><code>cestas-validacao-20261017.json</code></a>:</p>
+<table>
+<thead>
+<tr>
+<th>Nova cesta</th>
+<th>Itens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V1</td>
+<td>p01, p02</td>
+</tr>
+<tr>
+<td>V2</td>
+<td>p01, p03</td>
+</tr>
+<tr>
+<td>V3</td>
+<td>p01, p10</td>
+</tr>
+<tr>
+<td>V4</td>
+<td>p01, p04</td>
+</tr>
+<tr>
+<td>V5</td>
+<td>p02, p05</td>
+</tr>
+<tr>
+<td>V6</td>
+<td>p02, p07</td>
+</tr>
+<tr>
+<td>V7</td>
+<td>p04, p05</td>
+</tr>
+<tr>
+<td>V8</td>
+<td>p07, p08</td>
+</tr>
+<tr>
+<td>V9</td>
+<td>p10, p11</td>
+</tr>
+<tr>
+<td>V10</td>
+<td>p04, p06</td>
+</tr>
+</tbody>
+</table>
+<p>Estas cestas adicionais são um <strong>cenário hipotético construído
+para comparação</strong>, não um período observado nem evidência
+empírica independente. Elas não alteram o relatório original de 14
+regras. Recalcular a regra fixa não exige minerar novamente nem misturar
+as duas bases.</p>
+<table>
+<thead>
+<tr>
+<th>Contagem ou métrica</th>
+<th style="text-align: right;">Descoberta: base original</th>
+<th style="text-align: right;">Avaliação: cenário adicional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total de cestas</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td>Cestas com Jarro</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td>Cestas com Prato</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>Cestas com ambos</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>Suporte</td>
+<td style="text-align: right;">3/10 = 30%</td>
+<td style="text-align: right;">1/10 = 10%</td>
+</tr>
+<tr>
+<td>Confiança</td>
+<td style="text-align: right;">3/4 = 75%</td>
+<td style="text-align: right;">1/4 = 25%</td>
+</tr>
+<tr>
+<td>Lift</td>
+<td style="text-align: right;">0,75/0,30 = 2,50</td>
+<td style="text-align: right;">0,25/0,30 ≈ 0,83</td>
+</tr>
+</tbody>
+</table>
+<p><img src="material/imagens/descoberta-validacao.png"
+alt="Três gráficos comparam Jarro para Prato em duas bases sintéticas: suporte cai de 30% para 10%, confiança de 75% para 25% e lift de 2,50 para aproximadamente 0,83." /></p>
+<p><em>Figura 4 — Avaliar a mesma regra em outra base pode mudar sua
+interpretação. O lift passa para abaixo da referência 1; as frequências
+individuais de Jarro e Prato continuam iguais. Os números são calculados
+a partir dos dois arquivos.</em></p>
+<p>Nesse cenário, a regra não atende mais aos critérios originais:
+suporte ≥ 20%, confiança ≥ 60% e lift &gt; 1. Isso ilustra por que você
+não deve confundir seleção na base de descoberta com evidência de
+generalização. Dez transações por base ainda são insuficientes para
+sustentar uma conclusão confiável sobre desempenho real; a diferença não
+demonstra, por si só, uma mudança de mercado.</p>
+<h3
+id="generalização-o-que-você-espera-das-próximas-compras">Generalização:
+o que você espera das próximas compras?</h3>
+<p><strong>Generalização</strong> é a capacidade de uma regra ou modelo
+manter utilidade em dados novos, que não participaram de sua construção
+ou seleção, nas condições em que você pretende utilizá-lo. Para Jarro →
+Prato, isso significa investigar se a associação continua relevante em
+outras transações. Você não espera que as porcentagens sejam idênticas,
+mas precisa avaliar a estabilidade do padrão, a incerteza das
+estimativas e sua utilidade para a decisão de marketing.</p>
+<p>Dois conceitos de aprendizado de máquina ajudam a entender esse
+cuidado:</p>
+<ul>
+<li><strong>Sobreajuste (<em>overfitting</em>):</strong> ocorre quando o
+processo de aprendizado ou seleção se adapta excessivamente às
+particularidades e ao ruído da base de descoberta. Uma regra pode
+parecer excelente nessa base e perder utilidade em dados novos. Por
+exemplo, procurar muitas combinações e escolher uma regra muito
+específica, com confiança de 100% em apenas duas compras, pode
+selecionar uma coincidência em vez de um padrão estável.</li>
+<li><strong>Subajuste (<em>underfitting</em>):</strong> ocorre quando o
+modelo ou a representação utilizada é simples ou restrita demais para
+capturar padrões relevantes. Por exemplo, permitir apenas antecedentes
+com um item pode deixar de representar uma associação que depende da
+presença conjunta de dois itens. Na mineração, filtros muito restritivos
+também podem excluir padrões úteis; isso reduz a descoberta, mas não
+basta, por si só, para diagnosticar subajuste.</li>
+</ul>
+<p>Uma queda de métricas em dados separados pode motivar a investigação
+de sobreajuste, mas também pode resultar de variação amostral ou
+mudanças nas condições de compra. As duas bases sintéticas deste
+tutorial não permitem diagnosticar sobreajuste ou subajuste de um modelo
+real. A <a
+href="https://scikit-learn.org/stable/auto_examples/model_selection/plot_underfitting_overfitting.html">comparação
+de subajuste e sobreajuste do scikit-learn</a> mostra esses conceitos em
+um exemplo de regressão; aqui você os utiliza para refletir sobre a
+capacidade e a seleção das regras.</p>
+<p><strong>Por que isso importa para marketing?</strong> Uma oferta
+baseada em uma coincidência pode consumir espaço de exposição, orçamento
+de campanha ou margem de desconto sem trazer benefício. Uma análise
+excessivamente restrita pode deixar de revelar uma oportunidade de venda
+complementar. Validar em dados separados ajuda você a escolher hipóteses
+com maior sustentação; testar a ação depois verifica se transformá-las
+em uma oferta produz o resultado comercial desejado.</p>
+<h3 id="como-preservar-uma-avaliação-independente">Como preservar uma
+avaliação independente</h3>
+<p>Em um projeto real, separe dados de descoberta, dados para ajustar
+critérios quando necessário e um conjunto reservado à avaliação final.
+Para uma aplicação futura, uma separação temporal pode aproximar melhor
+o uso pretendido: aprender com compras anteriores e avaliar em compras
+posteriores. Evite compartilhar registros duplicados ou informações
+indevidas entre as etapas.</p>
+<p>Defina as regras e os critérios antes de consultar a avaliação final.
+Se você altera os filtros ou troca as regras repetidamente para melhorar
+o resultado nesse conjunto, ele passa a participar da seleção; uma
+avaliação final exige outros dados ainda não utilizados. Esse cuidado
+segue o princípio de prevenção de <a
+href="https://scikit-learn.org/stable/common_pitfalls.html">vazamento de
+dados explicado pelo scikit-learn</a>.</p>
+<p>Suporte e lift também não substituem uma análise de incerteza.
+<strong>Confiança não é certeza estatística nem nível de confiança de um
+intervalo.</strong> Lift &gt; 1 não é, sozinho, teste de significância.
+Ao examinar muitas regras, você pode encontrar padrões ocasionais; em
+aplicações reais, considere o volume de observações, a incerteza das
+estimativas e a multiplicidade das comparações.</p>
+<p>Mesmo uma regra estável em dados separados não mostra que exibir um
+produto causa mais vendas. Para avaliar esse efeito, você precisa testar
+a ação de marketing, como no exemplo da próxima seção.</p>
+<h2 id="8-como-escrever-o-relatório">8. Como escrever o relatório</h2>
+<p>Comece pela origem e pelo tamanho da amostra, unidade de transação,
+período (aqui: exemplos sintéticos sem período real), critérios de
+seleção e método. Apresente a regra por nome, suas contagens e as três
+métricas. Finalize com uma interpretação e uma decisão proporcional à
+evidência.</p>
+<p>Modelo reutilizável:</p>
+<blockquote>
+<p>Na base [origem/período], com N transações, usamos suporte ≥ […],
+confiança ≥ […] e lift &gt; […]. A regra A → B aparece em […] transações
+(suporte […]). Entre […] transações com A, […] incluem B (confiança
+[…]), enquanto B ocorre em […] da base inteira. O lift […] indica […].
+Propomos investigar […], considerando o número de observações e
+validando em novos dados.</p>
+</blockquote>
+<p>Se você também avaliou a regra em uma base separada, identifique essa
+base e relate suas métricas em outro trecho. Por exemplo:</p>
+<blockquote>
+<p>No cenário adicional de dez cestas sintéticas, a regra fixa Jarro →
+Prato apresenta suporte 10%, confiança 25% e lift aproximadamente 0,83.
+Ela não atende aos critérios originais nesse cenário. A comparação
+exemplifica a avaliação em dados separados; como os dados foram
+construídos, não demonstra desempenho em compras reais nem efeito de uma
+ação comercial.</p>
+</blockquote>
+<p>Para a loja, uma hipótese seria testar exposição conjunta de Jarro e
+Prato. As métricas da amostra não demonstram que essa exposição
+aumentará vendas. Em uso real, avalie estabilidade em outro período e
+faça um teste da intervenção.</p>
+<h3 id="da-regra-ao-plano-de-marketing">Da regra ao plano de
+marketing</h3>
+<p>O quadro abaixo é uma proposta de aplicação à loja, não um
+experimento realizado nem uma conclusão dos dados sintéticos.</p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Exemplo de decisão documentada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Evidência exploratória</td>
+<td>Jarro → Prato: suporte 30%, confiança 75%, lift 2,50 em dez cestas
+sintéticas</td>
+</tr>
+<tr>
+<td>Hipótese comercial</td>
+<td>Apresentar Prato como complemento ao Jarro pode facilitar a
+descoberta do produto</td>
+</tr>
+<tr>
+<td>Ação a testar com dados reais</td>
+<td>Exibir a sugestão de Prato na página do Jarro</td>
+</tr>
+<tr>
+<td>Comparação</td>
+<td>Distribuir aleatoriamente visitantes elegíveis entre a página atual
+e a página com sugestão; manter o visitante no mesmo grupo</td>
+</tr>
+<tr>
+<td>Métrica principal</td>
+<td>Pedidos contendo Prato por visitante elegível de cada grupo</td>
+</tr>
+<tr>
+<td>Métricas complementares</td>
+<td>Conversão total, receita e margem de contribuição por visitante;
+devoluções</td>
+</tr>
+<tr>
+<td>Critério de decisão</td>
+<td>Definir antes do teste o efeito mínimo relevante, tamanho da
+amostra, duração e análise de incerteza</td>
+</tr>
+<tr>
+<td>Aprendizado</td>
+<td>Decidir se adota, ajusta ou abandona a sugestão com base no efeito
+estimado e no custo da ação</td>
+</tr>
+</tbody>
+</table>
+<p>Cliques na sugestão ajudam a entender o processo, mas o resultado
+comercial precisa ser avaliado com compras e custos. Oferecer desconto
+para montar um combo é outra intervenção, com impacto próprio sobre
+margem; deve ter sua hipótese e sua avaliação. Um teste que gere mais
+pedidos pode ainda reduzir o resultado financeiro se o custo da oferta
+superar o ganho.</p>
+<p>Separar a descoberta de uma associação da avaliação de uma ação é
+coerente com a discussão de pesquisa experimental em marketing de
+Hernandez, Basso e Brandão (2014). Use essa leitura para compreender a
+lógica experimental e avaliar como um teste pode distinguir o efeito da
+sugestão de outros fatores.</p>
+<p><strong>Verifique sua interpretação:</strong> se o lift é 2,50, você
+pode prometer aumento de 150% nas vendas ao mudar a vitrine? Não. Esse
+número compara frequências observadas; o efeito da mudança precisa ser
+estimado em um teste apropriado.</p>
+<p>Evite relatar apenas as maiores confianças ou lifts. Declare quantas
+regras passaram nos filtros, não esconda a contagem absoluta e considere
+redundância. Esta base minúscula serve para aprender a conta;
+associações observadas podem ser instáveis. Associação não estabelece
+causalidade nem sequência temporal.</p>
+<h2 id="9-como-bi-ajuda-você-a-visualizar-regras">9. Como BI ajuda você
+a visualizar regras</h2>
+<p><strong>Business Intelligence (BI)</strong> reúne práticas e
+ferramentas para organizar, analisar e apresentar dados que apoiam
+decisões. Você pode usar um painel para descobrir quais regras merecem
+atenção, comparar seus indicadores e consultar as contagens que
+sustentam uma recomendação. Um gráfico bem apresentado não dispensa
+validação nem demonstra que uma campanha funcionará.</p>
+<p>O <a href="material/bi/index.html">explorador de regras</a> oferece
+tabela, dispersão, matriz, rede e comparação entre bases. Você pode
+usá-lo incorporado à <a
+href="https://lgallindo.github.io/recomendador-bentoml/#explorador-interativo">versão
+web deste tutorial</a>. Para estudar offline, abra o HTML a partir de
+uma cópia local do repositório: a página do arquivo no GitHub exibe seu
+código. Consulte o <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi/README.md">roteiro
+de exploração</a>. As figuras abaixo também permitem estudar os
+resultados diretamente na versão Markdown.</p>
+<section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
+<h3 id="explorer-heading">Experimente as regras neste tutorial</h3>
+<p>Use os filtros e gráficos abaixo. O painel tem sua própria rolagem; você também
+pode ampliá-lo. Os dois conjuntos de dados são sintéticos.</p>
+<div class="explorer-actions">
+<button id="fullscreen-explorer" type="button">Ver explorador em tela cheia</button>
+<a href="material/bi/index.html" target="_blank" rel="noopener">Abrir explorador em nova aba</a>
+</div>
+<p id="explorer-status" role="status"></p>
+<iframe id="explorer" src="material/bi/index.html" title="Explorador interativo de regras de associação"
+loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+</section>
+<h3
+id="dispersão-alcance-frequência-condicional-e-regras-coincidentes">Dispersão:
+alcance, frequência condicional e regras coincidentes</h3>
+<p><img src="material/imagens/bi-dispersao.png"
+alt="Dispersão das 14 regras originais em quatro posições: sete regras têm suporte 20% e confiança 100%; cinco têm 20% e aproximadamente 66,7%; uma tem 30% e 100%; uma tem 30% e 75%. A cor mostra o maior lift de cada grupo." /></p>
+<p><em>Figura 5 — Suporte no eixo horizontal e confiança no vertical. O
+número indica quantas regras compartilham a posição. A cor representa o
+maior lift do grupo, não uma média. No explorador, selecione uma posição
+para consultar todas as regras e seus respectivos lifts.</em></p>
+<p>Jarro → Prato tem suporte maior que Prato → Boneca, mas lift menor. A
+dispersão permite comparar esses aspectos antes de você decidir qual
+hipótese investigar. Regras diferentes podem ter as mesmas métricas:
+quatro pontos não significam que existam apenas quatro regras.</p>
+<h3 id="matriz-de-qual-conjunto-para-qual-conjunto">Matriz: de qual
+conjunto para qual conjunto?</h3>
+<p><img src="material/imagens/bi-matriz.png"
+alt="Matriz das regras com antecedentes nas linhas e consequentes nas colunas. As células presentes mostram lift 2,50 ou aproximadamente 3,33; conjuntos com dois itens aparecem como rótulos completos." /></p>
+<p><em>Figura 6 — Cada célula representa uma regra direcionada. “—”
+significa que a regra não está no relatório exibido; não significa
+suporte zero. Os IDs são os mesmos do catálogo. No painel, selecione uma
+célula para consultar nomes, contagens e confiança.</em></p>
+<p>O lift de Jarro → Prato é igual ao da regra inversa. Essa simetria do
+indicador não torna as duas regras equivalentes: compare suas confianças
+e denominadores na tabela de detalhes. Você pode encontrar antecedentes
+ou consequentes com vários itens; trate cada rótulo como um conjunto
+inteiro.</p>
+<h3 id="rede-como-as-regras-compartilham-conjuntos">Rede: como as regras
+compartilham conjuntos</h3>
+<p><img src="material/imagens/bi-rede.png"
+alt="Rede bipartida com conjuntos antecedentes à esquerda e consequentes à direita. As setas mostram as 14 associações e preservam os conjuntos com mais de um item." /></p>
+<p><em>Figura 7 — Um nó como {p01 + p03} representa a presença conjunta
+de Jarro e Boneca. Não o divida em duas regras individuais. A seta
+indica a direção da associação, não uma causa; a espessura representa a
+confiança na descoberta.</em></p>
+<p>Dispersão, matrizes e redes são formas de explorar regras discutidas
+por <a
+href="https://journal.r-project.org/articles/RJ-2017-047/">Hahsler
+(2017)</a>. Neste exercício, a tabela permanece disponível para você
+conferir cada valor.</p>
+<h3 id="filtros-métricas-e-origem-dos-dados">Filtros, métricas e origem
+dos dados</h3>
+<p>O painel filtra <strong>as 14 regras previamente
+selecionadas</strong>. Alterar um limite na tela não minera novas regras
+e não recupera regras ausentes do relatório. A busca também não altera o
+conjunto de transações nem os denominadores. Para analisar outra
+população de compras, você precisa recalcular as contagens e as métricas
+nessa população, em vez de tirar médias dos indicadores.</p>
+<p>Escolher a base de avaliação mostra os valores dessas mesmas regras
+nas dez cestas adicionais. A comparação da regra selecionada permanece
+visível mesmo quando ela deixa de atender aos filtros, para que você
+observe o enfraquecimento do padrão. Use <strong>Ver toda a seleção
+original</strong> para desativar os filtros métricos e investigar
+inclusive valores zero ou métricas indefinidas nessa base.</p>
+<h3 id="atividade-do-painel-a-uma-recomendação">Atividade: do painel a
+uma recomendação</h3>
+<ol type="1">
+<li>Selecione Jarro → Prato e inverta a regra. Explique por que o
+suporte e o lift permanecem iguais, enquanto a confiança muda.</li>
+<li>Selecione o ponto de suporte 20% e confiança 100%. Quantas regras
+ele reúne? Todas têm o mesmo lift? Escolha duas para justificar sua
+resposta.</li>
+<li>Localize {Jarro,Boneca} → Prato na matriz ou na rede. Explique por
+que isso não equivale a duas associações com antecedentes
+individuais.</li>
+<li>Retorne a Jarro → Prato, escolha a avaliação separada e observe seus
+valores. Explique por que desaparecer de um gráfico filtrado não
+significa não ter sido avaliada.</li>
+<li>Exporte um PNG e um CSV e escreva uma recomendação de até cinco
+frases que identifique a base, a regra, suas métricas, uma limitação e
+uma ação a testar.</li>
+</ol>
+<p><strong>Resolução comentada:</strong> Jarro → Prato tem confiança
+75%; Prato → Jarro tem 100%, pois seus antecedentes aparecem em quatro e
+três transações, respectivamente. Ambas têm suporte 30% e lift 2,50. O
+ponto de 20% e 100% reúne sete regras: Boneca → Prato tem lift
+aproximadamente 3,33, enquanto Boneca → Jarro tem lift 2,50.
+{Jarro,Boneca} → Prato exige os dois itens no antecedente; sua confiança
+usa o número de cestas contendo ambos. Na avaliação separada, Jarro →
+Prato tem suporte 10%, confiança 25% e lift aproximadamente 0,83,
+ficando fora dos critérios originais, mas mantendo suas contagens
+disponíveis na comparação.</p>
+<p>Uma recomendação possível é: “Na descoberta sintética, Jarro → Prato
+aparece em três de dez cestas, com suporte 30%, confiança 75% e lift
+2,50. No cenário adicional, as métricas caem para 10%, 25% e
+aproximadamente 0,83. A comparação não demonstra estabilidade em compras
+reais. Proponho investigar a associação em novas transações reais antes
+de testar uma sugestão de Prato na página de Jarro e avaliar seu efeito
+sobre compras e margem.”</p>
+<h2 id="10-exercício-produza-seu-relatório">10. Exercício: produza seu
+relatório</h2>
+<p>Use as dez cestas para analisar a regra <strong>Prato →
+Boneca</strong>. Seu relatório deve conter:</p>
+<ol type="1">
+<li>A origem dos dados, o total de transações e os três critérios de
+seleção.</li>
+<li>As contagens de Prato, Boneca e do par, seguidas de suporte,
+confiança e lift.</li>
+<li>Uma frase que interprete cada métrica e uma comparação com Boneca →
+Prato.</li>
+<li>A decisão de incluir ou excluir a regra pelos filtros e a
+justificativa para a ausência de Jarro → {Prato,Boneca} no relatório
+completo.</li>
+<li>Uma hipótese de ação de marketing, a métrica que você usaria para
+avaliar seu efeito e uma limitação da evidência disponível.</li>
+<li>Um parágrafo explicando por que minerar essas associações é
+aprendizado não supervisionado dentro de ML e IA, e como uma regra
+aprovada poderia integrar a base de conhecimento de um sistema
+especialista.</li>
+<li>Uma avaliação de <strong>Jarro → Prato</strong> nas cestas
+adicionais: recalcule suas métricas e explique a diferença entre
+descoberta, validação e experimento.</li>
+</ol>
+<p>Você pode usar o modelo da seção 8 e conferir seus resultados na
+resolução a seguir. A resolução permanece disponível para consulta
+durante o estudo.</p>
+<h3 id="resolução-comentada">Resolução comentada</h3>
+<p><strong>Dados e critérios:</strong> a fonte é o array
+<code>cestas</code> de <code>dados/catalogo.json</code>, com dez
+transações sintéticas, sem período real. Os filtros são suporte ≥ 20%,
+confiança ≥ 60% e lift &gt; 1.</p>
+<p><strong>Cálculos e interpretação:</strong> Prato aparece em 3 cestas;
+Boneca em 2; ambos nas cestas 1 e 10. Suporte <code>2/10=20%</code>;
+confiança <code>2/3≈66,7%</code>; lift
+<code>(2/3)/(2/10)=10/3≈3,33</code>. Passa nos três filtros. A inversa
+tem confiança <code>2/2=100%</code>, com o mesmo suporte e lift. “Em 2
+das 10 cestas há Prato e Boneca; dois terços das cestas com Prato
+incluem Boneca, cerca de 3,33 vezes a frequência geral de Boneca.” Jarro
+→ {Prato,Boneca} tem suporte 20% e lift 2,50, mas confiança de 50%: é
+excluída pelo filtro de confiança.</p>
+<p><strong>Hipótese e avaliação:</strong> você pode propor uma sugestão
+de Boneca na página de Prato. Em um teste com visitantes reais
+distribuídos aleatoriamente entre a página atual e a página com
+sugestão, compare pedidos contendo Boneca por visitante elegível e
+acompanhe a margem por visitante. O padrão vem de apenas duas compras
+conjuntas em dados sintéticos: ele permite formular a hipótese, mas não
+estimar o ganho que a intervenção causará.</p>
+<p><strong>Posição na IA e uso das regras:</strong> a mineração procura
+relações nas compras sem uma resposta-alvo rotulada para cada cesta. Ela
+é uma tarefa de aprendizado não supervisionado, dentro de aprendizado de
+máquina e de inteligência artificial. Uma associação validada pode
+ajudar a construir uma regra de sugestão na base de conhecimento de um
+sistema especialista; condições como estoque e elegibilidade podem ser
+definidas por especialistas humanos. Aplicar a regra com um motor de
+inferência é diferente de induzi-la a partir dos dados.</p>
+<p><strong>Avaliação separada:</strong> nas cestas adicionais, Jarro
+está em quatro transações, Prato em três e ambos em uma. O suporte é
+10%, a confiança é 25% e o lift é aproximadamente 0,83. A regra não
+passa nos filtros originais nesse cenário. A descoberta seleciona
+padrões; a validação investiga sua persistência em dados separados; o
+experimento avalia o efeito de uma ação. Como ambas as bases são
+pequenas e sintéticas, esse resultado demonstra o procedimento e não
+valida ou invalida comercialmente a regra.</p>
+<h2 id="referências-bibliográficas-e-roteiro-de-leitura">Referências
+bibliográficas e roteiro de leitura</h2>
+<p>Você encontrará abaixo edições brasileiras em português, produção
+brasileira de marketing e documentação técnica em inglês. Consulte as
+obras de marketing para aprofundar a relação entre pesquisa, decisão e
+desempenho; use a documentação técnica para revisar as fórmulas e a
+mineração. Os links dos livros levam a fichas e apresentações; o texto
+integral pode exigir acesso por biblioteca ou compra. Consulta dos
+materiais on-line: 17 out. 2026.</p>
+<h3 id="marketing-pesquisa-e-decisão--português-brasileiro">Marketing,
+pesquisa e decisão — português brasileiro</h3>
+<ol type="1">
+<li><p>KOTLER, Philip; KARTAJAYA, Hermawan; SETIAWAN, Iwan.
+<strong>Marketing 5.0: tecnologia para a humanidade</strong>. Tradução:
+André Fontenelle. Rio de Janeiro: Sextante, 2021. ISBN 9786555642407. <a
+href="https://sextante.com.br/products/marketing-5-0">Ficha e
+apresentação da editora</a>. <strong>Para aprofundar:</strong> estude
+como a tecnologia pode contribuir para criar valor ao longo da jornada
+do cliente e tornar uma sugestão relevante.</p></li>
+<li><p>MALHOTRA, Naresh K. <strong>Pesquisa de marketing: uma orientação
+aplicada</strong>. 7. ed. Porto Alegre: Bookman, 2019. ISBN impresso
+9788582605097. <a
+href="https://loja.grupoa.com.br/novo/pesquisa-de-marketing9788582605103-p1005514">Ficha
+e sumário da editora</a>. <strong>Para aprofundar:</strong> relacione o
+problema de decisão ao desenho da pesquisa, à análise de dados e à
+comunicação das recomendações.</p></li>
+<li><p>FARRIS, Paul W.; BENDLE, Neil T.; PFEIFER, Phillip E.; REIBSTEIN,
+David J. <strong>Métricas de marketing: o guia definitivo de avaliação
+do desempenho do marketing</strong>. 2. ed. Porto Alegre: Bookman, 2012.
+<a href="https://books.google.com.br/books?id=CnGveVVsldEC">Apresentação
+e sumário da edição brasileira</a>; <a
+href="https://assets.univesp.br/blackboard/plano-de-ensino/disciplinas/ADM330.html">referência
+da edição no plano de ensino da Univesp</a>. <strong>Para
+aprofundar:</strong> conecte indicadores de marketing a produto,
+promoção, rentabilidade e desempenho financeiro. Leitura complementar às
+três métricas de associação, sem equipará-las a retorno
+financeiro.</p></li>
+<li><p>HERNANDEZ, José Mauro da Costa; BASSO, Kenny; BRANDÃO, Marcelo
+Moll. <strong>Pesquisa experimental em marketing</strong>. <em>Revista
+Brasileira de Marketing</em>, v. 13, n. 2, 2014. DOI:
+10.5585/remark.v13i2.2692. <a
+href="https://repositorio.usp.br/item/002515847">Registro e resumo no
+repositório da USP</a>; <a
+href="https://periodicos.uninove.br/remark/article/download/12035/5670/58711">texto
+no periódico</a>. <strong>Para aprofundar:</strong> compreenda a função
+dos experimentos em marketing e use essa base para distinguir uma
+associação de um efeito de intervenção.</p></li>
+<li><p>SEBRAE. <strong>Como elaborar um cadastro de clientes</strong>.
+Atualizado em 30 maio 2025. <a
+href="https://meuatendimento.sebrae.com.br/sites/PortalSebrae/ufs/ap/artigos/como-elaborar-um-cadastro-de-clientes%2Cd1440d36ecfa1610VgnVCM1000004c00210aRCRD">Artigo
+institucional</a>. <strong>Para aprofundar:</strong> conheça a relação
+entre registros de clientes, histórico de compras e oportunidades de
+vendas para pequenos negócios.</p></li>
+</ol>
+<h3 id="fundamentos-técnicos-e-reprodução">Fundamentos técnicos e
+reprodução</h3>
+<ol start="6" type="1">
+<li><p>MLXTEND. <strong>Association rules: association rules generation
+from frequent itemsets</strong>. Documentação em inglês, <a
+href="https://rasbt.github.io/mlxtend/user_guide/frequent_patterns/association_rules/">disponível
+on-line</a>. <strong>Para consultar:</strong> revise as definições de
+suporte, confiança e lift.</p></li>
+<li><p>MLXTEND. <strong>Apriori: frequent itemsets via the Apriori
+algorithm</strong>. Documentação em inglês, <a
+href="https://rasbt.github.io/mlxtend/user_guide/frequent_patterns/apriori/">disponível
+on-line</a>. <strong>Para aprofundar:</strong> explore a geração de
+itemsets frequentes e a propriedade de fechamento para
+subconjuntos.</p></li>
+<li><p>IBM. <strong>O que é o aprendizado de máquina?</strong> <a
+href="https://www.ibm.com/br-pt/think/topics/machine-learning">Introdução
+em português</a>. <strong>Para consultar:</strong> situe aprendizado de
+máquina no campo da IA e compare diferentes formas de
+aprendizado.</p></li>
+<li><p>IBM. <strong>O que é aprendizado não supervisionado?</strong>
+2021. <a
+href="https://www.ibm.com/br-pt/think/topics/unsupervised-learning">Texto
+em português</a>. <strong>Para consultar:</strong> relacione mineração
+de associações, agrupamento e exploração de dados sem respostas-alvo
+rotuladas.</p></li>
+<li><p>MENDES, Raquel Dias. <strong>Inteligência artificial: sistemas
+especialistas no gerenciamento da informação</strong>. <em>Ciência da
+Informação</em>, v. 26, n. 1, 1997. DOI:
+10.1590/S0100-19651997000100006. <a
+href="https://www.scielo.br/j/ci/a/MqGHKkTLcPxhhjgpDz9ZNNd/?lang=pt">Artigo
+em português</a>. <strong>Para aprofundar:</strong> conheça a
+representação de conhecimento e a arquitetura de sistemas especialistas
+como abordagem de inteligência artificial.</p></li>
+<li><p>SCIKIT-LEARN. <strong>Common pitfalls and recommended
+practices</strong>. <a
+href="https://scikit-learn.org/stable/common_pitfalls.html">Documentação
+em inglês</a>. <strong>Para consultar:</strong> compreenda por que usar
+dados de avaliação durante a seleção produz estimativas excessivamente
+otimistas.</p></li>
+<li><p>SCIKIT-LEARN. <strong>Underfitting vs. Overfitting</strong>. <a
+href="https://scikit-learn.org/stable/auto_examples/model_selection/plot_underfitting_overfitting.html">Exemplo
+em inglês</a>. <strong>Para aprofundar:</strong> compare modelos com
+diferentes capacidades e observe por que o ajuste aos exemplos
+conhecidos não garante desempenho em dados novos.</p></li>
+<li><p>HAHSLER, Michael. <strong>arulesViz: Interactive Visualization of
+Association Rules with R</strong>. <em>The R Journal</em>, v. 9, n. 2,
+p. 163–175, 2017. DOI: 10.32614/RJ-2017-047. <a
+href="https://journal.r-project.org/articles/RJ-2017-047/">Artigo em
+inglês</a>. <strong>Para aprofundar:</strong> compare dispersão,
+matrizes e redes para explorar regras; examine como a interação ajuda a
+identificar padrões e consultar detalhes.</p></li>
+</ol>
+<p>Para uma leitura introdutória, comece pelo Sebrae e pelo resumo do
+artigo de Hernandez, Basso e Brandão; use as obras de Kotler, Malhotra e
+Farris para aprofundamento gerencial. Para reproduzir os números,
+consulte os <a href="dados/catalogo.json">dados do exercício</a> e o <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/scripts/minerar_regras_associacao.py">script
+reproduzível</a>.</p>
+<hr />
+<p><strong>Nota de rodapé — relação com o recomendador
+existente.</strong> A popularidade atual é
+<code>pedidos / max(pedidos)</code>, calculada a partir de outro
+agregado; suporte usa frequências nas cestas. A co-ocorrência começa com
+a mesma contagem de pares, mas divide cada linha pelo maior contador de
+parceiros do produto de origem:
+<code>cooc[A][B] = n({A,B}) / max_C n({A,C})</code>. As contagens são
+simétricas; essa normalização pode produzir scores diferentes nos dois
+sentidos. Confiança divide pelo número de cestas com o antecedente; lift
+também considera a frequência do consequente. Portanto, co-ocorrência
+normalizada não é confiança nem lift. A fórmula
+<code>0,7 × pop + 0,3 × cooc</code> e o filtro por técnica são escolhas
+manuais do serviço. Aqui, as regras são geradas a partir de conjuntos
+observados e selecionadas pelos limites declarados; este tutorial não
+modifica a API.</p></main>
+  </div>
+</body>
+</html>
