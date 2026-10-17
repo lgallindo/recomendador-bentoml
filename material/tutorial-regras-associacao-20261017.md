@@ -1,12 +1,18 @@
 # Marketing orientado por dados: como minerar e relatar regras de associação
 
-Tutorial para um exercício de 40 minutos. Ao final, você deverá conseguir calcular
-suporte, confiança e lift, ler um relatório de regras e justificar quais padrões
-merecem investigação e transformar esses padrões em hipóteses de marketing.
-Os dados são sintéticos: os resultados descrevem estas
-dez cestas, sem constituir evidência sobre consumidores reais.
+Ao concluir este tutorial, você deverá conseguir calcular suporte, confiança e
+lift, ler um relatório de regras, justificar quais padrões merecem investigação
+e transformar esses padrões em hipóteses de marketing. Você também produzirá
+um breve relatório com contagens, métricas, interpretação e uma ação a testar.
+Os dados são sintéticos: os resultados descrevem estas dez cestas, sem
+constituir evidência sobre consumidores reais.
 
-| Tempo | Atividade |
+### Roteiro de estudo
+
+Você pode seguir o roteiro abaixo em aproximadamente 40 minutos ou consultar
+cada seção separadamente para revisar os conceitos e reproduzir os resultados.
+
+| Tempo sugerido | Atividade de estudo |
 | --- | --- |
 | 5 min | Ler as transações e formular a pergunta |
 | 8 min | Construir as três métricas a partir de contagens |
@@ -22,16 +28,16 @@ juntos nas compras?** Uma regra como `{Jarro} → {Prato}` resume uma associaç�
 entre presenças na mesma transação. A seta indica qual conjunto condiciona a
 análise; não indica ordem de compra nem causa.
 
-### O fio da aula: tornar o marketing centrado em dados
+### Como os dados orientam uma decisão de marketing
 
 A loja precisa decidir o que expor junto, que oferta combinada experimentar e
-qual sugestão apresentar no carrinho. Nesta aula, **marketing centrado em dados**
+qual sugestão apresentar no carrinho. Aqui, **marketing centrado em dados**
 significa tornar explícita a ligação entre pergunta comercial, registros de
 compra, critérios de análise, ação proposta e avaliação de resultado. As regras
 de associação ajudam a construir essa ligação: tornam um padrão de consumo
 mensurável, comunicável e verificável.
 
-Essa é nossa aplicação didática de três perspectivas da literatura de marketing:
+Três perspectivas da literatura de marketing ajudam a compreender essa ligação:
 a pesquisa começa com um problema de decisão e organiza a coleta e a análise
 (Malhotra, 2019); as métricas relacionam decisões a desempenho
 (Farris et al., 2012); a tecnologia deve contribuir para o valor entregue na
@@ -46,15 +52,11 @@ bibliográficas e os links de consulta estão ao final.
 | Ação | Como transformar esse padrão em uma oferta relevante? | Hipótese de exposição conjunta ou venda complementar |
 | Aprendizado | A mudança melhorou o resultado para a loja e o cliente? | Teste da ação com métricas definidas previamente |
 
-**Fala sugerida para abrir a aula:** “Vamos partir de uma decisão de marketing:
-que produtos apresentar juntos? Usaremos compras registradas para descobrir
-padrões, explicar a força da evidência e propor um teste. A conta ganha sentido
-quando ajuda a escolher uma ação e a aprender com seu resultado.”
-
 O cadastro e o histórico de compras também aparecem no material brasileiro do
 [Sebrae sobre cadastro de clientes](https://meuatendimento.sebrae.com.br/sites/PortalSebrae/ufs/ap/artigos/como-elaborar-um-cadastro-de-clientes%2Cd1440d36ecfa1610VgnVCM1000004c00210aRCRD)
-como insumos para identificar oportunidades de vendas. Para as regras desta
-aula basta o conjunto de itens por transação; identificar pessoas é desnecessário.
+como insumos para identificar oportunidades de vendas. Para calcular as regras
+deste tutorial basta o conjunto de itens por transação; identificar pessoas é
+desnecessário.
 
 Usaremos somente `cestas` de [`dados/catalogo.json`](../dados/catalogo.json).
 Cada linha é uma transação. A ordem dos produtos dentro dela não importa;
@@ -167,13 +169,14 @@ não garantem o comportamento da próxima compra.
 
 ## 4. Como as regras são mineradas
 
-Escolhemos, para esta demonstração:
+Neste conjunto de dados, aplique os seguintes critérios de seleção:
 
 - Suporte mínimo **20%**, inclusive: pelo menos 2 das 10 cestas.
 - Confiança mínima **60%**, inclusive.
 - Lift **estritamente maior que 1**, para relatar associações positivas.
 
-São escolhas didáticas, não limites universais. Defina os critérios e o escopo
+Esses limites permitem explorar padrões presentes em pelo menos duas cestas.
+Eles não são universais. Defina os critérios e o escopo
 antes de selecionar exemplos. Reduzir o suporte pode revelar padrões raros,
 mas também produz regras sustentadas por poucas observações.
 
@@ -194,9 +197,10 @@ Apriori economiza trabalho usando a propriedade: **todo subconjunto de um
 itemset frequente também é frequente**. Assim, se um conjunto não alcança o
 suporte mínimo, seus superconjuntos podem ser podados. Veja a
 [documentação do Apriori](https://rasbt.github.io/mlxtend/user_guide/frequent_patterns/apriori/).
-Nosso script enumera os subconjuntos observados diretamente para deixar as
-contas visíveis; ele não implementa Apriori. O custo cresce exponencialmente
-com o tamanho da cesta, portanto esta implementação é para a pequena base da aula.
+O script deste tutorial enumera os subconjuntos observados diretamente; você
+pode acompanhar as contagens no código. Ele não implementa Apriori. O custo
+cresce exponencialmente com o tamanho da cesta, portanto use esta implementação
+apenas com bases de cestas pequenas como a deste exercício.
 
 ### Executar e abrir o relatório
 
@@ -212,7 +216,7 @@ IDs, contagens, métricas e os três limites usados. Suporte e confiança estão
 em proporções: `0.300000` significa 30%. Decimais usam ponto. Os filtros usam
 frações exatas; o CSV arredonda para seis casas somente na exportação.
 
-Para experimentar outro filtro e preservar o relatório da aula:
+Para experimentar outro filtro e preservar o relatório original:
 
 ```bash
 python3 scripts/minerar_regras_associacao.py --suporte-minimo 0.3 --confianca-minima 0.75 --saida material/regras-experimento.csv
@@ -304,11 +308,11 @@ o resultado financeiro se o custo da oferta superar o ganho.
 
 Separar a descoberta de uma associação da avaliação de uma ação é coerente com
 a discussão de pesquisa experimental em marketing de Hernandez, Basso e
-Brandão (2014). O desenho acima é uma adaptação didática: o artigo fundamenta
-a lógica experimental, sem avaliar esta loja ou estes produtos.
+Brandão (2014). Use essa leitura para compreender a lógica experimental e
+avaliar como um teste pode distinguir o efeito da sugestão de outros fatores.
 
-**Pergunta para a turma:** “Se o lift é 2,50, podemos prometer aumento de 150%
-nas vendas ao mudar a vitrine?” Resposta: não. Esse número compara frequências
+**Verifique sua interpretação:** se o lift é 2,50, você pode prometer aumento
+de 150% nas vendas ao mudar a vitrine? Não. Esse número compara frequências
 observadas; o efeito da mudança precisa ser estimado em um teste apropriado.
 
 Evite relatar apenas as maiores confianças ou lifts. Declare quantas regras
@@ -316,13 +320,29 @@ passaram nos filtros, não esconda a contagem absoluta e considere redundância.
 Esta base minúscula serve para aprender a conta; associações observadas podem
 ser instáveis. Associação não estabelece causalidade nem sequência temporal.
 
-## 7. Exercício e gabarito
+## 7. Exercício: produza seu relatório
 
-**Antes de mostrar o gabarito:** calcule Prato → Boneca. Escreva uma frase
-para cada métrica, compare com a regra inversa e decida se passa nos filtros.
-Depois responda: por que Jarro → {Prato,Boneca} não aparece no relatório?
+Use as dez cestas para analisar a regra **Prato → Boneca**. Seu relatório deve
+conter:
 
-**Gabarito:** Prato aparece em 3 cestas; Boneca em 2; ambos nas cestas 1 e 10.
+1. A origem dos dados, o total de transações e os três critérios de seleção.
+2. As contagens de Prato, Boneca e do par, seguidas de suporte, confiança e lift.
+3. Uma frase que interprete cada métrica e uma comparação com Boneca → Prato.
+4. A decisão de incluir ou excluir a regra pelos filtros e a justificativa
+   para a ausência de Jarro → {Prato,Boneca} no relatório completo.
+5. Uma hipótese de ação de marketing, a métrica que você usaria para avaliar
+   seu efeito e uma limitação da evidência disponível.
+
+Você pode usar o modelo da seção 6 e conferir seus resultados na resolução a
+seguir. A resolução permanece disponível para consulta durante o estudo.
+
+### Resolução comentada
+
+**Dados e critérios:** a fonte é o array `cestas` de `dados/catalogo.json`, com
+dez transações sintéticas, sem período real. Os filtros são suporte ≥ 20%,
+confiança ≥ 60% e lift > 1.
+
+**Cálculos e interpretação:** Prato aparece em 3 cestas; Boneca em 2; ambos nas cestas 1 e 10.
 Suporte `2/10=20%`; confiança `2/3≈66,7%`; lift `(2/3)/(2/10)=10/3≈3,33`.
 Passa nos três filtros. A inversa tem confiança `2/2=100%`, com o mesmo
 suporte e lift. “Em 2 das 10 cestas há Prato e Boneca; dois terços das cestas
@@ -330,15 +350,21 @@ com Prato incluem Boneca, cerca de 3,33 vezes a frequência geral de Boneca.”
 Jarro → {Prato,Boneca} tem suporte 20% e lift 2,50, mas confiança de 50%:
 é excluída pelo filtro de confiança.
 
+**Hipótese e avaliação:** você pode propor uma sugestão de Boneca na página de
+Prato. Em um teste com visitantes reais distribuídos aleatoriamente entre a
+página atual e a página com sugestão, compare pedidos contendo Boneca por
+visitante elegível e acompanhe a margem por visitante. O padrão vem de apenas
+duas compras conjuntas em dados sintéticos: ele permite formular a hipótese,
+mas não estimar o ganho que a intervenção causará.
+
 ## Referências bibliográficas e roteiro de leitura
 
-Priorizamos edições brasileiras em português e produção brasileira de marketing.
-As obras de marketing dão o enquadramento gerencial; a documentação técnica
-fundamenta as fórmulas e a mineração. As indicações abaixo se baseiam em fichas
-editoriais, registros bibliográficos e materiais públicos consultados; não
-atribuem às obras exemplos ou páginas internas que não foram verificados.
-Links de livros levam a informações bibliográficas ou editoriais, sem pressupor
-acesso gratuito ao texto integral. Consulta dos materiais on-line: 17 out. 2026.
+Você encontrará abaixo edições brasileiras em português, produção brasileira
+de marketing e documentação técnica em inglês. Consulte as obras de marketing
+para aprofundar a relação entre pesquisa, decisão e desempenho; use a
+documentação técnica para revisar as fórmulas e a mineração. Os links dos livros
+levam a fichas e apresentações; o texto integral pode exigir acesso por biblioteca
+ou compra. Consulta dos materiais on-line: 17 out. 2026.
 
 ### Marketing, pesquisa e decisão — português brasileiro
 
@@ -346,21 +372,21 @@ acesso gratuito ao texto integral. Consulta dos materiais on-line: 17 out. 2026.
    **Marketing 5.0: tecnologia para a humanidade**. Tradução: André Fontenelle.
    Rio de Janeiro: Sextante, 2021. ISBN 9786555642407.
    [Ficha e apresentação da editora](https://sextante.com.br/products/marketing-5-0).
-   **Na aula:** enquadrar o uso da tecnologia na criação de valor ao longo da
-   jornada do cliente; orientar a discussão sobre relevância da sugestão.
+   **Para aprofundar:** estude como a tecnologia pode contribuir para criar
+   valor ao longo da jornada do cliente e tornar uma sugestão relevante.
 
 2. MALHOTRA, Naresh K. **Pesquisa de marketing: uma orientação aplicada**.
    7. ed. Porto Alegre: Bookman, 2019. ISBN impresso 9788582605097.
    [Ficha e sumário da editora](https://loja.grupoa.com.br/novo/pesquisa-de-marketing9788582605103-p1005514).
-   **Na aula:** ligar o problema de decisão ao desenho da pesquisa, à análise
-   de dados e à comunicação das recomendações.
+   **Para aprofundar:** relacione o problema de decisão ao desenho da pesquisa,
+   à análise de dados e à comunicação das recomendações.
 
 3. FARRIS, Paul W.; BENDLE, Neil T.; PFEIFER, Phillip E.; REIBSTEIN, David J.
    **Métricas de marketing: o guia definitivo de avaliação do desempenho do
    marketing**. 2. ed. Porto Alegre: Bookman, 2012.
    [Apresentação e sumário da edição brasileira](https://books.google.com.br/books?id=CnGveVVsldEC);
    [referência da edição no plano de ensino da Univesp](https://assets.univesp.br/blackboard/plano-de-ensino/disciplinas/ADM330.html).
-   **Na aula:** conectar indicadores de marketing a produto, promoção,
+   **Para aprofundar:** conecte indicadores de marketing a produto, promoção,
    rentabilidade e desempenho financeiro. Leitura complementar às três
    métricas de associação, sem equipará-las a retorno financeiro.
 
@@ -369,30 +395,30 @@ acesso gratuito ao texto integral. Consulta dos materiais on-line: 17 out. 2026.
    v. 13, n. 2, 2014. DOI: 10.5585/remark.v13i2.2692.
    [Registro e resumo no repositório da USP](https://repositorio.usp.br/item/002515847);
    [texto no periódico](https://periodicos.uninove.br/remark/article/download/12035/5670/58711).
-   **Na aula:** fundamentar a passagem de associação observada para uma
-   hipótese de intervenção e explicar a função de experimentos em marketing.
+   **Para aprofundar:** compreenda a função dos experimentos em marketing e
+   use essa base para distinguir uma associação de um efeito de intervenção.
 
 5. SEBRAE. **Como elaborar um cadastro de clientes**. Atualizado em
    30 maio 2025.
    [Artigo institucional](https://meuatendimento.sebrae.com.br/sites/PortalSebrae/ufs/ap/artigos/como-elaborar-um-cadastro-de-clientes%2Cd1440d36ecfa1610VgnVCM1000004c00210aRCRD).
-   **Na aula:** leitura introdutória sobre registros de clientes, histórico de
-   compras e oportunidades de vendas para pequenos negócios.
+   **Para aprofundar:** conheça a relação entre registros de clientes, histórico
+   de compras e oportunidades de vendas para pequenos negócios.
 
 ### Fundamentos técnicos e reprodução
 
 6. MLXTEND. **Association rules: association rules generation from frequent
    itemsets**. Documentação em inglês, [disponível on-line](https://rasbt.github.io/mlxtend/user_guide/frequent_patterns/association_rules/).
-   **Na aula:** consultar as definições de suporte, confiança e lift.
+   **Para consultar:** revise as definições de suporte, confiança e lift.
 
 7. MLXTEND. **Apriori: frequent itemsets via the Apriori algorithm**.
    Documentação em inglês, [disponível on-line](https://rasbt.github.io/mlxtend/user_guide/frequent_patterns/apriori/).
-   **Na aula:** aprofundar a geração de itemsets frequentes e a propriedade
+   **Para aprofundar:** explore a geração de itemsets frequentes e a propriedade
    de fechamento para subconjuntos.
 
-Para uma leitura breve antes da aula, comece pelo Sebrae e pelo resumo do
+Para uma leitura introdutória, comece pelo Sebrae e pelo resumo do
 artigo de Hernandez, Basso e Brandão; use as obras de Kotler, Malhotra e
 Farris para aprofundamento gerencial. Para reproduzir os números, consulte
-os [dados da aula](../dados/catalogo.json) e o
+os [dados do exercício](../dados/catalogo.json) e o
 [script reproduzível](../scripts/minerar_regras_associacao.py).
 
 ---
