@@ -7,6 +7,9 @@ os slides seguem o fio didático. Este script é a ponte: congela esse arco num
 
 | Arquivo | Papel |
 | --- | --- |
+| [`minerar_logs_autenticacao.py`](minerar_logs_autenticacao.py) | Reconstrói sessões e exporta regras e avaliação fixa; `--cenario validacao` seleciona a base separada |
+| [`gerar_logs_autenticacao.py`](gerar_logs_autenticacao.py) | Reproduz os logs fictícios independentes do marketplace |
+| [`test_logs_autenticacao.py`](test_logs_autenticacao.py) | Confere fixtures, métricas, duplicatas e diagnósticos do parser |
 | [`gerar_bi_associacao.py`](gerar_bi_associacao.py) | Reproduz dados do [explorador BI](../material/bi/README.md) e três figuras: dispersão, matriz e rede |
 | [`gerar_figuras_associacao.py`](gerar_figuras_associacao.py) | Reproduz o diagrama de inclusão IA/ML, a matriz de cestas e a comparação de descoberta com avaliação separada |
 | [`minerar_regras_associacao.py`](minerar_regras_associacao.py) | Minera as cestas e gera o CSV da [aula de regras de associação](../material/tutorial-regras-associacao-20261017.md), sem dependências externas |

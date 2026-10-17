@@ -1,5 +1,8 @@
 # Dados (`dados/`)
 
+O exercício independente de [logs de autenticação](logs-autenticacao/README.md)
+usa sessões fictícias, sem relação com compras, totais ou vendas semanais abaixo.
+
 A pessoa abre a página de um jarro de Tracunhaém. Para a loja sugerir o prato, a
 boneca ou outra peça, alguém precisa ter **descrito o catálogo** e algumas compras
 de exemplo — antes do treino, antes do HTTP. Esta pasta é esse chão: o que a

@@ -1,0 +1,59 @@
+{
+  "fonte": "validacao-20261017.jsonl",
+  "eventos_unicos": 24,
+  "entregas_duplicadas": 1,
+  "sessoes": {
+    "validacao-01": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-02": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-03": [
+      "falha_senha"
+    ],
+    "validacao-04": [
+      "falha_senha"
+    ],
+    "validacao-05": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-06": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-07": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-08": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-09": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-10": [
+      "senha_aceita"
+    ]
+  },
+  "total_regras": 9,
+  "avaliacao_regra_fixa": {
+    "regra": "falha_senha -> desafio_mfa",
+    "total_sessoes": 10,
+    "contagem_antecedente": 4,
+    "contagem_consequente": 3,
+    "contagem_conjunta": 1,
+    "suporte": 0.1,
+    "confianca": 0.25,
+    "lift": 0.8333333333333334
+  }
+}

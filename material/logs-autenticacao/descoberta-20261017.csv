@@ -1,0 +1,28 @@
+antecedente_ids,consequente_ids,antecedente,consequente,total_sessoes,contagem_antecedente,contagem_consequente,contagem_conjunta,suporte,confianca,lift,suporte_minimo,confianca_minima,lift_maior_que
+desafio_mfa + login_sucesso,falha_senha + senha_aceita,Desafio MFA + Login com sucesso,Falha de senha + Senha aceita,20,7,7,5,0.250000,0.714286,2.040816,0.200000,0.600000,1.000000
+falha_senha + senha_aceita,desafio_mfa + login_sucesso,Falha de senha + Senha aceita,Desafio MFA + Login com sucesso,20,7,7,5,0.250000,0.714286,2.040816,0.200000,0.600000,1.000000
+falha_senha + senha_aceita,desafio_mfa,Falha de senha + Senha aceita,Desafio MFA,20,7,9,6,0.300000,0.857143,1.904762,0.200000,0.600000,1.000000
+desafio_mfa,falha_senha + senha_aceita,Desafio MFA,Falha de senha + Senha aceita,20,9,7,6,0.300000,0.666667,1.904762,0.200000,0.600000,1.000000
+falha_senha + login_sucesso,desafio_mfa,Falha de senha + Login com sucesso,Desafio MFA,20,6,9,5,0.250000,0.833333,1.851852,0.200000,0.600000,1.000000
+falha_senha + login_sucesso,desafio_mfa + senha_aceita,Falha de senha + Login com sucesso,Desafio MFA + Senha aceita,20,6,9,5,0.250000,0.833333,1.851852,0.200000,0.600000,1.000000
+falha_senha + login_sucesso + senha_aceita,desafio_mfa,Falha de senha + Login com sucesso + Senha aceita,Desafio MFA,20,6,9,5,0.250000,0.833333,1.851852,0.200000,0.600000,1.000000
+desafio_mfa + login_sucesso,falha_senha,Desafio MFA + Login com sucesso,Falha de senha,20,7,9,5,0.250000,0.714286,1.587302,0.200000,0.600000,1.000000
+desafio_mfa + login_sucesso + senha_aceita,falha_senha,Desafio MFA + Login com sucesso + Senha aceita,Falha de senha,20,7,9,5,0.250000,0.714286,1.587302,0.200000,0.600000,1.000000
+desafio_mfa,falha_senha,Desafio MFA,Falha de senha,20,9,9,6,0.300000,0.666667,1.481481,0.200000,0.600000,1.000000
+desafio_mfa + senha_aceita,falha_senha,Desafio MFA + Senha aceita,Falha de senha,20,9,9,6,0.300000,0.666667,1.481481,0.200000,0.600000,1.000000
+falha_senha,desafio_mfa,Falha de senha,Desafio MFA,20,9,9,6,0.300000,0.666667,1.481481,0.200000,0.600000,1.000000
+falha_senha,desafio_mfa + senha_aceita,Falha de senha,Desafio MFA + Senha aceita,20,9,9,6,0.300000,0.666667,1.481481,0.200000,0.600000,1.000000
+falha_senha + senha_aceita,login_sucesso,Falha de senha + Senha aceita,Login com sucesso,20,7,15,6,0.300000,0.857143,1.142857,0.200000,0.600000,1.000000
+login_sucesso,senha_aceita,Login com sucesso,Senha aceita,20,15,18,15,0.750000,1.000000,1.111111,0.200000,0.600000,1.000000
+desafio_mfa,senha_aceita,Desafio MFA,Senha aceita,20,9,18,9,0.450000,1.000000,1.111111,0.200000,0.600000,1.000000
+desafio_mfa + login_sucesso,senha_aceita,Desafio MFA + Login com sucesso,Senha aceita,20,7,18,7,0.350000,1.000000,1.111111,0.200000,0.600000,1.000000
+desafio_mfa + falha_senha,senha_aceita,Desafio MFA + Falha de senha,Senha aceita,20,6,18,6,0.300000,1.000000,1.111111,0.200000,0.600000,1.000000
+falha_senha + login_sucesso,senha_aceita,Falha de senha + Login com sucesso,Senha aceita,20,6,18,6,0.300000,1.000000,1.111111,0.200000,0.600000,1.000000
+desafio_mfa + falha_senha + login_sucesso,senha_aceita,Desafio MFA + Falha de senha + Login com sucesso,Senha aceita,20,5,18,5,0.250000,1.000000,1.111111,0.200000,0.600000,1.000000
+senha_aceita,login_sucesso,Senha aceita,Login com sucesso,20,18,15,15,0.750000,0.833333,1.111111,0.200000,0.600000,1.000000
+desafio_mfa + falha_senha,login_sucesso,Desafio MFA + Falha de senha,Login com sucesso,20,6,15,5,0.250000,0.833333,1.111111,0.200000,0.600000,1.000000
+desafio_mfa + falha_senha,login_sucesso + senha_aceita,Desafio MFA + Falha de senha,Login com sucesso + Senha aceita,20,6,15,5,0.250000,0.833333,1.111111,0.200000,0.600000,1.000000
+desafio_mfa + falha_senha + senha_aceita,login_sucesso,Desafio MFA + Falha de senha + Senha aceita,Login com sucesso,20,6,15,5,0.250000,0.833333,1.111111,0.200000,0.600000,1.000000
+desafio_mfa,login_sucesso,Desafio MFA,Login com sucesso,20,9,15,7,0.350000,0.777778,1.037037,0.200000,0.600000,1.000000
+desafio_mfa,login_sucesso + senha_aceita,Desafio MFA,Login com sucesso + Senha aceita,20,9,15,7,0.350000,0.777778,1.037037,0.200000,0.600000,1.000000
+desafio_mfa + senha_aceita,login_sucesso,Desafio MFA + Senha aceita,Login com sucesso,20,9,15,7,0.350000,0.777778,1.037037,0.200000,0.600000,1.000000

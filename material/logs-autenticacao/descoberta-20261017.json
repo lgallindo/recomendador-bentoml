@@ -1,0 +1,110 @@
+{
+  "fonte": "descoberta-20261017.jsonl",
+  "eventos_unicos": 59,
+  "entregas_duplicadas": 1,
+  "sessoes": {
+    "descoberta-01": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-02": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-03": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-04": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-05": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-06": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-07": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-08": [
+      "falha_senha"
+    ],
+    "descoberta-09": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-10": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-11": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-12": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-13": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-14": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-15": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-16": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-17": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-18": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-19": [
+      "senha_aceita"
+    ],
+    "descoberta-20": [
+      "falha_senha"
+    ]
+  },
+  "total_regras": 27,
+  "avaliacao_regra_fixa": {
+    "regra": "falha_senha -> desafio_mfa",
+    "total_sessoes": 20,
+    "contagem_antecedente": 9,
+    "contagem_consequente": 9,
+    "contagem_conjunta": 6,
+    "suporte": 0.3,
+    "confianca": 0.6666666666666666,
+    "lift": 1.4814814814814814
+  }
+}
