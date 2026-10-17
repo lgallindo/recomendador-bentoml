@@ -95,6 +95,24 @@ def carregar_serie() -> tuple[list[date], list[int]]:
     return datas, valores
 
 
+def carregar_matriz() -> tuple[list[date], dict[str, list[int]]]:
+    datas: list[date] = []
+    series: dict[str, list[int]] = {}
+    with FONTE.open(newline="", encoding="utf-8") as arquivo:
+        for linha in csv.DictReader(arquivo):
+            semana = date.fromisoformat(linha["week_start"])
+            produto = linha["product_id"]
+            if semana not in datas:
+                datas.append(semana)
+            if produto not in series:
+                series[produto] = []
+            series[produto].append(int(linha["order_line_count"]))
+    datas.sort()
+    if len(datas) != 16 or any(len(valores) != len(datas) for valores in series.values()):
+        raise ValueError("Esperadas 16 observações semanais completas por produto")
+    return datas, series
+
+
 def serie_tempo() -> None:
     datas, valores = carregar_serie()
     previsoes = [
@@ -130,6 +148,40 @@ def serie_tempo() -> None:
              ha="center", color=AZUL, fontsize=11)
     fig.tight_layout(rect=(0, .05, 1, 1))
     salvar(fig, "serie-media-movel-p01.png")
+
+
+def comparar_metodos() -> None:
+    _, series = carregar_matriz()
+    periodos = [1, 2, 3, 4, 5]
+    nomes = ["Ingênua", "MA(2)", "MA(3)", "MA(4)", "MA(5)"]
+    inicio_teste = 12
+    maes: list[float] = []
+
+    for periodo in periodos:
+        erros = []
+        for valores in series.values():
+            for posicao in range(inicio_teste, len(valores)):
+                previsao = sum(valores[posicao - periodo : posicao]) / periodo
+                erros.append(abs(valores[posicao] - previsao))
+        maes.append(sum(erros) / len(erros))
+
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+    ax.plot(nomes, maes, marker="o", linewidth=2.8, markersize=8, color=VERDE)
+    for posicao, mae in enumerate(maes):
+        ax.annotate(f"{mae:.3f}".replace(".", ","), (posicao, mae),
+                    textcoords="offset points", xytext=(0, 10),
+                    ha="center", color=AZUL, fontsize=11, weight="bold")
+    ax.set_title("Comparação walk-forward: erro absoluto médio",
+                 fontsize=18, color=AZUL, weight="bold", pad=14)
+    ax.set_ylabel("MAE (linhas de pedido por produto/semana)")
+    ax.set_xlabel("Método")
+    ax.set_ylim(0, max(maes) * 1.25)
+    ax.grid(axis="y", alpha=.22)
+    ax.spines[["top", "right"]].set_visible(False)
+    fig.text(.5, .015, "48 previsões nos mesmos 4 períodos de teste; demanda sintética.",
+             ha="center", color=AZUL, fontsize=10.5)
+    fig.tight_layout(rect=(0, .05, 1, 1))
+    salvar(fig, "comparacao-media-movel-mae.png")
 
 
 def fluxo_walk_forward() -> None:
@@ -173,8 +225,9 @@ def main() -> None:
     DESTINO.mkdir(parents=True, exist_ok=True)
     mapa_conceitual()
     serie_tempo()
+    comparar_metodos()
     fluxo_walk_forward()
-    print(f"Três figuras de demanda geradas em {DESTINO}")
+    print(f"Quatro figuras de demanda geradas em {DESTINO}")
 
 
 if __name__ == "__main__":

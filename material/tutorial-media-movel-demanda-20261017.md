@@ -19,7 +19,7 @@ cada seção separadamente.
 | 5 min | Entender o problema, a unidade e os dados |
 | 8 min | Aprender a média móvel e calcular um exemplo à mão |
 | 10 min | Executar o código com pandas |
-| 10 min | Fazer uma avaliação temporal contra uma previsão ingênua |
+| 12 min | Comparar janelas em avaliação temporal |
 | 7 min | Interpretar resultados e limitações |
 | 10 min | Resolver o exercício |
 
@@ -386,6 +386,93 @@ $$
 Para esse produto no período de teste, a média móvel teve MAE 0,75 e a
 referência ingênua, 1,00. O resultado agregado dos 12 produtos difere; por
 isso, é útil examinar erros por produto além de uma única média global.
+
+### Comparação: previsão ingênua, MA(2), MA(3), MA(4) e MA(5)
+
+Agora compare cinco métodos nas **mesmas 48 situações** (12 produtos vezes as
+quatro semanas reservadas). A previsão ingênua equivale a uma média móvel de
+uma observação: usa somente a semana imediatamente anterior. MA(2) até MA(5)
+usam as duas a cinco observações anteriores, respectivamente.
+
+![Gráfico de linhas compara o MAE da previsão ingênua, MA(2), MA(3), MA(4) e MA(5) em 48 previsões walk-forward; os valores descem de 0,667 para 0,483, com os dados semanais sintéticos.](imagens/comparacao-media-movel-mae.png)
+
+*Figura 4 — MAE por janela, calculado sobre as mesmas semanas e produtos.
+Menor é melhor nesta métrica. A diferença pequena entre MA(4) e MA(5) não
+deve ser generalizada a partir de uma avaliação sintética de apenas quatro
+semanas.*
+
+O código calcula todas as previsões sem usar a observação da semana prevista.
+Como os métodos compartilham o mesmo período de teste, a comparação é justa
+para este exercício:
+
+```python
+periodos = {
+    "Ingênua": 1,
+    "MA(2)": 2,
+    "MA(3)": 3,
+    "MA(4)": 4,
+    "MA(5)": 5,
+}
+inicio_teste = len(matriz) - 4
+erros = {nome: [] for nome in periodos}
+
+for produto in matriz.columns:
+    serie = matriz[produto]
+
+    for posicao in range(inicio_teste, len(matriz)):
+        observado = float(serie.iloc[posicao])
+        for nome, periodo in periodos.items():
+            previsto = float(serie.iloc[posicao - periodo : posicao].mean())
+            erros[nome].append(abs(observado - previsto))
+
+maes = {
+    nome: sum(erros_metodo) / len(erros_metodo)
+    for nome, erros_metodo in erros.items()
+}
+for nome, mae in maes.items():
+    print(f"{nome}: MAE = {mae:.3f}")
+```
+
+Resultados esperados:
+
+| Método | Observações anteriores | MAE nas 48 previsões |
+| --- | ---: | ---: |
+| Ingênua | 1 | 0,667 |
+| MA(2) | 2 | 0,625 |
+| MA(3) | 3 | 0,500 |
+| MA(4) | 4 | 0,490 |
+| MA(5) | 5 | 0,483 |
+
+Nesta comparação sintética, MA(5) tem o menor MAE, mas sua vantagem sobre
+MA(4) é pequena: aproximadamente 0,006 linha por produto por semana. A
+previsão ingênua é a pior das cinco neste teste. Isso não demonstra que MA(5)
+seja a melhor escolha operacional; há somente quatro semanas de avaliação e
+os valores foram construídos para o tutorial.
+
+Também é possível comparar as previsões produzidas **agora**, usando todas as
+16 semanas disponíveis. São estimativas para a semana seguinte ao histórico,
+não observações nem garantias de vendas:
+
+| Produto | Ingênua | MA(2) | MA(3) | MA(4) | MA(5) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Jarro barro Tracunhaém (`p01`) | 2,00 | 2,00 | 2,00 | 2,50 | 2,40 |
+| Prato esmaltado Tracunhaém (`p02`) | 1,00 | 1,50 | 1,33 | 1,50 | 1,60 |
+| Boneca de barro (`p03`) | 0,00 | 0,50 | 1,00 | 1,00 | 1,00 |
+| Rendeira Alto do Moura (`p04`) | 2,00 | 2,00 | 2,33 | 2,00 | 2,00 |
+| Toalha de renda (`p05`) | 1,00 | 1,00 | 1,33 | 1,25 | 1,20 |
+| Caminho de mesa renda (`p06`) | 0,00 | 0,00 | 0,33 | 0,50 | 0,40 |
+| Xilogravura Pilar (`p07`) | 2,00 | 1,50 | 1,67 | 1,75 | 1,80 |
+| Cordel ilustrado (`p08`) | 1,00 | 1,50 | 1,33 | 1,25 | 1,00 |
+| Quadro xilo colorido (`p09`) | 0,00 | 0,50 | 0,33 | 0,25 | 0,40 |
+| Cesto de palha (`p10`) | 1,00 | 1,50 | 1,33 | 1,25 | 1,40 |
+| Bolsa de palha (`p11`) | 1,00 | 1,00 | 1,00 | 0,75 | 0,80 |
+| Sousplat de palha (`p12`) | 0,00 | 0,00 | 0,00 | 0,00 | 0,20 |
+
+As previsões finais podem diferir entre janelas porque cada janela enfatiza
+uma quantidade distinta de histórico. O MAE do teste avalia erros passados; ele
+não determina qual previsão futura ficará mais próxima. Se escolher uma janela,
+use mais dados históricos representativos e mantenha um período de avaliação
+final separado.
 
 ## 6. Interpretar e melhorar o experimento
 
