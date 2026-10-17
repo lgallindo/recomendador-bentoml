@@ -433,6 +433,45 @@ na base de descoberta com evidência de generalização. Dez transações por ba
 ainda são insuficientes para sustentar uma conclusão confiável sobre desempenho
 real; a diferença não demonstra, por si só, uma mudança de mercado.
 
+### Generalização: o que você espera das próximas compras?
+
+**Generalização** é a capacidade de uma regra ou modelo manter utilidade em
+dados novos, que não participaram de sua construção ou seleção, nas condições
+em que você pretende utilizá-lo. Para Jarro → Prato, isso significa investigar
+se a associação continua relevante em outras transações. Você não espera que
+as porcentagens sejam idênticas, mas precisa avaliar a estabilidade do padrão,
+a incerteza das estimativas e sua utilidade para a decisão de marketing.
+
+Dois conceitos de aprendizado de máquina ajudam a entender esse cuidado:
+
+- **Sobreajuste (*overfitting*):** ocorre quando o processo de aprendizado ou
+  seleção se adapta excessivamente às particularidades e ao ruído da base de
+  descoberta. Uma regra pode parecer excelente nessa base e perder utilidade
+  em dados novos. Por exemplo, procurar muitas combinações e escolher uma
+  regra muito específica, com confiança de 100% em apenas duas compras, pode
+  selecionar uma coincidência em vez de um padrão estável.
+- **Subajuste (*underfitting*):** ocorre quando o modelo ou a representação
+  utilizada é simples ou restrita demais para capturar padrões relevantes.
+  Por exemplo, permitir apenas antecedentes com um item pode deixar de
+  representar uma associação que depende da presença conjunta de dois itens.
+  Na mineração, filtros muito restritivos também podem excluir padrões úteis;
+  isso reduz a descoberta, mas não basta, por si só, para diagnosticar subajuste.
+
+Uma queda de métricas em dados separados pode motivar a investigação de
+sobreajuste, mas também pode resultar de variação amostral ou mudanças nas
+condições de compra. As duas bases sintéticas deste tutorial não permitem
+diagnosticar sobreajuste ou subajuste de um modelo real. A
+[comparação de subajuste e sobreajuste do scikit-learn](https://scikit-learn.org/stable/auto_examples/model_selection/plot_underfitting_overfitting.html)
+mostra esses conceitos em um exemplo de regressão; aqui você os utiliza para
+refletir sobre a capacidade e a seleção das regras.
+
+**Por que isso importa para marketing?** Uma oferta baseada em uma coincidência
+pode consumir espaço de exposição, orçamento de campanha ou margem de desconto
+sem trazer benefício. Uma análise excessivamente restrita pode deixar de revelar
+uma oportunidade de venda complementar. Validar em dados separados ajuda você
+a escolher hipóteses com maior sustentação; testar a ação depois verifica se
+transformá-las em uma oferta produz o resultado comercial desejado.
+
 ### Como preservar uma avaliação independente
 
 Em um projeto real, separe dados de descoberta, dados para ajustar critérios
@@ -657,6 +696,11 @@ ou compra. Consulta dos materiais on-line: 17 out. 2026.
     [Documentação em inglês](https://scikit-learn.org/stable/common_pitfalls.html).
     **Para consultar:** compreenda por que usar dados de avaliação durante
     a seleção produz estimativas excessivamente otimistas.
+
+12. SCIKIT-LEARN. **Underfitting vs. Overfitting**.
+    [Exemplo em inglês](https://scikit-learn.org/stable/auto_examples/model_selection/plot_underfitting_overfitting.html).
+    **Para aprofundar:** compare modelos com diferentes capacidades e observe
+    por que o ajuste aos exemplos conhecidos não garante desempenho em dados novos.
 
 Para uma leitura introdutória, comece pelo Sebrae e pelo resumo do
 artigo de Hernandez, Basso e Brandão; use as obras de Kotler, Malhotra e
