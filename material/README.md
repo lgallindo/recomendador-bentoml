@@ -10,8 +10,10 @@ junto com o código.
 
 | Arquivo | Conteúdo |
 | --- | --- |
-| [`tutorial-regras-associacao-20261017.md`](tutorial-regras-associacao-20261017.md) | Aula de 40 minutos: marketing orientado por dados, suporte, confiança, lift, relatório, exercício e bibliografia com prioridade a marketing em português |
+| [`tutorial-regras-associacao-20261017.md`](tutorial-regras-associacao-20261017.md) | Estudo de 60 minutos: IA, aprendizado de máquina, sistemas especialistas, mineração e validação de regras, marketing e bibliografia |
 | [`regras-associacao-20261017.csv`](regras-associacao-20261017.csv) | 14 regras das dez cestas, com contagens, métricas e limites reproduzíveis |
+| [`cestas-validacao-20261017.json`](cestas-validacao-20261017.json) | Cenário sintético adicional para avaliar uma regra fixa, separado das dez cestas originais |
+| [`imagens/`](imagens/README.md) | Diagrama de Venn, matriz de transações, comparação de métricas e ilustração da loja |
 | [`calculos-trabalhados.md`](calculos-trabalhados.md) | Contas passo a passo do exemplo do jarro (`p01`), alinhadas ao que `just curl-exemplo` deve devolver |
 
 ## Como usar na sala

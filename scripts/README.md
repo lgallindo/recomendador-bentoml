@@ -7,6 +7,7 @@ os slides seguem o fio didático. Este script é a ponte: congela esse arco num
 
 | Arquivo | Papel |
 | --- | --- |
+| [`gerar_figuras_associacao.py`](gerar_figuras_associacao.py) | Reproduz o diagrama de inclusão IA/ML, a matriz de cestas e a comparação de descoberta com avaliação separada |
 | [`minerar_regras_associacao.py`](minerar_regras_associacao.py) | Minera as cestas e gera o CSV da [aula de regras de associação](../material/tutorial-regras-associacao-20261017.md), sem dependências externas |
 | [`gerar_slides.py`](gerar_slides.py) | Gera [`../slides/recomendador-bentoml.pptx`](../slides/recomendador-bentoml.pptx) pelo **arco da aula** (ordem própria, distinta do README da raiz); uma variante por vez no deck |
 

@@ -4,24 +4,118 @@ Ao concluir este tutorial, você deverá conseguir calcular suporte, confiança 
 lift, ler um relatório de regras, justificar quais padrões merecem investigação
 e transformar esses padrões em hipóteses de marketing. Você também produzirá
 um breve relatório com contagens, métricas, interpretação e uma ação a testar.
-Os dados são sintéticos: os resultados descrevem estas dez cestas, sem
-constituir evidência sobre consumidores reais.
+Além disso, você situará a indução de regras dentro da inteligência artificial,
+explicará sua relação com sistemas especialistas e distinguirá descoberta,
+validação em novos dados e teste de uma ação de marketing.
+As bases são sintéticas: a descoberta usa dez cestas e a comparação de validação
+usa dez cestas adicionais. Os resultados não constituem evidência sobre
+consumidores reais.
 
 ### Roteiro de estudo
 
-Você pode seguir o roteiro abaixo em aproximadamente 40 minutos ou consultar
+Você pode seguir o roteiro abaixo em aproximadamente 60 minutos ou consultar
 cada seção separadamente para revisar os conceitos e reproduzir os resultados.
 
 | Tempo sugerido | Atividade de estudo |
 | --- | --- |
+| 10 min | Situar regras, aprendizado de máquina, IA e sistemas especialistas |
 | 5 min | Ler as transações e formular a pergunta |
 | 8 min | Construir as três métricas a partir de contagens |
 | 7 min | Calcular uma regra e sua inversa |
 | 7 min | Minerar itemsets e gerar regras |
 | 8 min | Comparar resultados e escrever um relato |
+| 10 min | Avaliar uma regra em transações separadas |
 | 5 min | Resolver o exercício e discutir a interpretação |
 
-## 1. A pergunta e as transações
+## 1. Da inteligência artificial à indução de regras
+
+**Inteligência artificial (IA)** é o campo que estuda e desenvolve sistemas
+capazes de realizar tarefas como raciocinar, aprender, perceber e tomar decisões.
+**Aprendizado de máquina**, ou *machine learning* (ML), é uma área da IA em que
+algoritmos extraem padrões dos dados para construir modelos ou regras.
+Você não precisa usar uma rede neural para trabalhar com aprendizado de máquina.
+Veja a [introdução ao aprendizado de máquina da IBM](https://www.ibm.com/br-pt/think/topics/machine-learning).
+
+![Diagrama de Venn com quatro círculos encaixados: inteligência artificial contém aprendizado de máquina, que contém aprendizado não supervisionado, que contém mineração de regras de associação. Sistemas especialistas clássicos aparecem na região de IA simbólica; validação é indicada como prática transversal.](imagens/venn-ia-aprendizado-regras.png)
+
+*Figura 1 — Diagrama de Venn com conjuntos encaixados, também chamado diagrama
+de inclusão ou de Euler. As áreas indicam pertencimento, não o tamanho relativo
+dos campos. O mapa destaca o caminho deste tutorial, sem enumerar toda a IA.*
+
+Leia a figura de fora para dentro:
+
+1. **Inteligência artificial:** inclui abordagens que aprendem com dados e
+   abordagens que representam conhecimento por símbolos e regras explícitas.
+2. **Aprendizado de máquina:** aprende padrões a partir de exemplos. As pessoas
+   ainda definem objetivos, dados, algoritmos e critérios de avaliação.
+3. **Aprendizado não supervisionado:** procura estruturas nos dados sem uma
+   resposta-alvo previamente rotulada para cada exemplo.
+4. **Mineração de regras de associação:** encontra conjuntos frequentes e
+   relações como `{Jarro} → {Prato}` nas transações. Você não fornece previamente
+   uma lista de regras corretas para o algoritmo reproduzir.
+
+Essa classificação acompanha a
+[apresentação de aprendizado não supervisionado da IBM](https://www.ibm.com/br-pt/think/topics/unsupervised-learning),
+que inclui associação entre suas tarefas. A mineração também é estudada em
+mineração de dados e descoberta de conhecimento em bases de dados.
+
+**Induzir uma regra** é partir de exemplos particulares para formular um padrão
+mais geral. Neste exercício, o algoritmo identifica quais conjuntos e relações
+aparecem nas cestas; as pessoas escolhem os limites de seleção. A existência da
+regra não garante que ela se mantenha em outras compras: essa é uma questão de
+validação.
+
+Indução de regras é mais ampla que associação: métodos supervisionados também
+podem aprender regras para prever uma classe conhecida, como “comprará” ou
+“não comprará”. O círculo menor localiza **estas regras de associação**, não
+todas as formas de aprendizado de regras. **Validação é uma prática transversal
+do aprendizado de máquina**, e não um nível adicional da hierarquia: ela avalia
+se regras e modelos funcionam além dos exemplos usados para construí-los.
+
+### Regras e sistemas especialistas
+
+Um **sistema especialista** é um sistema de IA que representa conhecimento de
+um domínio delimitado e usa mecanismos de inferência para apoiar conclusões
+ou recomendações que exigem conhecimento especializado. Na abordagem clássica
+baseada em regras, você encontra:
+
+- **Base de conhecimento:** fatos gerais e regras do domínio, muitas vezes
+  escritas no formato **SE condição ENTÃO conclusão ou ação**.
+- **Fatos do caso atual:** informações disponíveis sobre a situação analisada.
+- **Motor de inferência:** mecanismo que verifica condições e aplica ou encadeia
+  regras para chegar a conclusões, podendo registrar como elas foram obtidas.
+
+Sistemas especialistas pertencem à **IA simbólica** e podem funcionar com
+conhecimento fornecido por pessoas, sem aprender suas regras automaticamente.
+O artigo de [Mendes (1997)](https://www.scielo.br/j/ci/a/MqGHKkTLcPxhhjgpDz9ZNNd/?lang=pt)
+apresenta essa tradição na gestão da informação.
+
+Você pode usar regras para definir o comportamento de um sistema especialista.
+Um exemplo simplificado para apoio à loja seria:
+
+```text
+Fatos: o cliente consulta Jarro; Prato está em estoque;
+       a relação Jarro → Prato foi aprovada para uso.
+
+Regra: SE o cliente consulta Jarro
+       E Prato está em estoque
+       E a relação foi aprovada
+       ENTÃO incluir Prato entre as sugestões e registrar a justificativa.
+```
+
+Aqui, a condição sobre estoque e a decisão de sugerir são políticas definidas
+para a operação; a relação entre produtos pode ter origem em mineração e depois
+ser validada e revisada. Você combina aprendizado de máquina com conhecimento
+explícito em um **sistema híbrido**. Sistemas especialistas baseados em regras
+e sistemas que aprendem com dados são abordagens da IA que podem cooperar.
+
+Uma regra estatística `{Jarro} → {Prato}` descreve frequências; ela não prova
+a implicação lógica “todo comprador de Jarro compra Prato”. Antes de transformá-la
+em regra de ação, você precisa avaliar evidência, utilidade e condições de uso.
+Um CSV de associações ou um único filtro `if` também não constitui, por si só,
+um sistema especialista completo.
+
+## 2. A pergunta e as transações
 
 Uma loja de artesanato quer investigar: **quais produtos tendem a aparecer
 juntos nas compras?** Uma regra como `{Jarro} → {Prato}` resume uma associação
@@ -43,6 +137,13 @@ a pesquisa começa com um problema de decisão e organiza a coleta e a análise
 (Farris et al., 2012); a tecnologia deve contribuir para o valor entregue na
 jornada do cliente (Kotler, Kartajaya e Setiawan, 2021). As referências
 bibliográficas e os links de consulta estão ao final.
+
+![Uma lojista de artesanato consulta compras representadas por recibos, analisa uma sugestão de Jarro e Prato no computador e compara duas apresentações da loja.](imagens/marketing-artesanato.png)
+
+*Figura 2 — Dos registros de compra a uma hipótese de exposição de produtos.
+Ilustração gerada por IA; as barras são ilustrativas e não representam resultados
+medidos. Uma sugestão precisa ser avaliada antes de você atribuir a ela ganhos
+comerciais.*
 
 | Passo | Pergunta da equipe de marketing | Entrega da análise |
 | --- | --- | --- |
@@ -95,7 +196,13 @@ Há 12 produtos cadastrados, mas apenas 11 observados nas cestas. `p12` tem
 suporte zero nesta amostra. Os campos `pedidos` e a série de vendas semanais
 não participam das contas: todas as frequências abaixo vêm destas dez transações.
 
-## 2. Três perguntas, três denominadores
+![Matriz das dez cestas com os doze produtos do catálogo. Jarro está em quatro linhas, Prato em três, e os dois juntos nas cestas 1, 2 e 10, destacadas por contornos.](imagens/matriz-cestas.png)
+
+*Figura 3 — Cada linha representa uma transação; cada coluna, um produto.
+Conte as presenças nas colunas de Jarro e Prato para reproduzir os denominadores
+das métricas. O contorno marca as três ocorrências conjuntas.*
+
+## 3. Três perguntas, três denominadores
 
 Sejam A e B conjuntos de itens não vazios e sem itens em comum.
 `n(A)` é o número de cestas contendo **todos** os itens de A; `N` é o total
@@ -144,7 +251,7 @@ aumento de 250%. Suporte e confiança ficam entre 0 e 1; lift pode ultrapassar 1
 Essas interpretações seguem as definições da
 [documentação de regras de associação do mlxtend](https://rasbt.github.io/mlxtend/user_guide/frequent_patterns/association_rules/).
 
-## 3. Conta completa: Jarro → Prato
+## 4. Conta completa: Jarro → Prato
 
 Jarro (`p01`) aparece nas cestas 1, 2, 8 e 10: `n(A)=4`.
 Prato (`p02`) aparece nas cestas 1, 2 e 10: `n(B)=3`.
@@ -167,7 +274,7 @@ a `3/3=100%` e o lift é `1/0,40=2,50`. Para a regra inversa, suporte e lift
 são iguais, mas a confiança pode diferir. Os 100% descrevem apenas três casos;
 não garantem o comportamento da próxima compra.
 
-## 4. Como as regras são mineradas
+## 5. Como as regras são mineradas
 
 Neste conjunto de dados, aplique os seguintes critérios de seleção:
 
@@ -226,7 +333,7 @@ A ordenação do relatório é lift decrescente, depois confiança e suporte
 decrescentes, com desempate pelos IDs. Essa ordem facilita a inspeção e não
 define automaticamente a melhor ação comercial.
 
-## 5. Resultados completos e comparação
+## 6. Resultados completos e comparação
 
 Abreviações: J = Jarro (`p01`), P = Prato (`p02`), B = Boneca (`p03`),
 R = Rendeira (`p04`), T = Toalha (`p05`), X = Xilogravura (`p07`),
@@ -265,7 +372,89 @@ A está em 10; ambos estão em 8. A regra A → B tem suporte 8%, confiança 80%
 e lift `0,80/0,90 ≈ 0,89`. Apesar dos 80%, B é menos frequente entre cestas
 com A que na amostra inteira. O lift revela essa diferença de referência.
 
-## 6. Como escrever o relatório
+## 7. Como validar uma regra em dados separados
+
+Calcular métricas nas mesmas cestas usadas para selecionar regras descreve a
+**descoberta**. Para investigar se o padrão se mantém, fixe a regra escolhida
+e recalcule suas métricas em transações que não participaram da seleção.
+
+| Etapa | Pergunta | Evidência |
+| --- | --- | --- |
+| Descoberta | Que regras emergem das compras analisadas? | Itemsets, contagens e métricas na base de descoberta |
+| Validação | A regra selecionada mantém o padrão em dados separados? | Métricas recalculadas para a mesma regra |
+| Experimento de marketing | Agir com base na regra melhora o resultado? | Comparação entre grupos com e sem a intervenção |
+
+### Um padrão pode enfraquecer
+
+Mantenha **Jarro → Prato** como regra fixa. Além das dez cestas originais,
+considere as dez transações sintéticas adicionais de
+[`cestas-validacao-20261017.json`](cestas-validacao-20261017.json):
+
+| Nova cesta | Itens |
+| --- | --- |
+| V1 | p01, p02 |
+| V2 | p01, p03 |
+| V3 | p01, p10 |
+| V4 | p01, p04 |
+| V5 | p02, p05 |
+| V6 | p02, p07 |
+| V7 | p04, p05 |
+| V8 | p07, p08 |
+| V9 | p10, p11 |
+| V10 | p04, p06 |
+
+Estas cestas adicionais são um **cenário hipotético construído para comparação**,
+não um período observado nem evidência empírica independente. Elas não alteram
+o relatório original de 14 regras. Recalcular a regra fixa não exige minerar
+novamente nem misturar as duas bases.
+
+| Contagem ou métrica | Descoberta: base original | Avaliação: cenário adicional |
+| --- | ---: | ---: |
+| Total de cestas | 10 | 10 |
+| Cestas com Jarro | 4 | 4 |
+| Cestas com Prato | 3 | 3 |
+| Cestas com ambos | 3 | 1 |
+| Suporte | 3/10 = 30% | 1/10 = 10% |
+| Confiança | 3/4 = 75% | 1/4 = 25% |
+| Lift | 0,75/0,30 = 2,50 | 0,25/0,30 ≈ 0,83 |
+
+![Três gráficos comparam Jarro para Prato em duas bases sintéticas: suporte cai de 30% para 10%, confiança de 75% para 25% e lift de 2,50 para aproximadamente 0,83.](imagens/descoberta-validacao.png)
+
+*Figura 4 — Avaliar a mesma regra em outra base pode mudar sua interpretação.
+O lift passa para abaixo da referência 1; as frequências individuais de Jarro
+e Prato continuam iguais. Os números são calculados a partir dos dois arquivos.*
+
+Nesse cenário, a regra não atende mais aos critérios originais: suporte ≥ 20%,
+confiança ≥ 60% e lift > 1. Isso ilustra por que você não deve confundir seleção
+na base de descoberta com evidência de generalização. Dez transações por base
+ainda são insuficientes para sustentar uma conclusão confiável sobre desempenho
+real; a diferença não demonstra, por si só, uma mudança de mercado.
+
+### Como preservar uma avaliação independente
+
+Em um projeto real, separe dados de descoberta, dados para ajustar critérios
+quando necessário e um conjunto reservado à avaliação final. Para uma aplicação
+futura, uma separação temporal pode aproximar melhor o uso pretendido: aprender
+com compras anteriores e avaliar em compras posteriores. Evite compartilhar
+registros duplicados ou informações indevidas entre as etapas.
+
+Defina as regras e os critérios antes de consultar a avaliação final. Se você
+altera os filtros ou troca as regras repetidamente para melhorar o resultado
+nesse conjunto, ele passa a participar da seleção; uma avaliação final exige
+outros dados ainda não utilizados. Esse cuidado segue o princípio de prevenção
+de [vazamento de dados explicado pelo scikit-learn](https://scikit-learn.org/stable/common_pitfalls.html).
+
+Suporte e lift também não substituem uma análise de incerteza. **Confiança não
+é certeza estatística nem nível de confiança de um intervalo.** Lift > 1 não
+é, sozinho, teste de significância. Ao examinar muitas regras, você pode
+encontrar padrões ocasionais; em aplicações reais, considere o volume de
+observações, a incerteza das estimativas e a multiplicidade das comparações.
+
+Mesmo uma regra estável em dados separados não mostra que exibir um produto
+causa mais vendas. Para avaliar esse efeito, você precisa testar a ação de
+marketing, como no exemplo da próxima seção.
+
+## 8. Como escrever o relatório
 
 Comece pela origem e pelo tamanho da amostra, unidade de transação, período
 (aqui: exemplos sintéticos sem período real), critérios de seleção e método.
@@ -279,6 +468,15 @@ Modelo reutilizável:
 > Entre […] transações com A, […] incluem B (confiança […]), enquanto B ocorre
 > em […] da base inteira. O lift […] indica […]. Propomos investigar […],
 > considerando o número de observações e validando em novos dados.
+
+Se você também avaliou a regra em uma base separada, identifique essa base e
+relate suas métricas em outro trecho. Por exemplo:
+
+> No cenário adicional de dez cestas sintéticas, a regra fixa Jarro → Prato
+> apresenta suporte 10%, confiança 25% e lift aproximadamente 0,83. Ela não
+> atende aos critérios originais nesse cenário. A comparação exemplifica a
+> avaliação em dados separados; como os dados foram construídos, não demonstra
+> desempenho em compras reais nem efeito de uma ação comercial.
 
 Para a loja, uma hipótese seria testar exposição conjunta de Jarro e Prato.
 As métricas da amostra não demonstram que essa exposição aumentará vendas.
@@ -320,7 +518,7 @@ passaram nos filtros, não esconda a contagem absoluta e considere redundância.
 Esta base minúscula serve para aprender a conta; associações observadas podem
 ser instáveis. Associação não estabelece causalidade nem sequência temporal.
 
-## 7. Exercício: produza seu relatório
+## 9. Exercício: produza seu relatório
 
 Use as dez cestas para analisar a regra **Prato → Boneca**. Seu relatório deve
 conter:
@@ -332,8 +530,13 @@ conter:
    para a ausência de Jarro → {Prato,Boneca} no relatório completo.
 5. Uma hipótese de ação de marketing, a métrica que você usaria para avaliar
    seu efeito e uma limitação da evidência disponível.
+6. Um parágrafo explicando por que minerar essas associações é aprendizado
+   não supervisionado dentro de ML e IA, e como uma regra aprovada poderia
+   integrar a base de conhecimento de um sistema especialista.
+7. Uma avaliação de **Jarro → Prato** nas cestas adicionais: recalcule suas
+   métricas e explique a diferença entre descoberta, validação e experimento.
 
-Você pode usar o modelo da seção 6 e conferir seus resultados na resolução a
+Você pode usar o modelo da seção 8 e conferir seus resultados na resolução a
 seguir. A resolução permanece disponível para consulta durante o estudo.
 
 ### Resolução comentada
@@ -356,6 +559,22 @@ página atual e a página com sugestão, compare pedidos contendo Boneca por
 visitante elegível e acompanhe a margem por visitante. O padrão vem de apenas
 duas compras conjuntas em dados sintéticos: ele permite formular a hipótese,
 mas não estimar o ganho que a intervenção causará.
+
+**Posição na IA e uso das regras:** a mineração procura relações nas compras
+sem uma resposta-alvo rotulada para cada cesta. Ela é uma tarefa de aprendizado
+não supervisionado, dentro de aprendizado de máquina e de inteligência
+artificial. Uma associação validada pode ajudar a construir uma regra de
+sugestão na base de conhecimento de um sistema especialista; condições como
+estoque e elegibilidade podem ser definidas por especialistas humanos. Aplicar
+a regra com um motor de inferência é diferente de induzi-la a partir dos dados.
+
+**Avaliação separada:** nas cestas adicionais, Jarro está em quatro transações,
+Prato em três e ambos em uma. O suporte é 10%, a confiança é 25% e o lift é
+aproximadamente 0,83. A regra não passa nos filtros originais nesse cenário.
+A descoberta seleciona padrões; a validação investiga sua persistência em
+dados separados; o experimento avalia o efeito de uma ação. Como ambas as
+bases são pequenas e sintéticas, esse resultado demonstra o procedimento e
+não valida ou invalida comercialmente a regra.
 
 ## Referências bibliográficas e roteiro de leitura
 
@@ -414,6 +633,27 @@ ou compra. Consulta dos materiais on-line: 17 out. 2026.
    Documentação em inglês, [disponível on-line](https://rasbt.github.io/mlxtend/user_guide/frequent_patterns/apriori/).
    **Para aprofundar:** explore a geração de itemsets frequentes e a propriedade
    de fechamento para subconjuntos.
+
+8. IBM. **O que é o aprendizado de máquina?** [Introdução em português](https://www.ibm.com/br-pt/think/topics/machine-learning).
+   **Para consultar:** situe aprendizado de máquina no campo da IA e compare
+   diferentes formas de aprendizado.
+
+9. IBM. **O que é aprendizado não supervisionado?** 2021.
+   [Texto em português](https://www.ibm.com/br-pt/think/topics/unsupervised-learning).
+   **Para consultar:** relacione mineração de associações, agrupamento e
+   exploração de dados sem respostas-alvo rotuladas.
+
+10. MENDES, Raquel Dias. **Inteligência artificial: sistemas especialistas no
+    gerenciamento da informação**. *Ciência da Informação*, v. 26, n. 1, 1997.
+    DOI: 10.1590/S0100-19651997000100006.
+    [Artigo em português](https://www.scielo.br/j/ci/a/MqGHKkTLcPxhhjgpDz9ZNNd/?lang=pt).
+    **Para aprofundar:** conheça a representação de conhecimento e a arquitetura
+    de sistemas especialistas como abordagem de inteligência artificial.
+
+11. SCIKIT-LEARN. **Common pitfalls and recommended practices**.
+    [Documentação em inglês](https://scikit-learn.org/stable/common_pitfalls.html).
+    **Para consultar:** compreenda por que usar dados de avaliação durante
+    a seleção produz estimativas excessivamente otimistas.
 
 Para uma leitura introdutória, comece pelo Sebrae e pelo resumo do
 artigo de Hernandez, Basso e Brandão; use as obras de Kotler, Malhotra e
