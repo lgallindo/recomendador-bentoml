@@ -13,7 +13,7 @@ consumidores reais.
 
 ### Roteiro de estudo
 
-Você pode seguir o roteiro abaixo em aproximadamente 60 minutos ou consultar
+Você pode seguir o roteiro abaixo em aproximadamente 75 minutos ou consultar
 cada seção separadamente para revisar os conceitos e reproduzir os resultados.
 
 | Tempo sugerido | Atividade de estudo |
@@ -25,6 +25,7 @@ cada seção separadamente para revisar os conceitos e reproduzir os resultados.
 | 7 min | Minerar itemsets e gerar regras |
 | 8 min | Comparar resultados e escrever um relato |
 | 10 min | Avaliar uma regra em transações separadas |
+| 15 min | Explorar regras com BI e exportar uma evidência visual |
 | 5 min | Resolver o exercício e discutir a interpretação |
 
 ## 1. Da inteligência artificial à indução de regras
@@ -560,7 +561,107 @@ passaram nos filtros, não esconda a contagem absoluta e considere redundância.
 Esta base minúscula serve para aprender a conta; associações observadas podem
 ser instáveis. Associação não estabelece causalidade nem sequência temporal.
 
-## 9. Exercício: produza seu relatório
+## 9. Como BI ajuda você a visualizar regras
+
+**Business Intelligence (BI)** reúne práticas e ferramentas para organizar,
+analisar e apresentar dados que apoiam decisões. Você pode usar um painel para
+descobrir quais regras merecem atenção, comparar seus indicadores e consultar
+as contagens que sustentam uma recomendação. Um gráfico bem apresentado não
+dispensa validação nem demonstra que uma campanha funcionará.
+
+O [explorador de regras](bi/index.html) oferece tabela, dispersão, matriz,
+rede e comparação entre bases. Para executá-lo, abra esse HTML no navegador
+a partir de uma cópia local do repositório: a página do arquivo no GitHub exibe
+seu código. Consulte o [roteiro de exploração](bi/README.md). O painel funciona
+sem internet e sem instalar um serviço; as figuras abaixo também permitem
+estudar os resultados diretamente neste documento.
+
+### Dispersão: alcance, frequência condicional e regras coincidentes
+
+![Dispersão das 14 regras originais em quatro posições: sete regras têm suporte 20% e confiança 100%; cinco têm 20% e aproximadamente 66,7%; uma tem 30% e 100%; uma tem 30% e 75%. A cor mostra o maior lift de cada grupo.](imagens/bi-dispersao.png)
+
+*Figura 5 — Suporte no eixo horizontal e confiança no vertical. O número indica
+quantas regras compartilham a posição. A cor representa o maior lift do grupo,
+não uma média. No explorador, selecione uma posição para consultar todas as
+regras e seus respectivos lifts.*
+
+Jarro → Prato tem suporte maior que Prato → Boneca, mas lift menor. A dispersão
+permite comparar esses aspectos antes de você decidir qual hipótese investigar.
+Regras diferentes podem ter as mesmas métricas: quatro pontos não significam
+que existam apenas quatro regras.
+
+### Matriz: de qual conjunto para qual conjunto?
+
+![Matriz das regras com antecedentes nas linhas e consequentes nas colunas. As células presentes mostram lift 2,50 ou aproximadamente 3,33; conjuntos com dois itens aparecem como rótulos completos.](imagens/bi-matriz.png)
+
+*Figura 6 — Cada célula representa uma regra direcionada. “—” significa que
+a regra não está no relatório exibido; não significa suporte zero. Os IDs são
+os mesmos do catálogo. No painel, selecione uma célula para consultar nomes,
+contagens e confiança.*
+
+O lift de Jarro → Prato é igual ao da regra inversa. Essa simetria do indicador
+não torna as duas regras equivalentes: compare suas confianças e denominadores
+na tabela de detalhes. Você pode encontrar antecedentes ou consequentes com
+vários itens; trate cada rótulo como um conjunto inteiro.
+
+### Rede: como as regras compartilham conjuntos
+
+![Rede bipartida com conjuntos antecedentes à esquerda e consequentes à direita. As setas mostram as 14 associações e preservam os conjuntos com mais de um item.](imagens/bi-rede.png)
+
+*Figura 7 — Um nó como {p01 + p03} representa a presença conjunta de Jarro e
+Boneca. Não o divida em duas regras individuais. A seta indica a direção da
+associação, não uma causa; a espessura representa a confiança na descoberta.*
+
+Dispersão, matrizes e redes são formas de explorar regras discutidas por
+[Hahsler (2017)](https://journal.r-project.org/articles/RJ-2017-047/).
+Neste exercício, a tabela permanece disponível para você conferir cada valor.
+
+### Filtros, métricas e origem dos dados
+
+O painel filtra **as 14 regras previamente selecionadas**. Alterar um limite
+na tela não minera novas regras e não recupera regras ausentes do relatório.
+A busca também não altera o conjunto de transações nem os denominadores.
+Para analisar outra população de compras, você precisa recalcular as contagens
+e as métricas nessa população, em vez de tirar médias dos indicadores.
+
+Escolher a base de avaliação mostra os valores dessas mesmas regras nas dez
+cestas adicionais. A comparação da regra selecionada permanece visível mesmo
+quando ela deixa de atender aos filtros, para que você observe o enfraquecimento
+do padrão. Use **Ver toda a seleção original** para desativar os filtros métricos
+e investigar inclusive valores zero ou métricas indefinidas nessa base.
+
+### Atividade: do painel a uma recomendação
+
+1. Selecione Jarro → Prato e inverta a regra. Explique por que o suporte e o
+   lift permanecem iguais, enquanto a confiança muda.
+2. Selecione o ponto de suporte 20% e confiança 100%. Quantas regras ele reúne?
+   Todas têm o mesmo lift? Escolha duas para justificar sua resposta.
+3. Localize {Jarro,Boneca} → Prato na matriz ou na rede. Explique por que isso
+   não equivale a duas associações com antecedentes individuais.
+4. Retorne a Jarro → Prato, escolha a avaliação separada e observe seus valores.
+   Explique por que desaparecer de um gráfico filtrado não significa não ter
+   sido avaliada.
+5. Exporte um PNG e um CSV e escreva uma recomendação de até cinco frases que
+   identifique a base, a regra, suas métricas, uma limitação e uma ação a testar.
+
+**Resolução comentada:** Jarro → Prato tem confiança 75%; Prato → Jarro tem
+100%, pois seus antecedentes aparecem em quatro e três transações,
+respectivamente. Ambas têm suporte 30% e lift 2,50. O ponto de 20% e 100%
+reúne sete regras: Boneca → Prato tem lift aproximadamente 3,33, enquanto
+Boneca → Jarro tem lift 2,50. {Jarro,Boneca} → Prato exige os dois itens
+no antecedente; sua confiança usa o número de cestas contendo ambos.
+Na avaliação separada, Jarro → Prato tem suporte 10%, confiança 25% e lift
+aproximadamente 0,83, ficando fora dos critérios originais, mas mantendo suas
+contagens disponíveis na comparação.
+
+Uma recomendação possível é: “Na descoberta sintética, Jarro → Prato aparece
+em três de dez cestas, com suporte 30%, confiança 75% e lift 2,50. No cenário
+adicional, as métricas caem para 10%, 25% e aproximadamente 0,83. A comparação
+não demonstra estabilidade em compras reais. Proponho investigar a associação
+em novas transações reais antes de testar uma sugestão de Prato na página de
+Jarro e avaliar seu efeito sobre compras e margem.”
+
+## 10. Exercício: produza seu relatório
 
 Use as dez cestas para analisar a regra **Prato → Boneca**. Seu relatório deve
 conter:
@@ -701,6 +802,13 @@ ou compra. Consulta dos materiais on-line: 17 out. 2026.
     [Exemplo em inglês](https://scikit-learn.org/stable/auto_examples/model_selection/plot_underfitting_overfitting.html).
     **Para aprofundar:** compare modelos com diferentes capacidades e observe
     por que o ajuste aos exemplos conhecidos não garante desempenho em dados novos.
+
+13. HAHSLER, Michael. **arulesViz: Interactive Visualization of Association
+    Rules with R**. *The R Journal*, v. 9, n. 2, p. 163–175, 2017.
+    DOI: 10.32614/RJ-2017-047.
+    [Artigo em inglês](https://journal.r-project.org/articles/RJ-2017-047/).
+    **Para aprofundar:** compare dispersão, matrizes e redes para explorar
+    regras; examine como a interação ajuda a identificar padrões e consultar detalhes.
 
 Para uma leitura introdutória, comece pelo Sebrae e pelo resumo do
 artigo de Hernandez, Basso e Brandão; use as obras de Kotler, Malhotra e
