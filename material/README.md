@@ -10,6 +10,8 @@ junto com o código.
 
 | Arquivo | Conteúdo |
 | --- | --- |
+| [`tutorial-regras-associacao-20261017.md`](tutorial-regras-associacao-20261017.md) | Aula de 40 minutos: mineração, suporte, confiança, lift, relatório, exercício e gabarito |
+| [`regras-associacao-20261017.csv`](regras-associacao-20261017.csv) | 14 regras das dez cestas, com contagens, métricas e limites reproduzíveis |
 | [`calculos-trabalhados.md`](calculos-trabalhados.md) | Contas passo a passo do exemplo do jarro (`p01`), alinhadas ao que `just curl-exemplo` deve devolver |
 
 ## Como usar na sala

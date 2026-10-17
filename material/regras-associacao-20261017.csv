@@ -1,0 +1,15 @@
+antecedente_ids,consequente_ids,antecedente,consequente,total_cestas,contagem_antecedente,contagem_consequente,contagem_conjunta,suporte,confianca,lift,suporte_minimo,confianca_minima,lift_maior_que
+p01 + p03,p02,Jarro barro Tracunhaém + Boneca de barro,Prato esmaltado Tracunhaém,10,2,3,2,0.200000,1.000000,3.333333,0.200000,0.600000,1.000000
+p03,p01 + p02,Boneca de barro,Jarro barro Tracunhaém + Prato esmaltado Tracunhaém,10,2,3,2,0.200000,1.000000,3.333333,0.200000,0.600000,1.000000
+p03,p02,Boneca de barro,Prato esmaltado Tracunhaém,10,2,3,2,0.200000,1.000000,3.333333,0.200000,0.600000,1.000000
+p05,p04,Toalha de renda,Rendeira Alto do Moura,10,2,3,2,0.200000,1.000000,3.333333,0.200000,0.600000,1.000000
+p08,p07,Cordel ilustrado,Xilogravura Pilar,10,2,3,2,0.200000,1.000000,3.333333,0.200000,0.600000,1.000000
+p01 + p02,p03,Jarro barro Tracunhaém + Prato esmaltado Tracunhaém,Boneca de barro,10,3,2,2,0.200000,0.666667,3.333333,0.200000,0.600000,1.000000
+p02,p01 + p03,Prato esmaltado Tracunhaém,Jarro barro Tracunhaém + Boneca de barro,10,3,2,2,0.200000,0.666667,3.333333,0.200000,0.600000,1.000000
+p02,p03,Prato esmaltado Tracunhaém,Boneca de barro,10,3,2,2,0.200000,0.666667,3.333333,0.200000,0.600000,1.000000
+p04,p05,Rendeira Alto do Moura,Toalha de renda,10,3,2,2,0.200000,0.666667,3.333333,0.200000,0.600000,1.000000
+p07,p08,Xilogravura Pilar,Cordel ilustrado,10,3,2,2,0.200000,0.666667,3.333333,0.200000,0.600000,1.000000
+p02,p01,Prato esmaltado Tracunhaém,Jarro barro Tracunhaém,10,3,4,3,0.300000,1.000000,2.500000,0.200000,0.600000,1.000000
+p02 + p03,p01,Prato esmaltado Tracunhaém + Boneca de barro,Jarro barro Tracunhaém,10,2,4,2,0.200000,1.000000,2.500000,0.200000,0.600000,1.000000
+p03,p01,Boneca de barro,Jarro barro Tracunhaém,10,2,4,2,0.200000,1.000000,2.500000,0.200000,0.600000,1.000000
+p01,p02,Jarro barro Tracunhaém,Prato esmaltado Tracunhaém,10,4,3,3,0.300000,0.750000,2.500000,0.200000,0.600000,1.000000
