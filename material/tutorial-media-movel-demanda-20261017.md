@@ -1,17 +1,21 @@
 # Previsão de demanda semanal com média móvel
 
+[Leia a versão web com o explorador interativo incorporado](https://lgallindo.github.io/recomendador-bentoml/demanda/).
+
 Ao concluir este tutorial, você deverá conseguir organizar vendas semanais por
 produto, calcular uma previsão com média móvel, comparar o resultado com uma
-previsão ingênua e interpretar um erro de previsão. Você também distinguirá a
-previsão de uma contagem semanal da popularidade usada pelo recomendador.
+previsão ingênua, interpretar um erro de previsão e explorar a série com um
+painel de BI. Você também distinguirá a previsão de uma contagem semanal da
+popularidade usada pelo recomendador.
 
 Os dados deste exercício são **sintéticos**. As 16 semanas distribuem os totais
-de pedidos já existentes no catálogo; não representam vendas observadas nem
-permitem concluir que a média móvel funcionaria igualmente bem numa loja real.
+de pedidos já existentes no catálogo. Elas servem para praticar o método e o
+painel; o desempenho numa loja real exigiria histórico observado e avaliação
+própria.
 
 ### Roteiro de estudo
 
-Você pode seguir o roteiro abaixo em aproximadamente 50 minutos ou consultar
+Você pode seguir o roteiro abaixo em aproximadamente 65 minutos ou consultar
 cada seção separadamente.
 
 | Tempo sugerido | Atividade de estudo |
@@ -21,6 +25,7 @@ cada seção separadamente.
 | 10 min | Executar o código com pandas |
 | 12 min | Comparar janelas em avaliação temporal |
 | 7 min | Interpretar resultados e limitações |
+| 15 min | Explorar a série com BI e exportar uma evidência visual |
 | 10 min | Resolver o exercício |
 
 ### Como este método se encaixa em IA e aprendizado de máquina
@@ -28,15 +33,14 @@ cada seção separadamente.
 **Inteligência artificial (IA)** é o campo amplo que estuda sistemas capazes
 de realizar tarefas como aprender, raciocinar, perceber e apoiar decisões.
 **Aprendizado de máquina (ML)** é uma área da IA em que algoritmos aprendem
-padrões a partir de dados. Nem todo sistema de IA aprende com dados e nem todo
-método estatístico de previsão é, por isso só, um modelo de ML.
+padrões a partir de dados. Métodos estatísticos de previsão e modelos de ML
+podem abordar o mesmo problema por caminhos distintos.
 
 Previsão de demanda é um **problema**: estimar valores futuros com base em
-informações disponíveis. Há diferentes famílias de soluções. Estatística e
-previsão de séries temporais oferecem métodos como médias móveis; ML pode usar
-características e exemplos históricos para ajustar um modelo; regras de negócio
-também podem fornecer referências simples. Esses caminhos podem se complementar,
-mas não são nomes intercambiáveis.
+informações disponíveis. Estatística e previsão de séries temporais oferecem
+métodos como médias móveis; ML pode usar características e exemplos históricos
+para ajustar um modelo; regras de negócio também podem fornecer referências
+simples. Esses caminhos podem se complementar.
 
 ![Diagrama conceitual: IA contém ML; estatística e previsão de séries temporais aparecem como áreas relacionadas, mas não equivalentes a ML; média móvel está destacada como baseline estatístico para o problema de previsão de demanda.](imagens/mapa-ia-previsao-demanda.png)
 
@@ -528,12 +532,69 @@ o resultado é 2,5 linhas de pedido esperadas na semana seguinte. Arredonde
 somente se uma decisão operacional exigir uma quantidade inteira e documente
 como fez isso.
 
-## 8. Exercício: preveja a demanda da Boneca
+## 8. Como BI ajuda você a visualizar previsões
+
+**Business Intelligence (BI)** reúne práticas e ferramentas para organizar,
+analisar e apresentar dados que apoiam decisões. Neste painel, você percorre a
+série de um produto, confere previsões walk-forward e compara o MAE entre
+janelas. Um gráfico bem apresentado acompanha a conta; a validação temporal e
+o relato continuam necessários.
+
+O [explorador de demanda](bi-demanda/index.html) oferece série, erros no teste,
+comparação de janelas e tabela auditável. Você pode usá-lo incorporado à
+[versão web deste tutorial](https://lgallindo.github.io/recomendador-bentoml/demanda/#explorador-interativo).
+Para estudar offline, abra o HTML a partir de uma cópia local do repositório:
+a página do arquivo no GitHub exibe o código. Consulte o
+[roteiro de exploração](bi-demanda/README.md).
+
+Para contas à mão na lousa, use também a
+[planilha de sala](planilha-media-movel-demanda.xlsx): uma aba por produto, com
+as 16 semanas do CSV nas primeiras linhas e colunas em branco para o quadro.
+A extensão sintética dessa planilha **não** alimenta o explorador; o painel
+usa somente `dados/vendas_semanais.csv`.
+
+As figuras abaixo permitem estudar os mesmos recortes na versão Markdown.
+
+### Série: observação, previsão e próxima semana
+
+![Série semanal sintética do Jarro p01 com previsões MA(4) walk-forward, faixa de teste destacada e ponto da previsão para a semana seguinte.](imagens/bi-demanda-serie-p01.png)
+
+*Figura 5 — Observações em linha contínua; previsões MA(4) em tracejado. A faixa
+sombreada marca as quatro semanas de teste. O ponto terracota é a estimativa
+para a semana posterior ao histórico disponível. No explorador, troque o
+produto e a janela para repetir a leitura.*
+
+### Erros: distância em cada semana do teste
+
+![Barras de erro absoluto de MA(4) nas quatro semanas de teste de p01, com linha do MAE do produto.](imagens/bi-demanda-erros-p01.png)
+
+*Figura 6 — Cada barra é |observado − previsão| em uma semana prevista. A linha
+tracejada marca o MAE de `p01` com MA(4). Use a tabela do painel para conferir
+os denominadores da média móvel semana a semana.*
+
+### Comparação de janelas: o mesmo teste para todos os métodos
+
+![Barras de MAE agregado da previsão ingênua e das médias móveis MA(2) a MA(5) em 48 previsões walk-forward.](imagens/bi-demanda-mae-janelas.png)
+
+*Figura 7 — MAE nas mesmas 48 previsões (12 produtos × 4 semanas). Menor é
+melhor nesta métrica. No painel, a barra do método selecionado fica destacada
+para você cruzar o agregado com o produto aberto à esquerda.*
+
+### Atividade: do painel a um relato
+
+1. Abra Jarro (`p01`) com MA(4). Anote a previsão da próxima semana e o MAE do
+   produto no teste.
+2. Na tabela, escolha uma semana e refaça a média das quatro anteriores à mão.
+3. Troque para a previsão ingênua e descreva o que muda nos erros.
+4. Exporte o CSV do teste ou um PNG e anexe ao modelo de relato da seção 7.
+
+## 9. Exercício: preveja a demanda da Boneca
 
 Usando `dados/vendas_semanais.csv`, produza uma previsão para Boneca de barro
 (`p03`) com média móvel de quatro semanas e compare-a com a previsão ingênua.
 Depois, avalie ambas nas quatro últimas semanas usando o mesmo procedimento
-walk-forward.
+walk-forward. Você pode conferir a série e a tabela no
+[explorador](bi-demanda/index.html).
 
 Seu relato deve incluir:
 
@@ -590,9 +651,10 @@ Na raiz do repositório, execute:
 
 ```bash
 uv run python scripts/gerar_figuras_demanda.py
+uv run python scripts/gerar_bi_demanda.py
 ```
 
-O script lê `dados/vendas_semanais.csv` e recria as três figuras em
-`material/imagens/`. Ele usa Matplotlib, já declarado entre as dependências do
-projeto. A geração reproduz os gráficos a partir dos dados e não acrescenta
-observações nem valida a origem sintética da série.
+O primeiro script recria o mapa conceitual, a série MA(4), o fluxo walk-forward
+e a comparação de MAE em `material/imagens/`. O segundo atualiza `dados.js` do
+explorador e os espelhos estáticos `bi-demanda-*.png`. Ambos leem
+`dados/vendas_semanais.csv`.

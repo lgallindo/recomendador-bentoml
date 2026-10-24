@@ -45,7 +45,7 @@ Os arquivos de entrada estão em [`dados/logs-autenticacao/`](../dados/logs-aute
 São JSON Lines: cada linha é um objeto completo, sem lista externa.
 
 ```json
-{"event_id":"descoberta-01-01","timestamp":"2026-10-01T12:01:01+00:00","session_id":"descoberta-01","evento":"falha_senha"}
+{"event_id":"descoberta-0001-01","timestamp":"2026-10-01T12:01:01+00:00","session_id":"descoberta-0001","evento":"falha_senha"}
 ```
 
 | Campo | Contrato |
@@ -80,7 +80,7 @@ O pipeline usa a biblioteca padrão do Python:
 4. Guardar o conjunto de categorias presentes em cada sessão.
 5. Contar conjuntos frequentes, gerar regras e aplicar filtros.
 
-Na sessão `descoberta-01`, a sequência construída é:
+Na sessão `descoberta-0001`, a sequência construída é:
 
 ```text
 falha_senha, falha_senha, senha_aceita, desafio_mfa, login_sucesso
@@ -100,8 +100,11 @@ duas vezes. **O denominador é o número de sessões, não o de linhas do log.**
 
 | Cenário | Linhas | Eventos únicos | Reentregas | Sessões |
 | --- | ---: | ---: | ---: | ---: |
-| Descoberta | 60 | 59 | 1 | 20 |
-| Validação | 25 | 24 | 1 | 10 |
+| Descoberta | 5901 | 5900 | 1 | 2000 |
+| Validação | 2401 | 2400 | 1 | 1000 |
+
+O gerador repete 100 vezes o bloco-base original (20 e 10 sessões). As proporções
+permanecem; as contagens absolutas crescem na mesma proporção.
 
 O JSON de saída mostra todas as sessões reconstruídas. A ordem das linhas não
 altera a mineração: timestamps servem à leitura do exemplo, mas não são usados
@@ -128,19 +131,19 @@ os eventos de A; `N` é o total de sessões.
 
 Na descoberta, para **falha_senha → desafio_mfa**:
 
-- A aparece em 9 sessões: 01–08 e 20.
-- B aparece em 9 sessões: 01–06, 09, 10 e 18.
-- Ambos aparecem em 6 sessões: 01–06.
-- `N = 20`.
+- A aparece em 900 sessões.
+- B aparece em 900 sessões.
+- Ambos aparecem em 600 sessões.
+- `N = 2000`.
 
-Portanto, suporte = `6/20 = 30%`; confiança = `6/9 ≈ 66,7%`;
-lift = `(6/9)/(9/20) = 40/27 ≈ 1,48`.
+Portanto, suporte = `600/2000 = 30%`; confiança = `600/900 ≈ 66,7%`;
+lift = `(600/900)/(900/2000) = 40/27 ≈ 1,48`.
 
-Relato: “Falha de senha e desafio MFA aparecem juntos em seis das vinte sessões.
-Entre as nove sessões com falha de senha, seis incluem desafio MFA. Essa frequência
+Relato: “Falha de senha e desafio MFA aparecem juntos em 600 das 2000 sessões.
+Entre as 900 sessões com falha de senha, 600 incluem desafio MFA. Essa frequência
 é aproximadamente 1,48 vez a frequência geral de desafio MFA, de 45%.”
 
-Aqui a inversa tem as mesmas métricas porque os dois eventos aparecem em nove
+Aqui a inversa tem as mesmas métricas porque os dois eventos aparecem em 900
 sessões cada. Isso não é uma propriedade geral da confiança: o denominador troca
 ao inverter a regra. Suporte e lift são simétricos para a regra inversa.
 
@@ -164,9 +167,10 @@ passam nos filtros de cada cenário. A avaliação da regra fixa é calculada me
 quando ela não passa nos filtros.
 
 Critérios definidos para o exercício: **suporte ≥ 20%, confiança ≥ 60% e lift > 1**.
-Na descoberta isso exige pelo menos quatro sessões conjuntas. A seleção resulta
-em **27 regras**; na validação exploratória, em **9 regras**. Não compare somente
-esses totais para avaliar generalização: o tamanho da base também mudou.
+Na descoberta isso exige pelo menos 400 sessões conjuntas. A seleção resulta
+em **27 regras**; na validação exploratória, em **9 regras** — os mesmos totais
+do bloco-base, porque a mistura de caminhos não mudou. Não compare somente
+esses totais para avaliar generalização: o tamanho da base também importa.
 
 O script reutiliza a função de contagem do minerador original por meio de um
 adaptador interno. Os eventos são seus itens; nenhuma cesta de compras é lida.
@@ -184,9 +188,9 @@ O CSV usa `total_sessoes` e é ordenado por lift, confiança, suporte e IDs.
 
 O segundo exemplo reflete uma dependência do fluxo construído: só se solicita
 MFA depois da aceitação da senha. O terceiro mostra por que confiança alta não
-basta: há apenas uma ocorrência. Regras com vários eventos de cada lado exigem
-todos eles na sessão e podem repetir informações cobertas por regras simples.
-Ordenar por lift não define automaticamente prioridade operacional.
+basta: suporte fica em 5% (100 em 2000 sessões). Regras com vários eventos de
+cada lado exigem todos eles na sessão e podem repetir informações cobertas por
+regras simples. Ordenar por lift não define automaticamente prioridade operacional.
 
 ## 6. Avaliar em sessões separadas
 
@@ -194,8 +198,8 @@ Fixe `falha_senha → desafio_mfa` antes de consultar a validação.
 
 | Base | N | n(A) | n(B) | Juntos | Suporte | Confiança | Lift |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Descoberta | 20 | 9 | 9 | 6 | 30% | 66,7% | 1,48 |
-| Validação | 10 | 4 | 3 | 1 | 10% | 25% | 0,83 |
+| Descoberta | 2000 | 900 | 900 | 600 | 30% | 66,7% | 1,48 |
+| Validação | 1000 | 400 | 300 | 100 | 10% | 25% | 0,83 |
 
 Na validação, a regra não passa nos três critérios originais. Isso demonstra o
 procedimento com números construídos; não diagnostica mudança de um servidor real.
@@ -206,7 +210,8 @@ Selecionar muitas regras específicas pode favorecer coincidências da descobert
 (sobreajuste). Uma representação restrita pode perder relações relevantes
 (subajuste), mas um filtro que exclui uma regra não basta para diagnosticá-lo.
 Variação amostral, política MFA, cobertura dos logs e população também podem
-alterar métricas. Bases tão pequenas não sustentam conclusões operacionais.
+alterar métricas. Estes logs são sintéticos e repetem o mesmo bloco-base: servem
+ao exercício, não a conclusões operacionais.
 
 Não reajuste os critérios repetidamente na validação e depois a apresente como
 avaliação independente. O CSV de regras de validação é uma exploração opcional;
@@ -228,33 +233,35 @@ sintéticos e não implementa detecção de intrusão nem recomenda relaxar MFA.
 
 Modelo de relatório:
 
-> Analisamos 20 sessões sintéticas, reconstruídas de 60 linhas, com 59 eventos
-> únicos e uma reentrega. Cada item indica presença de uma categoria na sessão.
-> Com suporte ≥ 20%, confiança ≥ 60% e lift > 1, obtivemos 27 regras. A associação
-> falha_senha → desafio_mfa tem contagens 9, 9 e 6, suporte 30%, confiança 66,7%
-> e lift 1,48. Nas dez sessões separadas, as métricas são 10%, 25% e 0,83.
-> Propomos investigar o papel da política de autenticação. O cenário construído
-> não permite atribuir causas, identificar ataques ou decidir bloqueios.
+> Analisamos 2000 sessões sintéticas, reconstruídas de 5901 linhas, com 5900
+> eventos únicos e uma reentrega. Cada item indica presença de uma categoria na
+> sessão. Com suporte ≥ 20%, confiança ≥ 60% e lift > 1, obtivemos 27 regras.
+> A associação falha_senha → desafio_mfa tem contagens 900, 900 e 600, suporte
+> 30%, confiança 66,7% e lift 1,48. Nas 1000 sessões separadas, as métricas são
+> 10%, 25% e 0,83. Propomos investigar o papel da política de autenticação. O
+> cenário construído não permite atribuir causas, identificar ataques ou decidir
+> bloqueios.
 
 ## 8. Exercício e resolução
 
-1. Reconstrua a sessão 01 e explique a diferença entre tentativa repetida e reentrega.
+1. Reconstrua a sessão `descoberta-0001` e explique a diferença entre tentativa repetida e reentrega.
 2. Calcule `desafio_mfa → login_sucesso` e a inversa na descoberta.
 3. Verifique os filtros e explique por que uma confiança de 100% pode refletir política.
 4. Recalcule a regra fixa na validação e escreva um relatório com limitações.
 5. Explique por que isso é associação não supervisionada e que etapa adicional
    seria necessária para investigar sequência temporal.
 
-**Resolução:** a sessão 01 tem cinco eventos únicos e quatro categorias.
-As duas falhas são ocorrências distintas; a reentrega mantém o primeiro ID.
-Desafio aparece em nove sessões; sucesso em quinze; ambos em sete. Para
-desafio → sucesso: suporte `7/20=35%`, confiança `7/9≈77,8%`,
-lift `(7/9)/(15/20)=28/27≈1,04`; passa. Para sucesso → desafio, suporte e lift
-permanecem iguais, mas confiança `7/15≈46,7%` não passa. Sucesso → senha aceita
-tem confiança 100% por construção do fluxo, não por descobrir um ataque.
-Na validação da regra fixa: `1/10`, `1/4` e `(1/4)/(3/10)=5/6`.
-Não há rótulo-alvo por sessão, e os conjuntos descartam a ordem; estudar sequência
-exigiria preservar e analisar a ordem dos eventos com um método apropriado.
+**Resolução:** a sessão `descoberta-0001` tem cinco eventos únicos e quatro
+categorias. As duas falhas são ocorrências distintas; a reentrega mantém o
+primeiro ID. Desafio aparece em 900 sessões; sucesso em 1500; ambos em 700.
+Para desafio → sucesso: suporte `700/2000=35%`, confiança `700/900≈77,8%`,
+lift `(700/900)/(1500/2000)=28/27≈1,04`; passa. Para sucesso → desafio, suporte
+e lift permanecem iguais, mas confiança `700/1500≈46,7%` não passa. Sucesso →
+senha aceita tem confiança 100% por construção do fluxo, não por descobrir um
+ataque. Na validação da regra fixa: suporte `100/1000`, confiança `100/400` e
+lift `(100/400)/(300/1000)=5/6`. Não há rótulo-alvo por sessão, e os conjuntos
+descartam a ordem; estudar sequência exigiria preservar e analisar a ordem dos
+eventos com um método apropriado.
 
 ## 9. Reprodução e verificações
 

@@ -1,0 +1,110 @@
+{
+  "sklearn": "1.9.1",
+  "features": [
+    "comprometimento_pct",
+    "atrasos_anteriores"
+  ],
+  "parametros": {
+    "profundidade_curta": 2,
+    "minimo_folha": 12
+  },
+  "criterio": "acertos no desenvolvimento; desempate por profundidade e folhas",
+  "selecionado": "profunda",
+  "classe_baseline": 0,
+  "modelos": {
+    "curta": {
+      "profundidade": 2,
+      "folhas": 4,
+      "medidas": {
+        "treino": {
+          "n": 240,
+          "acertos": 179,
+          "erros": 61,
+          "acuracia": 0.7458333333333333,
+          "sem_atraso_previsto_sem": 99,
+          "sem_atraso_previsto_com": 44,
+          "com_atraso_previsto_sem": 17,
+          "com_atraso_previsto_com": 80
+        },
+        "desenvolvimento": {
+          "n": 80,
+          "acertos": 54,
+          "erros": 26,
+          "acuracia": 0.675,
+          "sem_atraso_previsto_sem": 33,
+          "sem_atraso_previsto_com": 22,
+          "com_atraso_previsto_sem": 4,
+          "com_atraso_previsto_com": 21
+        }
+      }
+    },
+    "profunda": {
+      "profundidade": 10,
+      "folhas": 67,
+      "medidas": {
+        "treino": {
+          "n": 240,
+          "acertos": 212,
+          "erros": 28,
+          "acuracia": 0.8833333333333333,
+          "sem_atraso_previsto_sem": 133,
+          "sem_atraso_previsto_com": 10,
+          "com_atraso_previsto_sem": 18,
+          "com_atraso_previsto_com": 79
+        },
+        "desenvolvimento": {
+          "n": 80,
+          "acertos": 60,
+          "erros": 20,
+          "acuracia": 0.75,
+          "sem_atraso_previsto_sem": 45,
+          "sem_atraso_previsto_com": 10,
+          "com_atraso_previsto_sem": 10,
+          "com_atraso_previsto_com": 15
+        },
+        "teste": {
+          "n": 80,
+          "acertos": 55,
+          "erros": 25,
+          "acuracia": 0.6875,
+          "sem_atraso_previsto_sem": 40,
+          "sem_atraso_previsto_com": 10,
+          "com_atraso_previsto_sem": 15,
+          "com_atraso_previsto_com": 15
+        }
+      }
+    }
+  },
+  "baseline": {
+    "treino": {
+      "n": 240,
+      "acertos": 143,
+      "erros": 97,
+      "acuracia": 0.5958333333333333,
+      "sem_atraso_previsto_sem": 143,
+      "sem_atraso_previsto_com": 0,
+      "com_atraso_previsto_sem": 97,
+      "com_atraso_previsto_com": 0
+    },
+    "desenvolvimento": {
+      "n": 80,
+      "acertos": 55,
+      "erros": 25,
+      "acuracia": 0.6875,
+      "sem_atraso_previsto_sem": 55,
+      "sem_atraso_previsto_com": 0,
+      "com_atraso_previsto_sem": 25,
+      "com_atraso_previsto_com": 0
+    },
+    "teste": {
+      "n": 80,
+      "acertos": 50,
+      "erros": 30,
+      "acuracia": 0.625,
+      "sem_atraso_previsto_sem": 50,
+      "sem_atraso_previsto_com": 0,
+      "com_atraso_previsto_sem": 30,
+      "com_atraso_previsto_com": 0
+    }
+  }
+}

@@ -1,0 +1,199 @@
+SE Comprometimento (%) <= 35.50:
+  SE Atrasos anteriores <= 1.50:
+    SE Comprometimento (%) <= 13.50:
+      SE Comprometimento (%) <= 12.50:
+        SE Comprometimento (%) <= 10.50:
+          SE Atrasos anteriores <= 0.50:
+            PREVER sem atraso: 2 sem / 0 com (2 casos de treino)
+          SENÃO:
+            PREVER sem atraso: 2 sem / 1 com (3 casos de treino)
+        SENÃO:
+          PREVER sem atraso: 4 sem / 0 com (4 casos de treino)
+      SENÃO:
+        PREVER sem atraso: 2 sem / 1 com (3 casos de treino)
+    SENÃO:
+      SE Atrasos anteriores <= 0.50:
+        SE Comprometimento (%) <= 27.50:
+          SE Comprometimento (%) <= 22.50:
+            PREVER sem atraso: 15 sem / 0 com (15 casos de treino)
+          SENÃO:
+            SE Comprometimento (%) <= 23.50:
+              PREVER sem atraso: 2 sem / 1 com (3 casos de treino)
+            SENÃO:
+              PREVER sem atraso: 8 sem / 0 com (8 casos de treino)
+        SENÃO:
+          SE Comprometimento (%) <= 28.50:
+            PREVER com atraso: 0 sem / 1 com (1 casos de treino)
+          SENÃO:
+            SE Comprometimento (%) <= 31.50:
+              SE Comprometimento (%) <= 29.50:
+                PREVER sem atraso: 3 sem / 0 com (3 casos de treino)
+              SENÃO:
+                SE Comprometimento (%) <= 30.50:
+                  PREVER sem atraso: 4 sem / 1 com (5 casos de treino)
+                SENÃO:
+                  PREVER sem atraso: 3 sem / 0 com (3 casos de treino)
+            SENÃO:
+              SE Comprometimento (%) <= 32.50:
+                PREVER sem atraso: 1 sem / 1 com (2 casos de treino)
+              SENÃO:
+                PREVER sem atraso: 2 sem / 0 com (2 casos de treino)
+      SENÃO:
+        PREVER sem atraso: 31 sem / 0 com (31 casos de treino)
+  SENÃO:
+    SE Comprometimento (%) <= 34.00:
+      SE Comprometimento (%) <= 31.00:
+        SE Comprometimento (%) <= 18.50:
+          SE Atrasos anteriores <= 2.50:
+            PREVER sem atraso: 8 sem / 0 com (8 casos de treino)
+          SENÃO:
+            SE Comprometimento (%) <= 15.00:
+              PREVER com atraso: 1 sem / 2 com (3 casos de treino)
+            SENÃO:
+              PREVER com atraso: 0 sem / 1 com (1 casos de treino)
+        SENÃO:
+          SE Comprometimento (%) <= 19.50:
+            PREVER com atraso: 0 sem / 2 com (2 casos de treino)
+          SENÃO:
+            SE Comprometimento (%) <= 23.00:
+              SE Atrasos anteriores <= 2.50:
+                SE Comprometimento (%) <= 20.50:
+                  PREVER sem atraso: 2 sem / 1 com (3 casos de treino)
+                SENÃO:
+                  PREVER sem atraso: 1 sem / 1 com (2 casos de treino)
+              SENÃO:
+                PREVER com atraso: 0 sem / 1 com (1 casos de treino)
+            SENÃO:
+              SE Comprometimento (%) <= 28.00:
+                PREVER sem atraso: 3 sem / 0 com (3 casos de treino)
+              SENÃO:
+                SE Atrasos anteriores <= 2.50:
+                  PREVER com atraso: 0 sem / 1 com (1 casos de treino)
+                SENÃO:
+                  SE Comprometimento (%) <= 29.50:
+                    PREVER sem atraso: 1 sem / 0 com (1 casos de treino)
+                  SENÃO:
+                    PREVER sem atraso: 1 sem / 1 com (2 casos de treino)
+      SENÃO:
+        PREVER sem atraso: 3 sem / 0 com (3 casos de treino)
+    SENÃO:
+      PREVER com atraso: 0 sem / 1 com (1 casos de treino)
+SENÃO:
+  SE Atrasos anteriores <= 0.50:
+    SE Comprometimento (%) <= 49.50:
+      SE Comprometimento (%) <= 46.50:
+        SE Comprometimento (%) <= 45.50:
+          SE Comprometimento (%) <= 41.50:
+            SE Comprometimento (%) <= 38.50:
+              SE Comprometimento (%) <= 37.00:
+                PREVER sem atraso: 2 sem / 1 com (3 casos de treino)
+              SENÃO:
+                PREVER sem atraso: 1 sem / 0 com (1 casos de treino)
+            SENÃO:
+              SE Comprometimento (%) <= 39.50:
+                PREVER com atraso: 0 sem / 3 com (3 casos de treino)
+              SENÃO:
+                SE Comprometimento (%) <= 40.50:
+                  PREVER sem atraso: 1 sem / 1 com (2 casos de treino)
+                SENÃO:
+                  PREVER com atraso: 1 sem / 3 com (4 casos de treino)
+          SENÃO:
+            SE Comprometimento (%) <= 42.50:
+              PREVER sem atraso: 3 sem / 0 com (3 casos de treino)
+            SENÃO:
+              SE Comprometimento (%) <= 43.50:
+                PREVER com atraso: 0 sem / 1 com (1 casos de treino)
+              SENÃO:
+                SE Comprometimento (%) <= 44.50:
+                  PREVER sem atraso: 2 sem / 0 com (2 casos de treino)
+                SENÃO:
+                  PREVER sem atraso: 1 sem / 1 com (2 casos de treino)
+        SENÃO:
+          PREVER com atraso: 0 sem / 2 com (2 casos de treino)
+      SENÃO:
+        PREVER sem atraso: 6 sem / 0 com (6 casos de treino)
+    SENÃO:
+      SE Comprometimento (%) <= 61.50:
+        SE Comprometimento (%) <= 57.50:
+          SE Comprometimento (%) <= 56.50:
+            SE Comprometimento (%) <= 50.50:
+              PREVER com atraso: 2 sem / 3 com (5 casos de treino)
+            SENÃO:
+              SE Comprometimento (%) <= 53.50:
+                PREVER com atraso: 0 sem / 4 com (4 casos de treino)
+              SENÃO:
+                SE Comprometimento (%) <= 55.50:
+                  SE Comprometimento (%) <= 54.50:
+                    PREVER sem atraso: 1 sem / 1 com (2 casos de treino)
+                  SENÃO:
+                    PREVER sem atraso: 1 sem / 1 com (2 casos de treino)
+                SENÃO:
+                  PREVER com atraso: 0 sem / 1 com (1 casos de treino)
+          SENÃO:
+            PREVER sem atraso: 2 sem / 0 com (2 casos de treino)
+        SENÃO:
+          SE Comprometimento (%) <= 58.50:
+            PREVER com atraso: 0 sem / 4 com (4 casos de treino)
+          SENÃO:
+            SE Comprometimento (%) <= 59.50:
+              PREVER sem atraso: 1 sem / 0 com (1 casos de treino)
+            SENÃO:
+              SE Comprometimento (%) <= 60.50:
+                PREVER com atraso: 0 sem / 3 com (3 casos de treino)
+              SENÃO:
+                PREVER com atraso: 1 sem / 2 com (3 casos de treino)
+      SENÃO:
+        SE Comprometimento (%) <= 63.50:
+          SE Comprometimento (%) <= 62.50:
+            PREVER sem atraso: 6 sem / 1 com (7 casos de treino)
+          SENÃO:
+            PREVER sem atraso: 1 sem / 0 com (1 casos de treino)
+        SENÃO:
+          SE Comprometimento (%) <= 64.50:
+            PREVER com atraso: 0 sem / 2 com (2 casos de treino)
+          SENÃO:
+            PREVER com atraso: 2 sem / 3 com (5 casos de treino)
+  SENÃO:
+    SE Comprometimento (%) <= 55.50:
+      SE Comprometimento (%) <= 36.50:
+        SE Atrasos anteriores <= 2.00:
+          PREVER sem atraso: 1 sem / 1 com (2 casos de treino)
+        SENÃO:
+          PREVER com atraso: 0 sem / 1 com (1 casos de treino)
+      SENÃO:
+        SE Comprometimento (%) <= 51.50:
+          PREVER com atraso: 0 sem / 22 com (22 casos de treino)
+        SENÃO:
+          SE Atrasos anteriores <= 2.50:
+            SE Atrasos anteriores <= 1.50:
+              PREVER com atraso: 0 sem / 1 com (1 casos de treino)
+            SENÃO:
+              PREVER sem atraso: 1 sem / 1 com (2 casos de treino)
+          SENÃO:
+            PREVER com atraso: 0 sem / 3 com (3 casos de treino)
+    SENÃO:
+      SE Atrasos anteriores <= 1.50:
+        SE Comprometimento (%) <= 62.00:
+          SE Comprometimento (%) <= 60.00:
+            SE Comprometimento (%) <= 58.50:
+              SE Comprometimento (%) <= 57.00:
+                PREVER sem atraso: 1 sem / 1 com (2 casos de treino)
+              SENÃO:
+                PREVER sem atraso: 1 sem / 0 com (1 casos de treino)
+            SENÃO:
+              PREVER com atraso: 2 sem / 3 com (5 casos de treino)
+          SENÃO:
+            PREVER sem atraso: 2 sem / 0 com (2 casos de treino)
+        SENÃO:
+          SE Comprometimento (%) <= 64.00:
+            PREVER com atraso: 0 sem / 1 com (1 casos de treino)
+          SENÃO:
+            PREVER com atraso: 1 sem / 2 com (3 casos de treino)
+      SENÃO:
+        SE Comprometimento (%) <= 62.50:
+          PREVER com atraso: 0 sem / 5 com (5 casos de treino)
+        SENÃO:
+          SE Atrasos anteriores <= 2.50:
+            PREVER sem atraso: 1 sem / 1 com (2 casos de treino)
+          SENÃO:
+            PREVER com atraso: 0 sem / 1 com (1 casos de treino)

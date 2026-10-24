@@ -1,0 +1,10 @@
+SE Comprometimento (%) <= 35.50:
+  SE Atrasos anteriores <= 1.50:
+    PREVER sem atraso: 79 sem / 6 com (85 casos de treino)
+  SENÃO:
+    PREVER sem atraso: 20 sem / 11 com (31 casos de treino)
+SENÃO:
+  SE Atrasos anteriores <= 0.50:
+    PREVER com atraso: 34 sem / 37 com (71 casos de treino)
+  SENÃO:
+    PREVER com atraso: 10 sem / 43 com (53 casos de treino)

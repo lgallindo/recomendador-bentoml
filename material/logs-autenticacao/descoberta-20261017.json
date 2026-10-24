@@ -1,108 +1,9216 @@
 {
   "fonte": "descoberta-20261017.jsonl",
-  "eventos_unicos": 59,
+  "eventos_unicos": 5900,
   "entregas_duplicadas": 1,
   "sessoes": {
-    "descoberta-01": [
+    "descoberta-0001": [
       "desafio_mfa",
       "falha_senha",
       "login_sucesso",
       "senha_aceita"
     ],
-    "descoberta-02": [
+    "descoberta-0002": [
       "desafio_mfa",
       "falha_senha",
       "login_sucesso",
       "senha_aceita"
     ],
-    "descoberta-03": [
+    "descoberta-0003": [
       "desafio_mfa",
       "falha_senha",
       "login_sucesso",
       "senha_aceita"
     ],
-    "descoberta-04": [
+    "descoberta-0004": [
       "desafio_mfa",
       "falha_senha",
       "login_sucesso",
       "senha_aceita"
     ],
-    "descoberta-05": [
+    "descoberta-0005": [
       "desafio_mfa",
       "falha_senha",
       "login_sucesso",
       "senha_aceita"
     ],
-    "descoberta-06": [
+    "descoberta-0006": [
       "desafio_mfa",
       "falha_mfa",
       "falha_senha",
       "senha_aceita"
     ],
-    "descoberta-07": [
+    "descoberta-0007": [
       "falha_senha",
       "login_sucesso",
       "senha_aceita"
     ],
-    "descoberta-08": [
+    "descoberta-0008": [
       "falha_senha"
     ],
-    "descoberta-09": [
+    "descoberta-0009": [
       "desafio_mfa",
       "login_sucesso",
       "senha_aceita"
     ],
-    "descoberta-10": [
+    "descoberta-0010": [
       "desafio_mfa",
       "login_sucesso",
       "senha_aceita"
     ],
-    "descoberta-11": [
+    "descoberta-0011": [
       "login_sucesso",
       "senha_aceita"
     ],
-    "descoberta-12": [
+    "descoberta-0012": [
       "login_sucesso",
       "senha_aceita"
     ],
-    "descoberta-13": [
+    "descoberta-0013": [
       "login_sucesso",
       "senha_aceita"
     ],
-    "descoberta-14": [
+    "descoberta-0014": [
       "login_sucesso",
       "senha_aceita"
     ],
-    "descoberta-15": [
+    "descoberta-0015": [
       "login_sucesso",
       "senha_aceita"
     ],
-    "descoberta-16": [
+    "descoberta-0016": [
       "login_sucesso",
       "senha_aceita"
     ],
-    "descoberta-17": [
+    "descoberta-0017": [
       "login_sucesso",
       "senha_aceita"
     ],
-    "descoberta-18": [
+    "descoberta-0018": [
       "desafio_mfa",
       "senha_aceita"
     ],
-    "descoberta-19": [
+    "descoberta-0019": [
       "senha_aceita"
     ],
-    "descoberta-20": [
+    "descoberta-0020": [
+      "falha_senha"
+    ],
+    "descoberta-0021": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0022": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0023": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0024": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0025": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0026": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0027": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0028": [
+      "falha_senha"
+    ],
+    "descoberta-0029": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0030": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0031": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0032": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0033": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0034": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0035": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0036": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0037": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0038": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0039": [
+      "senha_aceita"
+    ],
+    "descoberta-0040": [
+      "falha_senha"
+    ],
+    "descoberta-0041": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0042": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0043": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0044": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0045": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0046": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0047": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0048": [
+      "falha_senha"
+    ],
+    "descoberta-0049": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0050": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0051": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0052": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0053": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0054": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0055": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0056": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0057": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0058": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0059": [
+      "senha_aceita"
+    ],
+    "descoberta-0060": [
+      "falha_senha"
+    ],
+    "descoberta-0061": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0062": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0063": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0064": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0065": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0066": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0067": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0068": [
+      "falha_senha"
+    ],
+    "descoberta-0069": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0070": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0071": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0072": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0073": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0074": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0075": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0076": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0077": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0078": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0079": [
+      "senha_aceita"
+    ],
+    "descoberta-0080": [
+      "falha_senha"
+    ],
+    "descoberta-0081": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0082": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0083": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0084": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0085": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0086": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0087": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0088": [
+      "falha_senha"
+    ],
+    "descoberta-0089": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0090": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0091": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0092": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0093": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0094": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0095": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0096": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0097": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0098": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0099": [
+      "senha_aceita"
+    ],
+    "descoberta-0100": [
+      "falha_senha"
+    ],
+    "descoberta-0101": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0102": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0103": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0104": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0105": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0106": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0107": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0108": [
+      "falha_senha"
+    ],
+    "descoberta-0109": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0110": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0111": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0112": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0113": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0114": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0115": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0116": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0117": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0118": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0119": [
+      "senha_aceita"
+    ],
+    "descoberta-0120": [
+      "falha_senha"
+    ],
+    "descoberta-0121": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0122": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0123": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0124": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0125": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0126": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0127": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0128": [
+      "falha_senha"
+    ],
+    "descoberta-0129": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0130": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0131": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0132": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0133": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0134": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0135": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0136": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0137": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0138": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0139": [
+      "senha_aceita"
+    ],
+    "descoberta-0140": [
+      "falha_senha"
+    ],
+    "descoberta-0141": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0142": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0143": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0144": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0145": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0146": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0147": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0148": [
+      "falha_senha"
+    ],
+    "descoberta-0149": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0150": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0151": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0152": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0153": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0154": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0155": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0156": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0157": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0158": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0159": [
+      "senha_aceita"
+    ],
+    "descoberta-0160": [
+      "falha_senha"
+    ],
+    "descoberta-0161": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0162": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0163": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0164": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0165": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0166": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0167": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0168": [
+      "falha_senha"
+    ],
+    "descoberta-0169": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0170": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0171": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0172": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0173": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0174": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0175": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0176": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0177": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0178": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0179": [
+      "senha_aceita"
+    ],
+    "descoberta-0180": [
+      "falha_senha"
+    ],
+    "descoberta-0181": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0182": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0183": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0184": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0185": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0186": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0187": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0188": [
+      "falha_senha"
+    ],
+    "descoberta-0189": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0190": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0191": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0192": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0193": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0194": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0195": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0196": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0197": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0198": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0199": [
+      "senha_aceita"
+    ],
+    "descoberta-0200": [
+      "falha_senha"
+    ],
+    "descoberta-0201": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0202": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0203": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0204": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0205": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0206": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0207": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0208": [
+      "falha_senha"
+    ],
+    "descoberta-0209": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0210": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0211": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0212": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0213": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0214": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0215": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0216": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0217": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0218": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0219": [
+      "senha_aceita"
+    ],
+    "descoberta-0220": [
+      "falha_senha"
+    ],
+    "descoberta-0221": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0222": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0223": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0224": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0225": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0226": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0227": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0228": [
+      "falha_senha"
+    ],
+    "descoberta-0229": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0230": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0231": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0232": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0233": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0234": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0235": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0236": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0237": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0238": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0239": [
+      "senha_aceita"
+    ],
+    "descoberta-0240": [
+      "falha_senha"
+    ],
+    "descoberta-0241": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0242": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0243": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0244": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0245": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0246": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0247": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0248": [
+      "falha_senha"
+    ],
+    "descoberta-0249": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0250": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0251": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0252": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0253": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0254": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0255": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0256": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0257": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0258": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0259": [
+      "senha_aceita"
+    ],
+    "descoberta-0260": [
+      "falha_senha"
+    ],
+    "descoberta-0261": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0262": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0263": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0264": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0265": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0266": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0267": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0268": [
+      "falha_senha"
+    ],
+    "descoberta-0269": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0270": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0271": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0272": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0273": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0274": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0275": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0276": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0277": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0278": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0279": [
+      "senha_aceita"
+    ],
+    "descoberta-0280": [
+      "falha_senha"
+    ],
+    "descoberta-0281": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0282": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0283": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0284": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0285": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0286": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0287": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0288": [
+      "falha_senha"
+    ],
+    "descoberta-0289": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0290": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0291": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0292": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0293": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0294": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0295": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0296": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0297": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0298": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0299": [
+      "senha_aceita"
+    ],
+    "descoberta-0300": [
+      "falha_senha"
+    ],
+    "descoberta-0301": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0302": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0303": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0304": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0305": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0306": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0307": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0308": [
+      "falha_senha"
+    ],
+    "descoberta-0309": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0310": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0311": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0312": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0313": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0314": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0315": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0316": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0317": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0318": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0319": [
+      "senha_aceita"
+    ],
+    "descoberta-0320": [
+      "falha_senha"
+    ],
+    "descoberta-0321": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0322": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0323": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0324": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0325": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0326": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0327": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0328": [
+      "falha_senha"
+    ],
+    "descoberta-0329": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0330": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0331": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0332": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0333": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0334": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0335": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0336": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0337": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0338": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0339": [
+      "senha_aceita"
+    ],
+    "descoberta-0340": [
+      "falha_senha"
+    ],
+    "descoberta-0341": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0342": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0343": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0344": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0345": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0346": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0347": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0348": [
+      "falha_senha"
+    ],
+    "descoberta-0349": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0350": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0351": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0352": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0353": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0354": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0355": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0356": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0357": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0358": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0359": [
+      "senha_aceita"
+    ],
+    "descoberta-0360": [
+      "falha_senha"
+    ],
+    "descoberta-0361": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0362": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0363": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0364": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0365": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0366": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0367": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0368": [
+      "falha_senha"
+    ],
+    "descoberta-0369": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0370": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0371": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0372": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0373": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0374": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0375": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0376": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0377": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0378": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0379": [
+      "senha_aceita"
+    ],
+    "descoberta-0380": [
+      "falha_senha"
+    ],
+    "descoberta-0381": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0382": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0383": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0384": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0385": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0386": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0387": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0388": [
+      "falha_senha"
+    ],
+    "descoberta-0389": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0390": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0391": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0392": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0393": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0394": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0395": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0396": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0397": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0398": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0399": [
+      "senha_aceita"
+    ],
+    "descoberta-0400": [
+      "falha_senha"
+    ],
+    "descoberta-0401": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0402": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0403": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0404": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0405": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0406": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0407": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0408": [
+      "falha_senha"
+    ],
+    "descoberta-0409": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0410": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0411": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0412": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0413": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0414": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0415": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0416": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0417": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0418": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0419": [
+      "senha_aceita"
+    ],
+    "descoberta-0420": [
+      "falha_senha"
+    ],
+    "descoberta-0421": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0422": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0423": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0424": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0425": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0426": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0427": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0428": [
+      "falha_senha"
+    ],
+    "descoberta-0429": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0430": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0431": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0432": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0433": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0434": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0435": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0436": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0437": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0438": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0439": [
+      "senha_aceita"
+    ],
+    "descoberta-0440": [
+      "falha_senha"
+    ],
+    "descoberta-0441": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0442": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0443": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0444": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0445": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0446": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0447": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0448": [
+      "falha_senha"
+    ],
+    "descoberta-0449": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0450": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0451": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0452": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0453": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0454": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0455": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0456": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0457": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0458": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0459": [
+      "senha_aceita"
+    ],
+    "descoberta-0460": [
+      "falha_senha"
+    ],
+    "descoberta-0461": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0462": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0463": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0464": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0465": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0466": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0467": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0468": [
+      "falha_senha"
+    ],
+    "descoberta-0469": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0470": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0471": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0472": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0473": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0474": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0475": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0476": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0477": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0478": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0479": [
+      "senha_aceita"
+    ],
+    "descoberta-0480": [
+      "falha_senha"
+    ],
+    "descoberta-0481": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0482": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0483": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0484": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0485": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0486": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0487": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0488": [
+      "falha_senha"
+    ],
+    "descoberta-0489": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0490": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0491": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0492": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0493": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0494": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0495": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0496": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0497": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0498": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0499": [
+      "senha_aceita"
+    ],
+    "descoberta-0500": [
+      "falha_senha"
+    ],
+    "descoberta-0501": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0502": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0503": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0504": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0505": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0506": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0507": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0508": [
+      "falha_senha"
+    ],
+    "descoberta-0509": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0510": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0511": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0512": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0513": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0514": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0515": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0516": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0517": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0518": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0519": [
+      "senha_aceita"
+    ],
+    "descoberta-0520": [
+      "falha_senha"
+    ],
+    "descoberta-0521": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0522": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0523": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0524": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0525": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0526": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0527": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0528": [
+      "falha_senha"
+    ],
+    "descoberta-0529": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0530": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0531": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0532": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0533": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0534": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0535": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0536": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0537": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0538": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0539": [
+      "senha_aceita"
+    ],
+    "descoberta-0540": [
+      "falha_senha"
+    ],
+    "descoberta-0541": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0542": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0543": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0544": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0545": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0546": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0547": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0548": [
+      "falha_senha"
+    ],
+    "descoberta-0549": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0550": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0551": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0552": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0553": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0554": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0555": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0556": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0557": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0558": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0559": [
+      "senha_aceita"
+    ],
+    "descoberta-0560": [
+      "falha_senha"
+    ],
+    "descoberta-0561": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0562": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0563": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0564": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0565": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0566": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0567": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0568": [
+      "falha_senha"
+    ],
+    "descoberta-0569": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0570": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0571": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0572": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0573": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0574": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0575": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0576": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0577": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0578": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0579": [
+      "senha_aceita"
+    ],
+    "descoberta-0580": [
+      "falha_senha"
+    ],
+    "descoberta-0581": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0582": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0583": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0584": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0585": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0586": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0587": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0588": [
+      "falha_senha"
+    ],
+    "descoberta-0589": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0590": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0591": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0592": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0593": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0594": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0595": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0596": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0597": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0598": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0599": [
+      "senha_aceita"
+    ],
+    "descoberta-0600": [
+      "falha_senha"
+    ],
+    "descoberta-0601": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0602": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0603": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0604": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0605": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0606": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0607": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0608": [
+      "falha_senha"
+    ],
+    "descoberta-0609": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0610": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0611": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0612": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0613": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0614": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0615": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0616": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0617": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0618": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0619": [
+      "senha_aceita"
+    ],
+    "descoberta-0620": [
+      "falha_senha"
+    ],
+    "descoberta-0621": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0622": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0623": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0624": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0625": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0626": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0627": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0628": [
+      "falha_senha"
+    ],
+    "descoberta-0629": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0630": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0631": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0632": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0633": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0634": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0635": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0636": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0637": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0638": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0639": [
+      "senha_aceita"
+    ],
+    "descoberta-0640": [
+      "falha_senha"
+    ],
+    "descoberta-0641": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0642": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0643": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0644": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0645": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0646": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0647": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0648": [
+      "falha_senha"
+    ],
+    "descoberta-0649": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0650": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0651": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0652": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0653": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0654": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0655": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0656": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0657": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0658": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0659": [
+      "senha_aceita"
+    ],
+    "descoberta-0660": [
+      "falha_senha"
+    ],
+    "descoberta-0661": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0662": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0663": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0664": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0665": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0666": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0667": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0668": [
+      "falha_senha"
+    ],
+    "descoberta-0669": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0670": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0671": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0672": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0673": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0674": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0675": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0676": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0677": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0678": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0679": [
+      "senha_aceita"
+    ],
+    "descoberta-0680": [
+      "falha_senha"
+    ],
+    "descoberta-0681": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0682": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0683": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0684": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0685": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0686": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0687": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0688": [
+      "falha_senha"
+    ],
+    "descoberta-0689": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0690": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0691": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0692": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0693": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0694": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0695": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0696": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0697": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0698": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0699": [
+      "senha_aceita"
+    ],
+    "descoberta-0700": [
+      "falha_senha"
+    ],
+    "descoberta-0701": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0702": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0703": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0704": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0705": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0706": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0707": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0708": [
+      "falha_senha"
+    ],
+    "descoberta-0709": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0710": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0711": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0712": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0713": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0714": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0715": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0716": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0717": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0718": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0719": [
+      "senha_aceita"
+    ],
+    "descoberta-0720": [
+      "falha_senha"
+    ],
+    "descoberta-0721": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0722": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0723": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0724": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0725": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0726": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0727": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0728": [
+      "falha_senha"
+    ],
+    "descoberta-0729": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0730": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0731": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0732": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0733": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0734": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0735": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0736": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0737": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0738": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0739": [
+      "senha_aceita"
+    ],
+    "descoberta-0740": [
+      "falha_senha"
+    ],
+    "descoberta-0741": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0742": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0743": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0744": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0745": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0746": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0747": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0748": [
+      "falha_senha"
+    ],
+    "descoberta-0749": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0750": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0751": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0752": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0753": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0754": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0755": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0756": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0757": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0758": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0759": [
+      "senha_aceita"
+    ],
+    "descoberta-0760": [
+      "falha_senha"
+    ],
+    "descoberta-0761": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0762": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0763": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0764": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0765": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0766": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0767": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0768": [
+      "falha_senha"
+    ],
+    "descoberta-0769": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0770": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0771": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0772": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0773": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0774": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0775": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0776": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0777": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0778": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0779": [
+      "senha_aceita"
+    ],
+    "descoberta-0780": [
+      "falha_senha"
+    ],
+    "descoberta-0781": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0782": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0783": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0784": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0785": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0786": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0787": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0788": [
+      "falha_senha"
+    ],
+    "descoberta-0789": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0790": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0791": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0792": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0793": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0794": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0795": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0796": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0797": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0798": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0799": [
+      "senha_aceita"
+    ],
+    "descoberta-0800": [
+      "falha_senha"
+    ],
+    "descoberta-0801": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0802": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0803": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0804": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0805": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0806": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0807": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0808": [
+      "falha_senha"
+    ],
+    "descoberta-0809": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0810": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0811": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0812": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0813": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0814": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0815": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0816": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0817": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0818": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0819": [
+      "senha_aceita"
+    ],
+    "descoberta-0820": [
+      "falha_senha"
+    ],
+    "descoberta-0821": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0822": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0823": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0824": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0825": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0826": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0827": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0828": [
+      "falha_senha"
+    ],
+    "descoberta-0829": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0830": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0831": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0832": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0833": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0834": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0835": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0836": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0837": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0838": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0839": [
+      "senha_aceita"
+    ],
+    "descoberta-0840": [
+      "falha_senha"
+    ],
+    "descoberta-0841": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0842": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0843": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0844": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0845": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0846": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0847": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0848": [
+      "falha_senha"
+    ],
+    "descoberta-0849": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0850": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0851": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0852": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0853": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0854": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0855": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0856": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0857": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0858": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0859": [
+      "senha_aceita"
+    ],
+    "descoberta-0860": [
+      "falha_senha"
+    ],
+    "descoberta-0861": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0862": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0863": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0864": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0865": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0866": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0867": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0868": [
+      "falha_senha"
+    ],
+    "descoberta-0869": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0870": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0871": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0872": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0873": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0874": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0875": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0876": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0877": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0878": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0879": [
+      "senha_aceita"
+    ],
+    "descoberta-0880": [
+      "falha_senha"
+    ],
+    "descoberta-0881": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0882": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0883": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0884": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0885": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0886": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0887": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0888": [
+      "falha_senha"
+    ],
+    "descoberta-0889": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0890": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0891": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0892": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0893": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0894": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0895": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0896": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0897": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0898": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0899": [
+      "senha_aceita"
+    ],
+    "descoberta-0900": [
+      "falha_senha"
+    ],
+    "descoberta-0901": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0902": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0903": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0904": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0905": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0906": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0907": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0908": [
+      "falha_senha"
+    ],
+    "descoberta-0909": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0910": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0911": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0912": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0913": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0914": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0915": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0916": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0917": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0918": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0919": [
+      "senha_aceita"
+    ],
+    "descoberta-0920": [
+      "falha_senha"
+    ],
+    "descoberta-0921": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0922": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0923": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0924": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0925": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0926": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0927": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0928": [
+      "falha_senha"
+    ],
+    "descoberta-0929": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0930": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0931": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0932": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0933": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0934": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0935": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0936": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0937": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0938": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0939": [
+      "senha_aceita"
+    ],
+    "descoberta-0940": [
+      "falha_senha"
+    ],
+    "descoberta-0941": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0942": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0943": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0944": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0945": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0946": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0947": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0948": [
+      "falha_senha"
+    ],
+    "descoberta-0949": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0950": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0951": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0952": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0953": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0954": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0955": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0956": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0957": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0958": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0959": [
+      "senha_aceita"
+    ],
+    "descoberta-0960": [
+      "falha_senha"
+    ],
+    "descoberta-0961": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0962": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0963": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0964": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0965": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0966": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0967": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0968": [
+      "falha_senha"
+    ],
+    "descoberta-0969": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0970": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0971": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0972": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0973": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0974": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0975": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0976": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0977": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0978": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0979": [
+      "senha_aceita"
+    ],
+    "descoberta-0980": [
+      "falha_senha"
+    ],
+    "descoberta-0981": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0982": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0983": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0984": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0985": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0986": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-0987": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0988": [
+      "falha_senha"
+    ],
+    "descoberta-0989": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0990": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0991": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0992": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0993": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0994": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0995": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0996": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0997": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-0998": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-0999": [
+      "senha_aceita"
+    ],
+    "descoberta-1000": [
+      "falha_senha"
+    ],
+    "descoberta-1001": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1002": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1003": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1004": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1005": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1006": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1007": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1008": [
+      "falha_senha"
+    ],
+    "descoberta-1009": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1010": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1011": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1012": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1013": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1014": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1015": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1016": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1017": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1018": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1019": [
+      "senha_aceita"
+    ],
+    "descoberta-1020": [
+      "falha_senha"
+    ],
+    "descoberta-1021": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1022": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1023": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1024": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1025": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1026": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1027": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1028": [
+      "falha_senha"
+    ],
+    "descoberta-1029": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1030": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1031": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1032": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1033": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1034": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1035": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1036": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1037": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1038": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1039": [
+      "senha_aceita"
+    ],
+    "descoberta-1040": [
+      "falha_senha"
+    ],
+    "descoberta-1041": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1042": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1043": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1044": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1045": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1046": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1047": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1048": [
+      "falha_senha"
+    ],
+    "descoberta-1049": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1050": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1051": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1052": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1053": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1054": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1055": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1056": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1057": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1058": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1059": [
+      "senha_aceita"
+    ],
+    "descoberta-1060": [
+      "falha_senha"
+    ],
+    "descoberta-1061": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1062": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1063": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1064": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1065": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1066": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1067": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1068": [
+      "falha_senha"
+    ],
+    "descoberta-1069": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1070": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1071": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1072": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1073": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1074": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1075": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1076": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1077": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1078": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1079": [
+      "senha_aceita"
+    ],
+    "descoberta-1080": [
+      "falha_senha"
+    ],
+    "descoberta-1081": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1082": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1083": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1084": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1085": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1086": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1087": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1088": [
+      "falha_senha"
+    ],
+    "descoberta-1089": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1090": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1091": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1092": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1093": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1094": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1095": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1096": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1097": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1098": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1099": [
+      "senha_aceita"
+    ],
+    "descoberta-1100": [
+      "falha_senha"
+    ],
+    "descoberta-1101": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1102": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1103": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1104": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1105": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1106": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1107": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1108": [
+      "falha_senha"
+    ],
+    "descoberta-1109": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1110": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1111": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1112": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1113": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1114": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1115": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1116": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1117": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1118": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1119": [
+      "senha_aceita"
+    ],
+    "descoberta-1120": [
+      "falha_senha"
+    ],
+    "descoberta-1121": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1122": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1123": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1124": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1125": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1126": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1127": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1128": [
+      "falha_senha"
+    ],
+    "descoberta-1129": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1130": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1131": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1132": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1133": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1134": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1135": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1136": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1137": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1138": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1139": [
+      "senha_aceita"
+    ],
+    "descoberta-1140": [
+      "falha_senha"
+    ],
+    "descoberta-1141": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1142": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1143": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1144": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1145": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1146": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1147": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1148": [
+      "falha_senha"
+    ],
+    "descoberta-1149": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1150": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1151": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1152": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1153": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1154": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1155": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1156": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1157": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1158": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1159": [
+      "senha_aceita"
+    ],
+    "descoberta-1160": [
+      "falha_senha"
+    ],
+    "descoberta-1161": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1162": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1163": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1164": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1165": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1166": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1167": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1168": [
+      "falha_senha"
+    ],
+    "descoberta-1169": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1170": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1171": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1172": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1173": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1174": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1175": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1176": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1177": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1178": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1179": [
+      "senha_aceita"
+    ],
+    "descoberta-1180": [
+      "falha_senha"
+    ],
+    "descoberta-1181": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1182": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1183": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1184": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1185": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1186": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1187": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1188": [
+      "falha_senha"
+    ],
+    "descoberta-1189": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1190": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1191": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1192": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1193": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1194": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1195": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1196": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1197": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1198": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1199": [
+      "senha_aceita"
+    ],
+    "descoberta-1200": [
+      "falha_senha"
+    ],
+    "descoberta-1201": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1202": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1203": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1204": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1205": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1206": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1207": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1208": [
+      "falha_senha"
+    ],
+    "descoberta-1209": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1210": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1211": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1212": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1213": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1214": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1215": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1216": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1217": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1218": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1219": [
+      "senha_aceita"
+    ],
+    "descoberta-1220": [
+      "falha_senha"
+    ],
+    "descoberta-1221": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1222": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1223": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1224": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1225": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1226": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1227": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1228": [
+      "falha_senha"
+    ],
+    "descoberta-1229": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1230": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1231": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1232": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1233": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1234": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1235": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1236": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1237": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1238": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1239": [
+      "senha_aceita"
+    ],
+    "descoberta-1240": [
+      "falha_senha"
+    ],
+    "descoberta-1241": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1242": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1243": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1244": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1245": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1246": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1247": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1248": [
+      "falha_senha"
+    ],
+    "descoberta-1249": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1250": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1251": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1252": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1253": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1254": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1255": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1256": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1257": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1258": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1259": [
+      "senha_aceita"
+    ],
+    "descoberta-1260": [
+      "falha_senha"
+    ],
+    "descoberta-1261": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1262": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1263": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1264": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1265": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1266": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1267": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1268": [
+      "falha_senha"
+    ],
+    "descoberta-1269": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1270": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1271": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1272": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1273": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1274": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1275": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1276": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1277": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1278": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1279": [
+      "senha_aceita"
+    ],
+    "descoberta-1280": [
+      "falha_senha"
+    ],
+    "descoberta-1281": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1282": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1283": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1284": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1285": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1286": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1287": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1288": [
+      "falha_senha"
+    ],
+    "descoberta-1289": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1290": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1291": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1292": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1293": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1294": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1295": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1296": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1297": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1298": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1299": [
+      "senha_aceita"
+    ],
+    "descoberta-1300": [
+      "falha_senha"
+    ],
+    "descoberta-1301": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1302": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1303": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1304": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1305": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1306": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1307": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1308": [
+      "falha_senha"
+    ],
+    "descoberta-1309": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1310": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1311": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1312": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1313": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1314": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1315": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1316": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1317": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1318": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1319": [
+      "senha_aceita"
+    ],
+    "descoberta-1320": [
+      "falha_senha"
+    ],
+    "descoberta-1321": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1322": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1323": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1324": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1325": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1326": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1327": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1328": [
+      "falha_senha"
+    ],
+    "descoberta-1329": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1330": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1331": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1332": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1333": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1334": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1335": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1336": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1337": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1338": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1339": [
+      "senha_aceita"
+    ],
+    "descoberta-1340": [
+      "falha_senha"
+    ],
+    "descoberta-1341": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1342": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1343": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1344": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1345": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1346": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1347": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1348": [
+      "falha_senha"
+    ],
+    "descoberta-1349": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1350": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1351": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1352": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1353": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1354": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1355": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1356": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1357": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1358": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1359": [
+      "senha_aceita"
+    ],
+    "descoberta-1360": [
+      "falha_senha"
+    ],
+    "descoberta-1361": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1362": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1363": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1364": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1365": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1366": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1367": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1368": [
+      "falha_senha"
+    ],
+    "descoberta-1369": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1370": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1371": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1372": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1373": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1374": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1375": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1376": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1377": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1378": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1379": [
+      "senha_aceita"
+    ],
+    "descoberta-1380": [
+      "falha_senha"
+    ],
+    "descoberta-1381": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1382": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1383": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1384": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1385": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1386": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1387": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1388": [
+      "falha_senha"
+    ],
+    "descoberta-1389": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1390": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1391": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1392": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1393": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1394": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1395": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1396": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1397": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1398": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1399": [
+      "senha_aceita"
+    ],
+    "descoberta-1400": [
+      "falha_senha"
+    ],
+    "descoberta-1401": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1402": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1403": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1404": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1405": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1406": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1407": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1408": [
+      "falha_senha"
+    ],
+    "descoberta-1409": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1410": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1411": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1412": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1413": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1414": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1415": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1416": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1417": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1418": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1419": [
+      "senha_aceita"
+    ],
+    "descoberta-1420": [
+      "falha_senha"
+    ],
+    "descoberta-1421": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1422": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1423": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1424": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1425": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1426": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1427": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1428": [
+      "falha_senha"
+    ],
+    "descoberta-1429": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1430": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1431": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1432": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1433": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1434": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1435": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1436": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1437": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1438": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1439": [
+      "senha_aceita"
+    ],
+    "descoberta-1440": [
+      "falha_senha"
+    ],
+    "descoberta-1441": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1442": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1443": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1444": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1445": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1446": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1447": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1448": [
+      "falha_senha"
+    ],
+    "descoberta-1449": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1450": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1451": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1452": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1453": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1454": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1455": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1456": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1457": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1458": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1459": [
+      "senha_aceita"
+    ],
+    "descoberta-1460": [
+      "falha_senha"
+    ],
+    "descoberta-1461": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1462": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1463": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1464": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1465": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1466": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1467": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1468": [
+      "falha_senha"
+    ],
+    "descoberta-1469": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1470": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1471": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1472": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1473": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1474": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1475": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1476": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1477": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1478": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1479": [
+      "senha_aceita"
+    ],
+    "descoberta-1480": [
+      "falha_senha"
+    ],
+    "descoberta-1481": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1482": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1483": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1484": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1485": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1486": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1487": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1488": [
+      "falha_senha"
+    ],
+    "descoberta-1489": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1490": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1491": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1492": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1493": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1494": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1495": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1496": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1497": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1498": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1499": [
+      "senha_aceita"
+    ],
+    "descoberta-1500": [
+      "falha_senha"
+    ],
+    "descoberta-1501": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1502": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1503": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1504": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1505": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1506": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1507": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1508": [
+      "falha_senha"
+    ],
+    "descoberta-1509": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1510": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1511": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1512": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1513": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1514": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1515": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1516": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1517": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1518": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1519": [
+      "senha_aceita"
+    ],
+    "descoberta-1520": [
+      "falha_senha"
+    ],
+    "descoberta-1521": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1522": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1523": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1524": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1525": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1526": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1527": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1528": [
+      "falha_senha"
+    ],
+    "descoberta-1529": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1530": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1531": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1532": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1533": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1534": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1535": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1536": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1537": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1538": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1539": [
+      "senha_aceita"
+    ],
+    "descoberta-1540": [
+      "falha_senha"
+    ],
+    "descoberta-1541": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1542": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1543": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1544": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1545": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1546": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1547": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1548": [
+      "falha_senha"
+    ],
+    "descoberta-1549": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1550": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1551": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1552": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1553": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1554": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1555": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1556": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1557": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1558": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1559": [
+      "senha_aceita"
+    ],
+    "descoberta-1560": [
+      "falha_senha"
+    ],
+    "descoberta-1561": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1562": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1563": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1564": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1565": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1566": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1567": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1568": [
+      "falha_senha"
+    ],
+    "descoberta-1569": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1570": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1571": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1572": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1573": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1574": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1575": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1576": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1577": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1578": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1579": [
+      "senha_aceita"
+    ],
+    "descoberta-1580": [
+      "falha_senha"
+    ],
+    "descoberta-1581": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1582": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1583": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1584": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1585": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1586": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1587": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1588": [
+      "falha_senha"
+    ],
+    "descoberta-1589": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1590": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1591": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1592": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1593": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1594": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1595": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1596": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1597": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1598": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1599": [
+      "senha_aceita"
+    ],
+    "descoberta-1600": [
+      "falha_senha"
+    ],
+    "descoberta-1601": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1602": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1603": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1604": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1605": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1606": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1607": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1608": [
+      "falha_senha"
+    ],
+    "descoberta-1609": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1610": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1611": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1612": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1613": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1614": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1615": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1616": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1617": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1618": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1619": [
+      "senha_aceita"
+    ],
+    "descoberta-1620": [
+      "falha_senha"
+    ],
+    "descoberta-1621": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1622": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1623": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1624": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1625": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1626": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1627": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1628": [
+      "falha_senha"
+    ],
+    "descoberta-1629": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1630": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1631": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1632": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1633": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1634": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1635": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1636": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1637": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1638": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1639": [
+      "senha_aceita"
+    ],
+    "descoberta-1640": [
+      "falha_senha"
+    ],
+    "descoberta-1641": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1642": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1643": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1644": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1645": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1646": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1647": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1648": [
+      "falha_senha"
+    ],
+    "descoberta-1649": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1650": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1651": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1652": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1653": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1654": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1655": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1656": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1657": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1658": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1659": [
+      "senha_aceita"
+    ],
+    "descoberta-1660": [
+      "falha_senha"
+    ],
+    "descoberta-1661": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1662": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1663": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1664": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1665": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1666": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1667": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1668": [
+      "falha_senha"
+    ],
+    "descoberta-1669": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1670": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1671": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1672": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1673": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1674": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1675": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1676": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1677": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1678": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1679": [
+      "senha_aceita"
+    ],
+    "descoberta-1680": [
+      "falha_senha"
+    ],
+    "descoberta-1681": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1682": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1683": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1684": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1685": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1686": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1687": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1688": [
+      "falha_senha"
+    ],
+    "descoberta-1689": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1690": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1691": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1692": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1693": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1694": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1695": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1696": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1697": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1698": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1699": [
+      "senha_aceita"
+    ],
+    "descoberta-1700": [
+      "falha_senha"
+    ],
+    "descoberta-1701": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1702": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1703": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1704": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1705": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1706": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1707": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1708": [
+      "falha_senha"
+    ],
+    "descoberta-1709": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1710": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1711": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1712": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1713": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1714": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1715": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1716": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1717": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1718": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1719": [
+      "senha_aceita"
+    ],
+    "descoberta-1720": [
+      "falha_senha"
+    ],
+    "descoberta-1721": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1722": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1723": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1724": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1725": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1726": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1727": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1728": [
+      "falha_senha"
+    ],
+    "descoberta-1729": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1730": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1731": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1732": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1733": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1734": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1735": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1736": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1737": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1738": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1739": [
+      "senha_aceita"
+    ],
+    "descoberta-1740": [
+      "falha_senha"
+    ],
+    "descoberta-1741": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1742": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1743": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1744": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1745": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1746": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1747": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1748": [
+      "falha_senha"
+    ],
+    "descoberta-1749": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1750": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1751": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1752": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1753": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1754": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1755": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1756": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1757": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1758": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1759": [
+      "senha_aceita"
+    ],
+    "descoberta-1760": [
+      "falha_senha"
+    ],
+    "descoberta-1761": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1762": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1763": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1764": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1765": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1766": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1767": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1768": [
+      "falha_senha"
+    ],
+    "descoberta-1769": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1770": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1771": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1772": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1773": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1774": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1775": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1776": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1777": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1778": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1779": [
+      "senha_aceita"
+    ],
+    "descoberta-1780": [
+      "falha_senha"
+    ],
+    "descoberta-1781": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1782": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1783": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1784": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1785": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1786": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1787": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1788": [
+      "falha_senha"
+    ],
+    "descoberta-1789": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1790": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1791": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1792": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1793": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1794": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1795": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1796": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1797": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1798": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1799": [
+      "senha_aceita"
+    ],
+    "descoberta-1800": [
+      "falha_senha"
+    ],
+    "descoberta-1801": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1802": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1803": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1804": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1805": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1806": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1807": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1808": [
+      "falha_senha"
+    ],
+    "descoberta-1809": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1810": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1811": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1812": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1813": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1814": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1815": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1816": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1817": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1818": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1819": [
+      "senha_aceita"
+    ],
+    "descoberta-1820": [
+      "falha_senha"
+    ],
+    "descoberta-1821": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1822": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1823": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1824": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1825": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1826": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1827": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1828": [
+      "falha_senha"
+    ],
+    "descoberta-1829": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1830": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1831": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1832": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1833": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1834": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1835": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1836": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1837": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1838": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1839": [
+      "senha_aceita"
+    ],
+    "descoberta-1840": [
+      "falha_senha"
+    ],
+    "descoberta-1841": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1842": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1843": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1844": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1845": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1846": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1847": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1848": [
+      "falha_senha"
+    ],
+    "descoberta-1849": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1850": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1851": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1852": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1853": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1854": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1855": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1856": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1857": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1858": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1859": [
+      "senha_aceita"
+    ],
+    "descoberta-1860": [
+      "falha_senha"
+    ],
+    "descoberta-1861": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1862": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1863": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1864": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1865": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1866": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1867": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1868": [
+      "falha_senha"
+    ],
+    "descoberta-1869": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1870": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1871": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1872": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1873": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1874": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1875": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1876": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1877": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1878": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1879": [
+      "senha_aceita"
+    ],
+    "descoberta-1880": [
+      "falha_senha"
+    ],
+    "descoberta-1881": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1882": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1883": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1884": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1885": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1886": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1887": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1888": [
+      "falha_senha"
+    ],
+    "descoberta-1889": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1890": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1891": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1892": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1893": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1894": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1895": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1896": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1897": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1898": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1899": [
+      "senha_aceita"
+    ],
+    "descoberta-1900": [
+      "falha_senha"
+    ],
+    "descoberta-1901": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1902": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1903": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1904": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1905": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1906": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1907": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1908": [
+      "falha_senha"
+    ],
+    "descoberta-1909": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1910": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1911": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1912": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1913": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1914": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1915": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1916": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1917": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1918": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1919": [
+      "senha_aceita"
+    ],
+    "descoberta-1920": [
+      "falha_senha"
+    ],
+    "descoberta-1921": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1922": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1923": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1924": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1925": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1926": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1927": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1928": [
+      "falha_senha"
+    ],
+    "descoberta-1929": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1930": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1931": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1932": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1933": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1934": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1935": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1936": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1937": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1938": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1939": [
+      "senha_aceita"
+    ],
+    "descoberta-1940": [
+      "falha_senha"
+    ],
+    "descoberta-1941": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1942": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1943": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1944": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1945": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1946": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1947": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1948": [
+      "falha_senha"
+    ],
+    "descoberta-1949": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1950": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1951": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1952": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1953": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1954": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1955": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1956": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1957": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1958": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1959": [
+      "senha_aceita"
+    ],
+    "descoberta-1960": [
+      "falha_senha"
+    ],
+    "descoberta-1961": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1962": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1963": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1964": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1965": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1966": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1967": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1968": [
+      "falha_senha"
+    ],
+    "descoberta-1969": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1970": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1971": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1972": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1973": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1974": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1975": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1976": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1977": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1978": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1979": [
+      "senha_aceita"
+    ],
+    "descoberta-1980": [
+      "falha_senha"
+    ],
+    "descoberta-1981": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1982": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1983": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1984": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1985": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1986": [
+      "desafio_mfa",
+      "falha_mfa",
+      "falha_senha",
+      "senha_aceita"
+    ],
+    "descoberta-1987": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1988": [
+      "falha_senha"
+    ],
+    "descoberta-1989": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1990": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1991": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1992": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1993": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1994": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1995": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1996": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1997": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "descoberta-1998": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "descoberta-1999": [
+      "senha_aceita"
+    ],
+    "descoberta-2000": [
       "falha_senha"
     ]
   },
   "total_regras": 27,
   "avaliacao_regra_fixa": {
     "regra": "falha_senha -> desafio_mfa",
-    "total_sessoes": 20,
-    "contagem_antecedente": 9,
-    "contagem_consequente": 9,
-    "contagem_conjunta": 6,
+    "total_sessoes": 2000,
+    "contagem_antecedente": 900,
+    "contagem_consequente": 900,
+    "contagem_conjunta": 600,
     "suporte": 0.3,
     "confianca": 0.6666666666666666,
     "lift": 1.4814814814814814

@@ -1,57 +1,4116 @@
 {
   "fonte": "validacao-20261017.jsonl",
-  "eventos_unicos": 24,
+  "eventos_unicos": 2400,
   "entregas_duplicadas": 1,
   "sessoes": {
-    "validacao-01": [
+    "validacao-0001": [
       "desafio_mfa",
       "falha_senha",
       "login_sucesso",
       "senha_aceita"
     ],
-    "validacao-02": [
+    "validacao-0002": [
       "falha_senha",
       "login_sucesso",
       "senha_aceita"
     ],
-    "validacao-03": [
+    "validacao-0003": [
       "falha_senha"
     ],
-    "validacao-04": [
+    "validacao-0004": [
       "falha_senha"
     ],
-    "validacao-05": [
+    "validacao-0005": [
       "desafio_mfa",
       "login_sucesso",
       "senha_aceita"
     ],
-    "validacao-06": [
+    "validacao-0006": [
       "desafio_mfa",
       "senha_aceita"
     ],
-    "validacao-07": [
+    "validacao-0007": [
       "login_sucesso",
       "senha_aceita"
     ],
-    "validacao-08": [
+    "validacao-0008": [
       "login_sucesso",
       "senha_aceita"
     ],
-    "validacao-09": [
+    "validacao-0009": [
       "login_sucesso",
       "senha_aceita"
     ],
-    "validacao-10": [
+    "validacao-0010": [
+      "senha_aceita"
+    ],
+    "validacao-0011": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0012": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0013": [
+      "falha_senha"
+    ],
+    "validacao-0014": [
+      "falha_senha"
+    ],
+    "validacao-0015": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0016": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0017": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0018": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0019": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0020": [
+      "senha_aceita"
+    ],
+    "validacao-0021": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0022": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0023": [
+      "falha_senha"
+    ],
+    "validacao-0024": [
+      "falha_senha"
+    ],
+    "validacao-0025": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0026": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0027": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0028": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0029": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0030": [
+      "senha_aceita"
+    ],
+    "validacao-0031": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0032": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0033": [
+      "falha_senha"
+    ],
+    "validacao-0034": [
+      "falha_senha"
+    ],
+    "validacao-0035": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0036": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0037": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0038": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0039": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0040": [
+      "senha_aceita"
+    ],
+    "validacao-0041": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0042": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0043": [
+      "falha_senha"
+    ],
+    "validacao-0044": [
+      "falha_senha"
+    ],
+    "validacao-0045": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0046": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0047": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0048": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0049": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0050": [
+      "senha_aceita"
+    ],
+    "validacao-0051": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0052": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0053": [
+      "falha_senha"
+    ],
+    "validacao-0054": [
+      "falha_senha"
+    ],
+    "validacao-0055": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0056": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0057": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0058": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0059": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0060": [
+      "senha_aceita"
+    ],
+    "validacao-0061": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0062": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0063": [
+      "falha_senha"
+    ],
+    "validacao-0064": [
+      "falha_senha"
+    ],
+    "validacao-0065": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0066": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0067": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0068": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0069": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0070": [
+      "senha_aceita"
+    ],
+    "validacao-0071": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0072": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0073": [
+      "falha_senha"
+    ],
+    "validacao-0074": [
+      "falha_senha"
+    ],
+    "validacao-0075": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0076": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0077": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0078": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0079": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0080": [
+      "senha_aceita"
+    ],
+    "validacao-0081": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0082": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0083": [
+      "falha_senha"
+    ],
+    "validacao-0084": [
+      "falha_senha"
+    ],
+    "validacao-0085": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0086": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0087": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0088": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0089": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0090": [
+      "senha_aceita"
+    ],
+    "validacao-0091": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0092": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0093": [
+      "falha_senha"
+    ],
+    "validacao-0094": [
+      "falha_senha"
+    ],
+    "validacao-0095": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0096": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0097": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0098": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0099": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0100": [
+      "senha_aceita"
+    ],
+    "validacao-0101": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0102": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0103": [
+      "falha_senha"
+    ],
+    "validacao-0104": [
+      "falha_senha"
+    ],
+    "validacao-0105": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0106": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0107": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0108": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0109": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0110": [
+      "senha_aceita"
+    ],
+    "validacao-0111": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0112": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0113": [
+      "falha_senha"
+    ],
+    "validacao-0114": [
+      "falha_senha"
+    ],
+    "validacao-0115": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0116": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0117": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0118": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0119": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0120": [
+      "senha_aceita"
+    ],
+    "validacao-0121": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0122": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0123": [
+      "falha_senha"
+    ],
+    "validacao-0124": [
+      "falha_senha"
+    ],
+    "validacao-0125": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0126": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0127": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0128": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0129": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0130": [
+      "senha_aceita"
+    ],
+    "validacao-0131": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0132": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0133": [
+      "falha_senha"
+    ],
+    "validacao-0134": [
+      "falha_senha"
+    ],
+    "validacao-0135": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0136": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0137": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0138": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0139": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0140": [
+      "senha_aceita"
+    ],
+    "validacao-0141": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0142": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0143": [
+      "falha_senha"
+    ],
+    "validacao-0144": [
+      "falha_senha"
+    ],
+    "validacao-0145": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0146": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0147": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0148": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0149": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0150": [
+      "senha_aceita"
+    ],
+    "validacao-0151": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0152": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0153": [
+      "falha_senha"
+    ],
+    "validacao-0154": [
+      "falha_senha"
+    ],
+    "validacao-0155": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0156": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0157": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0158": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0159": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0160": [
+      "senha_aceita"
+    ],
+    "validacao-0161": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0162": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0163": [
+      "falha_senha"
+    ],
+    "validacao-0164": [
+      "falha_senha"
+    ],
+    "validacao-0165": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0166": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0167": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0168": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0169": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0170": [
+      "senha_aceita"
+    ],
+    "validacao-0171": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0172": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0173": [
+      "falha_senha"
+    ],
+    "validacao-0174": [
+      "falha_senha"
+    ],
+    "validacao-0175": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0176": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0177": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0178": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0179": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0180": [
+      "senha_aceita"
+    ],
+    "validacao-0181": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0182": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0183": [
+      "falha_senha"
+    ],
+    "validacao-0184": [
+      "falha_senha"
+    ],
+    "validacao-0185": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0186": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0187": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0188": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0189": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0190": [
+      "senha_aceita"
+    ],
+    "validacao-0191": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0192": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0193": [
+      "falha_senha"
+    ],
+    "validacao-0194": [
+      "falha_senha"
+    ],
+    "validacao-0195": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0196": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0197": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0198": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0199": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0200": [
+      "senha_aceita"
+    ],
+    "validacao-0201": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0202": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0203": [
+      "falha_senha"
+    ],
+    "validacao-0204": [
+      "falha_senha"
+    ],
+    "validacao-0205": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0206": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0207": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0208": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0209": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0210": [
+      "senha_aceita"
+    ],
+    "validacao-0211": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0212": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0213": [
+      "falha_senha"
+    ],
+    "validacao-0214": [
+      "falha_senha"
+    ],
+    "validacao-0215": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0216": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0217": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0218": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0219": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0220": [
+      "senha_aceita"
+    ],
+    "validacao-0221": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0222": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0223": [
+      "falha_senha"
+    ],
+    "validacao-0224": [
+      "falha_senha"
+    ],
+    "validacao-0225": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0226": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0227": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0228": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0229": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0230": [
+      "senha_aceita"
+    ],
+    "validacao-0231": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0232": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0233": [
+      "falha_senha"
+    ],
+    "validacao-0234": [
+      "falha_senha"
+    ],
+    "validacao-0235": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0236": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0237": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0238": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0239": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0240": [
+      "senha_aceita"
+    ],
+    "validacao-0241": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0242": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0243": [
+      "falha_senha"
+    ],
+    "validacao-0244": [
+      "falha_senha"
+    ],
+    "validacao-0245": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0246": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0247": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0248": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0249": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0250": [
+      "senha_aceita"
+    ],
+    "validacao-0251": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0252": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0253": [
+      "falha_senha"
+    ],
+    "validacao-0254": [
+      "falha_senha"
+    ],
+    "validacao-0255": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0256": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0257": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0258": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0259": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0260": [
+      "senha_aceita"
+    ],
+    "validacao-0261": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0262": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0263": [
+      "falha_senha"
+    ],
+    "validacao-0264": [
+      "falha_senha"
+    ],
+    "validacao-0265": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0266": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0267": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0268": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0269": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0270": [
+      "senha_aceita"
+    ],
+    "validacao-0271": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0272": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0273": [
+      "falha_senha"
+    ],
+    "validacao-0274": [
+      "falha_senha"
+    ],
+    "validacao-0275": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0276": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0277": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0278": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0279": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0280": [
+      "senha_aceita"
+    ],
+    "validacao-0281": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0282": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0283": [
+      "falha_senha"
+    ],
+    "validacao-0284": [
+      "falha_senha"
+    ],
+    "validacao-0285": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0286": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0287": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0288": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0289": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0290": [
+      "senha_aceita"
+    ],
+    "validacao-0291": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0292": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0293": [
+      "falha_senha"
+    ],
+    "validacao-0294": [
+      "falha_senha"
+    ],
+    "validacao-0295": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0296": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0297": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0298": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0299": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0300": [
+      "senha_aceita"
+    ],
+    "validacao-0301": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0302": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0303": [
+      "falha_senha"
+    ],
+    "validacao-0304": [
+      "falha_senha"
+    ],
+    "validacao-0305": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0306": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0307": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0308": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0309": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0310": [
+      "senha_aceita"
+    ],
+    "validacao-0311": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0312": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0313": [
+      "falha_senha"
+    ],
+    "validacao-0314": [
+      "falha_senha"
+    ],
+    "validacao-0315": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0316": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0317": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0318": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0319": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0320": [
+      "senha_aceita"
+    ],
+    "validacao-0321": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0322": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0323": [
+      "falha_senha"
+    ],
+    "validacao-0324": [
+      "falha_senha"
+    ],
+    "validacao-0325": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0326": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0327": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0328": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0329": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0330": [
+      "senha_aceita"
+    ],
+    "validacao-0331": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0332": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0333": [
+      "falha_senha"
+    ],
+    "validacao-0334": [
+      "falha_senha"
+    ],
+    "validacao-0335": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0336": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0337": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0338": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0339": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0340": [
+      "senha_aceita"
+    ],
+    "validacao-0341": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0342": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0343": [
+      "falha_senha"
+    ],
+    "validacao-0344": [
+      "falha_senha"
+    ],
+    "validacao-0345": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0346": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0347": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0348": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0349": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0350": [
+      "senha_aceita"
+    ],
+    "validacao-0351": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0352": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0353": [
+      "falha_senha"
+    ],
+    "validacao-0354": [
+      "falha_senha"
+    ],
+    "validacao-0355": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0356": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0357": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0358": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0359": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0360": [
+      "senha_aceita"
+    ],
+    "validacao-0361": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0362": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0363": [
+      "falha_senha"
+    ],
+    "validacao-0364": [
+      "falha_senha"
+    ],
+    "validacao-0365": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0366": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0367": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0368": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0369": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0370": [
+      "senha_aceita"
+    ],
+    "validacao-0371": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0372": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0373": [
+      "falha_senha"
+    ],
+    "validacao-0374": [
+      "falha_senha"
+    ],
+    "validacao-0375": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0376": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0377": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0378": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0379": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0380": [
+      "senha_aceita"
+    ],
+    "validacao-0381": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0382": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0383": [
+      "falha_senha"
+    ],
+    "validacao-0384": [
+      "falha_senha"
+    ],
+    "validacao-0385": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0386": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0387": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0388": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0389": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0390": [
+      "senha_aceita"
+    ],
+    "validacao-0391": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0392": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0393": [
+      "falha_senha"
+    ],
+    "validacao-0394": [
+      "falha_senha"
+    ],
+    "validacao-0395": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0396": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0397": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0398": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0399": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0400": [
+      "senha_aceita"
+    ],
+    "validacao-0401": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0402": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0403": [
+      "falha_senha"
+    ],
+    "validacao-0404": [
+      "falha_senha"
+    ],
+    "validacao-0405": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0406": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0407": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0408": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0409": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0410": [
+      "senha_aceita"
+    ],
+    "validacao-0411": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0412": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0413": [
+      "falha_senha"
+    ],
+    "validacao-0414": [
+      "falha_senha"
+    ],
+    "validacao-0415": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0416": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0417": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0418": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0419": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0420": [
+      "senha_aceita"
+    ],
+    "validacao-0421": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0422": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0423": [
+      "falha_senha"
+    ],
+    "validacao-0424": [
+      "falha_senha"
+    ],
+    "validacao-0425": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0426": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0427": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0428": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0429": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0430": [
+      "senha_aceita"
+    ],
+    "validacao-0431": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0432": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0433": [
+      "falha_senha"
+    ],
+    "validacao-0434": [
+      "falha_senha"
+    ],
+    "validacao-0435": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0436": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0437": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0438": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0439": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0440": [
+      "senha_aceita"
+    ],
+    "validacao-0441": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0442": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0443": [
+      "falha_senha"
+    ],
+    "validacao-0444": [
+      "falha_senha"
+    ],
+    "validacao-0445": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0446": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0447": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0448": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0449": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0450": [
+      "senha_aceita"
+    ],
+    "validacao-0451": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0452": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0453": [
+      "falha_senha"
+    ],
+    "validacao-0454": [
+      "falha_senha"
+    ],
+    "validacao-0455": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0456": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0457": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0458": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0459": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0460": [
+      "senha_aceita"
+    ],
+    "validacao-0461": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0462": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0463": [
+      "falha_senha"
+    ],
+    "validacao-0464": [
+      "falha_senha"
+    ],
+    "validacao-0465": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0466": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0467": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0468": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0469": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0470": [
+      "senha_aceita"
+    ],
+    "validacao-0471": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0472": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0473": [
+      "falha_senha"
+    ],
+    "validacao-0474": [
+      "falha_senha"
+    ],
+    "validacao-0475": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0476": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0477": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0478": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0479": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0480": [
+      "senha_aceita"
+    ],
+    "validacao-0481": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0482": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0483": [
+      "falha_senha"
+    ],
+    "validacao-0484": [
+      "falha_senha"
+    ],
+    "validacao-0485": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0486": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0487": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0488": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0489": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0490": [
+      "senha_aceita"
+    ],
+    "validacao-0491": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0492": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0493": [
+      "falha_senha"
+    ],
+    "validacao-0494": [
+      "falha_senha"
+    ],
+    "validacao-0495": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0496": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0497": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0498": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0499": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0500": [
+      "senha_aceita"
+    ],
+    "validacao-0501": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0502": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0503": [
+      "falha_senha"
+    ],
+    "validacao-0504": [
+      "falha_senha"
+    ],
+    "validacao-0505": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0506": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0507": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0508": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0509": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0510": [
+      "senha_aceita"
+    ],
+    "validacao-0511": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0512": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0513": [
+      "falha_senha"
+    ],
+    "validacao-0514": [
+      "falha_senha"
+    ],
+    "validacao-0515": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0516": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0517": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0518": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0519": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0520": [
+      "senha_aceita"
+    ],
+    "validacao-0521": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0522": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0523": [
+      "falha_senha"
+    ],
+    "validacao-0524": [
+      "falha_senha"
+    ],
+    "validacao-0525": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0526": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0527": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0528": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0529": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0530": [
+      "senha_aceita"
+    ],
+    "validacao-0531": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0532": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0533": [
+      "falha_senha"
+    ],
+    "validacao-0534": [
+      "falha_senha"
+    ],
+    "validacao-0535": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0536": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0537": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0538": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0539": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0540": [
+      "senha_aceita"
+    ],
+    "validacao-0541": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0542": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0543": [
+      "falha_senha"
+    ],
+    "validacao-0544": [
+      "falha_senha"
+    ],
+    "validacao-0545": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0546": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0547": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0548": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0549": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0550": [
+      "senha_aceita"
+    ],
+    "validacao-0551": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0552": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0553": [
+      "falha_senha"
+    ],
+    "validacao-0554": [
+      "falha_senha"
+    ],
+    "validacao-0555": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0556": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0557": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0558": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0559": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0560": [
+      "senha_aceita"
+    ],
+    "validacao-0561": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0562": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0563": [
+      "falha_senha"
+    ],
+    "validacao-0564": [
+      "falha_senha"
+    ],
+    "validacao-0565": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0566": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0567": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0568": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0569": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0570": [
+      "senha_aceita"
+    ],
+    "validacao-0571": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0572": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0573": [
+      "falha_senha"
+    ],
+    "validacao-0574": [
+      "falha_senha"
+    ],
+    "validacao-0575": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0576": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0577": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0578": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0579": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0580": [
+      "senha_aceita"
+    ],
+    "validacao-0581": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0582": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0583": [
+      "falha_senha"
+    ],
+    "validacao-0584": [
+      "falha_senha"
+    ],
+    "validacao-0585": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0586": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0587": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0588": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0589": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0590": [
+      "senha_aceita"
+    ],
+    "validacao-0591": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0592": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0593": [
+      "falha_senha"
+    ],
+    "validacao-0594": [
+      "falha_senha"
+    ],
+    "validacao-0595": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0596": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0597": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0598": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0599": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0600": [
+      "senha_aceita"
+    ],
+    "validacao-0601": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0602": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0603": [
+      "falha_senha"
+    ],
+    "validacao-0604": [
+      "falha_senha"
+    ],
+    "validacao-0605": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0606": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0607": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0608": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0609": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0610": [
+      "senha_aceita"
+    ],
+    "validacao-0611": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0612": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0613": [
+      "falha_senha"
+    ],
+    "validacao-0614": [
+      "falha_senha"
+    ],
+    "validacao-0615": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0616": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0617": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0618": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0619": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0620": [
+      "senha_aceita"
+    ],
+    "validacao-0621": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0622": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0623": [
+      "falha_senha"
+    ],
+    "validacao-0624": [
+      "falha_senha"
+    ],
+    "validacao-0625": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0626": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0627": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0628": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0629": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0630": [
+      "senha_aceita"
+    ],
+    "validacao-0631": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0632": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0633": [
+      "falha_senha"
+    ],
+    "validacao-0634": [
+      "falha_senha"
+    ],
+    "validacao-0635": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0636": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0637": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0638": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0639": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0640": [
+      "senha_aceita"
+    ],
+    "validacao-0641": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0642": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0643": [
+      "falha_senha"
+    ],
+    "validacao-0644": [
+      "falha_senha"
+    ],
+    "validacao-0645": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0646": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0647": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0648": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0649": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0650": [
+      "senha_aceita"
+    ],
+    "validacao-0651": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0652": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0653": [
+      "falha_senha"
+    ],
+    "validacao-0654": [
+      "falha_senha"
+    ],
+    "validacao-0655": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0656": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0657": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0658": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0659": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0660": [
+      "senha_aceita"
+    ],
+    "validacao-0661": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0662": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0663": [
+      "falha_senha"
+    ],
+    "validacao-0664": [
+      "falha_senha"
+    ],
+    "validacao-0665": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0666": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0667": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0668": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0669": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0670": [
+      "senha_aceita"
+    ],
+    "validacao-0671": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0672": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0673": [
+      "falha_senha"
+    ],
+    "validacao-0674": [
+      "falha_senha"
+    ],
+    "validacao-0675": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0676": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0677": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0678": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0679": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0680": [
+      "senha_aceita"
+    ],
+    "validacao-0681": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0682": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0683": [
+      "falha_senha"
+    ],
+    "validacao-0684": [
+      "falha_senha"
+    ],
+    "validacao-0685": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0686": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0687": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0688": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0689": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0690": [
+      "senha_aceita"
+    ],
+    "validacao-0691": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0692": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0693": [
+      "falha_senha"
+    ],
+    "validacao-0694": [
+      "falha_senha"
+    ],
+    "validacao-0695": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0696": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0697": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0698": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0699": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0700": [
+      "senha_aceita"
+    ],
+    "validacao-0701": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0702": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0703": [
+      "falha_senha"
+    ],
+    "validacao-0704": [
+      "falha_senha"
+    ],
+    "validacao-0705": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0706": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0707": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0708": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0709": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0710": [
+      "senha_aceita"
+    ],
+    "validacao-0711": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0712": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0713": [
+      "falha_senha"
+    ],
+    "validacao-0714": [
+      "falha_senha"
+    ],
+    "validacao-0715": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0716": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0717": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0718": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0719": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0720": [
+      "senha_aceita"
+    ],
+    "validacao-0721": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0722": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0723": [
+      "falha_senha"
+    ],
+    "validacao-0724": [
+      "falha_senha"
+    ],
+    "validacao-0725": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0726": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0727": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0728": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0729": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0730": [
+      "senha_aceita"
+    ],
+    "validacao-0731": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0732": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0733": [
+      "falha_senha"
+    ],
+    "validacao-0734": [
+      "falha_senha"
+    ],
+    "validacao-0735": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0736": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0737": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0738": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0739": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0740": [
+      "senha_aceita"
+    ],
+    "validacao-0741": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0742": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0743": [
+      "falha_senha"
+    ],
+    "validacao-0744": [
+      "falha_senha"
+    ],
+    "validacao-0745": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0746": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0747": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0748": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0749": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0750": [
+      "senha_aceita"
+    ],
+    "validacao-0751": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0752": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0753": [
+      "falha_senha"
+    ],
+    "validacao-0754": [
+      "falha_senha"
+    ],
+    "validacao-0755": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0756": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0757": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0758": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0759": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0760": [
+      "senha_aceita"
+    ],
+    "validacao-0761": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0762": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0763": [
+      "falha_senha"
+    ],
+    "validacao-0764": [
+      "falha_senha"
+    ],
+    "validacao-0765": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0766": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0767": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0768": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0769": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0770": [
+      "senha_aceita"
+    ],
+    "validacao-0771": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0772": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0773": [
+      "falha_senha"
+    ],
+    "validacao-0774": [
+      "falha_senha"
+    ],
+    "validacao-0775": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0776": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0777": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0778": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0779": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0780": [
+      "senha_aceita"
+    ],
+    "validacao-0781": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0782": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0783": [
+      "falha_senha"
+    ],
+    "validacao-0784": [
+      "falha_senha"
+    ],
+    "validacao-0785": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0786": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0787": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0788": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0789": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0790": [
+      "senha_aceita"
+    ],
+    "validacao-0791": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0792": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0793": [
+      "falha_senha"
+    ],
+    "validacao-0794": [
+      "falha_senha"
+    ],
+    "validacao-0795": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0796": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0797": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0798": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0799": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0800": [
+      "senha_aceita"
+    ],
+    "validacao-0801": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0802": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0803": [
+      "falha_senha"
+    ],
+    "validacao-0804": [
+      "falha_senha"
+    ],
+    "validacao-0805": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0806": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0807": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0808": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0809": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0810": [
+      "senha_aceita"
+    ],
+    "validacao-0811": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0812": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0813": [
+      "falha_senha"
+    ],
+    "validacao-0814": [
+      "falha_senha"
+    ],
+    "validacao-0815": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0816": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0817": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0818": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0819": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0820": [
+      "senha_aceita"
+    ],
+    "validacao-0821": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0822": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0823": [
+      "falha_senha"
+    ],
+    "validacao-0824": [
+      "falha_senha"
+    ],
+    "validacao-0825": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0826": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0827": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0828": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0829": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0830": [
+      "senha_aceita"
+    ],
+    "validacao-0831": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0832": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0833": [
+      "falha_senha"
+    ],
+    "validacao-0834": [
+      "falha_senha"
+    ],
+    "validacao-0835": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0836": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0837": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0838": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0839": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0840": [
+      "senha_aceita"
+    ],
+    "validacao-0841": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0842": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0843": [
+      "falha_senha"
+    ],
+    "validacao-0844": [
+      "falha_senha"
+    ],
+    "validacao-0845": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0846": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0847": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0848": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0849": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0850": [
+      "senha_aceita"
+    ],
+    "validacao-0851": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0852": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0853": [
+      "falha_senha"
+    ],
+    "validacao-0854": [
+      "falha_senha"
+    ],
+    "validacao-0855": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0856": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0857": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0858": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0859": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0860": [
+      "senha_aceita"
+    ],
+    "validacao-0861": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0862": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0863": [
+      "falha_senha"
+    ],
+    "validacao-0864": [
+      "falha_senha"
+    ],
+    "validacao-0865": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0866": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0867": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0868": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0869": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0870": [
+      "senha_aceita"
+    ],
+    "validacao-0871": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0872": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0873": [
+      "falha_senha"
+    ],
+    "validacao-0874": [
+      "falha_senha"
+    ],
+    "validacao-0875": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0876": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0877": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0878": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0879": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0880": [
+      "senha_aceita"
+    ],
+    "validacao-0881": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0882": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0883": [
+      "falha_senha"
+    ],
+    "validacao-0884": [
+      "falha_senha"
+    ],
+    "validacao-0885": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0886": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0887": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0888": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0889": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0890": [
+      "senha_aceita"
+    ],
+    "validacao-0891": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0892": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0893": [
+      "falha_senha"
+    ],
+    "validacao-0894": [
+      "falha_senha"
+    ],
+    "validacao-0895": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0896": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0897": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0898": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0899": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0900": [
+      "senha_aceita"
+    ],
+    "validacao-0901": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0902": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0903": [
+      "falha_senha"
+    ],
+    "validacao-0904": [
+      "falha_senha"
+    ],
+    "validacao-0905": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0906": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0907": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0908": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0909": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0910": [
+      "senha_aceita"
+    ],
+    "validacao-0911": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0912": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0913": [
+      "falha_senha"
+    ],
+    "validacao-0914": [
+      "falha_senha"
+    ],
+    "validacao-0915": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0916": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0917": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0918": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0919": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0920": [
+      "senha_aceita"
+    ],
+    "validacao-0921": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0922": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0923": [
+      "falha_senha"
+    ],
+    "validacao-0924": [
+      "falha_senha"
+    ],
+    "validacao-0925": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0926": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0927": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0928": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0929": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0930": [
+      "senha_aceita"
+    ],
+    "validacao-0931": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0932": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0933": [
+      "falha_senha"
+    ],
+    "validacao-0934": [
+      "falha_senha"
+    ],
+    "validacao-0935": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0936": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0937": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0938": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0939": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0940": [
+      "senha_aceita"
+    ],
+    "validacao-0941": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0942": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0943": [
+      "falha_senha"
+    ],
+    "validacao-0944": [
+      "falha_senha"
+    ],
+    "validacao-0945": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0946": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0947": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0948": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0949": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0950": [
+      "senha_aceita"
+    ],
+    "validacao-0951": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0952": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0953": [
+      "falha_senha"
+    ],
+    "validacao-0954": [
+      "falha_senha"
+    ],
+    "validacao-0955": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0956": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0957": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0958": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0959": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0960": [
+      "senha_aceita"
+    ],
+    "validacao-0961": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0962": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0963": [
+      "falha_senha"
+    ],
+    "validacao-0964": [
+      "falha_senha"
+    ],
+    "validacao-0965": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0966": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0967": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0968": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0969": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0970": [
+      "senha_aceita"
+    ],
+    "validacao-0971": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0972": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0973": [
+      "falha_senha"
+    ],
+    "validacao-0974": [
+      "falha_senha"
+    ],
+    "validacao-0975": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0976": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0977": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0978": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0979": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0980": [
+      "senha_aceita"
+    ],
+    "validacao-0981": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0982": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0983": [
+      "falha_senha"
+    ],
+    "validacao-0984": [
+      "falha_senha"
+    ],
+    "validacao-0985": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0986": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0987": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0988": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0989": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0990": [
+      "senha_aceita"
+    ],
+    "validacao-0991": [
+      "desafio_mfa",
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0992": [
+      "falha_senha",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0993": [
+      "falha_senha"
+    ],
+    "validacao-0994": [
+      "falha_senha"
+    ],
+    "validacao-0995": [
+      "desafio_mfa",
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0996": [
+      "desafio_mfa",
+      "senha_aceita"
+    ],
+    "validacao-0997": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0998": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-0999": [
+      "login_sucesso",
+      "senha_aceita"
+    ],
+    "validacao-1000": [
       "senha_aceita"
     ]
   },
   "total_regras": 9,
   "avaliacao_regra_fixa": {
     "regra": "falha_senha -> desafio_mfa",
-    "total_sessoes": 10,
-    "contagem_antecedente": 4,
-    "contagem_consequente": 3,
-    "contagem_conjunta": 1,
+    "total_sessoes": 1000,
+    "contagem_antecedente": 400,
+    "contagem_consequente": 300,
+    "contagem_conjunta": 100,
     "suporte": 0.1,
     "confianca": 0.25,
     "lift": 0.8333333333333334

@@ -16,6 +16,11 @@ nos tutoriais da pasta [material](../).
 | [serie-media-movel-p01.png](serie-media-movel-p01.png) | Vendas semanais sintéticas de `p01`, previsões retrospectivas MA(4) e previsão seguinte |
 | [comparacao-media-movel-mae.png](comparacao-media-movel-mae.png) | MAE walk-forward da previsão ingênua e médias móveis MA(2)–MA(5) |
 | [fluxo-walk-forward-demanda.png](fluxo-walk-forward-demanda.png) | Janela temporal, previsão, observação posterior e avanço da avaliação walk-forward |
+| [bi-demanda-serie-p01.png](bi-demanda-serie-p01.png) | Espelho estático do explorador: série de `p01` com MA(4) e janela de teste |
+| [bi-demanda-erros-p01.png](bi-demanda-erros-p01.png) | Espelho estático do explorador: erros absolutos de MA(4) no teste de `p01` |
+| [bi-demanda-mae-janelas.png](bi-demanda-mae-janelas.png) | Espelho estático do explorador: MAE agregado ingênua e MA(2)–MA(5) |
+| [regressao-minimos-quadrados-p01.png](regressao-minimos-quadrados-p01.png) | Reta de mínimos quadrados e extrapolação sintética para `p01` |
+| [distribuicao-poisson-p01.png](distribuicao-poisson-p01.png) | Probabilidades de contagens futuras para `p01` segundo regressão de Poisson |
 
 ## Reproduzir os diagramas e gráficos
 
@@ -46,6 +51,12 @@ As figuras do tutorial de previsão são geradas separadamente pelo
 uv run python scripts/gerar_figuras_demanda.py
 ```
 
+Os espelhos estáticos do explorador de demanda (`bi-demanda-*.png`) vêm de:
+
+```bash
+uv run python scripts/gerar_bi_demanda.py
+```
+
 Os gráficos são visualizações das contagens sintéticas e da regra MA(4);
 nenhuma ilustração deve ser interpretada como evidência de vendas reais.
 
@@ -58,4 +69,33 @@ com o resultado visual, você pode consultar o prompt completo abaixo:
 
 ```text
 Use case: illustration-story. Asset type: wide educational illustration for a Brazilian Portuguese student tutorial on association-rule mining in marketing. Create a polished warm editorial illustration in three connected scenes across a single landscape image: a small Pernambuco craft shop with terracotta jug, glazed ceramic plate, clay doll and woven baskets; purchase receipts represented by simple pictograms leading to a laptop displaying a product-pair suggestion with jug and plate; two alternative shop-page layouts being compared with small outcome bar charts. A human shopkeeper uses the computer. Consistent recognizable jug and plate throughout. Clear uncluttered flat illustration with subtle paper texture, cream background, terracotta, teal and dark blue palette. No lettering, no numbers, no logos, no invented statistical results. Do not depict robots or brains. The image explains purchase records leading to a testable merchandising suggestion, not a proven sales increase. Wide landscape composition.
+```
+
+## Figuras do tutorial de crédito
+
+As figuras abaixo acompanham o
+[tutorial de árvores de decisão e crédito](../tutorial-arvore-decisao-credito-20261017.md).
+As contagens são inteiramente sintéticas e vêm de `dados/credito/`. O script
+`uv run python scripts/gerar_figuras_credito.py` reproduz os oito diagramas e
+gráficos e o PDF de cartões; execute antes a avaliação padrão com
+`uv run python scripts/arvore_credito.py --avaliar-teste --saida material/credito`.
+
+| Arquivo | Conteúdo |
+| --- | --- |
+| [credito-loja.png](credito-loja.png) | Cena ilustrativa de solicitação, informações e análise em uma loja de móveis |
+| [credito-linha-tempo.png](credito-linha-tempo.png) | Disponibilidade das entradas na solicitação e observação posterior do alvo |
+| [credito-comprometimento.png](credito-comprometimento.png) | Renda e compromissos monetários do cartão C04 |
+| [credito-pilhas.png](credito-pilhas.png) | Os 12 cartões antes e depois da divisão em 35% |
+| [credito-arvore-manual.png](credito-arvore-manual.png) | Perguntas, previsões e contagens da atividade manual |
+| [credito-arvore-curta.png](credito-arvore-curta.png) | Árvore aprendida com duas perguntas por caminho e contagens do treino |
+| [credito-arvore-profunda.png](credito-arvore-profunda.png) | Início da árvore profunda; ramos omitidos são explicitamente marcados |
+| [credito-comparacao.png](credito-comparacao.png) | Acertos no treino e desenvolvimento para as duas árvores |
+| [credito-matriz-teste.png](credito-matriz-teste.png) | Contagens de previsão versus resultado no teste final da árvore selecionada |
+
+A cena `credito-loja.png` foi criada com a ferramenta integrada imagegen e
+salva nesta pasta. É uma ilustração narrativa; os pictogramas não são dados nem
+uma representação fiel da árvore aprendida. Prompt final usado:
+
+```text
+Use case: illustration-story. Asset type: wide opening illustration for a Brazilian Portuguese educational tutorial about decision trees and installment credit. Primary request: three connected scenes across one landscape: in a small Brazilian furniture store a customer discusses an installment purchase with a shop assistant, a desk with anonymous application sheets and simple branching question pictograms, and the assistant reviewing a computer with a small question tree while the customer waits. Warm approachable editorial flat illustration with subtle paper texture, cream background, teal, terracotta and dark blue palette. Ordinary diverse adults, dignified equal treatment, simple sofa and dining furniture in background. Clear uncluttered composition. No text, no letters, no numbers, no brands, no currency symbols, no robots, no brain icons, no appearance-based judgments, no automatic approval stamp. Illustrate people using records and questions to support a review, not certainty about future repayment.
 ```
