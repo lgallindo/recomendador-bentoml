@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutoriais com explorador interativo: associação de regras e previsão de demanda.">
+  <title>Previsão de demanda semanal com média
+móvel · Aprender com dados</title>
+  <link rel="stylesheet" href="../assets/tutorial.css">
+  <script src="../assets/tutorial.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+  <header class="site-header">
+    <a class="brand" href="../">Aprender com dados</a>
+    <nav aria-label="Navegação principal">
+      <a href="../">Associação</a>
+      <a href="./">Demanda</a>
+      <a href="#explorador-interativo">Explorar</a>
+      <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-media-movel-demanda-20261017.md">Versão
+Markdown</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="toc">
+      <details open><summary>Neste tutorial</summary><nav aria-label="Índice"><ul>
+<li><a href="#previsão-de-demanda-semanal-com-média-móvel"
+id="toc-previsão-de-demanda-semanal-com-média-móvel">Previsão de demanda
+semanal com média móvel</a>
+<ul>
+<li><a href="#1-a-pergunta-de-previsão"
+id="toc-1-a-pergunta-de-previsão">1. A pergunta de previsão</a></li>
+<li><a href="#2-como-funciona-a-média-móvel"
+id="toc-2-como-funciona-a-média-móvel">2. Como funciona a média
+móvel</a></li>
+<li><a href="#3-preparar-e-inspecionar-a-série"
+id="toc-3-preparar-e-inspecionar-a-série">3. Preparar e inspecionar a
+série</a></li>
+<li><a href="#4-calcular-previsões-para-todos-os-produtos"
+id="toc-4-calcular-previsões-para-todos-os-produtos">4. Calcular
+previsões para todos os produtos</a></li>
+<li><a href="#5-avaliar-sem-olhar-para-o-futuro"
+id="toc-5-avaliar-sem-olhar-para-o-futuro">5. Avaliar sem olhar para o
+futuro</a></li>
+<li><a href="#6-interpretar-e-melhorar-o-experimento"
+id="toc-6-interpretar-e-melhorar-o-experimento">6. Interpretar e
+melhorar o experimento</a></li>
+<li><a href="#7-como-relatar-uma-previsão"
+id="toc-7-como-relatar-uma-previsão">7. Como relatar uma
+previsão</a></li>
+<li><a href="#8-como-bi-ajuda-você-a-visualizar-previsões"
+id="toc-8-como-bi-ajuda-você-a-visualizar-previsões">8. Como BI ajuda
+você a visualizar previsões</a></li>
+<li><a href="#9-exercício-preveja-a-demanda-da-boneca"
+id="toc-9-exercício-preveja-a-demanda-da-boneca">9. Exercício: preveja a
+demanda da Boneca</a></li>
+<li><a href="#referências-e-leituras"
+id="toc-referências-e-leituras">Referências e leituras</a></li>
+<li><a href="#reproduzir-as-figuras"
+id="toc-reproduzir-as-figuras">Reproduzir as figuras</a></li>
+</ul></li>
+</ul></nav></details>
+    </aside>
+    <main id="conteudo"><h1
+id="previsão-de-demanda-semanal-com-média-móvel">Previsão de demanda
+semanal com média móvel</h1>
+<p><a
+href="https://lgallindo.github.io/recomendador-bentoml/demanda/">Leia a
+versão web com o explorador interativo incorporado</a>.</p>
+<p>Ao concluir este tutorial, você deverá conseguir organizar vendas
+semanais por produto, calcular uma previsão com média móvel, comparar o
+resultado com uma previsão ingênua, interpretar um erro de previsão e
+explorar a série com um painel de BI. Você também distinguirá a previsão
+de uma contagem semanal da popularidade usada pelo recomendador.</p>
+<p>Os dados deste exercício são <strong>sintéticos</strong>. As 16
+semanas distribuem os totais de pedidos já existentes no catálogo. Elas
+servem para praticar o método e o painel; o desempenho numa loja real
+exigiria histórico observado e avaliação própria.</p>
+<h3 id="roteiro-de-estudo">Roteiro de estudo</h3>
+<p>Você pode seguir o roteiro abaixo em aproximadamente 65 minutos ou
+consultar cada seção separadamente.</p>
+<table>
+<thead>
+<tr>
+<th>Tempo sugerido</th>
+<th>Atividade de estudo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5 min</td>
+<td>Entender o problema, a unidade e os dados</td>
+</tr>
+<tr>
+<td>8 min</td>
+<td>Aprender a média móvel e calcular um exemplo à mão</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Executar o código com pandas</td>
+</tr>
+<tr>
+<td>12 min</td>
+<td>Comparar janelas em avaliação temporal</td>
+</tr>
+<tr>
+<td>7 min</td>
+<td>Interpretar resultados e limitações</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Explorar a série com BI e exportar uma evidência visual</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Resolver o exercício</td>
+</tr>
+</tbody>
+</table>
+<h3 id="como-este-método-se-encaixa-em-ia-e-aprendizado-de-máquina">Como
+este método se encaixa em IA e aprendizado de máquina</h3>
+<p><strong>Inteligência artificial (IA)</strong> é o campo amplo que
+estuda sistemas capazes de realizar tarefas como aprender, raciocinar,
+perceber e apoiar decisões. <strong>Aprendizado de máquina (ML)</strong>
+é uma área da IA em que algoritmos aprendem padrões a partir de dados.
+Métodos estatísticos de previsão e modelos de ML podem abordar o mesmo
+problema por caminhos distintos.</p>
+<p>Previsão de demanda é um <strong>problema</strong>: estimar valores
+futuros com base em informações disponíveis. Estatística e previsão de
+séries temporais oferecem métodos como médias móveis; ML pode usar
+características e exemplos históricos para ajustar um modelo; regras de
+negócio também podem fornecer referências simples. Esses caminhos podem
+se complementar.</p>
+<p><img src="../material/imagens/mapa-ia-previsao-demanda.png"
+alt="Diagrama conceitual: IA contém ML; estatística e previsão de séries temporais aparecem como áreas relacionadas, mas não equivalentes a ML; média móvel está destacada como baseline estatístico para o problema de previsão de demanda." /></p>
+<p><em>Figura 1 — O problema de prever demanda pode ser abordado por
+métodos estatísticos ou de ML. A média móvel deste tutorial é um
+baseline estatístico transparente, não um modelo treinado de ML. O
+diagrama é conceitual; as formas não indicam proporções ou fronteiras
+formais entre disciplinas.</em></p>
+<p>Neste tutorial, você calcula uma regra fixa: a média das últimas
+quatro semanas. Não há etapa de ajuste de parâmetros a partir de um
+conjunto rotulado, embora seja possível escolher o tamanho da janela
+comparando previsões em dados de desenvolvimento. Se depois comparar
+esse baseline com um modelo de regressão que aprende a partir de
+exemplos, estará usando a média móvel como <strong>referência</strong>
+para avaliar se a complexidade adicional traz ganho.</p>
+<h2 id="1-a-pergunta-de-previsão">1. A pergunta de previsão</h2>
+<p>Um marketplace de artesanato precisa planejar a próxima semana. Para
+cada produto, quer responder:</p>
+<blockquote>
+<p>Quantas linhas de pedido deste produto podemos esperar na próxima
+semana?</p>
+</blockquote>
+<p>Esta é uma tarefa de <strong>previsão de série temporal</strong>:
+usamos observações ordenadas no tempo para estimar um valor futuro. A
+média móvel é uma regra simples, transparente e fácil de calcular. Ela
+não precisa de um pacote de aprendizado de máquina; pandas ajuda a
+organizar e resumir os dados.</p>
+<p>Neste tutorial, a unidade prevista é <strong>linhas de pedido por
+produto por semana</strong>. Uma linha não é necessariamente uma unidade
+física: um pedido pode conter mais de uma unidade. Para prever unidades,
+a fonte precisaria registrar quantidades vendidas, e a coluna-alvo teria
+de ser definida de acordo.</p>
+<h3 id="popularidade-não-é-previsão">Popularidade não é previsão</h3>
+<p>O catálogo do recomendador registra <code>pedidos</code> por produto
+como um total agregado. Esse valor ajuda a ordenar produtos populares,
+mas não tem datas e, sozinho, não revela o comportamento de uma semana
+para outra.</p>
+<p>A série em <a
+href="../dados/vendas_semanais.csv"><code>../dados/vendas_semanais.csv</code></a>
+acrescenta as datas necessárias para exercitar um método temporal. Ela
+tem 16 semanas, de 22 de junho a 5 de outubro de 2026. Para cada
+produto, a soma das semanas é igual ao total <code>pedidos</code> no <a
+href="../dados/catalogo.json"><code>catálogo</code></a>. Isso preserva
+os dados existentes, mas não transforma a distribuição criada em
+histórico real.</p>
+<p>As dez <code>cestas</code> do catálogo são exemplos separados para
+co-ocorrência entre produtos. Elas não são a origem dos valores semanais
+e não devem ser somadas para reproduzir as vendas.</p>
+<h2 id="2-como-funciona-a-média-móvel">2. Como funciona a média
+móvel</h2>
+<p>Uma média móvel de <strong>quatro semanas</strong> estima a semana
+seguinte usando a média das quatro observações semanais mais
+recentes:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><mfrac><mrow><msub><mi>y</mi><mi>t</mi></msub><mo>+</mo><msub><mi>y</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><msub><mi>y</mi><mrow><mi>t</mi><mo>−</mo><mn>2</mn></mrow></msub><mo>+</mo><msub><mi>y</mi><mrow><mi>t</mi><mo>−</mo><mn>3</mn></mrow></msub></mrow><mn>4</mn></mfrac></mrow><annotation encoding="application/x-tex">
+\widehat{y}_{t+1}
+= \frac{y_t + y_{t-1} + y_{t-2} + y_{t-3}}{4}
+</annotation></semantics></math></p>
+<p><code>y_t</code> é a quantidade observada na semana mais recente; o
+acento circunflexo indica uma estimativa, não uma venda já observada. A
+janela “se move” quando uma nova semana é conhecida: a observação mais
+antiga sai do cálculo e a nova entra.</p>
+<table>
+<thead>
+<tr>
+<th>Observações semanais</th>
+<th style="text-align: right;">Previsão para a próxima semana</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1, 3, 3, 4</td>
+<td style="text-align: right;">(1 + 3 + 3 + 4) / 4 = 2,75</td>
+</tr>
+<tr>
+<td>3, 3, 4, 3</td>
+<td style="text-align: right;">(3 + 3 + 4 + 3) / 4 = 3,25</td>
+</tr>
+</tbody>
+</table>
+<p>Ao avançar uma semana, a primeira janela deixa de incluir o
+<code>1</code> e inclui o <code>3</code> mais recente. Cada observação
+recebe o mesmo peso. Por isso, uma janela curta responde mais
+rapidamente a mudanças, mas tende a oscilar mais; uma janela longa
+suaviza mais, mas pode demorar a refletir mudanças.</p>
+<h3 id="conta-completa-jarro-barro-tracunhaém">Conta completa: Jarro
+barro Tracunhaém</h3>
+<p>O produto <code>p01</code> tem as seguintes quatro observações mais
+recentes na série:</p>
+<table>
+<thead>
+<tr>
+<th>Semana iniciada em</th>
+<th style="text-align: right;">Linhas de pedido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-09-14</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td>2026-09-21</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>2026-09-28</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>2026-10-05</td>
+<td style="text-align: right;">2</td>
+</tr>
+</tbody>
+</table>
+<p>Logo, a previsão de média móvel para a próxima semana é:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">ó</mi><mi mathvariant="normal">x</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi></mrow></msub><mo>=</mo><mfrac><mrow><mn>4</mn><mo>+</mo><mn>2</mn><mo>+</mo><mn>2</mn><mo>+</mo><mn>2</mn></mrow><mn>4</mn></mfrac><mo>=</mo><mfrac><mn>10</mn><mn>4</mn></mfrac><mo>=</mo><mn>2</mn><mo>,</mo><mn>5</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> linhas de pedido</mtext></mrow></mrow><annotation encoding="application/x-tex">
+\widehat{y}_{\mathrm{próxima}}
+= \frac{4 + 2 + 2 + 2}{4}
+= \frac{10}{4}
+= 2{,}5
+\text{ linhas de pedido}
+</annotation></semantics></math></p>
+<p>Uma previsão fracionária é válida: ela representa uma quantidade
+esperada, não um pedido literal de meia linha. O arredondamento, quando
+necessário para uma decisão operacional, deve ser feito na etapa de
+planejamento e não antes de avaliar o erro do modelo.</p>
+<h3 id="uma-referência-simples-última-semana">Uma referência simples:
+última semana</h3>
+<p>Compare a média móvel com uma previsão ingênua:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mover><mi>y</mi><mo accent="true">̂</mo></mover><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow><mrow><mi mathvariant="normal">i</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">ê</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">a</mi></mrow></msubsup><mo>=</mo><msub><mi>y</mi><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">
+\widehat{y}_{t+1}^{\mathrm{ingênua}} = y_t
+</annotation></semantics></math></p>
+<p>Para <code>p01</code>, a última semana observada tem 2 linhas, então
+essa previsão é 2. A média móvel produz 2,5. Nenhuma regra é sempre
+melhor: é preciso compará-las com semanas passadas que não foram usadas
+para construir a previsão.</p>
+<h2 id="3-preparar-e-inspecionar-a-série">3. Preparar e inspecionar a
+série</h2>
+<p>Cada linha do arquivo contém:</p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>week_start</code></td>
+<td>Segunda-feira que inicia a semana</td>
+</tr>
+<tr>
+<td><code>product_id</code></td>
+<td>Identificador estável do produto</td>
+</tr>
+<tr>
+<td><code>order_line_count</code></td>
+<td>Linhas de pedido do produto naquela semana</td>
+</tr>
+</tbody>
+</table>
+<p>O arquivo contém também linhas com zero vendas. Elas são importantes:
+zero é uma observação válida, não um valor ausente. O exercício exige
+uma linha por produto por semana; assim, uma semana sem vendas continua
+explícita.</p>
+<p>Antes de modelar, confira os dados:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/validar_vendas_semanais.py</span></code></pre></div>
+<p>O validador verifica as 192 combinações de 16 semanas e 12 produtos,
+ausência de duplicatas, ids conhecidos, contagens não negativas e
+reconciliação das somas semanais com o catálogo.</p>
+<p>O gráfico abaixo mostra a série de <code>p01</code>, previsões de
+média móvel feitas somente com semanas anteriores e a previsão para a
+semana seguinte. Como a entrada é sintética, as oscilações ilustram a
+conta, não um padrão real de procura.</p>
+<p><img src="../material/imagens/serie-media-movel-p01.png"
+alt="Gráfico da série sintética semanal do Jarro p01: linhas observadas, previsões de média móvel de quatro semanas feitas antes de cada semana e previsão final de 2,5 para a semana seguinte." /></p>
+<p><em>Figura 2 — A previsão de cada semana usa apenas as quatro semanas
+anteriores. O ponto final é a estimativa para a semana posterior ao
+histórico disponível.</em></p>
+<h3 id="abrir-os-dados-com-pandas">Abrir os dados com pandas</h3>
+<p>O código a seguir parte da raiz do repositório. Se pandas não estiver
+disponível no ambiente da aula, execute o exemplo com
+<code>uv run --with pandas</code>.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>arquivo <span class="op">=</span> Path(<span class="st">&quot;dados/vendas_semanais.csv&quot;</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>vendas <span class="op">=</span> pd.read_csv(arquivo, parse_dates<span class="op">=</span>[<span class="st">&quot;week_start&quot;</span>])</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(vendas.head())</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;Linhas:&quot;</span>, <span class="bu">len</span>(vendas))</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;Produtos:&quot;</span>, vendas[<span class="st">&quot;product_id&quot;</span>].nunique())</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;Semanas:&quot;</span>, vendas[<span class="st">&quot;week_start&quot;</span>].nunique())</span></code></pre></div>
+<p>Saída esperada:</p>
+<pre class="text"><code>Linhas: 192
+Produtos: 12
+Semanas: 16</code></pre>
+<p>Para calcular uma média por produto, transforme a tabela longa em uma
+matriz: linhas serão semanas e colunas serão produtos. A ordem
+cronológica é essencial.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>matriz <span class="op">=</span> vendas.pivot(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span><span class="st">&quot;week_start&quot;</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span><span class="st">&quot;product_id&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    values<span class="op">=</span><span class="st">&quot;order_line_count&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>).sort_index()</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(matriz[[<span class="st">&quot;p01&quot;</span>, <span class="st">&quot;p02&quot;</span>]].tail())</span></code></pre></div>
+<p>Cada célula contém a contagem de um produto numa semana. Se você
+aplicar esse código a outra fonte em que combinações ausentes significam
+zero, primeiro complete explicitamente a grade de semanas e produtos.
+Não converta automaticamente valores ausentes em zero quando eles
+puderem indicar falha de coleta.</p>
+<h2 id="4-calcular-previsões-para-todos-os-produtos">4. Calcular
+previsões para todos os produtos</h2>
+<p>A média das quatro linhas finais da matriz é a previsão para a semana
+seguinte de cada produto. A última linha, por sua vez, é a referência
+ingênua:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>janela <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>previsoes <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;media_movel_4_semanas&quot;</span>: matriz.tail(janela).mean(),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;ultima_semana&quot;</span>: matriz.iloc[<span class="op">-</span><span class="dv">1</span>],</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>previsoes.index.name <span class="op">=</span> <span class="st">&quot;product_id&quot;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(previsoes.<span class="bu">round</span>(<span class="dv">2</span>))</span></code></pre></div>
+<p>Para o conjunto sintético, o resultado é:</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Produto</th>
+<th style="text-align: right;">Média móvel 4 semanas</th>
+<th style="text-align: right;">Última semana</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p01</td>
+<td>Jarro barro Tracunhaém</td>
+<td style="text-align: right;">2,50</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>p02</td>
+<td>Prato esmaltado Tracunhaém</td>
+<td style="text-align: right;">1,50</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>p03</td>
+<td>Boneca de barro</td>
+<td style="text-align: right;">1,00</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>p04</td>
+<td>Rendeira Alto do Moura</td>
+<td style="text-align: right;">2,00</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>p05</td>
+<td>Toalha de renda</td>
+<td style="text-align: right;">1,25</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>p06</td>
+<td>Caminho de mesa renda</td>
+<td style="text-align: right;">0,50</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>p07</td>
+<td>Xilogravura Pilar</td>
+<td style="text-align: right;">1,75</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>p08</td>
+<td>Cordel ilustrado</td>
+<td style="text-align: right;">1,25</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>p09</td>
+<td>Quadro xilo colorido</td>
+<td style="text-align: right;">0,25</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>p10</td>
+<td>Cesto de palha</td>
+<td style="text-align: right;">1,25</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>p11</td>
+<td>Bolsa de palha</td>
+<td style="text-align: right;">0,75</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>p12</td>
+<td>Sousplat de palha</td>
+<td style="text-align: right;">0,00</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Esses valores são uma demonstração da conta com quatro semanas, não
+uma recomendação de estoque. Um valor esperado pode ser fracionário e
+não expressa incerteza: a previsão <code>2,50</code> não informa, por si
+só, se a demanda provável está perto de 2 ou pode variar muito.</p>
+<h2 id="5-avaliar-sem-olhar-para-o-futuro">5. Avaliar sem olhar para o
+futuro</h2>
+<p>Não avalie uma previsão com dados que ela já usou. Uma divisão
+aleatória pode misturar semanas antigas e futuras entre treino e teste,
+quebrando a ordem que existe na aplicação. Em previsão, a avaliação deve
+respeitar o tempo:</p>
+<table>
+<thead>
+<tr>
+<th>Etapa</th>
+<th>Semanas usadas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Histórico inicial</td>
+<td>12 primeiras semanas, de 2026-06-22 a 2026-09-07</td>
+</tr>
+<tr>
+<td>Teste temporal</td>
+<td>4 últimas semanas, de 2026-09-14 a 2026-10-05</td>
+</tr>
+</tbody>
+</table>
+<p>Faremos uma avaliação <strong>walk-forward</strong> (origem
+deslizante): prever uma semana do período de teste usando apenas as
+semanas anteriores; depois, quando a semana real já é conhecida,
+incluí-la no histórico para prever a seguinte. Assim simulamos previsões
+semanais sucessivas sem usar observações futuras.</p>
+<p><img src="../material/imagens/fluxo-walk-forward-demanda.png"
+alt="Fluxo de previsão walk-forward: observações semanais entram numa janela das quatro semanas anteriores; a média gera uma previsão para a semana seguinte; após observar a venda real, calcula-se o erro e avança a janela." /></p>
+<p><em>Figura 3 — A janela avança no tempo. Cada previsão é produzida
+antes de consultar o valor real daquela semana; a observação é usada
+somente nas previsões seguintes.</em></p>
+<h3 id="erro-absoluto-médio">Erro absoluto médio</h3>
+<p>Para cada previsão, o erro absoluto é a distância entre previsto e
+observado:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">e</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">o</mi><mspace width="0.222em"></mspace><mi mathvariant="normal">a</mi><mi mathvariant="normal">b</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">o</mi></mrow><mi>t</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">|</mo><msub><mi>y</mi><mi>t</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>t</mi></msub><mo stretchy="false" form="prefix">|</mo></mrow><annotation encoding="application/x-tex">
+\mathrm{erro\ absoluto}_t = |y_t - \widehat{y}_t|
+</annotation></semantics></math></p>
+<p>O <strong>erro absoluto médio</strong>, ou MAE (<em>mean absolute
+error</em>), é a média dessas distâncias:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">M</mi><mi mathvariant="normal">A</mi><mi mathvariant="normal">E</mi></mrow><mo>=</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mo stretchy="false" form="prefix">|</mo><msub><mi>y</mi><mi>t</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>t</mi></msub><mo stretchy="false" form="prefix">|</mo></mrow><annotation encoding="application/x-tex">
+\mathrm{MAE} = \frac{1}{n}\sum_{t=1}^{n}|y_t-\widehat{y}_t|
+</annotation></semantics></math></p>
+<p>Ele fica na mesma unidade do alvo: aqui, linhas de pedido por produto
+por semana. MAE 0,5 significa que, em média, a previsão ficou a meia
+linha da contagem observada. Erros positivos e negativos não se
+cancelam, pois usamos valor absoluto.</p>
+<h3 id="código-de-avaliação-temporal">Código de avaliação temporal</h3>
+<p>Este bloco continua o exemplo anterior. Para cada produto e cada uma
+das quatro semanas reservadas, compara a média móvel de quatro semanas
+com a previsão ingênua. Ao avançar pela janela de teste, usa as
+observações reais das semanas anteriores, como faria uma atualização
+semanal.</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>inicio_teste <span class="op">=</span> <span class="bu">len</span>(matriz) <span class="op">-</span> <span class="dv">4</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>erros_media_movel <span class="op">=</span> []</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>erros_ingenua <span class="op">=</span> []</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> produto <span class="kw">in</span> matriz.columns:</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    serie <span class="op">=</span> matriz[produto]</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> posicao <span class="kw">in</span> <span class="bu">range</span>(inicio_teste, <span class="bu">len</span>(matriz)):</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        observado <span class="op">=</span> <span class="bu">float</span>(serie.iloc[posicao])</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        previsao_media <span class="op">=</span> <span class="bu">float</span>(serie.iloc[posicao <span class="op">-</span> janela : posicao].mean())</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        previsao_ingenua <span class="op">=</span> <span class="bu">float</span>(serie.iloc[posicao <span class="op">-</span> <span class="dv">1</span>])</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        erros_media_movel.append(<span class="bu">abs</span>(observado <span class="op">-</span> previsao_media))</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        erros_ingenua.append(<span class="bu">abs</span>(observado <span class="op">-</span> previsao_ingenua))</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>mae_media <span class="op">=</span> <span class="bu">sum</span>(erros_media_movel) <span class="op">/</span> <span class="bu">len</span>(erros_media_movel)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>mae_ingenua <span class="op">=</span> <span class="bu">sum</span>(erros_ingenua) <span class="op">/</span> <span class="bu">len</span>(erros_ingenua)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Casos avaliados: </span><span class="sc">{</span><span class="bu">len</span>(erros_media_movel)<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;MAE média móvel: </span><span class="sc">{</span>mae_media<span class="sc">:.2f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;MAE ingênua: </span><span class="sc">{</span>mae_ingenua<span class="sc">:.2f}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<p>Resultado esperado:</p>
+<pre class="text"><code>Casos avaliados: 48
+MAE média móvel: 0.49
+MAE ingênua: 0.67</code></pre>
+<p>São 48 previsões: 12 produtos vezes 4 semanas de teste. Nesse recorte
+sintético, a média móvel tem menor MAE. Isso não prova que vencerá em
+semanas futuras ou em dados reais. Há somente quatro semanas de teste, e
+o histórico sintético foi construído para repartir totais
+conhecidos.</p>
+<h3 id="exemplo-de-cálculo-de-erro-no-teste">Exemplo de cálculo de erro
+no teste</h3>
+<p>Para <code>p01</code>, as quatro observações reais no período de
+teste são 4, 2, 2 e 2. As previsões feitas antes de cada semana são:</p>
+<table>
+<thead>
+<tr>
+<th>Semana prevista</th>
+<th>Histórico usado pela média móvel</th>
+<th style="text-align: right;">Previsão MA(4)</th>
+<th style="text-align: right;">Previsão ingênua</th>
+<th style="text-align: right;">Observado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-09-14</td>
+<td>3, 4, 1, 2</td>
+<td style="text-align: right;">2,50</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td>2026-09-21</td>
+<td>4, 1, 2, 4</td>
+<td style="text-align: right;">2,75</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>2026-09-28</td>
+<td>1, 2, 4, 2</td>
+<td style="text-align: right;">2,25</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>2026-10-05</td>
+<td>2, 4, 2, 2</td>
+<td style="text-align: right;">2,50</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+</tr>
+</tbody>
+</table>
+<p>O MAE da média móvel para <code>p01</code> é:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mo stretchy="false" form="prefix">|</mo><mn>4</mn><mo>−</mo><mn>2</mn><mo>,</mo><mn>5</mn><mo stretchy="false" form="prefix">|</mo><mi>+</mi><mo stretchy="false" form="prefix">|</mo><mn>2</mn><mo>−</mo><mn>2</mn><mo>,</mo><mn>75</mn><mo stretchy="false" form="prefix">|</mo><mi>+</mi><mo stretchy="false" form="prefix">|</mo><mn>2</mn><mo>−</mo><mn>2</mn><mo>,</mo><mn>25</mn><mo stretchy="false" form="prefix">|</mo><mi>+</mi><mo stretchy="false" form="prefix">|</mo><mn>2</mn><mo>−</mo><mn>2</mn><mo>,</mo><mn>5</mn><mo stretchy="false" form="prefix">|</mo></mrow><mn>4</mn></mfrac><mo>=</mo><mfrac><mrow><mn>1</mn><mo>,</mo><mn>5</mn><mo>+</mo><mn>0</mn><mo>,</mo><mn>75</mn><mo>+</mo><mn>0</mn><mo>,</mo><mn>25</mn><mo>+</mo><mn>0</mn><mo>,</mo><mn>5</mn></mrow><mn>4</mn></mfrac><mo>=</mo><mn>0</mn><mo>,</mo><mn>75</mn></mrow><annotation encoding="application/x-tex">
+\frac{|4-2{,}5| + |2-2{,}75| + |2-2{,}25| + |2-2{,}5|}{4}
+= \frac{1{,}5+0{,}75+0{,}25+0{,}5}{4}
+= 0{,}75
+</annotation></semantics></math></p>
+<p>O MAE ingênuo de <code>p01</code> é:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mo stretchy="false" form="prefix">|</mo><mn>4</mn><mo>−</mo><mn>2</mn><mo stretchy="false" form="prefix">|</mo><mi>+</mi><mo stretchy="false" form="prefix">|</mo><mn>2</mn><mo>−</mo><mn>4</mn><mo stretchy="false" form="prefix">|</mo><mi>+</mi><mo stretchy="false" form="prefix">|</mo><mn>2</mn><mo>−</mo><mn>2</mn><mo stretchy="false" form="prefix">|</mo><mi>+</mi><mo stretchy="false" form="prefix">|</mo><mn>2</mn><mo>−</mo><mn>2</mn><mo stretchy="false" form="prefix">|</mo></mrow><mn>4</mn></mfrac><mo>=</mo><mfrac><mrow><mn>2</mn><mo>+</mo><mn>2</mn><mo>+</mo><mn>0</mn><mo>+</mo><mn>0</mn></mrow><mn>4</mn></mfrac><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">
+\frac{|4-2| + |2-4| + |2-2| + |2-2|}{4}
+= \frac{2+2+0+0}{4}
+= 1
+</annotation></semantics></math></p>
+<p>Para esse produto no período de teste, a média móvel teve MAE 0,75 e
+a referência ingênua, 1,00. O resultado agregado dos 12 produtos difere;
+por isso, é útil examinar erros por produto além de uma única média
+global.</p>
+<h3 id="comparação-previsão-ingênua-ma2-ma3-ma4-e-ma5">Comparação:
+previsão ingênua, MA(2), MA(3), MA(4) e MA(5)</h3>
+<p>Agora compare cinco métodos nas <strong>mesmas 48 situações</strong>
+(12 produtos vezes as quatro semanas reservadas). A previsão ingênua
+equivale a uma média móvel de uma observação: usa somente a semana
+imediatamente anterior. MA(2) até MA(5) usam as duas a cinco observações
+anteriores, respectivamente.</p>
+<p><img src="../material/imagens/comparacao-media-movel-mae.png"
+alt="Gráfico de linhas compara o MAE da previsão ingênua, MA(2), MA(3), MA(4) e MA(5) em 48 previsões walk-forward; os valores descem de 0,667 para 0,483, com os dados semanais sintéticos." /></p>
+<p><em>Figura 4 — MAE por janela, calculado sobre as mesmas semanas e
+produtos. Menor é melhor nesta métrica. A diferença pequena entre MA(4)
+e MA(5) não deve ser generalizada a partir de uma avaliação sintética de
+apenas quatro semanas.</em></p>
+<p>O código calcula todas as previsões sem usar a observação da semana
+prevista. Como os métodos compartilham o mesmo período de teste, a
+comparação é justa para este exercício:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>periodos <span class="op">=</span> {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Ingênua&quot;</span>: <span class="dv">1</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;MA(2)&quot;</span>: <span class="dv">2</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;MA(3)&quot;</span>: <span class="dv">3</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;MA(4)&quot;</span>: <span class="dv">4</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;MA(5)&quot;</span>: <span class="dv">5</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>inicio_teste <span class="op">=</span> <span class="bu">len</span>(matriz) <span class="op">-</span> <span class="dv">4</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>erros <span class="op">=</span> {nome: [] <span class="cf">for</span> nome <span class="kw">in</span> periodos}</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> produto <span class="kw">in</span> matriz.columns:</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    serie <span class="op">=</span> matriz[produto]</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> posicao <span class="kw">in</span> <span class="bu">range</span>(inicio_teste, <span class="bu">len</span>(matriz)):</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        observado <span class="op">=</span> <span class="bu">float</span>(serie.iloc[posicao])</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> nome, periodo <span class="kw">in</span> periodos.items():</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>            previsto <span class="op">=</span> <span class="bu">float</span>(serie.iloc[posicao <span class="op">-</span> periodo : posicao].mean())</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>            erros[nome].append(<span class="bu">abs</span>(observado <span class="op">-</span> previsto))</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>maes <span class="op">=</span> {</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    nome: <span class="bu">sum</span>(erros_metodo) <span class="op">/</span> <span class="bu">len</span>(erros_metodo)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> nome, erros_metodo <span class="kw">in</span> erros.items()</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> nome, mae <span class="kw">in</span> maes.items():</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;</span><span class="sc">{</span>nome<span class="sc">}</span><span class="ss">: MAE = </span><span class="sc">{</span>mae<span class="sc">:.3f}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<p>Resultados esperados:</p>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th style="text-align: right;">Observações anteriores</th>
+<th style="text-align: right;">MAE nas 48 previsões</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ingênua</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0,667</td>
+</tr>
+<tr>
+<td>MA(2)</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0,625</td>
+</tr>
+<tr>
+<td>MA(3)</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0,500</td>
+</tr>
+<tr>
+<td>MA(4)</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0,490</td>
+</tr>
+<tr>
+<td>MA(5)</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0,483</td>
+</tr>
+</tbody>
+</table>
+<p>Nesta comparação sintética, MA(5) tem o menor MAE, mas sua vantagem
+sobre MA(4) é pequena: aproximadamente 0,006 linha por produto por
+semana. A previsão ingênua é a pior das cinco neste teste. Isso não
+demonstra que MA(5) seja a melhor escolha operacional; há somente quatro
+semanas de avaliação e os valores foram construídos para o tutorial.</p>
+<p>Também é possível comparar as previsões produzidas
+<strong>agora</strong>, usando todas as 16 semanas disponíveis. São
+estimativas para a semana seguinte ao histórico, não observações nem
+garantias de vendas:</p>
+<table>
+<thead>
+<tr>
+<th>Produto</th>
+<th style="text-align: right;">Ingênua</th>
+<th style="text-align: right;">MA(2)</th>
+<th style="text-align: right;">MA(3)</th>
+<th style="text-align: right;">MA(4)</th>
+<th style="text-align: right;">MA(5)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Jarro barro Tracunhaém (<code>p01</code>)</td>
+<td style="text-align: right;">2,00</td>
+<td style="text-align: right;">2,00</td>
+<td style="text-align: right;">2,00</td>
+<td style="text-align: right;">2,50</td>
+<td style="text-align: right;">2,40</td>
+</tr>
+<tr>
+<td>Prato esmaltado Tracunhaém (<code>p02</code>)</td>
+<td style="text-align: right;">1,00</td>
+<td style="text-align: right;">1,50</td>
+<td style="text-align: right;">1,33</td>
+<td style="text-align: right;">1,50</td>
+<td style="text-align: right;">1,60</td>
+</tr>
+<tr>
+<td>Boneca de barro (<code>p03</code>)</td>
+<td style="text-align: right;">0,00</td>
+<td style="text-align: right;">0,50</td>
+<td style="text-align: right;">1,00</td>
+<td style="text-align: right;">1,00</td>
+<td style="text-align: right;">1,00</td>
+</tr>
+<tr>
+<td>Rendeira Alto do Moura (<code>p04</code>)</td>
+<td style="text-align: right;">2,00</td>
+<td style="text-align: right;">2,00</td>
+<td style="text-align: right;">2,33</td>
+<td style="text-align: right;">2,00</td>
+<td style="text-align: right;">2,00</td>
+</tr>
+<tr>
+<td>Toalha de renda (<code>p05</code>)</td>
+<td style="text-align: right;">1,00</td>
+<td style="text-align: right;">1,00</td>
+<td style="text-align: right;">1,33</td>
+<td style="text-align: right;">1,25</td>
+<td style="text-align: right;">1,20</td>
+</tr>
+<tr>
+<td>Caminho de mesa renda (<code>p06</code>)</td>
+<td style="text-align: right;">0,00</td>
+<td style="text-align: right;">0,00</td>
+<td style="text-align: right;">0,33</td>
+<td style="text-align: right;">0,50</td>
+<td style="text-align: right;">0,40</td>
+</tr>
+<tr>
+<td>Xilogravura Pilar (<code>p07</code>)</td>
+<td style="text-align: right;">2,00</td>
+<td style="text-align: right;">1,50</td>
+<td style="text-align: right;">1,67</td>
+<td style="text-align: right;">1,75</td>
+<td style="text-align: right;">1,80</td>
+</tr>
+<tr>
+<td>Cordel ilustrado (<code>p08</code>)</td>
+<td style="text-align: right;">1,00</td>
+<td style="text-align: right;">1,50</td>
+<td style="text-align: right;">1,33</td>
+<td style="text-align: right;">1,25</td>
+<td style="text-align: right;">1,00</td>
+</tr>
+<tr>
+<td>Quadro xilo colorido (<code>p09</code>)</td>
+<td style="text-align: right;">0,00</td>
+<td style="text-align: right;">0,50</td>
+<td style="text-align: right;">0,33</td>
+<td style="text-align: right;">0,25</td>
+<td style="text-align: right;">0,40</td>
+</tr>
+<tr>
+<td>Cesto de palha (<code>p10</code>)</td>
+<td style="text-align: right;">1,00</td>
+<td style="text-align: right;">1,50</td>
+<td style="text-align: right;">1,33</td>
+<td style="text-align: right;">1,25</td>
+<td style="text-align: right;">1,40</td>
+</tr>
+<tr>
+<td>Bolsa de palha (<code>p11</code>)</td>
+<td style="text-align: right;">1,00</td>
+<td style="text-align: right;">1,00</td>
+<td style="text-align: right;">1,00</td>
+<td style="text-align: right;">0,75</td>
+<td style="text-align: right;">0,80</td>
+</tr>
+<tr>
+<td>Sousplat de palha (<code>p12</code>)</td>
+<td style="text-align: right;">0,00</td>
+<td style="text-align: right;">0,00</td>
+<td style="text-align: right;">0,00</td>
+<td style="text-align: right;">0,00</td>
+<td style="text-align: right;">0,20</td>
+</tr>
+</tbody>
+</table>
+<p>As previsões finais podem diferir entre janelas porque cada janela
+enfatiza uma quantidade distinta de histórico. O MAE do teste avalia
+erros passados; ele não determina qual previsão futura ficará mais
+próxima. Se escolher uma janela, use mais dados históricos
+representativos e mantenha um período de avaliação final separado.</p>
+<h2 id="6-interpretar-e-melhorar-o-experimento">6. Interpretar e
+melhorar o experimento</h2>
+<p>O teste anterior responde uma pergunta delimitada: “qual teve menor
+MAE nas 48 previsões deste período sintético?” Ele não responde “qual
+terá melhor resultado no próximo trimestre?” nem “quantas unidades
+devemos fabricar?”.</p>
+<p>Antes de confiar numa avaliação, considere:</p>
+<ul>
+<li><strong>Tamanho do teste:</strong> quatro semanas são poucas e podem
+não representar períodos mais longos.</li>
+<li><strong>Comparação por produto:</strong> o erro agregado pode
+esconder produtos em que uma abordagem é consistentemente pior.</li>
+<li><strong>Unidade:</strong> o alvo é linha de pedido, não quantidade
+física, receita ou lucro.</li>
+<li><strong>Disponibilidade:</strong> a série não contém estoque, preço,
+promoções, feriados, prazo de entrega ou ruptura de estoque.</li>
+<li><strong>Origem sintética:</strong> a forma semana a semana foi
+criada para reconciliar totais do catálogo; não representa sazonalidade,
+tendência ou comportamento observado.</li>
+<li><strong>Janela:</strong> quatro semanas é uma escolha inicial, não
+um parâmetro universal. Compare algumas janelas em dados de
+desenvolvimento e deixe um período final reservado para a
+avaliação.</li>
+</ul>
+<p>Se escolher a janela que teve melhor resultado em todas as semanas
+disponíveis e depois relatar o mesmo resultado como avaliação
+independente, você usou os dados de teste para tomar decisões. Separe
+desenvolvimento e avaliação final; num projeto real, prefira uma
+avaliação temporal com vários pontos de origem.</p>
+<p>A média móvel simples funciona melhor como <strong>baseline</strong>:
+uma referência compreensível que métodos mais complexos precisam
+superar. Para demanda com muitos zeros, mudanças de nível ou
+sazonalidade, outras abordagens podem ser necessárias. Primeiro confira
+a qualidade e o significado dos dados; mais complexidade não corrige uma
+unidade mal definida.</p>
+<h2 id="7-como-relatar-uma-previsão">7. Como relatar uma previsão</h2>
+<p>Um relato reproduzível informa fonte, período, produto ou grupo de
+produtos, alvo, janela, método de avaliação e métrica. Separe o
+resultado do teste da previsão final, calculada depois de usar todo o
+histórico disponível.</p>
+<p>Modelo para este exercício:</p>
+<blockquote>
+<p>Usei a série sintética de 16 semanas, de 2026-06-22 a 2026-10-05,
+cuja unidade é linha de pedido por produto por semana. Comparei MA(4)
+com a previsão ingênua “próxima semana = última semana” em walk-forward
+nas quatro últimas semanas, para 12 produtos (48 previsões). O MAE
+agregado foi 0,49 para MA(4) e 0,67 para a referência. Nesse pequeno
+teste sintético, MA(4) teve menor erro médio absoluto. O resultado é
+didático: não estima o desempenho numa loja real nem informa unidades,
+receita ou estoque necessário.</p>
+</blockquote>
+<p>Para a estimativa final de <code>p01</code>, usando as quatro últimas
+semanas já observadas, o resultado é 2,5 linhas de pedido esperadas na
+semana seguinte. Arredonde somente se uma decisão operacional exigir uma
+quantidade inteira e documente como fez isso.</p>
+<h2 id="8-como-bi-ajuda-você-a-visualizar-previsões">8. Como BI ajuda
+você a visualizar previsões</h2>
+<p><strong>Business Intelligence (BI)</strong> reúne práticas e
+ferramentas para organizar, analisar e apresentar dados que apoiam
+decisões. Neste painel, você percorre a série de um produto, confere
+previsões walk-forward e compara o MAE entre janelas. Um gráfico bem
+apresentado acompanha a conta; a validação temporal e o relato continuam
+necessários.</p>
+<p>O <a href="../material/bi-demanda/index.html">explorador de
+demanda</a> oferece série, erros no teste, comparação de janelas e
+tabela auditável. Você pode usá-lo incorporado à <a
+href="https://lgallindo.github.io/recomendador-bentoml/demanda/#explorador-interativo">versão
+web deste tutorial</a>. Para estudar offline, abra o HTML a partir de
+uma cópia local do repositório: a página do arquivo no GitHub exibe o
+código. Consulte o <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-demanda/README.md">roteiro
+de exploração</a>.</p>
+<section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
+<h3 id="explorer-heading">Experimente a série neste tutorial</h3>
+<p>Escolha produto e janela abaixo. O painel tem sua própria rolagem; você também pode ampliá-lo. As 16 semanas são sintéticas.</p>
+<div class="explorer-actions">
+<button id="fullscreen-explorer" type="button">Ver explorador em tela cheia</button>
+<a href="../material/bi-demanda/index.html" target="_blank" rel="noopener">Abrir explorador em nova aba</a>
+</div>
+<p id="explorer-status" role="status"></p>
+<iframe id="explorer" src="../material/bi-demanda/index.html" title="Explorador interativo de previsão de demanda"
+loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+</section>
+<p>Para contas à mão na lousa, use também a <a
+href="../material/planilha-media-movel-demanda.xlsx">planilha de
+sala</a>: uma aba por produto, com as 16 semanas do CSV nas primeiras
+linhas e colunas em branco para o quadro. A extensão sintética dessa
+planilha <strong>não</strong> alimenta o explorador; o painel usa
+somente <code>dados/vendas_semanais.csv</code>.</p>
+<p>As figuras abaixo permitem estudar os mesmos recortes na versão
+Markdown.</p>
+<h3 id="série-observação-previsão-e-próxima-semana">Série: observação,
+previsão e próxima semana</h3>
+<p><img src="../material/imagens/bi-demanda-serie-p01.png"
+alt="Série semanal sintética do Jarro p01 com previsões MA(4) walk-forward, faixa de teste destacada e ponto da previsão para a semana seguinte." /></p>
+<p><em>Figura 5 — Observações em linha contínua; previsões MA(4) em
+tracejado. A faixa sombreada marca as quatro semanas de teste. O ponto
+terracota é a estimativa para a semana posterior ao histórico
+disponível. No explorador, troque o produto e a janela para repetir a
+leitura.</em></p>
+<h3 id="erros-distância-em-cada-semana-do-teste">Erros: distância em
+cada semana do teste</h3>
+<p><img src="../material/imagens/bi-demanda-erros-p01.png"
+alt="Barras de erro absoluto de MA(4) nas quatro semanas de teste de p01, com linha do MAE do produto." /></p>
+<p><em>Figura 6 — Cada barra é |observado − previsão| em uma semana
+prevista. A linha tracejada marca o MAE de <code>p01</code> com MA(4).
+Use a tabela do painel para conferir os denominadores da média móvel
+semana a semana.</em></p>
+<h3
+id="comparação-de-janelas-o-mesmo-teste-para-todos-os-métodos">Comparação
+de janelas: o mesmo teste para todos os métodos</h3>
+<p><img src="../material/imagens/bi-demanda-mae-janelas.png"
+alt="Barras de MAE agregado da previsão ingênua e das médias móveis MA(2) a MA(5) em 48 previsões walk-forward." /></p>
+<p><em>Figura 7 — MAE nas mesmas 48 previsões (12 produtos × 4 semanas).
+Menor é melhor nesta métrica. No painel, a barra do método selecionado
+fica destacada para você cruzar o agregado com o produto aberto à
+esquerda.</em></p>
+<h3 id="atividade-do-painel-a-um-relato">Atividade: do painel a um
+relato</h3>
+<ol type="1">
+<li>Abra Jarro (<code>p01</code>) com MA(4). Anote a previsão da próxima
+semana e o MAE do produto no teste.</li>
+<li>Na tabela, escolha uma semana e refaça a média das quatro anteriores
+à mão.</li>
+<li>Troque para a previsão ingênua e descreva o que muda nos erros.</li>
+<li>Exporte o CSV do teste ou um PNG e anexe ao modelo de relato da
+seção 7.</li>
+</ol>
+<h2 id="9-exercício-preveja-a-demanda-da-boneca">9. Exercício: preveja a
+demanda da Boneca</h2>
+<p>Usando <code>dados/vendas_semanais.csv</code>, produza uma previsão
+para Boneca de barro (<code>p03</code>) com média móvel de quatro
+semanas e compare-a com a previsão ingênua. Depois, avalie ambas nas
+quatro últimas semanas usando o mesmo procedimento walk-forward. Você
+pode conferir a série e a tabela no <a
+href="../material/bi-demanda/index.html">explorador</a>.</p>
+<p>Seu relato deve incluir:</p>
+<ol type="1">
+<li>As quatro observações usadas para a previsão futura.</li>
+<li>A conta de MA(4) e o valor da previsão ingênua.</li>
+<li>O MAE de cada método nas quatro semanas de teste para
+<code>p03</code>.</li>
+<li>Uma frase sobre se esta série sintética permite concluir que o
+método funcionará em vendas futuras reais.</li>
+</ol>
+<h3 id="resolução-comentada">Resolução comentada</h3>
+<p>As quatro últimas observações de <code>p03</code> são 1, 2, 1 e 0. A
+previsão da média móvel é <code>(1 + 2 + 1 + 0) / 4 = 1</code>; a
+previsão ingênua é <code>0</code>, a última observação.</p>
+<p>No período de teste, os valores observados são 1, 2, 1 e 0. As
+previsões MA(4) são 1; 1; 1,25; e 1,25. As previsões ingênuas são 1; 1;
+2; e 1.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">M</mi><mi mathvariant="normal">A</mi><mi mathvariant="normal">E</mi></mrow><mrow><mi mathvariant="normal">M</mi><mi mathvariant="normal">A</mi><mo stretchy="false" form="prefix" mathvariant="normal">(</mo><mn mathvariant="normal">4</mn><mo stretchy="false" form="postfix" mathvariant="normal">)</mo></mrow></msub><mo>=</mo><mfrac><mrow><mo stretchy="false" form="prefix">|</mo><mn>1</mn><mo>−</mo><mn>1</mn><mo stretchy="false" form="prefix">|</mo><mi>+</mi><mo stretchy="false" form="prefix">|</mo><mn>2</mn><mo>−</mo><mn>1</mn><mo stretchy="false" form="prefix">|</mo><mi>+</mi><mo stretchy="false" form="prefix">|</mo><mn>1</mn><mo>−</mo><mn>1</mn><mo>,</mo><mn>25</mn><mo stretchy="false" form="prefix">|</mo><mi>+</mi><mo stretchy="false" form="prefix">|</mo><mn>0</mn><mo>−</mo><mn>1</mn><mo>,</mo><mn>25</mn><mo stretchy="false" form="prefix">|</mo></mrow><mn>4</mn></mfrac><mo>=</mo><mfrac><mrow><mn>0</mn><mo>+</mo><mn>1</mn><mo>+</mo><mn>0</mn><mo>,</mo><mn>25</mn><mo>+</mo><mn>1</mn><mo>,</mo><mn>25</mn></mrow><mn>4</mn></mfrac><mo>=</mo><mn>0</mn><mo>,</mo><mn>625</mn></mrow><annotation encoding="application/x-tex">
+\mathrm{MAE}_{\mathrm{MA(4)}}
+= \frac{|1-1|+|2-1|+|1-1{,}25|+|0-1{,}25|}{4}
+= \frac{0+1+0{,}25+1{,}25}{4}
+= 0{,}625
+</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">M</mi><mi mathvariant="normal">A</mi><mi mathvariant="normal">E</mi></mrow><mrow><mi mathvariant="normal">i</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">ê</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">a</mi></mrow></msub><mo>=</mo><mfrac><mrow><mo stretchy="false" form="prefix">|</mo><mn>1</mn><mo>−</mo><mn>1</mn><mo stretchy="false" form="prefix">|</mo><mi>+</mi><mo stretchy="false" form="prefix">|</mo><mn>2</mn><mo>−</mo><mn>1</mn><mo stretchy="false" form="prefix">|</mo><mi>+</mi><mo stretchy="false" form="prefix">|</mo><mn>1</mn><mo>−</mo><mn>2</mn><mo stretchy="false" form="prefix">|</mo><mi>+</mi><mo stretchy="false" form="prefix">|</mo><mn>0</mn><mo>−</mo><mn>1</mn><mo stretchy="false" form="prefix">|</mo></mrow><mn>4</mn></mfrac><mo>=</mo><mfrac><mrow><mn>0</mn><mo>+</mo><mn>1</mn><mo>+</mo><mn>1</mn><mo>+</mo><mn>1</mn></mrow><mn>4</mn></mfrac><mo>=</mo><mn>0</mn><mo>,</mo><mn>75</mn></mrow><annotation encoding="application/x-tex">
+\mathrm{MAE}_{\mathrm{ingênua}}
+= \frac{|1-1|+|2-1|+|1-2|+|0-1|}{4}
+= \frac{0+1+1+1}{4}
+= 0{,}75
+</annotation></semantics></math></p>
+<p>MA(4) tem MAE ligeiramente menor para <code>p03</code> nesse período,
+mas quatro observações de teste são insuficientes para garantir que será
+melhor adiante. Além disso, a série foi construída sinteticamente. Use o
+exercício para praticar o método, não como evidência comercial.</p>
+<h2 id="referências-e-leituras">Referências e leituras</h2>
+<ol type="1">
+<li>HYNDMAN, Rob J.; ATHANASOPOULOS, George. <em>Forecasting: Principles
+and Practice</em>. 3. ed. Capítulo sobre médias móveis. Explica a
+suavização com médias móveis e suas limitações. <a
+href="https://otexts.com/fpp3/moving-averages.html">Moving
+averages</a>.</li>
+<li>HYNDMAN, Rob J.; ATHANASOPOULOS, George. <em>Forecasting: Principles
+and Practice</em>. Capítulo sobre avaliação temporal e validação cruzada
+para séries. <a href="https://otexts.com/fpp3/tscv.html">Time series
+cross-validation</a>.</li>
+<li>PANDAS. Documentação da operação <code>DataFrame.rolling</code>,
+para experimentar janelas móveis em dados tabulares. <a
+href="https://pandas.pydata.org/docs/user_guide/window.html">Rolling
+window calculations</a>.</li>
+</ol>
+<h2 id="reproduzir-as-figuras">Reproduzir as figuras</h2>
+<p>Na raiz do repositório, execute:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/gerar_figuras_demanda.py</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/gerar_bi_demanda.py</span></code></pre></div>
+<p>O primeiro script recria o mapa conceitual, a série MA(4), o fluxo
+walk-forward e a comparação de MAE em <code>material/imagens/</code>. O
+segundo atualiza <code>dados.js</code> do explorador e os espelhos
+estáticos <code>bi-demanda-*.png</code>. Ambos leem
+<code>dados/vendas_semanais.csv</code>.</p></main>
+  </div>
+</body>
+</html>

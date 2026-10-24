@@ -1,4 +1,7 @@
 {
-  "source_commit": "0c34381e136c8238b75b516fb11cd3c14daa79c9",
-  "tutorial": "material/tutorial-regras-associacao-20261017.md"
+  "source_commit": "7565917a3d4e3a2882c16a9f261eb5da46067a2c",
+  "tutorials": [
+    "material/tutorial-regras-associacao-20261017.md",
+    "material/tutorial-media-movel-demanda-20261017.md"
+  ]
 }
