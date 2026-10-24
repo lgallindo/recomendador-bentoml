@@ -62,14 +62,9 @@ nenhuma ilustração deve ser interpretada como evidência de vendas reais.
 
 ## Sobre a ilustração da loja
 
-`marketing-artesanato.png` foi criada com a ferramenta integrada de geração de
-imagens. É uma ilustração sintética, não uma fotografia nem uma visualização dos
-dados. As barras não têm valores medidos. Para comparar instruções de geração
-com o resultado visual, você pode consultar o prompt completo abaixo:
-
-```text
-Use case: illustration-story. Asset type: wide educational illustration for a Brazilian Portuguese student tutorial on association-rule mining in marketing. Create a polished warm editorial illustration in three connected scenes across a single landscape image: a small Pernambuco craft shop with terracotta jug, glazed ceramic plate, clay doll and woven baskets; purchase receipts represented by simple pictograms leading to a laptop displaying a product-pair suggestion with jug and plate; two alternative shop-page layouts being compared with small outcome bar charts. A human shopkeeper uses the computer. Consistent recognizable jug and plate throughout. Clear uncluttered flat illustration with subtle paper texture, cream background, terracotta, teal and dark blue palette. No lettering, no numbers, no logos, no invented statistical results. Do not depict robots or brains. The image explains purchase records leading to a testable merchandising suggestion, not a proven sales increase. Wide landscape composition.
-```
+`marketing-artesanato.png` é uma **ilustração sintética** da cena da loja
+(feira, recibos, sugestão no laptop). Serve para ambientar o tutorial; as barras
+e pictogramas **não** são medidas dos dados do exercício.
 
 ## Figuras do tutorial de crédito
 
@@ -92,10 +87,5 @@ gráficos e o PDF de cartões; execute antes a avaliação padrão com
 | [credito-comparacao.png](credito-comparacao.png) | Acertos no treino e desenvolvimento para as duas árvores |
 | [credito-matriz-teste.png](credito-matriz-teste.png) | Contagens de previsão versus resultado no teste final da árvore selecionada |
 
-A cena `credito-loja.png` foi criada com a ferramenta integrada imagegen e
-salva nesta pasta. É uma ilustração narrativa; os pictogramas não são dados nem
-uma representação fiel da árvore aprendida. Prompt final usado:
-
-```text
-Use case: illustration-story. Asset type: wide opening illustration for a Brazilian Portuguese educational tutorial about decision trees and installment credit. Primary request: three connected scenes across one landscape: in a small Brazilian furniture store a customer discusses an installment purchase with a shop assistant, a desk with anonymous application sheets and simple branching question pictograms, and the assistant reviewing a computer with a small question tree while the customer waits. Warm approachable editorial flat illustration with subtle paper texture, cream background, teal, terracotta and dark blue palette. Ordinary diverse adults, dignified equal treatment, simple sofa and dining furniture in background. Clear uncluttered composition. No text, no letters, no numbers, no brands, no currency symbols, no robots, no brain icons, no appearance-based judgments, no automatic approval stamp. Illustrate people using records and questions to support a review, not certainty about future repayment.
-```
+A cena `credito-loja.png` é ilustração narrativa da solicitação de crédito;
+pictogramas e ramos desenhados **não** são a árvore aprendida nem linhas do CSV.

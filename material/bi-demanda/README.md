@@ -36,11 +36,12 @@ não alimenta este painel.
    conferir previsão futura e MAE.
 6. Exporte o CSV do teste ou um PNG de gráfico para anexar ao relato.
 
-## Filtrar não é treinar de novo
+## O que o filtro faz
 
-Trocar produto ou janela recalcula a leitura das mesmas 16 semanas. O painel
-não estima parâmetros por otimização e não usa as semanas de extensão da
-planilha de sala. Para outras séries, atualize o CSV e rode
+Trocar produto ou janela **rele a mesma série** de 16 semanas (método e
+janela escolhidos no painel). O explorador aplica a regra fixa já definida no
+tutorial; não estima parâmetros por otimização nem usa as semanas de extensão
+da planilha de sala. Para outras séries, atualize o CSV e rode
 [`gerar_bi_demanda.py`](../../scripts/gerar_bi_demanda.py).
 
 ## Reproduzir os dados e as figuras

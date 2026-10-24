@@ -6,12 +6,11 @@ aparecem outras peças: um prato da mesma técnica, uma boneca de barro, e mais 
 sugestões que muita gente já pediu. Ninguém digitou “cerâmica” na busca. A loja
 simplesmente **chutou com cuidado** o que ainda pode interessar.
 
-Esse “chute com cuidado” é o **sistema de recomendação**. Sem ele, a pessoa só vê o
-que ela mesma procura — e a maior parte do catálogo fica invisível. Com ele, a loja
-usa o produto da página (e, neste material, o histórico de pedidos de exemplo) para
-montar uma lista curta de **outros** produtos. Não é um chatbot: não conversa. Não é
-um classificador genérico: não rotula texto. É um ranqueador: recebe um produto e
-devolve outros, cada um com uma nota e um motivo legível.
+Esse “chute com cuidado” é o **sistema de recomendação**. Com ele, a loja usa o
+produto da página (e, neste material, o histórico de pedidos de exemplo) para
+montar uma lista curta de **outros** produtos. É um **ranqueador**: recebe um
+produto e devolve outros, cada um com uma nota (`score`) e um motivo legível
+(`reason`) — o gênero que esta aula implementa de ponta a ponta.
 
 Este repositório traz um catálogo pequeno de
 peças pernambucanas, um treino que calcula popularidade e “aparecem juntos”, e um
@@ -23,7 +22,7 @@ README — depois do baseline.
 
 ## Sinais que a loja observa
 
-Antes de ranquear, a loja já acumula duas leituras do passado. Elas chegam ao
+Antes de ranquear, a loja já acumulou leituras do passado. Elas chegam ao
 recomendador como matéria-prima da nota:
 
 | Leitura | O que a loja vê | Papel na nota |
@@ -47,8 +46,9 @@ seguintes.
 | **Score** | Nota única que mistura esses sinais — e, nas variantes, sinais extras — para ranquear candidatos. |
 | **Reason** | Rótulo legível do motivo da sugestão (`mesma_tecnica`, `complemento_popularidade`, ou os rótulos das variantes). |
 
-A variante demográfica acrescenta **afinidade de perfil**; a de clustering acrescenta
-**vizinhança de grupo**. Detalhe operacional no fim, em [Variantes](#variantes).
+A variante 01 (demográfica) acrescenta **afinidade de perfil**; a 02 (clustering),
+**vizinhança de grupo**; a 03 (embeddings), **similaridade semântica** via encoder
+neural. Detalhe operacional no fim, em [Variantes](#variantes).
 
 ## Cesta de compra
 
@@ -87,10 +87,6 @@ diferentes** do mesmo arquivo:
 | --- | --- | --- |
 | Popularidade | `produtos[].pedidos` | Quão pedido é o item (contagem por produto) |
 | Co-ocorrência | `cestas` | Quão frequentemente dois ids saem **na mesma** compra |
-
-Não misture: contar em quantas cestas um id aparece **não** é o que este baseline
-faz para popularidade. Aqui a demanda já veio agregada no campo `pedidos` de cada
-produto; as `cestas` servem só para pares.
 
 ### Popularidade
 
@@ -209,8 +205,9 @@ normalizada do candidato dado o produto da página (0 se nunca apareceram juntos
 
 ## Workflow
 
-Dois momentos distintos — e, em MLOps, dois **papéis** distintos. Não misture na
-mesma sequência: quem treina não é quem clica na vitrine.
+O pipeline separa **treino** (offline: dados → artefato) de **inferência**
+(online: artefato → resposta HTTP). Em MLOps esses são papéis distintos: o
+operador grava o modelo; a vitrine só consulta o serviço.
 
 | Momento | Em MLOps | Neste repo | Quem age | Frequência |
 | --- | --- | --- | --- | --- |
@@ -385,9 +382,9 @@ $$
 5. **Resposta.** Devolvemos a lista com id, nome, técnica, região, score, motivo e rank —
    pronta para a WEB desenhar a faixa “Você também pode gostar”.
 
-Não há rede neural nem modelo de linguagem neste baseline: são contagens e uma regra
-fixa, auditáveis no papel (ver [`material/calculos-trabalhados.md`](material/calculos-trabalhados.md)).
-O dataset e o significado de cada campo estão em [`dados/README.md`](dados/README.md).
+Neste baseline a ordenação é **contagem + regra fixa**, auditável no papel (ver
+[`material/calculos-trabalhados.md`](material/calculos-trabalhados.md)). O dataset
+e o significado de cada campo estão em [`dados/README.md`](dados/README.md).
 
 ---
 
@@ -520,7 +517,7 @@ Até aqui o serviço sobe com `just serve`: processo Python na sua máquina, len
 model store local. **Containerizar** é o passo seguinte — útil quando a pergunta
 é: “como levo essa API para outro computador sem repetir o ambiente?”
 
-Três ideias, nesta ordem:
+O empacote sobe em camadas, nesta ordem operacional:
 
 | Nome | O que é | Comando neste repo |
 | --- | --- | --- |
@@ -604,25 +601,24 @@ container a API escuta 3000, por isso o mapeamento `HOST:3000`.
 Exemplo (clustering):
 
 ```bash
-cd variante-clustering
+cd 02-variante-clustering
 just treino
 just imagem
 just serve-container   # -p 3002:3000
 just curl-exemplo
 ```
 
-### O que este passo não é
+### O que este passo prova
 
-Não é orquestração (Kubernetes), não é registro remoto (`docker push`), não é
-rebuild automático a cada clique. É a prova mínima de **portabilidade da
-inferência**: treinou uma vez, empacotou o serviço, subiu a imagem, bateu o
-mesmo `POST /recomendar`.
+Prova mínima de **portabilidade da inferência**: treinou uma vez, empacotou o
+serviço, subiu a imagem, bateu o mesmo `POST /recomendar` — o mesmo contrato
+HTTP, agora fora do venv da pasta.
 
 ---
 
 ## Mergulho técnico
 
-### Ideia da regra (baseline, sem rede neural)
+### Ideia da regra (baseline: popularidade e co-ocorrência)
 
 1. **Popularidade.** Cada produto tem um contador `pedidos` no JSON. No treino,
    normalizamos pelo máximo do catálogo:
@@ -656,16 +652,17 @@ não usa região na ordenação**.
 | [`bentofile.yaml`](bentofile.yaml) | Empacote opcional: o que entra no Bento / imagem |
 | [`justfile`](justfile) | Atalhos `treino`, `serve`, `imagem`, `serve-container`, curls |
 | [`material/calculos-trabalhados.md`](material/calculos-trabalhados.md) | Contas do exemplo `p01` no papel |
-| [`slides/`](slides/) | Slides (arco didático; ver [`slides/README.md`](slides/README.md)) |
-| [`scripts/gerar_slides.py`](scripts/gerar_slides.py) | Regenera o deck (`just slides`) |
-| [`variante-demografica/`](variante-demografica/) | Variante com `clientes` + `compras` e score demográfico |
-| [`variante-clustering/`](variante-clustering/) | Cluster hierárquico + intercalação `cesta` / `cluster` |
+| [`slides/`](slides/) | Deck HTML (arco didático; ver [`slides/README.md`](slides/README.md)) |
+| [`scripts/gerar_slides.py`](scripts/gerar_slides.py) | Regenera `slides/recomendador-bentoml.html` (`just slides`) |
+| [`01-variante-demografica/`](01-variante-demografica/) | Perfil do cliente + score demográfico (arco 01) |
+| [`02-variante-clustering/`](02-variante-clustering/) | Cluster hierárquico + intercalação `cesta` / `cluster` (arco 02) |
+| [`03-variante-embeddings/`](03-variante-embeddings/) | Encoder pretrained + cosseno semântico (arco 03) |
 
 ### Dependências e ambiente
 
 - Python **≥ 3.13**, gerenciado por **uv** (`pyproject.toml` / `uv.lock`).
-- Dependência de runtime: **BentoML**.
-- Grupo `dev`: **python-pptx** (só para gerar slides).
+- Runtime compartilhado: **BentoML**, scikit-learn / scipy / matplotlib (clustering),
+  **sentence-transformers** (variante 03; puxa torch).
 - Comandos passam por `uv run …` (via `just`), com venv local nesta pasta.
 
 ### Ciclo treino → serve
@@ -680,12 +677,12 @@ Para levar o **mesmo** serviço numa imagem OCI (sem depender do venv da pasta),
 veja [Empacote e container](#empacote-e-container-bento--imagem-oci):
 `just treino` → `just imagem` → `just serve-container`.
 
-### O que este material não é
+### O que este material entrega
 
-Não é aprendizado profundo, não é filtragem colaborativa com matriz de usuários
-reais, não autentica, não persiste log de impressões, não avalia Precision@k.
-É um **baseline** com técnica, popularidade, exclusões, JSON e motivo legível —
-servido como API para a WEB consumir.
+Um **baseline** com técnica, popularidade, exclusões, JSON e motivo legível —
+servido como API para a WEB consumir. A regra cabe no papel; o próximo degrau
+(modelos supervisionados, métricas de ranking, etc.) está no mapa
+[Do Data Science à Machine Learning](#ds-para-ml-microsoft-learn).
 
 ### Para onde ir depois (fora deste repositório)
 
@@ -703,8 +700,7 @@ Nada disso é necessário para este pacote rodar sozinho.
 
 **GPL-3.0** — ver [`LICENSE`](LICENSE).
 
-BentoML (Apache-2.0) e python-pptx (MIT) têm licenças próprias; elas não alteram a
-licença deste código.
+BentoML (Apache-2.0) tem licença própria; ela não altera a licença deste código.
 
 ---
 
@@ -777,7 +773,7 @@ Links em pt-BR, mesma ordem do módulo.
 | 5. Classificação binária | [5-binary-classification](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/5-binary-classification) | Rótulo “este candidato é relevante dado `pagina`?” (clique, compra, par na cesta). Inferência: pontuar candidatos e ordenar pela probabilidade positiva. |
 | 6. Classificação multiclasse | [6-multiclass-classification](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/6-multiclass-classification) | Predizer o **próximo id** entre muitos — viável com catálogo pequeno deste material; em loja real costuma virar ranking / top‑k, não uma classe única. |
 | 7. Clustering | [7-clustering](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/7-clustering) | Substituir ou enriquecer o filtro manual por `tecnica`: agrupar produtos por atributos (e depois rotular clusters, se quiser classificação). |
-| 8. Aprendizado profundo | [8-deep-learning](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/8-deep-learning) | Opcional e **fora** do próximo passo deste baseline; só depois de haver rótulos, métricas e um modelo tabular simples. |
+| 8. Aprendizado profundo | [8-deep-learning](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/8-deep-learning) | A variante [`03-variante-embeddings/`](03-variante-embeddings/) já **usa** um encoder neural pretrained (sem treinar pesos novos). Treinar rede do zero com rótulos da loja continua fora do próximo passo tabular. |
 | 9. Exercício (cenários) | [9-exercise](https://learn.microsoft.com/pt-br/training/modules/fundamentals-machine-learning/9-exercise) | Praticar o enquadramento: “sorvete/pinguim/diabetes” do módulo ↔ “par (página, candidato) → engajou?”. |
 
 ### Ordem sugerida na prática (teórica → código)
@@ -797,15 +793,17 @@ implementar de verdade:
 
 ## Variantes
 
-O **baseline** é a raiz; as pastas irmãs têm artefato BentoML, porta HTTP e imagem
-OCI próprios (cada uma grava a própria tag — o baseline continua em
+O **baseline** é a raiz; as pastas irmãs são numeradas pela ordem do arco didático
+(complexidade crescente). Cada uma tem artefato BentoML, porta HTTP e imagem OCI
+próprios (cada uma grava a própria tag — o baseline continua em
 `recomendador:latest`).
 
-| Pasta | Porta | Artefato | Imagem OCI | O que acrescenta |
-| --- | ---: | --- | --- | --- |
-| [`.`](.) (raiz / baseline) | 3000 | `recomendador` | `recomendador:aula` | técnica + `pop` + `cooc` + complemento por popularidade |
-| [`variante-demografica/`](variante-demografica/) | 3001 | `recomendador-demo` | `recomendador-demo:aula` | `clientes` + `compras`; score com afinidade demográfica |
-| [`variante-clustering/`](variante-clustering/) | 3002 | `recomendador-cluster` | `recomendador-cluster:aula` | cluster hierárquico (dendrograma); lista intercalada `cesta`/`cluster` |
+| Ordem | Pasta | Porta | Artefato | Imagem OCI | O que acrescenta |
+| --- | --- | ---: | --- | --- | --- |
+| — | [`.`](.) (raiz / baseline) | 3000 | `recomendador` | `recomendador:aula` | técnica + `pop` + `cooc` + complemento por popularidade |
+| 01 | [`01-variante-demografica/`](01-variante-demografica/) | 3001 | `recomendador-demo` | `recomendador-demo:aula` | `clientes` + `compras`; score com afinidade demográfica |
+| 02 | [`02-variante-clustering/`](02-variante-clustering/) | 3002 | `recomendador-cluster` | `recomendador-cluster:aula` | cluster hierárquico (dendrograma); lista intercalada `cesta`/`cluster` |
+| 03 | [`03-variante-embeddings/`](03-variante-embeddings/) | 3003 | `recomendador-embed` | `recomendador-embed:aula` | encoder pretrained (HF); cosseno no serve |
 
 Receitas de container em qualquer pasta: `just imagem` · `just serve-container`
 (ver [Empacote e container](#empacote-e-container-bento--imagem-oci)).
@@ -825,7 +823,7 @@ houver vaga. O motivo de cada sugestão vem no campo `reason`
 - **Container:** `just imagem` · `just serve-container` · mesmos curls.
 - **Leitura:** seções [Cesta](#cesta-de-compra) → [Workflow](#workflow) → [API](#o-que-a-api-espera-e-o-que-ela-devolve).
 
-### Variante demográfica — a loja também sabe *quem* olha
+### 01 — Variante demográfica — a loja também sabe *quem* olha
 
 Mesma vitrine, com um perfil sintético a mais: faixa etária, técnicas e polos
 preferidos, mais um histórico curto de compras por cliente. O treino prepara
@@ -835,21 +833,21 @@ API ainda responde — a parte demográfica da nota fica em zero e os pesos do
 artefato seguem valendo.
 
 - **Dados extras:** `clientes[]` e `compras[]` em
-  [`variante-demografica/dados/`](variante-demografica/dados/).
+  [`01-variante-demografica/dados/`](01-variante-demografica/dados/).
 - **Regra (mesma técnica):**  
   $`0.45 \times \mathrm{pop} + 0.25 \times \mathrm{cooc} + 0.30 \times \mathrm{demo}`$,  
   onde `demo` mistura preferências declaradas e popularidade do produto **na faixa
   etária** do cliente.
-- **Subir:** `cd variante-demografica && just treino && just serve` (porta **3001**).
+- **Subir:** `cd 01-variante-demografica && just treino && just serve` (porta **3001**).
 - **Container:** nessa pasta, `just imagem` · `just serve-container` (host **3001**).
-- **Doc:** [`variante-demografica/README.md`](variante-demografica/README.md).
+- **Doc:** [`01-variante-demografica/README.md`](01-variante-demografica/README.md).
 
-### Variante clustering — cesta e grupo de atributos na mesma lista
+### 02 — Variante clustering — cesta e grupo de atributos na mesma lista
 
-Este pacote monta a faixa de sugestões **intercalando** dois fios. No treino, cada
-produto vira um vetor (técnica, região, pedidos) e o linkage *ward* corta o
-catálogo em grupos; o dendrograma fica em
-[`variante-clustering/material/dendrograma.png`](variante-clustering/material/dendrograma.png).
+Este pacote monta a faixa de sugestões **intercalando** compra conjunta e
+vizinhança de atributos. No treino, cada produto vira um vetor (técnica, região,
+pedidos) e o linkage *ward* corta o catálogo em grupos; o dendrograma fica em
+[`02-variante-clustering/material/dendrograma.png`](02-variante-clustering/material/dendrograma.png).
 Na inferência, ranks ímpares puxam a fila da **cesta** (co-ocorrência com a
 página); ranks pares puxam o **cluster** (mesmo grupo, ordenado por popularidade).
 Se a fila da vez esvaziar, a outra completa a vaga e o `reason` registra a fonte
@@ -857,9 +855,24 @@ que de fato entrou (`cesta` ou `cluster`).
 
 - **Exemplo completo:** `produto_na_pagina=p07`, `limite=4` →  
   `cesta`, `cluster`, `cesta`, `cluster` (`intercalacao_completa: true`).
-- **Subir:** `cd variante-clustering && just treino && just serve` (porta **3002**).
+- **Subir:** `cd 02-variante-clustering && just treino && just serve` (porta **3002**).
 - **Container:** nessa pasta, `just imagem` · `just serve-container` (host **3002**).
-- **Doc:** [`variante-clustering/README.md`](variante-clustering/README.md).
+- **Doc:** [`02-variante-clustering/README.md`](02-variante-clustering/README.md).
+
+### 03 — Variante embeddings — encoder neural na inferência
+
+Baixa um Sentence Transformer multilíngue
+(`paraphrase-multilingual-MiniLM-L12-v2`), monta uma frase por produto
+(`nome` + `técnica` + `polo`) e ranqueia por **cosseno**. O treino aquece o
+checkpoint e grava textos no artefato BentoML; o serviço **carrega o encoder de
+novo** e chama `encode` na subida (catálogo) e em cada `POST /recomendar`
+(página). Tag BentoML (`modelo`) e id Hugging Face (`modelo_hf`) ficam separados
+na resposta.
+
+- **Score:** similaridade de cosseno; `reason: similaridade_semantica`.
+- **Subir:** `cd 03-variante-embeddings && just treino && just serve` (porta **3003**).
+- **Container:** nessa pasta, `just imagem` · `just serve-container` (host **3003**).
+- **Doc:** [`03-variante-embeddings/README.md`](03-variante-embeddings/README.md).
 
 ### Entradas e saídas esperadas
 
@@ -868,51 +881,56 @@ artefato mudam por pasta (tabela acima).
 
 #### Entradas (`POST /recomendar`)
 
-| Campo | Baseline `:3000` | Demográfica `:3001` | Clustering `:3002` |
-| --- | --- | --- | --- |
-| `produto_na_pagina` | obrigatório (string) | obrigatório | obrigatório |
-| `limite` | opcional (padrão `4`) | opcional (padrão `4`) | opcional (padrão `4`) |
-| `excluir` | opcional (lista de ids) | opcional | opcional |
-| `cliente_id` | — | opcional (string, ex. `"u01"`) | — |
+| Campo | Baseline `:3000` | Demo `:3001` | Cluster `:3002` | Embed `:3003` |
+| --- | --- | --- | --- | --- |
+| `produto_na_pagina` | obrigatório (string) | obrigatório | obrigatório | obrigatório |
+| `limite` | opcional (padrão `4`) | opcional | opcional | opcional |
+| `excluir` | opcional (lista de ids) | opcional | opcional | opcional |
+| `cliente_id` | — | opcional (string, ex. `"u01"`) | — | — |
 
 #### Saídas (sucesso)
 
-Campos presentes no JSON de resposta. “comum” = os três pacotes; o restante é
-específico da pasta.
+Campos presentes no JSON de resposta. “comum” = baseline + as três variantes
+numeradas; o restante é específico da pasta.
 
-| Campo | Baseline | Demográfica | Clustering |
-| --- | --- | --- | --- |
-| `items[]` | comum | comum | comum |
-| `items[].product_id`, `nome`, `tecnica`, `regiao`, `rank` | comum | comum | comum |
-| `items[].score` | `0,7×pop+0,3×cooc` ou `0,5×pop` no complemento | mistura com `demo` quando há cliente | `cooc` se `reason=cesta`; `pop` se `reason=cluster` |
-| `items[].reason` | `mesma_tecnica` · `complemento_popularidade` | `mesma_tecnica` / `mesma_tecnica_demo` · `complemento_popularidade` / `complemento_demo` | `cesta` · `cluster` |
-| `items[].afinidade_demo` | — | sim (`0…1`) | — |
-| `items[].cluster_id`, `items[].cooc`, `items[].pop` | — | — | sim |
-| `strategy` | comum | comum | comum |
-| `modelo` | tag `recomendador:…` | tag `recomendador-demo:…` | tag `recomendador-cluster:…` |
-| `produto_na_pagina` (eco) | id, nome, técnica, região | igual | igual **+** `cluster_id` |
-| `complemento_usado` | bool | bool | — |
-| `pesos` | — | `{pop, cooc, demo}` | — |
-| `cliente_id` / `cliente` | — | eco; `cliente` só se o id existir | — |
-| `intercalacao_completa` | — | — | bool |
-| `n_clusters` | — | — | int (ex. `4`) |
+| Campo | Baseline | Demográfica | Clustering | Embeddings |
+| --- | --- | --- | --- | --- |
+| `items[]` | comum | comum | comum | comum |
+| `items[].product_id`, `nome`, `tecnica`, `regiao`, `rank` | comum | comum | comum | comum |
+| `items[].score` | `0,7×pop+0,3×cooc` ou `0,5×pop` no complemento | mistura com `demo` quando há cliente | `cooc` se `reason=cesta`; `pop` se `reason=cluster` | cosseno do embedding |
+| `items[].reason` | `mesma_tecnica` · `complemento_popularidade` | `mesma_tecnica` / `mesma_tecnica_demo` · `complemento_popularidade` / `complemento_demo` | `cesta` · `cluster` | `similaridade_semantica` |
+| `items[].afinidade_demo` | — | sim (`0…1`) | — | — |
+| `items[].cluster_id`, `items[].cooc`, `items[].pop` | — | — | sim | — |
+| `strategy` | comum | comum | comum | comum |
+| `modelo` | tag `recomendador:…` | tag `recomendador-demo:…` | tag `recomendador-cluster:…` | tag `recomendador-embed:…` |
+| `modelo_hf` | — | — | — | id Hugging Face do encoder |
+| `produto_na_pagina` (eco) | id, nome, técnica, região | igual | igual **+** `cluster_id` | igual **+** `texto` |
+| `complemento_usado` | bool | bool | — | — |
+| `pesos` | — | `{pop, cooc, demo}` | — | — |
+| `cliente_id` / `cliente` | — | eco; `cliente` só se o id existir | — | — |
+| `intercalacao_completa` | — | — | bool | — |
+| `n_clusters` | — | — | int (ex. `4`) | — |
 
 #### Saídas de erro
 
-| Situação | Baseline | Demográfica | Clustering |
-| --- | --- | --- | --- |
-| Produto inexistente | `erro: produto_inexistente`, `items: []` | igual | igual |
-| Cliente inexistente | — | `erro: cliente_inexistente`, `items: []` | — |
+| Situação | Baseline | Demográfica | Clustering | Embeddings |
+| --- | --- | --- | --- | --- |
+| Produto inexistente | `erro: produto_inexistente`, `items: []` | igual | igual | igual |
+| Cliente inexistente | — | `erro: cliente_inexistente`, `items: []` | — | — |
 
 ### Como escolher
 
 | Pergunta | Pasta |
 | --- | --- |
 | “Só produto da página, regra auditável” | raiz |
-| “E se soubermos quem é o cliente?” | `variante-demografica/` |
-| “E se agruparmos por atributos e misturarmos com a cesta?” | `variante-clustering/` |
+| “E se soubermos quem é o cliente?” | `01-variante-demografica/` |
+| “E se agruparmos por atributos e misturarmos com a cesta?” | `02-variante-clustering/` |
+| “E se um encoder de texto baixado ranquear por significado?” | `03-variante-embeddings/` |
 
-Nenhuma variante é aprendizado de máquina supervisionado ainda — ver
+O baseline e a demográfica são regra + agregados. O clustering encaixa ML não
+supervisionado **treinado no catálogo**. Os embeddings usam um encoder neural
+**pretrained** (baixado) na inferência — ainda sem rótulo supervisionado de
+clique; esse degrau continua em
 [Do Data Science à Machine Learning](#ds-para-ml-microsoft-learn). Para **predição
 de demanda** (outro problema: prever `pedidos`, não montar top‑k), use o
 repositório irmão

@@ -73,11 +73,11 @@ Uma linha não é necessariamente uma unidade física: um pedido pode conter mai
 de uma unidade. Para prever unidades, a fonte precisaria registrar quantidades
 vendidas, e a coluna-alvo teria de ser definida de acordo.
 
-### Popularidade não é previsão
+### Popularidade e previsão semanal
 
-O catálogo do recomendador registra `pedidos` por produto como um total
-agregado. Esse valor ajuda a ordenar produtos populares, mas não tem datas e,
-sozinho, não revela o comportamento de uma semana para outra.
+O catálogo do recomendador registra `pedidos` por produto como um **total
+agregado** — útil para ordenar peças populares. Esse total **não traz datas**;
+para responder “e na próxima semana?”, a aula usa a série temporal abaixo.
 
 A série em [`../dados/vendas_semanais.csv`](../dados/vendas_semanais.csv)
 acrescenta as datas necessárias para exercitar um método temporal. Ela tem 16

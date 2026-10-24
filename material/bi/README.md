@@ -44,19 +44,17 @@ são suporte ≥ 20%, confiança ≥ 60% e lift > 1, calculados na descoberta.
 7. Exporte a seleção em CSV ou baixe cada gráfico em PNG. As exportações levam
    as métricas da base escolhida; a figura de comparação sempre mostra as duas.
 
-## Filtrar não é minerar novamente
+## O que o filtro faz
 
-Os filtros atuam sobre as 14 regras originais, não sobre a população de
-transações. Diminuir um limite não recupera regras que foram excluídas na
-mineração original. Para uma nova mineração, use
+Os filtros **releem** as 14 regras já mineradas (limites de métrica, busca por
+produto, base descoberta/validação). Diminuir um limite no painel **não** traz
+de volta regras cortadas na mineração original — para isso rode
 [`minerar_regras_associacao.py`](../../scripts/minerar_regras_associacao.py)
-com outros limites e outro arquivo de saída. O explorador continuará mostrando
-a seleção original até você alterar sua preparação de dados.
+com outros limites e outro arquivo de saída.
 
-Alterar a base exibida recalcula a leitura das regras fixas: as métricas das
-duas bases foram obtidas de suas respectivas contagens, sem tirar médias das
-métricas. Não há filtro de período real, receita ou margem, pois os conjuntos
-sintéticos não fornecem esses dados.
+Alterar a base exibida recalcula a leitura das regras fixas a partir das
+contagens de cada conjunto. Os dados sintéticos desta aula não incluem período
+real de venda, receita ou margem.
 
 ## Reproduzir os dados e as figuras
 

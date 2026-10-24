@@ -6,3 +6,13 @@ __pycache__/
 .bentoml/
 *.egg-info/
 *.~lock.*
+
+# Local agent / review tooling (not part of the student clone)
+.gstack/
+DEVELOPMENT.md
+
+# Agent/SDD working trees — local only (EDU-001 in bureaucracy STACK_EDU.md)
+openspec/
+.kiro/
+.specify/
+.openspec/

@@ -7,15 +7,17 @@ from pathlib import Path
 
 import bentoml
 
-modelo = bentoml.models.get("recomendador:latest")
+MODELO = "recomendador:latest"
 ARTEFATO = "model.pkl"
 
 
 @bentoml.service(resources={"cpu": "1"})
 class Recomendador:
+    # Artefato local do `just treino` (pickle confiável só do model store da aula).
+    bento_model = bentoml.models.BentoModel(MODELO)
 
     def __init__(self) -> None:
-        caminho = Path(modelo.path_of(ARTEFATO))
+        caminho = Path(self.bento_model.path_of(ARTEFATO))
         self.artefato = pickle.loads(caminho.read_bytes())
 
     @bentoml.api
@@ -105,5 +107,5 @@ class Recomendador:
                 "tecnica": tecnica,
                 "regiao": atual["regiao"],
             },
-            "modelo": str(modelo.tag),
+            "modelo": str(self.bento_model.tag),
         }

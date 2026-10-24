@@ -1,8 +1,12 @@
-# Versão web do tutorial
+# Versões web dos tutoriais
 
-Você pode ler o tutorial com o explorador incorporado em
-[lgallindo.github.io/recomendador-bentoml](https://lgallindo.github.io/recomendador-bentoml/).
-O conteúdo vem do [Markdown](../material/tutorial-regras-associacao-20261017.md).
+Você pode ler os tutoriais com explorador incorporado em:
+
+- [Associação](https://lgallindo.github.io/recomendador-bentoml/) — regras de
+  associação ([Markdown](../material/tutorial-regras-associacao-20261017.md))
+- [Demanda](https://lgallindo.github.io/recomendador-bentoml/demanda/) — média
+  móvel ([Markdown](../material/tutorial-media-movel-demanda-20261017.md))
+
 As fórmulas são convertidas para MathML; o navegador não precisa baixar uma
 biblioteca externa para renderizá-las.
 
@@ -14,11 +18,18 @@ Com Python 3 e Pandoc instalados, execute na raiz:
 python3 scripts/gerar_site_tutorial.py
 ```
 
-Abra `.local/pages-build/index.html` no navegador ou sirva essa pasta localmente.
-O explorador continua disponível separadamente em `material/bi/index.html`.
-A saída de publicação contém somente os arquivos necessários ao tutorial,
-incluindo imagens e dados dos exercícios; backups em `.local/pages-backups/`
-não integram essa saída.
+Abra `.local/pages-build/index.html` e `.local/pages-build/demanda/index.html`
+no navegador, ou sirva essa pasta localmente. Os exploradores também ficam em
+`material/bi/index.html` e `material/bi-demanda/index.html`. A saída de
+publicação contém somente os arquivos necessários aos tutoriais, incluindo
+imagens e dados dos exercícios; backups em `.local/pages-backups/` não
+integram essa saída.
+
+Antes de gerar a página de demanda, atualize o painel se necessário:
+
+```bash
+uv run python scripts/gerar_bi_demanda.py
+```
 
 ## Publicação
 
@@ -33,19 +44,20 @@ CLI e Pandoc disponíveis, você pode atualizar a publicação pela raiz:
 python3 scripts/publicar_site_tutorial.py
 ```
 
-O comando gera o site, clona `gh-pages` em uma pasta local, adiciona uma nova
-revisão e solicita a publicação. Ele preserva o histórico, não faz push forçado
-e não altera o site pessoal. Você precisa de permissão para publicar no `origin`
-e de autenticação no GitHub CLI. Confira o estado final com:
+O comando gera o site, clona `gh-pages` em uma pasta local, acrescenta uma
+revisão no histórico do branch e solicita a publicação no Pages. Você precisa
+de permissão no `origin` e autenticação no GitHub CLI. Confira o estado final
+com:
 
 ```bash
 gh api repos/lgallindo/recomendador-bentoml/pages/builds/latest --jq .status
 ```
 
-O [workflow opcional](../.github/workflows/pages.yml) permite gerar um artefato
-HTML pela aba Actions quando runners estiverem disponíveis; ele não é a rota
-de publicação do site. A publicação pelo branch não depende desse workflow.
+A **rota de publicação** desta aula é `scripts/publicar_site_tutorial.py` →
+branch `gh-pages`. O [workflow opcional](../.github/workflows/pages.yml) só
+gera artefato HTML na aba Actions quando houver runners; a publicação pelo
+branch funciona sem ele.
 
 Os links para código e documentação complementar levam aos respectivos arquivos
-do repositório. Os gráficos e o explorador funcionam na própria página. Você pode
-ampliar o painel com seu botão de tela cheia ou abri-lo em uma nova aba.
+do repositório. Os gráficos e os exploradores funcionam na própria página. Você
+pode ampliar o painel com o botão de tela cheia ou abri-lo em uma nova aba.

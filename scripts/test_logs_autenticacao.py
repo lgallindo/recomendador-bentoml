@@ -1,21 +1,22 @@
 """Verifica reconstrução, coerência dos fixtures e métricas independentes."""
 
+from __future__ import annotations
+
 import json
 import tempfile
 import unittest
 from fractions import Fraction
 from pathlib import Path
 
-from minerar_logs_autenticacao import RAIZ, avaliar, ler_eventos, montar_sessoes
+from minerar_logs_autenticacao import EVENTOS, RAIZ, avaliar, ler_eventos, montar_sessoes
 from minerar_regras_associacao import minerar
-from minerar_logs_autenticacao import EVENTOS
 
 
 class LogsTest(unittest.TestCase):
     def test_fixtures_e_fluxos(self):
         for cenario, total, quantidade, esperadas, contagens in [
-            ("descoberta", 20, 59, 27, (9, 9, 6)),
-            ("validacao", 10, 24, 9, (4, 3, 1)),
+            ("descoberta", 2000, 5900, 27, (900, 900, 600)),
+            ("validacao", 1000, 2400, 9, (400, 300, 100)),
         ]:
             with self.subTest(cenario=cenario):
                 eventos, duplicatas = ler_eventos(

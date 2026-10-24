@@ -8,7 +8,6 @@ from pathlib import Path
 import bentoml
 
 MODELO = "recomendador-demo:latest"
-modelo = bentoml.models.get(MODELO)
 ARTEFATO = "model.pkl"
 
 
@@ -29,9 +28,11 @@ def _afinidade_demo(
 
 @bentoml.service(resources={"cpu": "1"})
 class RecomendadorDemo:
+    # Artefato local do `just treino` nesta pasta (pickle só do model store da aula).
+    bento_model = bentoml.models.BentoModel(MODELO)
 
     def __init__(self) -> None:
-        caminho = Path(modelo.path_of(ARTEFATO))
+        caminho = Path(self.bento_model.path_of(ARTEFATO))
         self.artefato = pickle.loads(caminho.read_bytes())
 
     @bentoml.api
@@ -146,7 +147,7 @@ class RecomendadorDemo:
                 "tecnica": tecnica,
                 "regiao": atual["regiao"],
             },
-            "modelo": str(modelo.tag),
+            "modelo": str(self.bento_model.tag),
             "cliente_id": cliente_id,
         }
         if cliente is not None:

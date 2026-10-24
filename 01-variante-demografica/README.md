@@ -1,17 +1,16 @@
-# Variante demográfica
+# 01 — Variante demográfica
 
-O baseline da raiz já responde à pergunta da vitrine: *dado o produto da página,
-quais outros sugerir?* Nesta pasta a aula dá um passo a mais — **uma pergunta
-nova, sozinha**:
+O baseline da raiz responde: *dado o produto da página, quais outros sugerir?*
+Nesta pasta a pergunta é outra:
 
 > E se soubermos *quem* está olhando o jarro?
 
-O mesmo HTTP, o mesmo papel de treino e inferência, e um sinal extra: perfil do
-cliente (faixa etária, preferências) e compras de exemplo por pessoa. Enquanto
-você estiver aqui, o foco é só esse sinal.
+O mesmo HTTP e os mesmos papéis de treino e inferência ganham um sinal de
+**perfil**: faixa etária, preferências declaradas e compras de exemplo por
+pessoa. A nota `demo` entra na ordenação quando há `cliente_id`.
 
 Pasta irmã do baseline em [`../`](../). Mesma ideia (técnica + popularidade +
-co-ocorrência + BentoML), **mais** um sinal de perfil do cliente.
+co-ocorrência + BentoML), **mais** afinidade demográfica.
 
 | | Baseline (`../`) | Esta variante |
 | --- | --- | --- |
@@ -26,18 +25,15 @@ e (b) popularidade do produto **dentro da faixa etária** do cliente, medida nas
 
 ## Subir
 
-Os dois pipelines continuam separados: `just treino` grava
-`recomendador-demo:…`; `just serve` sobe a inferência na porta **3001**. O
-ambiente Python (`uv` / `.venv`) fica na raiz do repositório.
-
-Na raiz do repositório o `uv` / `.venv` já existem. Desta pasta:
+`just treino` grava `recomendador-demo:…`; `just serve` sobe a inferência na
+porta **3001**. O ambiente Python (`uv` / `.venv`) fica na raiz do repositório.
 
 ```bash
 just treino
 just serve
 ```
 
-Swagger em `http://127.0.0.1:3001` (porta **3001** para não brigar com o baseline
+Swagger em `http://127.0.0.1:3001` (porta **3001** para conviver com o baseline
 na 3000).
 
 ```bash
@@ -94,8 +90,8 @@ na_faixa   ← pop_faixa[faixa_etaria][id]   # 0 se a faixa não comprou esse id
 demo       ← 0,5 × declarado + 0,5 × na_faixa
 ```
 
-Sem `cliente_id`, `demo = 0` e o serviço se comporta como um primo do baseline
-(pesos diferentes; motivo `mesma_tecnica` / `complemento_popularidade`).
+Sem `cliente_id`, `demo = 0`: a lista segue técnica + popularidade/co-ocorrência
+com os pesos desta variante (`mesma_tecnica` / `complemento_popularidade`).
 
 ```mermaid
 sequenceDiagram
@@ -114,9 +110,9 @@ sequenceDiagram
 
 ## Relação com o baseline e com ML
 
-Isto **ainda** é regra + agregados (ciência de dados + serviço), não um modelo
-treinado. O perfil demográfico é o próximo degrau pedagógico antes de rotular
-pares `(página, candidato, cliente)` — ver o mapa Microsoft Learn no
+Aqui a ordenação continua **regra + agregados** (ciência de dados + serviço),
+agora com perfil sintético na nota. O próximo degrau — rotular pares
+`(página, candidato, cliente)` — está no mapa Microsoft Learn do
 [`../README.md`](../README.md#ds-para-ml-microsoft-learn).
 
 O contrato HTTP permanece familiar (`POST /recomendar`); muda a origem de parte
@@ -128,8 +124,8 @@ imagem OCI, use `just imagem` e `just serve-container` **nesta** pasta (tag
 
 | Arquivo | Papel |
 | --- | --- |
-| [`dados/catalogo.json`](dados/catalogo.json) | produtos, cestas, clientes, compras |
+| [`dados/catalogo.json`](dados/catalogo.json) | produtos + cestas + clientes + compras |
 | [`treino.py`](treino.py) | pop, cooc, pop_faixa → `recomendador-demo` |
-| [`service.py`](service.py) | `RecomendadorDemo.recomendar` |
-| [`justfile`](justfile) | `treino`, `serve` (porta 3001), curls |
+| [`service.py`](service.py) | `RecomendadorDemo`: score com `demo` |
+| [`justfile`](justfile) | treino / serve :3001 / curls |
 | [`bentofile.yaml`](bentofile.yaml) | empacote Bento / container desta variante |

@@ -1,15 +1,15 @@
-# Variante clustering (cesta ⊕ cluster)
+# 02 — Variante clustering (cesta ⊕ cluster)
 
 O baseline filtra candidatos pela técnica artesanal e ordena por uma nota única.
-Nesta pasta a aula coloca **outra** pergunta — e só ela — no centro:
+Nesta pasta a pergunta é:
 
 > E se agruparmos as peças por atributos e misturarmos isso com a cesta?
 
 O treino forma clusters hierárquicos; a inferência **intercala** o que costuma
-sair junto na compra com o que caiu no mesmo grupo da página. Enquanto você
-estiver aqui, o foco é esse desenho de lista.
+sair junto na compra com o que caiu no mesmo grupo da página — assim a faixa
+mistura evidência de cesta e vizinhança de atributos.
 
-Pasta irmã do baseline em [`../`](../). Monta a lista **intercalando** dois sinais:
+Pasta irmã do baseline em [`../`](../). Regra operacional de intercalação:
 
 | Rank | Fonte | `reason` |
 | ---: | --- | --- |

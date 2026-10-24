@@ -13,6 +13,10 @@ matplotlib.use("Agg")
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+import numpy as np
+from scipy.stats import poisson
+from sklearn.linear_model import LinearRegression, PoissonRegressor
+from sklearn.preprocessing import OneHotEncoder
 
 RAIZ = Path(__file__).resolve().parent.parent
 FONTE = RAIZ / "dados" / "vendas_semanais.csv"
@@ -150,6 +154,123 @@ def serie_tempo() -> None:
     salvar(fig, "serie-media-movel-p01.png")
 
 
+def regressao_minimos_quadrados() -> None:
+    datas, series = carregar_matriz()
+    valores = np.asarray(series["p01"], dtype=float)
+    x = np.arange(len(valores)).reshape(-1, 1)
+    modelo = LinearRegression().fit(x, valores)
+    x_reta = np.arange(len(valores) + 1).reshape(-1, 1)
+    ajustados = modelo.predict(x_reta)
+    futura = date.fromordinal(datas[-1].toordinal() + 7)
+    datas_reta = datas + [futura]
+
+    fig, ax = plt.subplots(figsize=(11, 5.8))
+    ax.scatter(datas, valores, s=52, color=AZUL, zorder=3,
+               label="Observado (sintético)")
+    ax.plot(datas_reta[:-1], ajustados[:-1], color=VERDE, linewidth=2.5,
+            label="Reta ajustada")
+    ax.plot(datas_reta[-2:], ajustados[-2:], color=BARRO, linewidth=2.5,
+            linestyle="--", label="Extrapolação")
+    ax.scatter([futura], [ajustados[-1]], marker="*", s=220, color=BARRO,
+               edgecolor="white", linewidth=.8, zorder=4,
+               label=f"Previsão: {ajustados[-1]:.3f}")
+    ax.axvline(datas[-1], color=BARRO, linewidth=1, alpha=.45, linestyle=":")
+    ax.set_title("Regressão linear por mínimos quadrados: p01",
+                 fontsize=18, color=AZUL, weight="bold", pad=14)
+    ax.set_ylabel("Linhas de pedido por semana")
+    ax.set_xlabel("Semana iniciada em")
+    ax.set_ylim(-.35, max(valores) + 1)
+    ax.xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO, interval=2))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m"))
+    ax.grid(axis="y", alpha=.22)
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.legend(frameon=False)
+    fig.text(.5, .015, "Histórico sintético; extrapolação para a próxima semana.",
+             ha="center", color=AZUL, fontsize=10.5)
+    fig.tight_layout(rect=(0, .05, 1, 1))
+    salvar(fig, "regressao-minimos-quadrados-p01.png")
+
+
+def ajustar_poisson(
+    series: dict[str, list[int]],
+    quantidade_semanas: int,
+) -> tuple[OneHotEncoder, PoissonRegressor]:
+    produtos = sorted(series)
+    codificador = OneHotEncoder(
+        categories=[produtos],
+        sparse_output=False,
+        handle_unknown="ignore",
+    )
+    matriz_produtos = codificador.fit_transform(
+        np.asarray(produtos, dtype=object).reshape(-1, 1)
+    )
+    X = np.vstack(
+        [
+            np.column_stack(
+                (matriz_produtos, np.full(len(produtos), semana / 10))
+            )
+            for semana in range(quantidade_semanas)
+        ]
+    )
+    y = np.asarray(
+        [
+            series[produto][semana]
+            for semana in range(quantidade_semanas)
+            for produto in produtos
+        ],
+        dtype=int,
+    )
+    modelo = PoissonRegressor(alpha=0.1, max_iter=1000).fit(X, y)
+    return codificador, modelo
+
+
+def distribuicao_poisson() -> None:
+    _, series = carregar_matriz()
+    produtos = sorted(series)
+    codificador, modelo = ajustar_poisson(series, len(next(iter(series.values()))))
+    matriz_produtos = codificador.transform(
+        np.asarray(produtos, dtype=object).reshape(-1, 1)
+    )
+    X_futuro = np.column_stack(
+        (matriz_produtos, np.full(len(produtos), 1.6))
+    )
+    taxa = float(modelo.predict(X_futuro)[produtos.index("p01")])
+    inferior = int(poisson.ppf(0.025, taxa))
+    superior = int(poisson.ppf(0.975, taxa))
+    contagens = np.arange(max(8, superior + 2))
+    probabilidades = poisson.pmf(contagens, taxa)
+    cores = [
+        VERDE if inferior <= k <= superior else "#cbd3d9"
+        for k in contagens
+    ]
+
+    fig, ax = plt.subplots(figsize=(10, 5.8))
+    ax.bar(contagens, probabilidades, color=cores, edgecolor="white", width=.76)
+    ax.axvline(taxa, color=BARRO, linestyle="--", linewidth=2,
+               label=f"Média prevista λ = {taxa:.3f}")
+    ax.set_title("Distribuição de Poisson prevista para p01",
+                 fontsize=18, color=AZUL, weight="bold", pad=14)
+    ax.set_xlabel("Linhas de pedido possíveis na próxima semana")
+    ax.set_ylabel("Probabilidade")
+    ax.set_xticks(contagens)
+    ax.set_ylim(0, max(probabilidades) * 1.22)
+    ax.grid(axis="y", alpha=.22)
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.legend(frameon=False)
+    ax.text(
+        .98, .92,
+        f"Intervalo central de 95%: [{inferior}, {superior}]\n"
+        f"P(demanda > 2) = {poisson.sf(2, taxa):.1%}",
+        transform=ax.transAxes, ha="right", va="top",
+        color=AZUL, fontsize=11,
+        bbox={"boxstyle": "round,pad=.4", "facecolor": "white", "edgecolor": "#cbd3d9"},
+    )
+    fig.text(.5, .015, "Distribuição condicional a PoissonRegressor; dados sintéticos.",
+             ha="center", color=AZUL, fontsize=10.5)
+    fig.tight_layout(rect=(0, .05, 1, 1))
+    salvar(fig, "distribuicao-poisson-p01.png")
+
+
 def comparar_metodos() -> None:
     _, series = carregar_matriz()
     periodos = [1, 2, 3, 4, 5]
@@ -225,9 +346,11 @@ def main() -> None:
     DESTINO.mkdir(parents=True, exist_ok=True)
     mapa_conceitual()
     serie_tempo()
+    regressao_minimos_quadrados()
+    distribuicao_poisson()
     comparar_metodos()
     fluxo_walk_forward()
-    print(f"Quatro figuras de demanda geradas em {DESTINO}")
+    print(f"Seis figuras de demanda geradas em {DESTINO}")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,51 @@
+# Variante embeddings — porta 3003 (baseline :3000, demo :3001, cluster :3002)
+#
+# Empacote (opcional): treino → build → containerize → serve-container
+# Imagem de aula: recomendador-embed:aula
+
+# ---------------------------------------------------------------------------
+# Offline — treino (baixa / aquece o encoder HF)
+# ---------------------------------------------------------------------------
+
+treino:
+    uv run --project .. python treino.py
+
+# ---------------------------------------------------------------------------
+# Online — processo local (sem Docker); encoder roda no serviço
+# ---------------------------------------------------------------------------
+
+serve:
+    uv run --project .. bentoml serve service:RecomendadorEmbed --reload --port 3003
+
+# ---------------------------------------------------------------------------
+# Empacote — Bento → imagem OCI → container
+# ---------------------------------------------------------------------------
+
+build:
+    # Pré-requisito: `just treino` (modelo recomendador-embed:latest)
+    uv run --project .. bentoml build
+
+containerize:
+    uv run --project .. bentoml containerize RecomendadorEmbed:latest --image-tag recomendador-embed:aula
+
+imagem: build containerize
+
+serve-container:
+    # Host 3003 → container 3000 (API padrão do BentoML dentro da imagem)
+    docker run --rm -p 3003:3000 recomendador-embed:aula serve
+
+listar-bentos:
+    uv run --project .. bentoml list
+
+listar-imagens:
+    docker images recomendador-embed
+
+# ---------------------------------------------------------------------------
+# Exemplos HTTP (serve local OU serve-container na :3003)
+# ---------------------------------------------------------------------------
+
+curl-exemplo:
+    curl -sS -X POST http://127.0.0.1:3003/recomendar \
+      -H 'Content-Type: application/json' \
+      -d '{"produto_na_pagina":"p01","limite":4,"excluir":[]}' \
+      | uv run python -m json.tool

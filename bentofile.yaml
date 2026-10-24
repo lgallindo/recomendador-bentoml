@@ -6,6 +6,6 @@ include:
   - "dados/*.json"
 python:
   packages:
-    - bentoml
+    - bentoml==1.4.39
 models:
   - recomendador:latest

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import subprocess
+import sys
 import unittest
 from pathlib import Path
 
@@ -14,7 +15,11 @@ RAIZ = Path(__file__).resolve().parent.parent
 class TutorialWeb(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        subprocess.run(["python3", "scripts/gerar_site_tutorial.py"], cwd=RAIZ, check=True)
+        subprocess.run(
+            [sys.executable, "scripts/gerar_site_tutorial.py"],
+            cwd=RAIZ,
+            check=True,
+        )
         cls.playwright = sync_playwright().start()
         cls.browser = cls.playwright.chromium.launch(headless=True)
 

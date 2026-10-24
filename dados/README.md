@@ -1,15 +1,14 @@
 # Dados (`dados/`)
 
-O exercício independente de [logs de autenticação](logs-autenticacao/README.md)
-usa sessões fictícias, sem relação com compras, totais ou vendas semanais abaixo.
-
 A pessoa abre a página de um jarro de Tracunhaém. Para a loja sugerir o prato, a
 boneca ou outra peça, alguém precisa ter **descrito o catálogo** e algumas compras
 de exemplo — antes do treino, antes do HTTP. Esta pasta é esse chão: o que a
 feira digital “sabe” sobre as peças e sobre o que costuma sair junto.
 
-Catálogo de exemplo usado pelo treino e pelo serviço. Um único arquivo:
-[`catalogo.json`](catalogo.json).
+Catálogo de exemplo usado pelo treino e pelo serviço: [`catalogo.json`](catalogo.json).
+Exercícios à parte (mesmo repositório, outros chãos):
+[crédito](credito/README.md) e
+[logs de autenticação](logs-autenticacao/README.md).
 
 ## Por que este conjunto existe
 
@@ -22,7 +21,9 @@ a ponta.
 ## Forma do arquivo
 
 Duas listas na raiz — uma descreve as peças da banca; a outra registra compras
-fictícias. Juntas, alimentam popularidade e co-ocorrência no treino.
+fictícias. Juntas, alimentam popularidade e co-ocorrência no treino. A série
+temporal para exercícios de demanda fica separada em
+[`vendas_semanais.csv`](vendas_semanais.csv).
 
 ```json
 {
@@ -49,10 +50,37 @@ flowchart LR
 | `pedidos` | produto | Contagem de demanda; vira popularidade no treino |
 | `cestas` | raiz | Listas de ids que “saíram juntos”; alimentam a co-ocorrência |
 
+## Série semanal sintética para demanda
+
+[`vendas_semanais.csv`](vendas_semanais.csv) acrescenta 16 semanas de vendas
+sintéticas, de **2026-06-22 a 2026-10-05** (`week_start` é sempre segunda-feira).
+Cada linha representa um produto numa semana; `order_line_count` é a contagem
+de linhas de pedido naquela semana, incluindo zeros explícitos.
+
+Os números semanais são uma **distribuição didática** dos totais já existentes:
+a soma das 16 semanas de cada produto é exatamente o `pedidos` em
+`catalogo.json`, então a série reconcilia com o catálogo do recomendador. O alvo
+do exercício é a **contagem semanal de linhas de pedido** (série sintética para
+aula). As dez `cestas` do JSON continuam sendo o material de co-ocorrência —
+exercício separado.
+
+Confira a grade completa, os ids, os valores não negativos e a reconciliação dos
+totais com:
+
+```bash
+uv run python scripts/validar_vendas_semanais.py
+```
+
+Com a série validada, estudantes podem agregar os registros por semana/produto
+com pandas e comparar, por exemplo, a média móvel das últimas quatro semanas
+com a previsão ingênua “próxima semana = última semana”, avaliando em semanas
+históricas mantidas fora do ajuste.
+
 ## Conteúdo atual (resumo)
 
-Quatro famílias artesanais, três peças cada — o suficiente para o exemplo do jarro
-(`p01`) e para forçar o complemento por popularidade quando a técnica esgota.
+O catálogo cobre as famílias artesanais usadas na feira de exemplo — o suficiente
+para o jarro (`p01`) e para exercitar o complemento por popularidade quando a
+técnica esgota. Inventário operacional:
 
 | Técnica | Quantidade | Exemplos |
 | --- | ---: | --- |
@@ -194,10 +222,7 @@ Se a fonte for **CSV** (export do admin):
 
 ## Limites do arquivo de exemplo da aula
 
-Este JSON é o baseline da raiz. Perfis de cliente e clusters vivem em pastas
-irmãs, cada uma com o próprio `dados/` — um sinal novo por vez, quando a aula
-chegar lá.
-
-- Demanda e cestas do `catalogo.json` commitado são **inventadas para a aula**.
-- `regiao` aparece na resposta da API; a ordenação deste baseline não a usa.
-- Não há usuários, timestamps nem estoque: só catálogo + cestas.
+Este JSON é o baseline da raiz: **catálogo + cestas sintéticos** para a aula.
+Perfis de cliente e clusters vivem em pastas irmãs, cada uma com o próprio
+`dados/`. `regiao` aparece na resposta da API; a ordenação deste baseline usa
+técnica, popularidade e co-ocorrência.

@@ -1,0 +1,14 @@
+service: "service:RecomendadorEmbed"
+labels:
+  aula: recomendador-bentoml
+  variante: embeddings
+include:
+  - "*.py"
+  - "dados/*.json"
+python:
+  packages:
+    - bentoml==1.4.39
+    - sentence-transformers==6.1.0
+    - numpy==2.5.3
+models:
+  - recomendador-embed:latest

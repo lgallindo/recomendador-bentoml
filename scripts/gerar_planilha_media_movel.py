@@ -17,10 +17,10 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.worksheet import Worksheet
 
-ROOT = Path(__file__).resolve().parents[1]
-CSV_PATH = ROOT / "dados" / "vendas_semanais.csv"
-CATALOGO_PATH = ROOT / "dados" / "catalogo.json"
-OUT_PATH = ROOT / "material" / "planilha-media-movel-demanda.xlsx"
+RAIZ = Path(__file__).resolve().parents[1]
+CSV_PATH = RAIZ / "dados" / "vendas_semanais.csv"
+CATALOGO_PATH = RAIZ / "dados" / "catalogo.json"
+OUT_PATH = RAIZ / "material" / "planilha-media-movel-demanda.xlsx"
 
 N_WEEKS = 104  # >= 100; 16 do CSV + 88 de extensão
 CSV_WEEKS = 16

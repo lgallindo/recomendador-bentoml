@@ -49,11 +49,11 @@ curl-exemplo:
     curl -sS -X POST http://127.0.0.1:3002/recomendar \
       -H 'Content-Type: application/json' \
       -d '{"produto_na_pagina":"p07","limite":4,"excluir":[]}' \
-      | python3 -m json.tool
+      | uv run python -m json.tool
 
 curl-fallback:
     # p01: cluster pequeno (só cerâmicas) → rank 4 pode cair em cesta
     curl -sS -X POST http://127.0.0.1:3002/recomendar \
       -H 'Content-Type: application/json' \
       -d '{"produto_na_pagina":"p01","limite":4,"excluir":[]}' \
-      | python3 -m json.tool
+      | uv run python -m json.tool

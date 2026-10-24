@@ -2,21 +2,18 @@
 
 Depois que o `POST /recomendar` devolve JSON, a aula ainda precisa de um lugar
 para **abrir as contas no papel**: popularidade, co-ocorrência, score e o
-complemento por popularidade do exemplo do jarro. Esta pasta é esse caderno —
-fica ao lado do código, para projetar e conferir.
-
-Textos de apoio à aula que **não** sobem com o serviço — são para ler e projetar
-junto com o código.
+complemento por popularidade do exemplo do jarro. Esta pasta é o **caderno da
+aula** — tutoriais, BI e figuras para ler e projetar ao lado do código.
 
 | Arquivo | Conteúdo |
 | --- | --- |
-| [`tutorial-arvore-decisao-credito-20261017.md`](tutorial-arvore-decisao-credito-20261017.md) | Duas aulas: cartões, árvores supervisionadas, avaliação separada e decisões fictícias de crédito |
+| [`tutorial-arvore-decisao-credito-20261017.md`](tutorial-arvore-decisao-credito-20261017.md) | Cartões, árvores supervisionadas, avaliação separada e decisões fictícias de crédito |
 | [`credito/`](credito/README.md) | Cartões imprimíveis, regras aprendidas e gabarito de avaliação de crédito |
 | [Versão web · associação](https://lgallindo.github.io/recomendador-bentoml/) | Tutorial de regras com fórmulas, imagens e explorador BI incorporado |
 | [Versão web · demanda](https://lgallindo.github.io/recomendador-bentoml/demanda/) | Tutorial de média móvel com explorador de série, erros e MAE |
 | [`tutorial-media-movel-demanda-20261017.md`](tutorial-media-movel-demanda-20261017.md) | Previsão semanal com média móvel, walk-forward, BI e exercício da Boneca |
-| [`tutorial-regressao-quadrados-minimos-demanda-20261017.md`](tutorial-regressao-quadrados-minimos-demanda-20261017.md) | Continuação: regressão linear por mínimos quadrados na mesma série |
-| [`tutorial-previsao-probabilistica-demanda-20261017.md`](tutorial-previsao-probabilistica-demanda-20261017.md) | Continuação: regressão de Poisson e previsão probabilística |
+| [`tutorial-regressao-quadrados-minimos-demanda-20261017.md`](tutorial-regressao-quadrados-minimos-demanda-20261017.md) | Ajustar reta de mínimos quadrados na mesma série semanal |
+| [`tutorial-previsao-probabilistica-demanda-20261017.md`](tutorial-previsao-probabilistica-demanda-20261017.md) | Prever distribuição de contagens com regressão de Poisson |
 | [`bi-demanda/index.html`](bi-demanda/index.html) | Explorador local: série, erros, MAE por janela e exportações |
 | [`planilha-media-movel-demanda.xlsx`](planilha-media-movel-demanda.xlsx) | Planilha de sala: uma aba por produto para contas de média móvel |
 | [`tutorial-regras-associacao-logs-autenticacao-20261017.md`](tutorial-regras-associacao-logs-autenticacao-20261017.md) | Variante independente: logs sintéticos, reconstrução de sessões, associação e validação |

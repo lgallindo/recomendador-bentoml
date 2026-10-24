@@ -4,7 +4,10 @@
 **Data:** 2026-10-24  
 **Repo:** `recomendador-bentoml`  
 **Âncora já entregue:** média móvel com dados → tutorial → BI → Pages  
-(`material/tutorial-media-movel-demanda-20261017.md`, `material/bi-demanda/`)
+(`material/tutorial-media-movel-demanda-20261017.md`, `material/bi-demanda/`)  
+**Continuação:** deep learning (visão) e fine-tuning em
+[`PLAN_20261024T205137Z_deep-learning-e-fine-tuning.md`](PLAN_20261024T205137Z_deep-learning-e-fine-tuning.md)
+(trilhas 4–5).
 
 Este documento congela o escopo das próximas três peças didáticas. Não substitui
 os tutoriais existentes; descreve o que falta construir e o formato de cada uma.
@@ -18,9 +21,10 @@ os tutoriais existentes; descreve o que falta construir e o formato de cada uma.
 | 1 | Previsão de demanda por **mínimos quadrados** | Tutorial + explorador | `vendas_semanais.csv` (16×12) | Sim — parity com média móvel |
 | 2 | Previsão de demanda com **perceptron** | Tutorial + explorador | Mesma série (entrada temporal / features simples) | Sim — parity com média móvel |
 | 3 | **Visão geral** de treino de redes neurais | Tutorial de panorama | Datasets pequenos e públicos (ou sintéticos minúsculos) | Não — libs de alto nível, sem painel BI dedicado |
+| 4–5 | Deep learning (visão) + fine-tuning | Ver plano seguinte | Toy / modelo pequeno | Não |
 
-Ordem sugerida de implementação: **1 → 2 → 3** (reusa série e contratos de
-avaliação das trilhas 1–2; a 3 muda de problema e de ferramenta).
+Ordem sugerida de implementação: **1 → 2 → 3 → 4 → 5** (1–2 reusam a série;
+3 muda de ferramenta; 4–5 sobem o nível de abstração).
 
 ```text
 vendas_semanais.csv
@@ -29,7 +33,10 @@ vendas_semanais.csv
         ├─► mínimos quadrados ────► bi-demanda-mq/  (planejado)
         ├─► perceptron ───────────► bi-demanda-perc/(planejado)
         │
-        └─ (trilha 3 parte de outro pacote de dados / libs)
+        └─ (trilha 3: treino NN · libs / dataset pequeno)
+                 │
+                 ├─► trilha 4: deep learning (visão alta)
+                 └─► trilha 5: fine-tuning
 ```
 
 ---

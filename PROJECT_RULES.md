@@ -1,8 +1,10 @@
 # Project rules
 
-Preserve existing working-tree changes. Teaching material uses Brazilian Portuguese.
-Association-rule examples use only `cestas` from `dados/catalogo.json`; order
-totals and weekly demand are separate datasets. Keep classroom mining independent
-of the BentoML services and their dependencies.
-The independent authentication-log tutorial uses synthetic session baskets from
-`dados/logs-autenticacao/`, never marketplace purchases or demand aggregates.
+Pointers only — durable text lives outside this Classroom clone.
+
+1. Teaching pack rules (datasets, mining isolation, variant arcs):
+   bureaucracy `docs/governance/TEACHING_RECOMENDADOR_BENTOML.md`
+   (CESAR fallback: `docs/designs/TEACHING_RECOMENDADOR_BENTOML.md`).
+2. Agent/SDD trees (`openspec/`, `.kiro/`, …):
+   bureaucracy `docs/governance/STACK_EDU.md`
+   (CESAR fallback: `docs/designs/STACK_EDU.md`).

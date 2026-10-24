@@ -7,10 +7,8 @@ include:
   - "dados/*.json"
   - "material/*.png"
 python:
+  # Inferência só desserializa o artefato; sklearn/scipy/matplotlib ficam no treino (uv).
   packages:
-    - bentoml
-    - scikit-learn
-    - scipy
-    - matplotlib
+    - bentoml==1.4.39
 models:
   - recomendador-cluster:latest
