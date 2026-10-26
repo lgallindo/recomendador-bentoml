@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutoriais com explorador interativo: associação de regras e previsão de demanda.">
+  <title>Previsão de demanda com perceptron /
+LMS · Aprender com dados</title>
+  <link rel="stylesheet" href="../assets/tutorial.css">
+  <script src="../assets/tutorial.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+  <header class="site-header">
+    <a class="brand" href="../">Aprender com dados</a>
+    <nav aria-label="Navegação principal">
+      <a href="../">Associação</a>
+      <a href="../demanda/">Média móvel</a>
+      <a href="../demanda-mq/">Mín. quadrados</a>
+      <a href="./">LMS</a>
+      <a href="#explorador-interativo">Explorar</a>
+      <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-perceptron-demanda-20261026.md">Versão
+Markdown</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="toc">
+      <details open><summary>Neste tutorial</summary><nav aria-label="Índice"><ul>
+<li><a href="#previsão-de-demanda-com-perceptron--lms-adaline"
+id="toc-previsão-de-demanda-com-perceptron--lms-adaline">Previsão de
+demanda com perceptron / LMS (ADALINE)</a>
+<ul>
+<li><a href="#1-separabilidade-linear-booleanos"
+id="toc-1-separabilidade-linear-booleanos">1. Separabilidade linear
+(booleanos)</a></li>
+<li><a href="#2-da-classificação-à-previsão-contínua"
+id="toc-2-da-classificação-à-previsão-contínua">2. Da classificação à
+previsão contínua</a></li>
+<li><a href="#3-treinar-nas-12-primeiras-semanas"
+id="toc-3-treinar-nas-12-primeiras-semanas">3. Treinar nas 12 primeiras
+semanas</a></li>
+<li><a href="#4-avaliar-no-tempo" id="toc-4-avaliar-no-tempo">4. Avaliar
+no tempo</a></li>
+<li><a href="#5-explorador-bi" id="toc-5-explorador-bi">5. Explorador
+BI</a></li>
+<li><a href="#6-endpoint-bentoml" id="toc-6-endpoint-bentoml">6.
+Endpoint BentoML</a></li>
+<li><a href="#7-exercício" id="toc-7-exercício">7. Exercício</a></li>
+<li><a href="#referência" id="toc-referência">Referência</a></li>
+</ul></li>
+</ul></nav></details>
+    </aside>
+    <main id="conteudo"><h1
+id="previsão-de-demanda-com-perceptron--lms-adaline">Previsão de demanda
+com perceptron / LMS (ADALINE)</h1>
+<p><a
+href="https://lgallindo.github.io/recomendador-bentoml/demanda-perc/">Leia
+a versão web com o explorador</a>.</p>
+<p>Esta aula liga a <strong>reta</strong> dos mínimos quadrados a um
+modelo que <strong>atualiza pesos</strong> a cada exemplo. Na demanda
+semanal usamos a regra LMS (ADALINE): erro contínuo, não classificação
+0/1. Uma subseção curta de funções booleanas cobre separabilidade linear
+(AND, OR, XOR).</p>
+<p>Os dados de demanda são <strong>sintéticos</strong>
+(<code>dados/vendas_semanais.csv</code>).</p>
+<h3 id="roteiro">Roteiro</h3>
+<table>
+<thead>
+<tr>
+<th>Tempo</th>
+<th>Atividade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10 min</td>
+<td>Separabilidade linear em AND / OR / XOR</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Formatar entradas e a regra LMS</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Treinar na série, ver MSE por época</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Walk-forward e comparar com MA / MQ</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Explorador BI</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Endpoint BentoML mínimo</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-separabilidade-linear-booleanos">1. Separabilidade linear
+(booleanos)</h2>
+<p>Em classificação binária, um perceptron clássico traça um hiperplano.
+Com duas entradas 0/1:</p>
+<table>
+<thead>
+<tr>
+<th>Função</th>
+<th>Separável?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AND</td>
+<td>Sim</td>
+</tr>
+<tr>
+<td>OR</td>
+<td>Sim</td>
+</tr>
+<tr>
+<td>XOR</td>
+<td>Não</td>
+</tr>
+</tbody>
+</table>
+<p>Desenhe os quatro pontos no plano e argumente. XOR exige uma
+fronteira que uma única reta não realiza — daí redes com mais de uma
+camada depois.</p>
+<h2 id="2-da-classificação-à-previsão-contínua">2. Da classificação à
+previsão contínua</h2>
+<p>Na demanda, o alvo é a <strong>contagem</strong> de linhas de pedido,
+não um bit. A unidade <strong>ADALINE / LMS</strong> prevê</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>t</mi></msub><mo>=</mo><msub><mi>w</mi><mn>0</mn></msub><mo>+</mo><msub><mi>w</mi><mn>1</mn></msub><mi>t</mi></mrow><annotation encoding="application/x-tex">
+\widehat{y}_t = w_0 + w_1 t
+</annotation></semantics></math></p>
+<p>e atualiza os pesos com o erro contínuo:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>w</mi><mo>←</mo><mi>w</mi><mo>+</mo><mi>η</mi><mspace width="0.167em"></mspace><mo stretchy="false" form="prefix">(</mo><msub><mi>y</mi><mi>t</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>t</mi></msub><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><msub><mi>x</mi><mi>t</mi></msub><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>x</mi><mi>t</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>,</mo><mspace width="0.222em"></mspace><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
+w \leftarrow w + \eta\,(y_t - \widehat{y}_t)\,x_t,
+\quad x_t = (1,\ t)
+</annotation></semantics></math></p>
+<p>Isso é o mesmo espírito do perceptron (passo a passo), com perda
+quadrática em vez de erro 0/1. <strong>Não</strong> é backprop de uma
+rede multilcamada.</p>
+<h2 id="3-treinar-nas-12-primeiras-semanas">3. Treinar nas 12 primeiras
+semanas</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/gerar_bi_demanda_perceptron.py</span></code></pre></div>
+<p>O script grava
+<code>material/bi-demanda-perceptron/pesos_p01.json</code> e o painel.
+Para Jarro (<code>p01</code>), o treino LMS (80 épocas, η = 0,01) nas 12
+primeiras semanas produz bias e inclinação próximos à reta de mínimos
+quadrados em lote — a série é curta e sintética.</p>
+<p>A curva de MSE por época deve cair e estabilizar. Se não cair, revise
+η ou o número de épocas.</p>
+<h2 id="4-avaliar-no-tempo">4. Avaliar no tempo</h2>
+<p>Nas quatro últimas semanas, a cada origem o modelo <strong>re-treina
+só com o passado</strong> e prevê a semana seguinte (piso em zero).
+Compare MAE com ingênua, MA(4) e MQ em lote — mesmas 48 previsões.</p>
+<h2 id="5-explorador-bi">5. Explorador BI</h2>
+<p>O <a
+href="../material/bi-demanda-perceptron/index.html">explorador</a>
+mostra série, MSE por época, MAE agregado e tabela. Versão web: <a
+href="https://lgallindo.github.io/recomendador-bentoml/demanda-perc/">demanda-perc</a>.</p>
+<section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
+<h3 id="explorer-heading">Experimente o LMS neste tutorial</h3>
+<p>Escolha produto e método. Veja a curva de MSE e compare o MAE com os baselines. As 16 semanas são sintéticas.</p>
+<div class="explorer-actions">
+<button id="fullscreen-explorer" type="button">Ver explorador em tela cheia</button>
+<a href="../material/bi-demanda-perceptron/index.html" target="_blank" rel="noopener">Abrir explorador em nova aba</a>
+</div>
+<p id="explorer-status" role="status"></p>
+<iframe id="explorer" src="../material/bi-demanda-perceptron/index.html" title="Explorador interativo LMS / ADALINE"
+loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+</section>
+<p><img src="../material/imagens/bi-demanda-perc-serie-p01.png"
+alt="Série p01 com ajuste LMS." /></p>
+<p><img src="../material/imagens/bi-demanda-perc-mse-p01.png"
+alt="MSE por época no treino LMS." /></p>
+<p><img src="../material/imagens/bi-demanda-perc-mae.png"
+alt="MAE agregado: baselines e LMS." /></p>
+<h2 id="6-endpoint-bentoml">6. Endpoint BentoML</h2>
+<p>Com os pesos gerados:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run bentoml serve service_perceptron_demanda:PrevisaoLmsDemanda <span class="at">--reload</span></span></code></pre></div>
+<p>Chame a API <code>prever</code> com <code>indice_semana</code> (por
+exemplo <code>16</code> para a semana após o histórico). O mesmo cálculo
+local:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>pesos <span class="op">=</span> json.loads(Path(<span class="st">&quot;material/bi-demanda-perceptron/pesos_p01.json&quot;</span>).read_text())</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="dv">16</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>bruto <span class="op">=</span> pesos[<span class="st">&quot;bias&quot;</span>] <span class="op">+</span> pesos[<span class="st">&quot;inclinacao&quot;</span>] <span class="op">*</span> t</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">max</span>(<span class="fl">0.0</span>, bruto))</span></code></pre></div>
+<p>Os dois caminhos devem coincidir.</p>
+<h2 id="7-exercício">7. Exercício</h2>
+<ol type="1">
+<li>Marque AND, OR e XOR como separáveis ou não.</li>
+<li>Formate uma tabela t → y para um produto (cinco linhas bastam).</li>
+<li>Descreva o split: 12 treino / 4 teste, sem embaralhar.</li>
+<li>Rode o gerador e anote o MSE da última época e o MAE LMS de
+<code>p01</code>.</li>
+<li>Suba o serviço e compare a previsão para <code>t = 16</code> com o
+JSON de pesos.</li>
+</ol>
+<h2 id="referência">Referência</h2>
+<ul>
+<li>ADALINE / LMS: atualização pelo erro contínuo (Widrow–Hoff).</li>
+<li>Código: <code>scripts/lms_demanda.py</code>,
+<code>scripts/gerar_bi_demanda_perceptron.py</code>,
+<code>service_perceptron_demanda.py</code>.</li>
+</ul></main>
+  </div>
+</body>
+</html>
