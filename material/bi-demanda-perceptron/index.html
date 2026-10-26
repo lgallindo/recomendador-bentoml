@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore previsão de demanda com LMS/ADALINE, curva de MSE e comparação com baselines.">
+  <title>Demanda · perceptron / LMS</title>
+  <link rel="stylesheet" href="painel.css">
+  <script src="dados.js" defer></script>
+  <script src="painel.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para os resultados</a>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Laboratório de previsão de demanda</p>
+      <h1>Pesos que<br>aprendem semana a semana.</h1>
+      <p>ADALINE / LMS atualiza bias e inclinação por erro. Compare com média móvel e com mínimos quadrados em lote.</p>
+      <nav>
+        <a href="../tutorial-perceptron-demanda-20261026.md">Tutorial completo</a>
+        <a href="README.md">Como explorar</a>
+      </nav>
+    </div>
+    <img src="../imagens/bi-demanda-perc-mse-p01.png" alt="Curva de MSE por época do treino LMS em p01.">
+  </header>
+  <div class="layout">
+    <aside class="filters" aria-label="Controles do relatório">
+      <p class="eyebrow">01 · Escolha o recorte</p>
+      <h2>Explore a série</h2>
+      <p>As <strong>16 semanas</strong> de <code>vendas_semanais.csv</code>. O LMS treina nas 12 primeiras (ou no passado, no walk-forward).</p>
+      <label for="produto">Produto</label>
+      <select id="produto"></select>
+      <label for="metodo">Método</label>
+      <select id="metodo"></select>
+      <button id="reset" type="button">Restaurar Jarro · LMS</button>
+      <div class="note"><strong>Base sintética.</strong> Atualização delta/LMS — não é backprop de rede profunda.</div>
+    </aside>
+    <main id="conteudo">
+      <section class="summary" aria-label="Resumo">
+        <div><span id="nome-produto">—</span><p>produto</p></div>
+        <div><span id="mae-produto">—</span><p>MAE no teste</p></div>
+        <div><span id="mae-global">—</span><p>MAE agregado</p></div>
+      </section>
+      <section class="panel detail" aria-labelledby="titulo-serie">
+        <p class="eyebrow">02 · Série</p>
+        <h2 id="titulo-serie">Série e previsão</h2>
+        <p id="interpretacao"></p>
+        <p>Próxima semana: <strong id="proxima">—</strong></p>
+        <div class="plot-scroll"><svg id="serie" viewBox="0 0 780 340" role="img" aria-label="Série e previsão"></svg></div>
+        <button type="button" class="secondary export" data-svg="serie">Baixar série PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-mse">
+        <p class="eyebrow">03 · Aprendizado</p>
+        <h2 id="titulo-mse">MSE por época (LMS)</h2>
+        <p>Curva no treino das 12 primeiras semanas do produto selecionado.</p>
+        <div class="plot-scroll"><svg id="mse" viewBox="0 0 780 280" role="img" aria-label="MSE por época"></svg></div>
+        <button type="button" class="secondary export" data-svg="mse">Baixar MSE PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-mae">
+        <p class="eyebrow">04 · Compare</p>
+        <h2 id="titulo-mae">MAE agregado</h2>
+        <div class="plot-scroll"><svg id="mae" viewBox="0 0 780 300" role="img" aria-label="MAE agregado"></svg></div>
+        <button type="button" class="secondary export" data-svg="mae">Baixar MAE PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-tabela">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">05 · Auditoria</p>
+            <h2 id="titulo-tabela">Tabela do teste</h2>
+          </div>
+          <button id="csv" type="button">Baixar CSV</button>
+        </div>
+        <p id="estado" role="status"></p>
+        <div class="table-scroll">
+          <table id="tabela">
+            <caption>Walk-forward nas quatro últimas semanas.</caption>
+            <thead>
+              <tr><th>Semana</th><th>Observado</th><th>Previsão</th><th>Erro abs.</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p id="export-status" role="status"></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

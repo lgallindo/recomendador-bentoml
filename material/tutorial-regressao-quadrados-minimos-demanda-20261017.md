@@ -1,5 +1,7 @@
 # Previsão de demanda com regressão por mínimos quadrados
 
+[Leia a versão web com o explorador interativo incorporado](https://lgallindo.github.io/recomendador-bentoml/demanda-mq/).
+
 Este tutorial parte da série semanal sintética do marketplace e do protocolo
 walk-forward apresentado em
 [`tutorial-media-movel-demanda-20261017.md`](tutorial-media-movel-demanda-20261017.md).
@@ -19,6 +21,7 @@ não para afirmar que existe tendência real.
 | 10 min | Entender o ajuste por mínimos quadrados |
 | 10 min | Ajustar uma reta e prever demanda |
 | 12 min | Avaliar com origem temporal deslizante |
+| 15 min | Explorar a série com BI e exportar uma evidência |
 | 10 min | Interpretar resultados, limitações e exercício |
 
 ## 1. Onde a regressão se situa
@@ -255,7 +258,39 @@ observados, com datas, quantidades consistentes, estado dos pedidos, estoque e
 contexto de promoções ou rupturas. Faça a avaliação em ordem temporal e compare
 com baselines antes de implantar um modelo.
 
-## 6. Exercício: inclinação da Boneca
+## 6. Como BI ajuda você a visualizar a reta
+
+O [explorador de mínimos quadrados](bi-demanda-mq/index.html) mostra a série,
+a reta ajustada, os erros no teste e o MAE ao lado da média móvel e da
+previsão ingênua. Você pode usá-lo na
+[versão web deste tutorial](https://lgallindo.github.io/recomendador-bentoml/demanda-mq/#explorador-interativo)
+ou abrir o HTML local. Consulte o [roteiro](bi-demanda-mq/README.md).
+
+As figuras abaixo espelham o painel na versão Markdown.
+
+![Série sintética do Jarro p01 com reta de mínimos quadrados, faixa de teste e previsão da próxima semana.](imagens/bi-demanda-mq-serie-p01.png)
+
+*Figura 3 — Observações e reta do ajuste completo; o ponto terracota extrapola
+a semana seguinte. O MAE do teste, no painel, refaz o ajuste só com o passado.*
+
+![Barras de erro absoluto da regressão nas quatro semanas de teste de p01.](imagens/bi-demanda-mq-erros-p01.png)
+
+*Figura 4 — Erros walk-forward de mínimos quadrados em `p01`.*
+
+![MAE agregado da previsão ingênua, MA(4), MA(5) e mínimos quadrados.](imagens/bi-demanda-mq-mae.png)
+
+*Figura 5 — Mesmas 48 previsões para todos os métodos. Menor MAE é melhor nesta
+métrica; a diferença neste conjunto sintético é pequena.*
+
+### Atividade rápida no painel
+
+1. Abra Jarro (`p01`) com mínimos quadrados. Anote intercepto, inclinação e a
+   previsão da próxima semana.
+2. Na tabela do teste, confira uma semana à mão (ajuste só com o passado).
+3. Troque para MA(5) e diga o que muda no MAE do produto.
+4. Exporte um PNG ou o CSV do teste.
+
+## 7. Exercício: inclinação da Boneca
 
 Ajuste uma regressão linear para Boneca de barro (`p03`) e responda:
 

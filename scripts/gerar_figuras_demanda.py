@@ -86,6 +86,49 @@ def mapa_conceitual() -> None:
     salvar(fig, "mapa-ia-previsao-demanda.png")
 
 
+def mapa_regressao() -> None:
+    fig, ax = plt.subplots(figsize=(12, 6.5))
+    ax.set_xlim(0, 12)
+    ax.set_ylim(0, 6.5)
+    ax.axis("off")
+
+    areas = [
+        ((0.35, 1.4), (4.3, 4.55), "#e5edf7", AZUL),
+        ((0.8, 2.0), (3.4, 2.75), "#c0dedc", VERDE),
+        ((5.35, 1.4), (3.0, 4.55), "#fff2dc", BARRO),
+        ((9.0, 2.15), (2.65, 2.95), CLARO, AZUL),
+    ]
+    for (x, y), (width, height), fill, edge in areas:
+        ax.add_patch(FancyBboxPatch(
+            (x, y), width, height,
+            boxstyle="round,pad=.16,rounding_size=.18",
+            facecolor=fill, edgecolor=edge, linewidth=2,
+        ))
+
+    ax.text(2.5, 5.55, "Inteligência artificial (IA)", ha="center",
+            fontsize=17, weight="bold", color=AZUL)
+    ax.text(2.5, 4.35, "Aprendizado de máquina\n(ML)", ha="center",
+            fontsize=13, weight="bold", color=AZUL)
+    ax.text(2.5, 3.35, "Modelos aprendem padrões\ncom exemplos e dados",
+            ha="center", va="center", fontsize=12, color=AZUL)
+    ax.text(6.85, 5.25, "Aprendizado\nsupervisionado",
+            ha="center", va="center", fontsize=13, weight="bold", color=AZUL)
+    ax.text(6.85, 4.15, "Regressão linear\nmínimos quadrados", ha="center",
+            va="center", fontsize=14, weight="bold", color="white",
+            bbox={"boxstyle": "round,pad=.45", "facecolor": BARRO, "edgecolor": BARRO})
+    ax.text(6.85, 2.95, "Reta β₀ + β₁t ajustada\nao histórico",
+            ha="center", va="center", fontsize=12, color=AZUL)
+    ax.text(10.32, 3.65, "Prever a\ndemanda\nsemanal",
+            ha="center", va="center", fontsize=15, weight="bold", color=AZUL)
+    ax.add_patch(FancyArrowPatch(
+        (8.45, 3.5), (8.95, 3.5), arrowstyle="-|>", mutation_scale=18,
+        linewidth=2, color=BARRO,
+    ))
+    ax.set_title("Onde a regressão por mínimos quadrados se situa?",
+                 fontsize=20, color=AZUL, pad=12, weight="bold")
+    salvar(fig, "mapa-ia-regressao-demanda.png")
+
+
 def carregar_serie() -> tuple[list[date], list[int]]:
     datas: list[date] = []
     valores: list[int] = []
@@ -345,12 +388,13 @@ def fluxo_walk_forward() -> None:
 def main() -> None:
     DESTINO.mkdir(parents=True, exist_ok=True)
     mapa_conceitual()
+    mapa_regressao()
     serie_tempo()
     regressao_minimos_quadrados()
     distribuicao_poisson()
     comparar_metodos()
     fluxo_walk_forward()
-    print(f"Seis figuras de demanda geradas em {DESTINO}")
+    print(f"Sete figuras de demanda geradas em {DESTINO}")
 
 
 if __name__ == "__main__":

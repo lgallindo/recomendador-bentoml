@@ -57,6 +57,34 @@ TUTORIAIS = (
         md_nav_label="Versão Markdown",
         tutorial_md_href="material/tutorial-media-movel-demanda-20261017.md",
     ),
+    Tutorial(
+        fonte=Path("material/tutorial-regressao-quadrados-minimos-demanda-20261017.md"),
+        saida_relativa=Path("demanda-mq"),
+        bi_dir=Path("material/bi-demanda-mq"),
+        pagetitle="Previsão de demanda com regressão por mínimos quadrados",
+        embed_titulo="Experimente a reta neste tutorial",
+        embed_intro=(
+            "Escolha produto e método abaixo. Compare mínimos quadrados com média móvel "
+            "e com a previsão ingênua. As 16 semanas são sintéticas."
+        ),
+        embed_iframe_title="Explorador interativo de mínimos quadrados",
+        md_nav_label="Versão Markdown",
+        tutorial_md_href="material/tutorial-regressao-quadrados-minimos-demanda-20261017.md",
+    ),
+    Tutorial(
+        fonte=Path("material/tutorial-perceptron-demanda-20261026.md"),
+        saida_relativa=Path("demanda-perc"),
+        bi_dir=Path("material/bi-demanda-perceptron"),
+        pagetitle="Previsão de demanda com perceptron / LMS",
+        embed_titulo="Experimente o LMS neste tutorial",
+        embed_intro=(
+            "Escolha produto e método. Veja a curva de MSE e compare o MAE com os baselines. "
+            "As 16 semanas são sintéticas."
+        ),
+        embed_iframe_title="Explorador interativo LMS / ADALINE",
+        md_nav_label="Versão Markdown",
+        tutorial_md_href="material/tutorial-perceptron-demanda-20261026.md",
+    ),
 )
 
 
@@ -85,11 +113,24 @@ loading="lazy" allow="fullscreen" allowfullscreen></iframe>
 </section>"""
 
 
+def nav_hrefs(saida: Path) -> tuple[str, str, str, str, str]:
+    """home, associação, média móvel, mínimos quadrados, perceptron/LMS."""
+    if saida == Path("."):
+        return "./", "./", "demanda/", "demanda-mq/", "demanda-perc/"
+    if saida == Path("demanda"):
+        return "../", "../", "./", "../demanda-mq/", "../demanda-perc/"
+    if saida == Path("demanda-mq"):
+        return "../", "../", "../demanda/", "./", "../demanda-perc/"
+    if saida == Path("demanda-perc"):
+        return "../", "../", "../demanda/", "../demanda-mq/", "./"
+    raise ValueError(f"saida_relativa sem mapa de nav: {saida}")
+
+
 def gerar_tutorial(destino: Path, tutorial: Tutorial) -> None:
     assetroot = "" if tutorial.saida_relativa == Path(".") else "../"
-    homehref = "./" if tutorial.saida_relativa == Path(".") else "../"
-    demanda_href = "demanda/" if tutorial.saida_relativa == Path(".") else "./"
-    assoc_href = "./" if tutorial.saida_relativa == Path(".") else "../"
+    homehref, assoc_href, demanda_href, demanda_mq_href, demanda_perc_href = nav_hrefs(
+        tutorial.saida_relativa
+    )
     bi_index = tutorial.bi_dir.as_posix() + "/index.html"
     # Marcador no Markdown fonte (caminho relativo à pasta material/)
     bi_md_href = tutorial.bi_dir.name + "/index.html"
@@ -163,6 +204,8 @@ def gerar_tutorial(destino: Path, tutorial: Tutorial) -> None:
             f"--metadata=homehref:{homehref}",
             f"--metadata=assoc_href:{assoc_href}",
             f"--metadata=demanda_href:{demanda_href}",
+            f"--metadata=demanda_mq_href:{demanda_mq_href}",
+            f"--metadata=demanda_perc_href:{demanda_perc_href}",
             f"--metadata=md_href:{REPO + tutorial.tutorial_md_href}",
             f"--metadata=md_label:{tutorial.md_nav_label}",
             f"--metadata=bi_nova_aba:{(Path(assetroot) / tutorial.bi_dir / 'index.html').as_posix() if assetroot else (tutorial.bi_dir / 'index.html').as_posix()}",

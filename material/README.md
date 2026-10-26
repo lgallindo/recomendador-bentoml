@@ -10,9 +10,14 @@ aula** — tutoriais, BI e figuras para ler e projetar ao lado do código.
 | [`tutorial-arvore-decisao-credito-20261017.md`](tutorial-arvore-decisao-credito-20261017.md) | Cartões, árvores supervisionadas, avaliação separada e decisões fictícias de crédito |
 | [`credito/`](credito/README.md) | Cartões imprimíveis, regras aprendidas e gabarito de avaliação de crédito |
 | [Versão web · associação](https://lgallindo.github.io/recomendador-bentoml/) | Tutorial de regras com fórmulas, imagens e explorador BI incorporado |
-| [Versão web · demanda](https://lgallindo.github.io/recomendador-bentoml/demanda/) | Tutorial de média móvel com explorador de série, erros e MAE |
+| [Versão web · demanda (média móvel)](https://lgallindo.github.io/recomendador-bentoml/demanda/) | Tutorial de média móvel com explorador de série, erros e MAE |
+| [Versão web · demanda (mín. quadrados)](https://lgallindo.github.io/recomendador-bentoml/demanda-mq/) | Tutorial de regressão com explorador da reta e comparação de MAE |
 | [`tutorial-media-movel-demanda-20261017.md`](tutorial-media-movel-demanda-20261017.md) | Previsão semanal com média móvel, walk-forward, BI e exercício da Boneca |
-| [`tutorial-regressao-quadrados-minimos-demanda-20261017.md`](tutorial-regressao-quadrados-minimos-demanda-20261017.md) | Ajustar reta de mínimos quadrados na mesma série semanal |
+| [`tutorial-regressao-quadrados-minimos-demanda-20261017.md`](tutorial-regressao-quadrados-minimos-demanda-20261017.md) | Reta de mínimos quadrados, walk-forward, BI e exercício da Boneca |
+| [`bi-demanda-mq/index.html`](bi-demanda-mq/index.html) | Explorador: série, reta MQ, erros e MAE vs MA / ingênua |
+| [Versão web · demanda (LMS)](https://lgallindo.github.io/recomendador-bentoml/demanda-perc/) | Perceptron/ADALINE na série semanal |
+| [`tutorial-perceptron-demanda-20261026.md`](tutorial-perceptron-demanda-20261026.md) | Separabilidade, LMS, walk-forward, BI e endpoint BentoML |
+| [`bi-demanda-perceptron/index.html`](bi-demanda-perceptron/index.html) | Explorador: série, MSE por época, MAE vs baselines |
 | [`tutorial-previsao-probabilistica-demanda-20261017.md`](tutorial-previsao-probabilistica-demanda-20261017.md) | Prever distribuição de contagens com regressão de Poisson |
 | [`bi-demanda/index.html`](bi-demanda/index.html) | Explorador local: série, erros, MAE por janela e exportações |
 | [`planilha-media-movel-demanda.xlsx`](planilha-media-movel-demanda.xlsx) | Planilha de sala: uma aba por produto para contas de média móvel |

@@ -1,0 +1,10 @@
+{
+  "product_id": "p01",
+  "bias": 2.7818433199463204,
+  "inclinacao": -0.26947347416555895,
+  "escala": 11.0,
+  "epocas": 200,
+  "lr": 0.05,
+  "treino_semanas": 12,
+  "n_semanas": 16
+}
