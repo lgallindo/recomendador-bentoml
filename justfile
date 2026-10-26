@@ -79,11 +79,3 @@ curl-inexistente:
     curl -sS -X POST http://127.0.0.1:3000/recomendar \
       -H 'Content-Type: application/json' \
       -d '{"produto_na_pagina":"nao-existe","limite":4}' | uv run python -m json.tool
-
-# ---------------------------------------------------------------------------
-# Material de aula
-# ---------------------------------------------------------------------------
-
-slides:
-    # Gera slides/recomendador-bentoml.html (deck HTML, tela cheia)
-    uv run python scripts/gerar_slides.py

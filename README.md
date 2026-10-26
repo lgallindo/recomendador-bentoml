@@ -653,7 +653,6 @@ não usa região na ordenação**.
 | [`justfile`](justfile) | Atalhos `treino`, `serve`, `imagem`, `serve-container`, curls |
 | [`material/calculos-trabalhados.md`](material/calculos-trabalhados.md) | Contas do exemplo `p01` no papel |
 | [`slides/`](slides/) | Deck HTML (arco didático; ver [`slides/README.md`](slides/README.md)) |
-| [`scripts/gerar_slides.py`](scripts/gerar_slides.py) | Regenera `slides/recomendador-bentoml.html` (`just slides`) |
 | [`01-variante-demografica/`](01-variante-demografica/) | Perfil do cliente + score demográfico (arco 01) |
 | [`02-variante-clustering/`](02-variante-clustering/) | Cluster hierárquico + intercalação `cesta` / `cluster` (arco 02) |
 | [`03-variante-embeddings/`](03-variante-embeddings/) | Encoder pretrained + cosseno semântico (arco 03) |

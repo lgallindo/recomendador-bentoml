@@ -1,8 +1,7 @@
 # Scripts (`scripts/`)
 
-A aula conta uma história no *arco* didático (cena → métricas → cesta →
-pipelines…). O README da raiz documenta o sistema por seções técnicas; os slides
-seguem o fio narrativo. Este script congela esse arco num HTML reproduzível.
+Dados sintéticos, exploradores BI, demos das aulas e checagens — tudo o que a
+turma roda com `uv run python scripts/…`.
 
 | Arquivo | Papel |
 | --- | --- |
@@ -15,11 +14,9 @@ seguem o fio narrativo. Este script congela esse arco num HTML reproduzível.
 | [`test_logs_autenticacao.py`](test_logs_autenticacao.py) | Confere fixtures, métricas, duplicatas e diagnósticos do parser |
 | [`gerar_bi_associacao.py`](gerar_bi_associacao.py) | Reproduz dados do [explorador BI](../material/bi/README.md) e três figuras: dispersão, matriz e rede |
 | [`gerar_bi_demanda.py`](gerar_bi_demanda.py) | Reproduz `dados.js` do [explorador de demanda](../material/bi-demanda/README.md) e figuras `bi-demanda-*.png` |
-| [`gerar_planilha_media_movel.py`](gerar_planilha_media_movel.py) | Gera a planilha de sala com uma aba por produto |
 | [`gerar_site_tutorial.py`](gerar_site_tutorial.py) | Gera Pages: associação (`index.html`) e demanda (`demanda/index.html`) com exploradores |
 | [`gerar_figuras_associacao.py`](gerar_figuras_associacao.py) | Reproduz o diagrama de inclusão IA/ML, a matriz de cestas e a comparação de descoberta com avaliação separada |
 | [`minerar_regras_associacao.py`](minerar_regras_associacao.py) | Minera as cestas e gera o CSV da [aula de regras de associação](../material/tutorial-regras-associacao-20261017.md), sem dependências externas |
-| [`gerar_slides.py`](gerar_slides.py) | Gera [`../slides/recomendador-bentoml.html`](../slides/recomendador-bentoml.html) |
 | [`validar_vendas_semanais.py`](validar_vendas_semanais.py) | Confere a série sintética semanal contra os totais do catálogo |
 | [`demo_treino_mlp_demanda.py`](demo_treino_mlp_demanda.py) | MLP rasa + knobs; JSON em `material/redes/` |
 | [`demo_deep_vs_rasa.py`](demo_deep_vs_rasa.py) | Compara MLP rasa vs mais funda na série p01 |
@@ -30,14 +27,6 @@ seguem o fio narrativo. Este script congela esse arco num HTML reproduzível.
 | [`gerar_figuras_rag.py`](gerar_figuras_rag.py) | Figuras do loop RAG e da ladder |
 | [`demo_mem0_preferencias.py`](demo_mem0_preferencias.py) | add/search/update de preferências (store JSON) |
 
-```bash
-just slides
-xdg-open slides/recomendador-bentoml.html
-```
-
-Depois de editar títulos, prosa ou a sequência em `gerar_slides.py`, rode o
-comando acima e recarregue a página no navegador.
-
 **Como rodar os scripts:** na raiz do repo, prefira
 `uv run python scripts/<nome>.py` (mesmo interpretador do projeto). Testes que
 importam irmãos (`from minerar_…`) também funcionam com
@@ -47,7 +36,7 @@ importam irmãos (`from minerar_…`) também funcionam com
 Para validar a base de demanda, rode `uv run python scripts/validar_vendas_semanais.py`
 na raiz do projeto.
 
-Arco e índice: [`../slides/README.md`](../slides/README.md).
+Deck HTML da aula: [`../slides/README.md`](../slides/README.md).
 
 Para gerar o relatório de associação, rode na raiz:
 

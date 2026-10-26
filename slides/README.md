@@ -4,8 +4,6 @@ Deck HTML em tela cheia: a história começa na **vitrine**, passa por **métric
 e pela **cesta de mercado**, separa **treino** de **inferência**, demonstra o
 baseline com BentoML e fecha com variantes e empacote.
 
-Gerado por [`../scripts/gerar_slides.py`](../scripts/gerar_slides.py).
-
 **Arco:** cena → pacotes → sinais → métricas (prosa) → cesta → métricas nos dados
 → treino / inferência → API e demo → literatura → variantes → empacote.
 
@@ -37,20 +35,13 @@ Gerado por [`../scripts/gerar_slides.py`](../scripts/gerar_slides.py).
 | 18 | Variantes |
 | 19 | Empacote — inferência portátil |
 
-```mermaid
-flowchart LR
-  S["../scripts/gerar_slides.py"] -->|"just slides"| D["recomendador-bentoml.html"]
-```
-
 ### Navegação
 
-Abrir o HTML no navegador. Teclas: `←` `→`, espaço, `Home` / `End`. Hash na URL
-(`#3`) aponta o slide.
-
 ```bash
-just slides
 xdg-open slides/recomendador-bentoml.html
 ```
+
+Teclas: `←` `→`, espaço, `Home` / `End`. Hash na URL (`#3`) aponta o slide.
 
 ### Como encaixa no restante do repo
 
@@ -58,5 +49,4 @@ xdg-open slides/recomendador-bentoml.html
 | --- | --- |
 | Sinais e catálogo | [`../dados/README.md`](../dados/README.md) |
 | Contas do jarro `p01` | [`../material/README.md`](../material/README.md) |
-| Regenerar o deck | [`../scripts/README.md`](../scripts/README.md) · `just slides` |
 | Sistema completo (HTTP, fórmula, container) | [`../README.md`](../README.md) |
