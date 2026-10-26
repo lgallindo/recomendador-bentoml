@@ -1,0 +1,42 @@
+{
+  "produto": "p01",
+  "n_treino": 12,
+  "n_teste": 4,
+  "shape_x_treino": [
+    12,
+    2
+  ],
+  "dtype_y": "float64 (linhas de pedido)",
+  "mae_baseline_media": 0.8333333333333333,
+  "mae_mlp_base": 1.4925574630899512,
+  "knobs": {
+    "base": {
+      "epocas": 40,
+      "lr": 0.01,
+      "largura": 8,
+      "mae_teste": 1.4926,
+      "mse_final_treino": 0.7682
+    },
+    "mais_epocas": {
+      "epocas": 80,
+      "lr": 0.01,
+      "largura": 8,
+      "mae_teste": 1.4926,
+      "mse_final_treino": 0.7682
+    },
+    "lr_maior": {
+      "epocas": 40,
+      "lr": 0.05,
+      "largura": 8,
+      "mae_teste": 0.7887,
+      "mse_final_treino": 0.7024
+    },
+    "mais_larga": {
+      "epocas": 40,
+      "lr": 0.01,
+      "largura": 16,
+      "mae_teste": 1.1016,
+      "mse_final_treino": 1.1597
+    }
+  }
+}
