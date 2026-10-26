@@ -10,6 +10,8 @@ __pycache__/
 # Local agent / review tooling (not part of the student clone)
 .gstack/
 DEVELOPMENT.md
+# EDU-008 — instructor/agent local unless README names an exception
+PROJECT_RULES.md
 
 # llmwiki local index (rebuild with `llmwiki index --wiki-root …`)
 material/mini-wiki-rag/.index/
