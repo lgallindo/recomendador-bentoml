@@ -21,6 +21,9 @@ seguem o fio narrativo. Este script congela esse arco num HTML reproduzível.
 | [`minerar_regras_associacao.py`](minerar_regras_associacao.py) | Minera as cestas e gera o CSV da [aula de regras de associação](../material/tutorial-regras-associacao-20261017.md), sem dependências externas |
 | [`gerar_slides.py`](gerar_slides.py) | Gera [`../slides/recomendador-bentoml.html`](../slides/recomendador-bentoml.html) |
 | [`validar_vendas_semanais.py`](validar_vendas_semanais.py) | Confere a série sintética semanal contra os totais do catálogo |
+| [`demo_treino_mlp_demanda.py`](demo_treino_mlp_demanda.py) | MLP rasa + knobs; JSON em `material/redes/` |
+| [`demo_deep_vs_rasa.py`](demo_deep_vs_rasa.py) | Compara MLP rasa vs mais funda na série p01 |
+| [`demo_fine_tuning_mlp.py`](demo_fine_tuning_mlp.py) | Pré-treino multi-produto + fine-tune da cabeça em p01 |
 
 ```bash
 just slides

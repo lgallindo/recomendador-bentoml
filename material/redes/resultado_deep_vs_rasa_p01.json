@@ -1,0 +1,23 @@
+{
+  "produto": "p01",
+  "mae_baseline_media": 0.8333,
+  "rasa": {
+    "hidden": [
+      8
+    ],
+    "n_params": 33,
+    "mae_teste": 0.8357,
+    "mse_final_treino": 0.606
+  },
+  "mais_funda": {
+    "hidden": [
+      8,
+      8,
+      8
+    ],
+    "n_params": 177,
+    "mae_teste": 0.8945,
+    "mse_final_treino": 0.5739
+  },
+  "nota": "Com n_treino=12, mais parâmetros não garantem melhor teste. Compare com MA/MQ/LMS das aulas anteriores."
+}

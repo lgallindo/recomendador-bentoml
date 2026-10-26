@@ -19,7 +19,9 @@ aula** — tutoriais, BI e figuras para ler e projetar ao lado do código.
 | [`tutorial-perceptron-demanda-20261026.md`](tutorial-perceptron-demanda-20261026.md) | Separabilidade, LMS, walk-forward, BI e endpoint BentoML |
 | [`bi-demanda-perceptron/index.html`](bi-demanda-perceptron/index.html) | Explorador: série, MSE por época, MAE vs baselines |
 | [`tutorial-treino-redes-neurais-20261026.md`](tutorial-treino-redes-neurais-20261026.md) | Loop de treino (época, batch, loss, otimizador) + MLP rasa |
-| [`redes/`](redes/) | Saída JSON do demo MLP (`resultado_mlp_p01.json`) |
+| [`tutorial-deep-learning-visao-geral-20261026.md`](tutorial-deep-learning-visao-geral-20261026.md) | Profundidade, três famílias, MLP rasa vs mais funda |
+| [`tutorial-fine-tuning-20261026.md`](tutorial-fine-tuning-20261026.md) | Pré-treino → congelar tronco → adaptar cabeça (toy MLP) |
+| [`redes/`](redes/) | JSON dos demos MLP / deep / fine-tune (`resultado_*.json`) |
 | [`tutorial-previsao-probabilistica-demanda-20261017.md`](tutorial-previsao-probabilistica-demanda-20261017.md) | Prever distribuição de contagens com regressão de Poisson |
 | [`bi-demanda/index.html`](bi-demanda/index.html) | Explorador local: série, erros, MAE por janela e exportações |
 | [`planilha-media-movel-demanda.xlsx`](planilha-media-movel-demanda.xlsx) | Planilha de sala: uma aba por produto para contas de média móvel |

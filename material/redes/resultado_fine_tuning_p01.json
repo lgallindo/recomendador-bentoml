@@ -1,0 +1,23 @@
+{
+  "alvo": "p01",
+  "pretreino": {
+    "n_exemplos": 144,
+    "wall_clock_s": 0.029,
+    "mae_teste_p01_antes_ft": 0.9511
+  },
+  "fine_tune": {
+    "congela": "camadas escondidas (tronco)",
+    "atualiza": "camada de saída (cabeça)",
+    "epocas": 40,
+    "wall_clock_s": 0.012,
+    "mae_teste_depois": 0.8337
+  },
+  "do_zero_so_p01": {
+    "mae_teste": 0.7452
+  },
+  "riscos": [
+    "overfit no conjunto minúsculo de p01",
+    "split temporal frágil (só 4 semanas de teste)"
+  ],
+  "mitigacao_usada": "congelar tronco; poucas épocas na cabeça; piso em zero na previsão"
+}
