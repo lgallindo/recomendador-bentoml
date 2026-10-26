@@ -18,12 +18,11 @@ não precisa instalar um serviço nem acessar a internet. A página de um arquiv
 HTML no GitHub mostra seu código, não executa o explorador.
 
 A base é [`dados/vendas_semanais.csv`](../../dados/vendas_semanais.csv):
-**16 semanas × 12 produtos** (corpus da **aula**). As quatro últimas semanas
-formam o teste walk-forward. O classwork usa outro CSV em
-[`dados/classwork/`](../../dados/classwork/).
+**16 semanas × 12 produtos**. As quatro últimas semanas formam o teste
+walk-forward.
 
-O núcleo da aula: definir a **métrica de qualidade** e **escolher N** da média
-móvel comparando MA(2)…MA(5) (e a ingênua) no mesmo holdout.
+O núcleo do tutorial: definir a **métrica** (inclui custos de estoque por
+regras de negócio) e **escolher N** comparando janelas no mesmo holdout.
 
 ## Roteiro de exploração
 
@@ -33,7 +32,7 @@ móvel comparando MA(2)…MA(5) (e a ingênua) no mesmo holdout.
 4. Escolha **N\*** pela métrica (menor MAE ou o desempate que você declarar).
 5. Com N\*, leia a previsão da próxima semana; repita o ritual em **Boneca
    (`p03`)** se quiser um segundo produto.
-6. Exporte CSV ou PNG para o relato da aula (classwork: série da oficina).
+6. Exporte CSV ou PNG para o relato.
 
 ## O que o filtro faz
 

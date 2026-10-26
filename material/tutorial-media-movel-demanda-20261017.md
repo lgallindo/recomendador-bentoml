@@ -3,33 +3,32 @@
 [Versão web com explorador](https://lgallindo.github.io/recomendador-bentoml/demanda/).
 
 A loja abre a semana seguinte sem saber quantas linhas de pedido cada peça vai
-gerar. Você vai aprender a **suavizar o passado** com uma média móvel, a
-**nomear o preço do erro** com funções de custo — simétricas e assimétricas —
-e a **escolher o tamanho da janela** como quem treina um parâmetro: mede em
-dados de treino, confere em dados que ficaram de fora.
+gerar. Você aprende a **suavizar o passado** com uma média móvel, a **precificar
+o erro** com funções de custo (incluindo regras de negócio de estoque) e a
+**escolher o tamanho da janela N** medindo uma métrica em dados de ajuste e
+conferindo o resultado em dados que ficaram de fora.
 
-Corpus da **aula:**
+Dados:
 [`dados/vendas_semanais.csv`](../dados/vendas_semanais.csv) (16 semanas × 12
-produtos). Corpus do **classwork** (outro universo):
-[`dados/classwork/demanda_semanal_oficina.csv`](../dados/classwork/demanda_semanal_oficina.csv).
+produtos).
 
 ### Roteiro (~90 min)
 
 | Bloco | O que você faz |
 | --- | --- |
-| Definição e cultura | O que é média móvel; onde ela aparece no noticiário e no mercado |
-| IA / ML | Em que prateleira intelectual o método e a escolha de N se encaixam |
-| Custos do erro | Duas perdas simétricas e uma assimétrica, com história e conta |
-| Dois procedimentos | Treinar/avaliar em conjuntos separados; otimizar N pela métrica |
-| Laboratório | Série da aula → cartão de métrica → N\* → previsão |
+| Definição | O que é média móvel simples de ordem N |
+| IA / ML | Onde o método e a escolha de N se encaixam |
+| Custos | \(L_2\), \(L_1\), LinLin e métrica de estoque (sobra / quebra) |
+| Procedimentos | Treinar/avaliar em conjuntos separados; otimizar N pela métrica |
+| Laboratório | Série → cartão de métrica → N\* → previsão |
 
 ---
 
 ## 1. Definindo média móvel
 
-Uma **média móvel simples de ordem N** (em inglês, *simple moving average*,
-SMA) estima o próximo valor de uma série temporal como a média aritmética das
-**N observações mais recentes já conhecidas**:
+Uma **média móvel simples de ordem N** (*simple moving average*, SMA) estima o
+próximo valor de uma série temporal como a média aritmética das **N
+observações mais recentes já conhecidas**:
 
 $$
 \widehat{y}_{t+1}
@@ -37,232 +36,205 @@ $$
 = \frac{y_t + y_{t-1} + \cdots + y_{t-N+1}}{N}.
 $$
 
-- **Móvel:** quando o tempo avança, a janela desliza — a observação mais
-  antiga sai; a nova entra.
-- **Simples:** cada uma das N entradas pesa \(1/N\). (Há variantes
-  exponenciais e ponderadas; esta aula fixa a SMA.)
-- **N:** inteiro positivo; é o **parâmetro** do algoritmo. Pequeno N → a
-  previsão reage rápido e oscila mais. Grande N → a curva fica mais lisa e
-  atrasada.
+- **Móvel:** a janela desliza no tempo — sai a observação mais antiga; entra a
+  nova.
+- **Simples:** cada entrada pesa \(1/N\).
+- **N:** parâmetro inteiro do algoritmo. N pequeno reage rápido e oscila mais;
+  N grande suaviza e atrasa.
 
-Unidade neste material: **linhas de pedido por produto (ou kit) por semana**.
-Zero é observação válida.
+Unidade neste material: **linhas de pedido por produto por semana**. Zero é
+observação válida.
 
 ### Exemplo numérico (N = 4)
 
-Observações: \(1,\,3,\,3,\,4\). Previsão da próxima semana:
+Observações: \(1,\,3,\,3,\,4\). Previsão:
 
 \[
 (1+3+3+4)/4 = 2{,}75.
 \]
 
 Na semana seguinte a série vira \(3,\,3,\,4,\,3\); a previsão passa a
-\((3+3+4+3)/4 = 3{,}25\). A janela andou.
+\((3+3+4+3)/4 = 3{,}25\).
 
----
+Campos do CSV:
 
-## 2. Onde a média móvel aparece na cultura pop e no noticiário
-
-Você já viu a ideia mesmo sem o nome formal:
-
-| Arena | Como a média móvel entra na conversa |
+| Campo | Significado |
 | --- | --- |
-| **Mercado financeiro** | Gráficos de ações e criptomoedas exibem a “média móvel de 50 dias” ou “de 200 dias”. Âncoras de TV e threads no X apontam cruzamentos (“a cotação furrou a média de 200 dias”) como sinal de tendência — narrativa popular, não prova científica. |
-| **Saúde pública** | Na pandemia de COVID-19, jornais e dashboards publicavam a **média móvel de 7 dias** de casos ou óbitos para amortecer o efeito do fim de semana na notificação. |
-| **Esportes** | Comentaristas falam da “forma recente”: pontos ou rebatidas nas últimas N partidas — uma SMA informal do desempenho. |
-| **Audiência e bilheteria** | Rankings semanais e médias de audiência em janelas curtas suavizam um feriado atípico ou uma estreia isolada. |
-| **Clima na tela** | Mapas e apps mostram temperatura ou chuva “na média dos últimos dias” para falar de onda de calor sem um único pico distorcer a frase. |
+| `week_start` | Segunda-feira que inicia a semana |
+| `product_id` | Id do produto |
+| `order_line_count` | Linhas na semana |
 
-O padrão cultural é o mesmo da aula: **suavizar ruído curto** para contar uma
-história sobre tendência — e alguém, nos bastidores, escolheu um N.
+```bash
+uv run python scripts/validar_vendas_semanais.py
+```
 
 ---
 
-## 3. Média móvel, aprendizado de máquina e inteligência artificial
+## 2. Média móvel, aprendizado de máquina e inteligência artificial
 
 **Inteligência artificial (IA)** é o campo amplo de sistemas que apoiam ou
 automatizam tarefas cognitivas: perceber, prever, decidir. **Aprendizado de
 máquina (ML)** é a família de métodos em que o comportamento do sistema
 **depende de dados** — parâmetros ou estruturas ajustados a exemplos.
 
-Onde a SMA se encaixa:
-
-| Peça | Leitura honesta |
+| Peça | Leitura |
 | --- | --- |
-| Fórmula MA(N) com N fixo imposto à mão | Baseline **estatístico** de séries temporais. Transparente, barato, clássico. Ainda não “aprendeu” nada: o humano escolheu N. |
-| Escolher N **medindo** uma métrica em dados e pegando o N que otimiza essa métrica | **Seleção de hiperparâmetro** / model selection — um gesto central de ML. O algoritmo de previsão continua simples; o **procedimento de escolha** é aprendizado a partir de dados. |
-| Usar a previsão para decidir compra, estoque ou alerta | Caso de uso de **IA aplicada** (apoio à decisão), independentemente de a previsão vir de SMA, regressão ou rede neural. |
+| MA(N) com N fixo imposto à mão | Baseline **estatístico** de séries temporais. |
+| Escolher N **medindo** uma métrica em dados e ficando com o N que a otimiza | **Seleção de hiperparâmetro** — gesto central de ML. A previsão continua SMA; o **procedimento de escolha** aprende a partir dos dados. |
+| Usar a previsão para comprar, estocar ou alertar | **IA aplicada** (apoio à decisão). |
 
-Nesta aula o protagonista intelectual é o segundo gesto: você **treina o
-parâmetro N** sob uma métrica e **avalia** o resultado com disciplina
-temporal. A SMA é o veículo didático; o ritual métrica → parâmetro é o que
-viaja para modelos mais ricos depois.
+Nesta aula o gesto central é treinar o parâmetro N sob uma métrica escrita e
+avaliar com disciplina temporal.
 
 ---
 
-## 4. O preço do erro: duas perdas simétricas e uma assimétrica
+## 3. O preço do erro
 
-Seja \(e = y - \widehat{y}\) o erro (observado menos previsto). Uma **função
-de custo** (ou de perda) transforma \(e\) num número que você soma ou média
-ao longo do tempo. Ela responde: *quanto dói errar deste jeito?*
+Seja \(e = y - \widehat{y}\) (observado menos previsto). Uma **função de
+custo** transforma \(e\) (ou o par previsão/demanda sob regras de estoque) num
+número agregável no tempo.
 
-### 4.1 Perda quadrática (simétrica) — herança de Gauss e Legendre
+### 3.1 Perda quadrática (simétrica) — Gauss e Legendre
 
 $$
 L_2(e) = e^2 = (y - \widehat{y})^2.
 $$
 
-**Simetria:** \(L_2(e) = L_2(-e)\). Superestimar em 2 dói igual a subestimar
-em 2. Erros grandes pesam **desproporcionalmente** (o quadrado).
+\(L_2(e)=L_2(-e)\). Erros grandes pesam desproporcionalmente.
 
-**Motivação histórica.** No limiar do século XIX, Adrien-Marie Legendre
-(1805) e Carl Friedrich Gauss publicaram o método dos **mínimos quadrados**
-para ajustar órbitas e medidas astronômicas — notoriamente o planeta anão
-Ceres. Minimizar a soma dos \(e^2\) tornou-se o padrão de “melhor ajuste”
-linear; a média da perda no conjunto de teste é o **MSE** (*mean squared
-error*):
+**História.** Legendre (1805) e Gauss popularizaram os **mínimos quadrados**
+para órbitas e medidas — o caso de Ceres é o episódio clássico. A média da
+perda no teste é o **MSE**:
 
 $$
 \mathrm{MSE} = \frac{1}{n}\sum_{t=1}^{n}(y_t-\widehat{y}_t)^2.
 $$
 
-A raiz \(\mathrm{RMSE}=\sqrt{\mathrm{MSE}}\) devolve a unidade original
-(linhas de pedido), ainda sob a mesma filosofia quadrática.
+**Minúcia.** Erro \(\pm 1\) → custo \(1\). Erro \(\pm 2\) → custo \(4\).
 
-**Minúcia numérica.** Erros \(+1\) e \(-1\): custo \(1\) cada. Erros \(+2\) e
-\(-2\): custo \(4\) cada — quatro vezes o custo do erro unitário, não o dobro.
-
-### 4.2 Perda absoluta (simétrica) — a linha de Boscovich e Laplace
+### 3.2 Perda absoluta (simétrica) — Boscovich e Laplace
 
 $$
 L_1(e) = |e| = |y - \widehat{y}|.
 $$
 
-**Simetria:** de novo \(L_1(e)=L_1(-e)\). A diferença: o custo cresce **linear**
-com a magnitude; um outlier não explode a conta como no \(L_2\).
+Crescimento linear na magnitude; outliers pesam menos que no \(L_2\).
 
-**Motivação histórica.** Roger Joseph Boscovich (século XVIII) e Pierre-Simon
-Laplace desenvolveram ajustes por **desvios absolutos** (*least absolute
-deviations*). A média amostral dessa perda é o **MAE** (*mean absolute
-error*):
+**História.** Ajustes por **desvios absolutos** (*least absolute deviations*).
+A média amostral é o **MAE**:
 
 $$
 \mathrm{MAE} = \frac{1}{n}\sum_{t=1}^{n}|y_t-\widehat{y}_t|.
 $$
 
-O minimizador teórico do MAE sob certas condições é a **mediana** dos erros;
-o do MSE, a **média**. Por isso MAE e MSE podem eleger N\* diferentes na
-mesma série — e isso é feature, não bug.
+**Minúcia.** Erro \(\pm 1\) → custo \(1\). Erro \(\pm 2\) → custo \(2\).
 
-**Minúcia numérica.** Erros \(+1\) e \(-1\): custo \(1\). Erros \(+2\) e
-\(-2\): custo \(2\). O dobro do erro → dobro do custo, não o quádruplo.
+### 3.3 Perda assimétrica linear (LinLin)
 
-### 4.3 Perda assimétrica linear (LinLin) — quando sobrar dói diferente de faltar
-
-No estoque de artesanato, **ficar sem peça** (demanda maior que a previsão)
-pode custar venda perdida e cliente irritado; **produzir ou comprar demais**
-pode custar capital parado e espaço. Os dois erros **não** são simétricos.
-
-Defina pesos \(a>0\) (custo por unidade de **subprevisão**, \(y>\widehat{y}\))
-e \(b>0\) (custo por unidade de **superprevisão**, \(y<\widehat{y}\)), com
-\(a \neq b\):
+Pesos \(a>0\) (custo da subprevisão, \(e>0\)) e \(b>0\) (custo da
+superprevisão, \(e<0\)), com \(a\neq b\):
 
 $$
-L_{a,b}(e) =
-\begin{cases}
-a\,e & \text{se } e \ge 0 \quad (y \ge \widehat{y}),\\[4pt]
-b\,(-e) & \text{se } e < 0 \quad (y < \widehat{y}).
-\end{cases}
+L_{a,b}(e) = a\max(e,0) + b\max(-e,0).
 $$
 
-Equivalente compacto: \(L_{a,b}(e) = a\max(e,0) + b\max(-e,0)\).
+**História.** Problema do **jornaleiro** (*newsvendor*): sobra e falta têm
+custos unitários distintos; a perda assimétrica escolhe o lado caro.
 
-**Assimetria:** se \(a=3\) e \(b=1\), errar para baixo em 2 custa \(6\); errar
-para cima em 2 custa \(2\). A função **penaliza mais o lado caro**.
+**Minúcia.** \(y=5\), \(\widehat{y}=3\), \(a=3\), \(b=1\) → \(e=+2\), custo
+\(6\). Com \(\widehat{y}=7\) → \(e=-2\), custo \(2\).
 
-**Motivação histórica.** O problema do **jornaleiro** (*newsvendor*),
-clássico de pesquisa operacional e teoria da decisão: uma única chance de
-encomendar antes da demanda revelar-se; sobra e falta têm custos unitários
-distintos. Funções de perda assimétricas e a *pinball loss* (quantis) da
-previsão probabilística moderna prolongam essa intuição — prever o **quantil**
-adequado ao custo relativo \(a/(a+b)\).
+### 3.4 Métrica de estoque — sobra e quebra por regras de negócio
 
-**Minúcia numérica (exemplo de sala).** Seja \(y=5\), \(\widehat{y}=3\) →
-\(e=+2\). Com \(a=3\), \(b=1\): custo \(3\times 2=6\). Se \(\widehat{y}=7\) →
-\(e=-2\): custo \(1\times 2=2\). Mesma magnitude de erro; custos diferentes.
+Aqui o custo **não** é só uma função abstrata de \(e\). A loja transforma a
+previsão em **estoque preparado** e aplica regras explícitas.
 
-A média amostral \(n^{-1}\sum_t L_{a,b}(e_t)\) é a métrica assimétrica que
-você pode otimizar no lugar do MAE ou do MSE.
+#### Regras de negócio (nesta aula)
+
+| Id | Regra |
+| --- | --- |
+| **RN-1** | Para a semana \(t\), o estoque preparado é \(s_t = \mathrm{round}(\widehat{y}_t)\), com \(\mathrm{round}\) half-up (0,5 → 1). A previsão fracionária vira inteiro operacional. |
+| **RN-2** | A demanda realizada é \(y_t\) (linhas de pedido). |
+| **RN-3 — quebra de estoque** | Se \(y_t > s_t\), a quebra é \(q_t = y_t - s_t\). Custo unitário de quebra: \(c_{\mathrm{quebra}} = 40\) (margem + atendimento perdidos por linha não atendida). |
+| **RN-4 — sobra (overstock)** | Se \(s_t > y_t\), a sobra é \(o_t = s_t - y_t\). Custo unitário de sobra na semana: \(c_{\mathrm{sobra}} = 5\) (capital e espaço parados). |
+| **RN-5** | Se \(y_t = s_t\), \(q_t=o_t=0\). |
+
+Custo da semana \(t\):
+
+$$
+C_t = c_{\mathrm{quebra}}\,q_t + c_{\mathrm{sobra}}\,o_t
+= 40\cdot\max(y_t-s_t,0) + 5\cdot\max(s_t-y_t,0).
+$$
+
+**Métrica de estoque** no holdout de \(n\) semanas de teste:
+
+$$
+M_{\mathrm{estoque}}
+= \frac{1}{n}\sum_{t\in\mathrm{teste}} C_t.
+$$
+
+Menor \(M_{\mathrm{estoque}}\) → melhor segundo as regras RN-1…RN-5.
+
+#### Minúcia numérica
+
+Previsão \(\widehat{y}=3{,}4\) → \(s=\mathrm{round}(3{,}4)=3\).
+
+| Demanda \(y\) | Quebra \(q\) | Sobra \(o\) | \(C\) |
+| ---: | ---: | ---: | ---: |
+| 5 | 2 | 0 | \(40\times 2=80\) |
+| 3 | 0 | 0 | \(0\) |
+| 1 | 0 | 2 | \(5\times 2=10\) |
+
+A mesma magnitude de erro de previsão gera custos diferentes conforme as
+regras — e \(M_{\mathrm{estoque}}\) pode eleger um N\* distinto do MAE ou do MSE.
 
 ---
 
-## 5. Dois procedimentos de alto nível
-
-Estes procedimentos são o esqueleto da aula. Modelos futuros (reta, rede,
-RAG) repetem a mesma disciplina com outros parâmetros.
+## 4. Dois procedimentos de alto nível
 
 ### Procedimento A — Treinar parâmetros num conjunto e avaliar noutro
 
 ```text
 # Variáveis:
-# D_treino — observações usadas para fixar parâmetros do algoritmo
-# D_teste  — observações guardadas; não entram na escolha dos parâmetros
-# θ        — parâmetros (aqui, N da média móvel)
-# M        — métrica de qualidade (MAE, MSE, LinLin, …)
-# ŷ        — previsões produzidas com θ em D_teste
+# D_treino — observações usadas para fixar parâmetros
+# D_teste  — observações guardadas; fora da escolha dos parâmetros
+# θ        — parâmetros (aqui, N)
+# M        — métrica (MAE, MSE, LinLin, M_estoque, …)
+# ŷ        — previsões com θ em D_teste
 
-1. Particione a série no tempo: D_treino = passado; D_teste = futuro relativo
-   (holdout temporal; sem embaralhar semanas).
-2. Em D_treino (ou por walk-forward só dentro da região permitida), escolha θ.
+1. Particione no tempo: D_treino = passado; D_teste = holdout futuro relativo.
+2. Em D_treino (ou walk-forward na região permitida), escolha θ.
 3. Congele θ.
-4. Gere ŷ em D_teste usando apenas informação anterior a cada instante.
-5. Calcule M(y, ŷ) em D_teste e relate esse número como desempenho
-   fora da amostra de ajuste.
+4. Gere ŷ em D_teste só com informação anterior a cada instante.
+5. Calcule M em D_teste e reporte esse valor.
 ```
-
-**Ideia:** o parâmetro “viu” um pedaço do mundo; a nota final vem de um pedaço
-que ele **não** usou para se escolher. Isso controla o otimismo ilusório de
-testar no mesmo lugar em que se treinou.
 
 ### Procedimento B — Definir a métrica e ajustar o parâmetro para otimizá-la
 
 ```text
 # Variáveis:
-# M     — métrica escolhida a priori (e escrita em prosa + fórmula)
-# Θ     — conjunto candidato de parâmetros (ex.: N ∈ {2,3,4,5})
-# θ*    — parâmetro selecionado
-# score(θ) — valor de M obtido sob o protocolo de avaliação acordado
+# M, Θ, θ*, score(θ)
 
-1. Escreva M com precisão (nome, fórmula, holdout, agregação).
-2. Para cada θ em Θ, calcule score(θ) com o Procedimento A (ou walk-forward
-   equivalente).
-3. θ* ← argmin_θ score(θ)   # ou argmax, se M for utilidade
-4. Em empate, aplique um desempate declarado (menor N, maior estabilidade…).
-5. Publique a previsão operacional com θ* (aqui: MA(N*) na próxima semana).
+1. Escreva M (nome, fórmula, holdout, agregação; se for M_estoque, cite RN-1…5).
+2. Para cada θ em Θ, calcule score(θ) com o Procedimento A.
+3. θ* ← argmin score(θ).
+4. Empate → desempate declarado.
+5. Previsão operacional com θ* (MA(N*)).
 ```
-
-**Ideia:** primeiro o **critério**, depois a **busca**. Sem M escrito, “melhor
-N” não significa nada. Com M escrito, N\* é auditável: qualquer colega
-recalcula a tabela e chega ao mesmo escolhido (salvo o desempate).
-
-Na SMA, θ = N. Em mínimos quadrados, θ serão inclinação e intercepto; o
-**procedimento** permanece.
 
 ---
 
-## 6. Laboratório na série da aula
+## 5. Laboratório
 
 Arquivo: [`dados/vendas_semanais.csv`](../dados/vendas_semanais.csv).
 
-Sugestão de partição: últimas **4** semanas = `D_teste`; anteriores =
-região de treino / walk-forward. Candidatos: \(N \in \{2,3,4,5\}\).
+Partição sugerida: últimas **4** semanas = `D_teste`. Candidatos:
+\(N\in\{2,3,4,5\}\).
 
-1. Escreva o cartão de **M** (escolha MAE, MSE ou LinLin com \(a,b\)
-   explícitos).
-2. Monte a tabela \(N \mapsto \mathrm{score}(N)\) no mesmo protocolo.
+1. Escolha **M** (MAE, MSE, LinLin ou \(M_{\mathrm{estoque}}\) com RN-1…RN-5).
+2. Tabela \(N\mapsto\mathrm{score}(N)\).
 3. Declare \(N^\star\) e a previsão da próxima semana com MA(\(N^\star\)).
-4. Opcional: compare o \(N^\star\) sob MAE com o \(N^\star\) sob MSE ou
-   LinLin — eles podem divergir; explique com uma frase.
+4. Opcional: compare \(N^\star\) sob MAE versus sob \(M_{\mathrm{estoque}}\).
 
 ```python
 from pathlib import Path
@@ -277,47 +249,47 @@ serie = (
     .sort_index()["p01"]
 )
 k_teste = 4
+c_quebra, c_sobra = 40.0, 5.0
 
 
-def mae_wf(serie: pd.Series, n: int, k_teste: int) -> float:
-    erros = []
+def m_estoque_wf(serie: pd.Series, n: int, k_teste: int) -> float:
+    custos = []
     for pos in range(len(serie) - k_teste, len(serie)):
-        prev = float(serie.iloc[pos - n : pos].mean())
-        erros.append(abs(float(serie.iloc[pos]) - prev))
-    return sum(erros) / len(erros)
+        yhat = float(serie.iloc[pos - n : pos].mean())
+        s = int(round(yhat))  # RN-1
+        y = int(serie.iloc[pos])
+        q = max(y - s, 0)
+        o = max(s - y, 0)
+        custos.append(c_quebra * q + c_sobra * o)
+    return sum(custos) / len(custos)
 
 
-scores = {n: mae_wf(serie, n, k_teste) for n in (2, 3, 4, 5)}
+scores = {n: m_estoque_wf(serie, n, k_teste) for n in (2, 3, 4, 5)}
 n_star = min(scores, key=scores.get)
 print(scores, "N* =", n_star, "prev =", float(serie.iloc[-n_star:].mean()))
 ```
 
 O [explorador BI](https://lgallindo.github.io/recomendador-bentoml/demanda/)
-visualiza MAE por janela na série da aula. Use-o para conferir o Procedimento
-B; no classwork, troque o arquivo.
+mostra MAE por janela nesta série.
 
 ---
 
-## 7. Exercício (aula) e ponte ao classwork
+## 6. Exercício
 
-**Na aula (este CSV):** um produto, cartão de M, tabela N→score, N\*, previsão,
-uma figura.
+Escolha um produto. Entregue:
 
-**No classwork:** o mesmo ritual intelectual no CSV da **oficina de kits** —
-incluindo calcular, para o kit escolhido, um exemplo numérico de **\(L_2\)**,
-**\(L_1\)** e **\(L_{a,b}\)** em pelo menos um instante de teste, e otimizar N
-sob a métrica que você eleger (pode ser a média de uma delas).
-
-Detalhe operacional e entrega: pacote Classroom
-`ads032-demanda-media-movel`.
+1. Cartão de M (se usar estoque, copie RN-1…RN-5 ou declare variantes).
+2. Em um instante de teste: \(L_2\), \(L_1\) e \(C_t\) (quebra/sobra) com o
+   mesmo \(y\) e a mesma \(\widehat{y}\).
+3. Tabela N→score sob a M escolhida; N\*; previsão da próxima semana.
+4. Uma figura (BI ou gráfico próprio).
 
 ---
 
-## Referências rápidas no repositório
+## Referências no repositório
 
 | Artefato | Papel |
 | --- | --- |
-| `dados/vendas_semanais.csv` | Treino/demo da aula |
-| `dados/classwork/demanda_semanal_oficina.csv` | Avaliação independente do classwork |
-| `material/bi-demanda/` | Painel da série da aula |
-| `scripts/validar_vendas_semanais.py` | Sanidade do CSV da loja |
+| `dados/vendas_semanais.csv` | Série do laboratório |
+| `material/bi-demanda/` | Painel |
+| `scripts/validar_vendas_semanais.py` | Sanidade do CSV |
