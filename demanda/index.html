@@ -15,7 +15,8 @@ móvel · Aprender com dados</title>
     <a class="brand" href="../">Aprender com dados</a>
     <nav aria-label="Navegação principal">
       <a href="../">Associação</a>
-      <a href="./">Demanda</a>
+      <a href="./">Média móvel</a>
+      <a href="../demanda-mq/">Mín. quadrados</a>
       <a href="#explorador-interativo">Explorar</a>
       <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-media-movel-demanda-20261017.md">Versão
 Markdown</a>
@@ -162,11 +163,12 @@ produto por semana</strong>. Uma linha não é necessariamente uma unidade
 física: um pedido pode conter mais de uma unidade. Para prever unidades,
 a fonte precisaria registrar quantidades vendidas, e a coluna-alvo teria
 de ser definida de acordo.</p>
-<h3 id="popularidade-não-é-previsão">Popularidade não é previsão</h3>
+<h3 id="popularidade-e-previsão-semanal">Popularidade e previsão
+semanal</h3>
 <p>O catálogo do recomendador registra <code>pedidos</code> por produto
-como um total agregado. Esse valor ajuda a ordenar produtos populares,
-mas não tem datas e, sozinho, não revela o comportamento de uma semana
-para outra.</p>
+como um <strong>total agregado</strong> — útil para ordenar peças
+populares. Esse total <strong>não traz datas</strong>; para responder “e
+na próxima semana?”, a aula usa a série temporal abaixo.</p>
 <p>A série em <a
 href="../dados/vendas_semanais.csv"><code>../dados/vendas_semanais.csv</code></a>
 acrescenta as datas necessárias para exercitar um método temporal. Ela

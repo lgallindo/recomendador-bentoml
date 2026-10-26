@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutoriais com explorador interativo: associação de regras e previsão de demanda.">
+  <title>Previsão de demanda com regressão por mínimos
+quadrados · Aprender com dados</title>
+  <link rel="stylesheet" href="../assets/tutorial.css">
+  <script src="../assets/tutorial.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+  <header class="site-header">
+    <a class="brand" href="../">Aprender com dados</a>
+    <nav aria-label="Navegação principal">
+      <a href="../">Associação</a>
+      <a href="../demanda/">Média móvel</a>
+      <a href="./">Mín. quadrados</a>
+      <a href="#explorador-interativo">Explorar</a>
+      <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-regressao-quadrados-minimos-demanda-20261017.md">Versão
+Markdown</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="toc">
+      <details open><summary>Neste tutorial</summary><nav aria-label="Índice"><ul>
+<li><a href="#previsão-de-demanda-com-regressão-por-mínimos-quadrados"
+id="toc-previsão-de-demanda-com-regressão-por-mínimos-quadrados">Previsão
+de demanda com regressão por mínimos quadrados</a>
+<ul>
+<li><a href="#1-onde-a-regressão-se-situa"
+id="toc-1-onde-a-regressão-se-situa">1. Onde a regressão se
+situa</a></li>
+<li><a href="#2-o-que-significa-mínimos-quadrados"
+id="toc-2-o-que-significa-mínimos-quadrados">2. O que significa “mínimos
+quadrados”</a></li>
+<li><a href="#3-carregar-a-série-e-ajustar-um-produto"
+id="toc-3-carregar-a-série-e-ajustar-um-produto">3. Carregar a série e
+ajustar um produto</a></li>
+<li><a href="#4-avaliar-respeitando-o-tempo"
+id="toc-4-avaliar-respeitando-o-tempo">4. Avaliar respeitando o
+tempo</a></li>
+<li><a href="#5-interpretar-o-resultado"
+id="toc-5-interpretar-o-resultado">5. Interpretar o resultado</a></li>
+<li><a href="#6-como-bi-ajuda-você-a-visualizar-a-reta"
+id="toc-6-como-bi-ajuda-você-a-visualizar-a-reta">6. Como BI ajuda você
+a visualizar a reta</a></li>
+<li><a href="#7-exercício-inclinação-da-boneca"
+id="toc-7-exercício-inclinação-da-boneca">7. Exercício: inclinação da
+Boneca</a></li>
+<li><a href="#referência-e-reprodução"
+id="toc-referência-e-reprodução">Referência e reprodução</a></li>
+<li><a href="#gerar-a-figura" id="toc-gerar-a-figura">Gerar a
+figura</a></li>
+</ul></li>
+</ul></nav></details>
+    </aside>
+    <main id="conteudo"><h1
+id="previsão-de-demanda-com-regressão-por-mínimos-quadrados">Previsão de
+demanda com regressão por mínimos quadrados</h1>
+<p><a
+href="https://lgallindo.github.io/recomendador-bentoml/demanda-mq/">Leia
+a versão web com o explorador interativo incorporado</a>.</p>
+<p>Este tutorial parte da série semanal sintética do marketplace e do
+protocolo walk-forward apresentado em <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-media-movel-demanda-20261017.md"><code>tutorial-media-movel-demanda-20261017.md</code></a>.
+Você vai ajustar uma reta para cada produto usando regressão linear por
+mínimos quadrados, extrapolar a tendência para a próxima semana e
+comparar o resultado com médias móveis e uma previsão ingênua.</p>
+<p>Os dados são <strong>sintéticos</strong>: as 16 semanas distribuem os
+totais do catálogo e não são vendas observadas. Resultados numéricos
+servem para reproduzir o método, não para afirmar que existe tendência
+real.</p>
+<h3 id="roteiro">Roteiro</h3>
+<table>
+<thead>
+<tr>
+<th>Tempo sugerido</th>
+<th>Atividade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8 min</td>
+<td>Relacionar regressão, aprendizado de máquina e previsão</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Entender o ajuste por mínimos quadrados</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Ajustar uma reta e prever demanda</td>
+</tr>
+<tr>
+<td>12 min</td>
+<td>Avaliar com origem temporal deslizante</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Explorar a série com BI e exportar uma evidência</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Interpretar resultados, limitações e exercício</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-onde-a-regressão-se-situa">1. Onde a regressão se situa</h2>
+<p>Na média móvel, a regra de previsão é definida diretamente como a
+média das últimas observações. Aqui, ajustaremos os coeficientes de uma
+reta a partir de exemplos históricos. Essa é uma forma simples de
+<strong>aprendizado supervisionado</strong>: cada semana fornece uma
+entrada (o tempo) e um alvo conhecido (a demanda observada).</p>
+<p><strong>Inteligência artificial (IA)</strong> é o campo amplo de
+sistemas que executam tarefas como aprender, raciocinar e apoiar
+decisões; <strong>aprendizado de máquina (ML)</strong> é uma área da IA
+em que algoritmos ajustam modelos a partir de dados. Regressão linear é
+uma técnica estatística que também é usada como modelo de ML quando seus
+parâmetros são aprendidos dos exemplos.</p>
+<p><img src="../material/imagens/mapa-ia-regressao-demanda.png"
+alt="Diagrama conceitual: IA contém ML; regressão linear aprendida por mínimos quadrados é um modelo supervisionado que pode resolver o problema de previsão de demanda." /></p>
+<p><em>Figura 1 — A regressão linear liga exemplos de entrada e alvo a
+uma função ajustada. As relações são conceituais, não uma medida de
+tamanho das áreas.</em></p>
+<p>O problema de negócio continua o mesmo: estimar <strong>linhas de
+pedido por produto por semana</strong>. Regressão não muda a unidade nem
+transforma os dados sintéticos em histórico real.</p>
+<h2 id="2-o-que-significa-mínimos-quadrados">2. O que significa “mínimos
+quadrados”</h2>
+<p>Para um produto, associe a semana <code>t</code> à contagem observada
+<code>y_t</code>. Uma reta prevê:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>t</mi></msub><mo>=</mo><msub><mi>β</mi><mn>0</mn></msub><mo>+</mo><msub><mi>β</mi><mn>1</mn></msub><mi>t</mi></mrow><annotation encoding="application/x-tex">
+\widehat{y}_t = \beta_0 + \beta_1 t
+</annotation></semantics></math></p>
+<ul>
+<li><code>β₀</code> é o intercepto: valor ajustado quando
+<code>t = 0</code>.</li>
+<li><code>β₁</code> é a inclinação: variação média ajustada em linhas de
+pedido por semana.</li>
+<li><code>ŷ_t</code> é a previsão do modelo para a semana
+<code>t</code>.</li>
+</ul>
+<p>Os dados raramente ficam todos exatamente numa reta. Para ajustar os
+coeficientes, mínimos quadrados escolhe a reta que minimiza a soma dos
+<strong>resíduos ao quadrado</strong>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><munder><mi mathvariant="normal">min</mi><mrow><msub><mi>β</mi><mn>0</mn></msub><mo>,</mo><msub><mi>β</mi><mn>1</mn></msub></mrow></munder><mspace width="0.222em"></mspace><munderover><mo>∑</mo><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></munderover><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mi>t</mi></msub><mo>−</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>β</mi><mn>0</mn></msub><mo>+</mo><msub><mi>β</mi><mn>1</mn></msub><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">
+\min_{\beta_0,\beta_1}\ \sum_{t=0}^{n-1}
+\left(y_t - (\beta_0+\beta_1t)\right)^2
+</annotation></semantics></math></p>
+<p>Um resíduo é observado menos previsto. Elevar ao quadrado penaliza
+erros grandes mais fortemente e evita que resíduos positivos e negativos
+se cancelem na soma.</p>
+<p>O ajuste não prova que a demanda siga uma tendência linear. É uma
+aproximação cuja utilidade deve ser examinada em semanas futuras
+reservadas para teste. Além disso, uma reta pode produzir previsões
+negativas, embora contagens não possam ser negativas. Neste tutorial,
+aplicaremos um limite inferior de zero após prever; isso é uma decisão
+prática de pós-processamento, não parte do ajuste por mínimos
+quadrados.</p>
+<h2 id="3-carregar-a-série-e-ajustar-um-produto">3. Carregar a série e
+ajustar um produto</h2>
+<p>O arquivo tem 16 semanas, de 2026-06-22 a 2026-10-05, para 12
+produtos. A coluna <code>order_line_count</code> conta linhas de pedido
+semanais, não unidades físicas. O script de validação verifica que todas
+as combinações produto/semana estão presentes e que os totais
+reconciliam:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/validar_vendas_semanais.py</span></code></pre></div>
+<p>O código a seguir reaproveita pandas para organizar a tabela e
+<code>LinearRegression</code> do scikit-learn para ajustar a reta. Na
+raiz do repositório, execute com:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run <span class="at">--with</span> pandas python</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>vendas <span class="op">=</span> pd.read_csv(</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    Path(<span class="st">&quot;dados/vendas_semanais.csv&quot;</span>),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    parse_dates<span class="op">=</span>[<span class="st">&quot;week_start&quot;</span>],</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>matriz <span class="op">=</span> vendas.pivot(</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span><span class="st">&quot;week_start&quot;</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span><span class="st">&quot;product_id&quot;</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    values<span class="op">=</span><span class="st">&quot;order_line_count&quot;</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>).sort_index()</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>produto <span class="op">=</span> <span class="st">&quot;p01&quot;</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>serie <span class="op">=</span> matriz[produto]</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>semanas <span class="op">=</span> np.arange(<span class="bu">len</span>(serie)).reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>modelo <span class="op">=</span> LinearRegression().fit(semanas, serie.to_numpy())</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>semana_seguinte <span class="op">=</span> np.array([[<span class="bu">len</span>(serie)]])</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>previsao_bruta <span class="op">=</span> <span class="bu">float</span>(modelo.predict(semana_seguinte)[<span class="dv">0</span>])</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>previsao <span class="op">=</span> <span class="bu">max</span>(<span class="fl">0.0</span>, previsao_bruta)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Intercepto: </span><span class="sc">{</span>modelo<span class="sc">.</span>intercept_<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Inclinação: </span><span class="sc">{</span>modelo<span class="sc">.</span>coef_[<span class="dv">0</span>]<span class="sc">:.4f}</span><span class="ss"> linhas/semana&quot;</span>)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Previsão bruta: </span><span class="sc">{</span>previsao_bruta<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Previsão não negativa: </span><span class="sc">{</span>previsao<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<p>Para Jarro (<code>p01</code>), o ajuste com as 16 semanas resulta
+em:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>t</mi></msub><mo>=</mo><mn>2</mn><mo>,</mo><mn>8015</mn><mo>−</mo><mn>0</mn><mo>,</mo><mn>0235</mn><mi>t</mi></mrow><annotation encoding="application/x-tex">
+\widehat{y}_t = 2{,}8015 - 0{,}0235t
+</annotation></semantics></math></p>
+<p>A inclinação ajustada é aproximadamente <strong>−0,024 linha por
+semana</strong>. Ao extrapolar para <code>t = 16</code>, a previsão é
+<strong>2,425 linhas de pedido</strong>. A pequena inclinação negativa
+descreve a reta que melhor ajusta esta amostra sintética; não demonstra
+uma queda real de demanda.</p>
+<p><img src="../material/imagens/regressao-minimos-quadrados-p01.png"
+alt="Série sintética semanal de Jarro, reta ajustada por mínimos quadrados e previsão extrapolada para a semana seguinte." /></p>
+<p><em>Figura 2 — A reta resume a tendência linear ajustada ao histórico
+de <code>p01</code>. O segmento futuro é uma extrapolação, não um valor
+observado.</em></p>
+<h3 id="previsões-para-todos-os-produtos">Previsões para todos os
+produtos</h3>
+<p>O mesmo ajuste, feito separadamente para cada produto, produz as
+previsões:</p>
+<table>
+<thead>
+<tr>
+<th>Produto</th>
+<th style="text-align: right;">Intercepto</th>
+<th style="text-align: right;">Inclinação por semana</th>
+<th style="text-align: right;">Previsão bruta</th>
+<th style="text-align: right;">Após limite em zero</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Jarro barro Tracunhaém (<code>p01</code>)</td>
+<td style="text-align: right;">2,801</td>
+<td style="text-align: right;">−0,024</td>
+<td style="text-align: right;">2,425</td>
+<td style="text-align: right;">2,425</td>
+</tr>
+<tr>
+<td>Prato esmaltado Tracunhaém (<code>p02</code>)</td>
+<td style="text-align: right;">1,904</td>
+<td style="text-align: right;">−0,021</td>
+<td style="text-align: right;">1,575</td>
+<td style="text-align: right;">1,575</td>
+</tr>
+<tr>
+<td>Boneca de barro (<code>p03</code>)</td>
+<td style="text-align: right;">1,529</td>
+<td style="text-align: right;">−0,046</td>
+<td style="text-align: right;">0,800</td>
+<td style="text-align: right;">0,800</td>
+</tr>
+<tr>
+<td>Rendeira Alto do Moura (<code>p04</code>)</td>
+<td style="text-align: right;">2,485</td>
+<td style="text-align: right;">−0,040</td>
+<td style="text-align: right;">1,850</td>
+<td style="text-align: right;">1,850</td>
+</tr>
+<tr>
+<td>Toalha de renda (<code>p05</code>)</td>
+<td style="text-align: right;">1,640</td>
+<td style="text-align: right;">−0,035</td>
+<td style="text-align: right;">1,075</td>
+<td style="text-align: right;">1,075</td>
+</tr>
+<tr>
+<td>Caminho de mesa renda (<code>p06</code>)</td>
+<td style="text-align: right;">0,897</td>
+<td style="text-align: right;">−0,028</td>
+<td style="text-align: right;">0,450</td>
+<td style="text-align: right;">0,450</td>
+</tr>
+<tr>
+<td>Xilogravura Pilar (<code>p07</code>)</td>
+<td style="text-align: right;">2,213</td>
+<td style="text-align: right;">−0,037</td>
+<td style="text-align: right;">1,625</td>
+<td style="text-align: right;">1,625</td>
+</tr>
+<tr>
+<td>Cordel ilustrado (<code>p08</code>)</td>
+<td style="text-align: right;">1,007</td>
+<td style="text-align: right;">0,007</td>
+<td style="text-align: right;">1,125</td>
+<td style="text-align: right;">1,125</td>
+</tr>
+<tr>
+<td>Quadro xilo colorido (<code>p09</code>)</td>
+<td style="text-align: right;">0,926</td>
+<td style="text-align: right;">−0,049</td>
+<td style="text-align: right;">0,150</td>
+<td style="text-align: right;">0,150</td>
+</tr>
+<tr>
+<td>Cesto de palha (<code>p10</code>)</td>
+<td style="text-align: right;">1,875</td>
+<td style="text-align: right;">−0,050</td>
+<td style="text-align: right;">1,075</td>
+<td style="text-align: right;">1,075</td>
+</tr>
+<tr>
+<td>Bolsa de palha (<code>p11</code>)</td>
+<td style="text-align: right;">0,963</td>
+<td style="text-align: right;">−0,012</td>
+<td style="text-align: right;">0,775</td>
+<td style="text-align: right;">0,775</td>
+</tr>
+<tr>
+<td>Sousplat de palha (<code>p12</code>)</td>
+<td style="text-align: right;">1,029</td>
+<td style="text-align: right;">−0,071</td>
+<td style="text-align: right;">−0,100</td>
+<td style="text-align: right;">0,000</td>
+</tr>
+</tbody>
+</table>
+<p>Para <code>p12</code>, a reta prevê −0,1. Usar zero evita apresentar
+uma contagem negativa, mas não garante uma distribuição válida nem
+corrige o modelo. Com alvos de contagem, considere um modelo cuja saída
+respeite a escala e o domínio do problema; também registre sempre
+qualquer pós-processamento.</p>
+<h2 id="4-avaliar-respeitando-o-tempo">4. Avaliar respeitando o
+tempo</h2>
+<p>Usaremos as 12 primeiras semanas como histórico inicial e as quatro
+últimas como teste, tal como no tutorial da média móvel. Em cada semana
+de teste, ajustamos a reta novamente usando <strong>somente</strong>
+semanas anteriores e prevemos o próximo ponto. Após observar o resultado
+real daquela semana, ela pode entrar no histórico da previsão
+seguinte.</p>
+<p>Para comparar escalas de erro:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">M</mi><mi mathvariant="normal">A</mi><mi mathvariant="normal">E</mi></mrow><mo>=</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mo stretchy="false" form="prefix">|</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><mo stretchy="false" form="prefix">|</mo><mo>,</mo><mspace width="2.0em"></mspace><mrow><mi mathvariant="normal">R</mi><mi mathvariant="normal">M</mi><mi mathvariant="normal">S</mi><mi mathvariant="normal">E</mi></mrow><mo>=</mo><msqrt><mrow><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mo stretchy="false" form="prefix">(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow></msqrt></mrow><annotation encoding="application/x-tex">
+\mathrm{MAE} = \frac{1}{n}\sum_{i=1}^{n}|y_i-\widehat{y}_i|,
+\qquad
+\mathrm{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i-\widehat{y}_i)^2}
+</annotation></semantics></math></p>
+<p>RMSE penaliza erros grandes mais fortemente que MAE. Ambas as
+métricas estão em linhas de pedido por produto por semana.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>inicio_teste <span class="op">=</span> <span class="bu">len</span>(matriz) <span class="op">-</span> <span class="dv">4</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>erros <span class="op">=</span> []</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> produto <span class="kw">in</span> matriz.columns:</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    serie <span class="op">=</span> matriz[produto]</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> posicao <span class="kw">in</span> <span class="bu">range</span>(inicio_teste, <span class="bu">len</span>(matriz)):</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        x_treino <span class="op">=</span> np.arange(posicao).reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        y_treino <span class="op">=</span> serie.iloc[:posicao].to_numpy()</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        modelo <span class="op">=</span> LinearRegression().fit(x_treino, y_treino)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        bruto <span class="op">=</span> <span class="bu">float</span>(modelo.predict([[posicao]])[<span class="dv">0</span>])</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        previsto <span class="op">=</span> <span class="bu">max</span>(<span class="fl">0.0</span>, bruto)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        observado <span class="op">=</span> <span class="bu">float</span>(serie.iloc[posicao])</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        erros.append(observado <span class="op">-</span> previsto)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>mae <span class="op">=</span> np.mean(np.<span class="bu">abs</span>(erros))</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>rmse <span class="op">=</span> np.sqrt(np.mean(np.square(erros)))</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Previsões avaliadas: </span><span class="sc">{</span><span class="bu">len</span>(erros)<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;MAE: </span><span class="sc">{</span>mae<span class="sc">:.3f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;RMSE: </span><span class="sc">{</span>rmse<span class="sc">:.3f}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<p>Saída neste conjunto:</p>
+<pre class="text"><code>Previsões avaliadas: 48
+MAE: 0.485
+RMSE: 0.629</code></pre>
+<h3 id="comparar-com-referências-simples">Comparar com referências
+simples</h3>
+<p>Todos os métodos abaixo usam exatamente os mesmos 48 pares
+produto/semana:</p>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th style="text-align: right;">MAE</th>
+<th style="text-align: right;">RMSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ingênua: última semana</td>
+<td style="text-align: right;">0,667</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>Média móvel de 4 semanas</td>
+<td style="text-align: right;">0,490</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>Média móvel de 5 semanas</td>
+<td style="text-align: right;">0,483</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>Regressão linear, por produto</td>
+<td style="text-align: right;">0,485</td>
+<td style="text-align: right;">0,629</td>
+</tr>
+</tbody>
+</table>
+<p>A regressão tem MAE próximo ao das médias móveis. Neste pequeno
+teste, MA(5) fica ligeiramente abaixo da regressão, com diferença de
+cerca de 0,001 linha. Isso não estabelece um vencedor: são apenas quatro
+semanas sintéticas de teste. O RMSE é apresentado para a regressão, mas
+só deve ser comparado com RMSE das outras abordagens, não diretamente
+com os MAEs.</p>
+<h2 id="5-interpretar-o-resultado">5. Interpretar o resultado</h2>
+<ul>
+<li>Uma inclinação positiva ou negativa é a tendência <strong>linear
+estimada no histórico usado</strong>; não é causa nem garantia de
+continuidade.</li>
+<li>Prever além das semanas usadas para ajustar uma reta é
+<strong>extrapolar</strong>. Extrapolações longas são especialmente
+frágeis se a tendência mudar.</li>
+<li>A contagem é inteira, mas a previsão média pode ser fracionária. Não
+arredonde antes de calcular erros.</li>
+<li>O corte em zero evita valores negativos, mas altera a saída e
+precisa ser documentado. <code>p12</code> mostra essa situação neste
+próprio conjunto.</li>
+<li>O modelo ajusta uma reta individual para cada produto. Com apenas 12
+pontos iniciais em cada origem, a inclinação pode ser instável.</li>
+<li>O arquivo é sintético e foi construído para reconciliar totais
+agregados. Não permite concluir que exista tendência, sazonalidade ou
+desempenho real.</li>
+</ul>
+<p>Para testar desempenho comercial, são necessários mais dados
+históricos observados, com datas, quantidades consistentes, estado dos
+pedidos, estoque e contexto de promoções ou rupturas. Faça a avaliação
+em ordem temporal e compare com baselines antes de implantar um
+modelo.</p>
+<h2 id="6-como-bi-ajuda-você-a-visualizar-a-reta">6. Como BI ajuda você
+a visualizar a reta</h2>
+<p>O <a href="../material/bi-demanda-mq/index.html">explorador de
+mínimos quadrados</a> mostra a série, a reta ajustada, os erros no teste
+e o MAE ao lado da média móvel e da previsão ingênua. Você pode usá-lo
+na <a
+href="https://lgallindo.github.io/recomendador-bentoml/demanda-mq/#explorador-interativo">versão
+web deste tutorial</a> ou abrir o HTML local. Consulte o <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-demanda-mq/README.md">roteiro</a>.</p>
+<section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
+<h3 id="explorer-heading">Experimente a reta neste tutorial</h3>
+<p>Escolha produto e método abaixo. Compare mínimos quadrados com média móvel e com a previsão ingênua. As 16 semanas são sintéticas.</p>
+<div class="explorer-actions">
+<button id="fullscreen-explorer" type="button">Ver explorador em tela cheia</button>
+<a href="../material/bi-demanda-mq/index.html" target="_blank" rel="noopener">Abrir explorador em nova aba</a>
+</div>
+<p id="explorer-status" role="status"></p>
+<iframe id="explorer" src="../material/bi-demanda-mq/index.html" title="Explorador interativo de mínimos quadrados"
+loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+</section>
+<p>As figuras abaixo espelham o painel na versão Markdown.</p>
+<p><img src="../material/imagens/bi-demanda-mq-serie-p01.png"
+alt="Série sintética do Jarro p01 com reta de mínimos quadrados, faixa de teste e previsão da próxima semana." /></p>
+<p><em>Figura 3 — Observações e reta do ajuste completo; o ponto
+terracota extrapola a semana seguinte. O MAE do teste, no painel, refaz
+o ajuste só com o passado.</em></p>
+<p><img src="../material/imagens/bi-demanda-mq-erros-p01.png"
+alt="Barras de erro absoluto da regressão nas quatro semanas de teste de p01." /></p>
+<p><em>Figura 4 — Erros walk-forward de mínimos quadrados em
+<code>p01</code>.</em></p>
+<p><img src="../material/imagens/bi-demanda-mq-mae.png"
+alt="MAE agregado da previsão ingênua, MA(4), MA(5) e mínimos quadrados." /></p>
+<p><em>Figura 5 — Mesmas 48 previsões para todos os métodos. Menor MAE é
+melhor nesta métrica; a diferença neste conjunto sintético é
+pequena.</em></p>
+<h3 id="atividade-rápida-no-painel">Atividade rápida no painel</h3>
+<ol type="1">
+<li>Abra Jarro (<code>p01</code>) com mínimos quadrados. Anote
+intercepto, inclinação e a previsão da próxima semana.</li>
+<li>Na tabela do teste, confira uma semana à mão (ajuste só com o
+passado).</li>
+<li>Troque para MA(5) e diga o que muda no MAE do produto.</li>
+<li>Exporte um PNG ou o CSV do teste.</li>
+</ol>
+<h2 id="7-exercício-inclinação-da-boneca">7. Exercício: inclinação da
+Boneca</h2>
+<p>Ajuste uma regressão linear para Boneca de barro (<code>p03</code>) e
+responda:</p>
+<ol type="1">
+<li>Qual é a inclinação estimada em linhas por semana? É positiva ou
+negativa?</li>
+<li>Qual é a previsão para a semana seguinte, antes e depois do limite
+em zero?</li>
+<li>Qual o MAE de <code>p03</code> nas quatro semanas finais usando
+ajuste walk-forward?</li>
+<li>Como a previsão de regressão se compara à média móvel de cinco
+semanas?</li>
+<li>Por que a inclinação não prova uma tendência real do
+marketplace?</li>
+</ol>
+<h3 id="resolução-comentada">Resolução comentada</h3>
+<p>Com as 16 semanas, <code>p03</code> tem intercepto aproximado 1,5294,
+inclinação −0,0456 linha por semana e previsão bruta 0,8 para
+<code>t = 16</code>. Ela permanece 0,8 após o limite em zero.</p>
+<p>Nas quatro semanas finais, a regressão por produto tem MAE aproximado
+<strong>0,614</strong> para <code>p03</code>; a média móvel de cinco
+semanas tem MAE <strong>0,600</strong> no mesmo produto e nas mesmas
+semanas. Os resultados são quase iguais e vêm de uma série sintética
+curta; não demonstram qual método preverá melhor vendas futuras
+reais.</p>
+<h2 id="referência-e-reprodução">Referência e reprodução</h2>
+<ol type="1">
+<li>SCIKIT-LEARN. <code>LinearRegression</code>: mínimos quadrados
+ordinários para regressão linear. <a
+href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html">Documentação</a>.</li>
+</ol>
+<h2 id="gerar-a-figura">Gerar a figura</h2>
+<p>Na raiz do repositório, execute:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run <span class="at">--with</span> scikit-learn python scripts/gerar_figuras_demanda.py</span></code></pre></div>
+<p>O script lê a série em <code>dados/vendas_semanais.csv</code> e
+atualiza as ilustrações dos tutoriais de demanda em
+<code>material/imagens/</code>.</p></main>
+  </div>
+</body>
+</html>

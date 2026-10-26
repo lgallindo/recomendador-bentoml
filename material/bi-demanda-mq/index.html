@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore previsões de demanda com mínimos quadrados, erros walk-forward e comparação com média móvel.">
+  <title>Demanda · mínimos quadrados</title>
+  <link rel="stylesheet" href="painel.css">
+  <script src="dados.js" defer></script>
+  <script src="painel.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para os resultados</a>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Laboratório de previsão de demanda</p>
+      <h1>Reta,<br>erro e próxima semana.</h1>
+      <p>Escolha um produto e um método. Compare mínimos quadrados com média móvel e com a previsão ingênua.</p>
+      <nav>
+        <a href="../../demanda-mq/index.html#explorador-interativo" target="_top">Tutorial completo</a>
+        <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-demanda-mq/README.md" target="_blank" rel="noopener">Como explorar</a>
+      </nav>
+    </div>
+    <img src="../imagens/mapa-ia-regressao-demanda.png" alt="Diagrama situando regressão por mínimos quadrados no problema de previsão de demanda.">
+  </header>
+  <div class="layout">
+    <aside class="filters" aria-label="Controles do relatório">
+      <p class="eyebrow">01 · Escolha o recorte</p>
+      <h2>Explore a série</h2>
+      <p>Os controles usam as <strong>16 semanas</strong> de <code>vendas_semanais.csv</code>.</p>
+      <label for="produto">Produto</label>
+      <select id="produto"></select>
+      <label for="metodo">Método de previsão</label>
+      <select id="metodo"></select>
+      <button id="reset" type="button">Restaurar Jarro · MQ</button>
+      <div class="note"><strong>Base sintética.</strong> Quatro semanas finais formam o teste walk-forward. A reta MQ no gráfico usa o ajuste completo; o MAE do teste refaz o ajuste só com o passado.</div>
+    </aside>
+    <main id="conteudo">
+      <section class="summary" aria-label="Resumo da seleção">
+        <div><span id="nome-produto">—</span><p>produto selecionado</p></div>
+        <div><span id="mae-produto">—</span><p>MAE do método neste produto</p></div>
+        <div><span id="mae-global">—</span><p>MAE agregado (12 × 4)</p></div>
+      </section>
+      <section class="panel detail" aria-labelledby="titulo-serie">
+        <p class="eyebrow">02 · Leia a série</p>
+        <h2 id="titulo-serie">Série e previsão</h2>
+        <p>Pontos escuros são observações. A linha tracejada é o ajuste ou a previsão walk-forward do método. O ponto terracota é a estimativa para a semana seguinte.</p>
+        <p id="interpretacao"></p>
+        <p>Previsão para a próxima semana: <strong id="proxima">—</strong> linhas de pedido.</p>
+        <div class="plot-scroll"><svg id="serie" viewBox="0 0 780 340" role="img" aria-label="Série semanal e previsão"></svg></div>
+        <button type="button" class="secondary export" data-svg="serie">Baixar série em PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-erros">
+        <p class="eyebrow">03 · Meça o erro no teste</p>
+        <h2 id="titulo-erros">Erros absolutos</h2>
+        <p>Cada barra é |observado − previsão| em uma semana do teste.</p>
+        <div class="plot-scroll"><svg id="erros" viewBox="0 0 780 280" role="img" aria-label="Erros absolutos nas semanas de teste"></svg></div>
+        <button type="button" class="secondary export" data-svg="erros">Baixar erros em PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-mae">
+        <p class="eyebrow">04 · Compare métodos</p>
+        <h2 id="titulo-mae">MAE agregado</h2>
+        <p>As mesmas 48 previsões (12 produtos × 4 semanas).</p>
+        <div class="plot-scroll"><svg id="mae" viewBox="0 0 780 300" role="img" aria-label="Comparação de MAE entre métodos"></svg></div>
+        <button type="button" class="secondary export" data-svg="mae">Baixar comparação em PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-tabela">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">05 · Audite as contas</p>
+            <h2 id="titulo-tabela">Tabela do teste</h2>
+          </div>
+          <button id="csv" type="button">Baixar teste em CSV</button>
+        </div>
+        <p id="estado" role="status" aria-live="polite"></p>
+        <div class="table-scroll">
+          <table id="tabela">
+            <caption>Walk-forward nas quatro últimas semanas do produto selecionado.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Semana</th>
+                <th scope="col">Observado</th>
+                <th scope="col">Previsão</th>
+                <th scope="col">Erro abs.</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p id="export-status" role="status"></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

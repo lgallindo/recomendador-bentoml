@@ -1,7 +1,8 @@
 {
-  "source_commit": "7565917a3d4e3a2882c16a9f261eb5da46067a2c",
+  "source_commit": "903e59ac22c90deeed13bbd7f33843cc83ef7918",
   "tutorials": [
     "material/tutorial-regras-associacao-20261017.md",
-    "material/tutorial-media-movel-demanda-20261017.md"
+    "material/tutorial-media-movel-demanda-20261017.md",
+    "material/tutorial-regressao-quadrados-minimos-demanda-20261017.md"
   ]
 }
