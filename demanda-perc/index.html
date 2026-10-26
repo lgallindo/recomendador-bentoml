@@ -147,10 +147,11 @@ semanas</h2>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/gerar_bi_demanda_perceptron.py</span></code></pre></div>
 <p>O script grava
-<code>material/bi-demanda-perceptron/pesos_p01.json</code> e o painel.
-Para Jarro (<code>p01</code>), o treino LMS (80 épocas, η = 0,01) nas 12
-primeiras semanas produz bias e inclinação próximos à reta de mínimos
-quadrados em lote — a série é curta e sintética.</p>
+<code>material/bi-demanda-perceptron/pesos_p01.json</code> e o painel. O
+tempo entra <strong>normalizado</strong> (t / (n−1) no treino) para o
+passo LMS ficar estável. Para Jarro (<code>p01</code>), 200 épocas com η
+= 0,05 nas 12 primeiras semanas aproximam a reta de mínimos quadrados em
+lote nesta série curta.</p>
 <p>A curva de MSE por época deve cair e estabilizar. Se não cair, revise
 η ou o número de épocas.</p>
 <h2 id="4-avaliar-no-tempo">4. Avaliar no tempo</h2>
