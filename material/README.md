@@ -12,7 +12,7 @@ aula** — tutoriais, BI e figuras para ler e projetar ao lado do código.
 | [Versão web · associação](https://lgallindo.github.io/recomendador-bentoml/) | Tutorial de regras com fórmulas, imagens e explorador BI incorporado |
 | [Versão web · demanda (média móvel)](https://lgallindo.github.io/recomendador-bentoml/demanda/) | Tutorial de média móvel com explorador de série, erros e MAE |
 | [Versão web · demanda (mín. quadrados)](https://lgallindo.github.io/recomendador-bentoml/demanda-mq/) | Tutorial de regressão com explorador da reta e comparação de MAE |
-| [`tutorial-media-movel-demanda-20261017.md`](tutorial-media-movel-demanda-20261017.md) | Previsão semanal com média móvel, walk-forward, BI e exercício da Boneca |
+| [`tutorial-media-movel-demanda-20261017.md`](tutorial-media-movel-demanda-20261017.md) | Métrica de qualidade → escolher N da média móvel; BI; classwork em corpus aparte |
 | [`tutorial-regressao-quadrados-minimos-demanda-20261017.md`](tutorial-regressao-quadrados-minimos-demanda-20261017.md) | Reta de mínimos quadrados, walk-forward, BI e exercício da Boneca |
 | [`bi-demanda-mq/index.html`](bi-demanda-mq/index.html) | Explorador: série, reta MQ, erros e MAE vs MA / ingênua |
 | [Versão web · demanda (LMS)](https://lgallindo.github.io/recomendador-bentoml/demanda-perc/) | Perceptron/ADALINE na série semanal |

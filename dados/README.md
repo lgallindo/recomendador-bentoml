@@ -22,8 +22,9 @@ a ponta.
 
 Duas listas na raiz — uma descreve as peças da banca; a outra registra compras
 fictícias. Juntas, alimentam popularidade e co-ocorrência no treino. A série
-temporal para exercícios de demanda fica separada em
-[`vendas_semanais.csv`](vendas_semanais.csv).
+temporal da **aula** de demanda fica em
+[`vendas_semanais.csv`](vendas_semanais.csv). O **classwork** de média móvel usa
+outro corpus em [`classwork/`](classwork/README.md).
 
 ```json
 {
@@ -50,7 +51,7 @@ flowchart LR
 | `pedidos` | produto | Contagem de demanda; vira popularidade no treino |
 | `cestas` | raiz | Listas de ids que “saíram juntos”; alimentam a co-ocorrência |
 
-## Série semanal sintética para demanda
+## Série semanal sintética para demanda (aula)
 
 [`vendas_semanais.csv`](vendas_semanais.csv) acrescenta 16 semanas de vendas
 sintéticas, de **2026-06-22 a 2026-10-05** (`week_start` é sempre segunda-feira).

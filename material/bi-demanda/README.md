@@ -18,23 +18,22 @@ não precisa instalar um serviço nem acessar a internet. A página de um arquiv
 HTML no GitHub mostra seu código, não executa o explorador.
 
 A base é [`dados/vendas_semanais.csv`](../../dados/vendas_semanais.csv):
-**16 semanas × 12 produtos**. As quatro últimas semanas formam o teste
-walk-forward. A planilha de sala com extensão sintética
-([`planilha-media-movel-demanda.xlsx`](../planilha-media-movel-demanda.xlsx))
-não alimenta este painel.
+**16 semanas × 12 produtos** (corpus da **aula**). As quatro últimas semanas
+formam o teste walk-forward. O classwork usa outro CSV em
+[`dados/classwork/`](../../dados/classwork/).
+
+O núcleo da aula: definir a **métrica de qualidade** e **escolher N** da média
+móvel comparando MA(2)…MA(5) (e a ingênua) no mesmo holdout.
 
 ## Roteiro de exploração
 
-1. Confira o produto inicial **Jarro (`p01`)** com **MA(4)**: série, previsão
-   da próxima semana e MAE nas quatro semanas de teste.
-2. Na tabela, reproduza à mão uma linha do teste (soma das quatro semanas
-   anteriores ÷ 4) e compare com a coluna Previsão.
-3. Troque o método para **Ingênua** e observe como os erros e o MAE mudam.
-4. No gráfico de MAE agregado, compare Ingênua e MA(2)–MA(5) nas mesmas
-   48 previsões do tutorial.
-5. Selecione **Boneca (`p03`)** e MA(4): use o exercício do tutorial para
-   conferir previsão futura e MAE.
-6. Exporte o CSV do teste ou um PNG de gráfico para anexar ao relato.
+1. Abra **Jarro (`p01`)**. Anote o MAE de **várias** janelas no mesmo teste.
+2. Na tabela, reproduza à mão uma previsão walk-forward e confira o erro.
+3. Compare **Ingênua** e MA(2)–MA(5) no gráfico de MAE agregado (48 previsões).
+4. Escolha **N\*** pela métrica (menor MAE ou o desempate que você declarar).
+5. Com N\*, leia a previsão da próxima semana; repita o ritual em **Boneca
+   (`p03`)** se quiser um segundo produto.
+6. Exporte CSV ou PNG para o relato da aula (classwork: série da oficina).
 
 ## O que o filtro faz
 
