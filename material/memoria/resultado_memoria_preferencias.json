@@ -1,0 +1,53 @@
+{
+  "user_id": "aluno_demo",
+  "adds": [
+    {
+      "id": "b801c3d4",
+      "user_id": "aluno_demo",
+      "memory": "Cliente prefere frete para Recife.",
+      "created_at": "2026-10-26T17:57:26Z"
+    },
+    {
+      "id": "004f9c1a",
+      "user_id": "aluno_demo",
+      "memory": "Não gosta de peças de palha.",
+      "created_at": "2026-10-26T17:57:26Z"
+    },
+    {
+      "id": "cfcc361e",
+      "user_id": "aluno_demo",
+      "memory": "Orçamento máximo cerca de R$ 150.",
+      "created_at": "2026-10-26T17:57:26Z"
+    }
+  ],
+  "search_frete_recife_antes": [
+    {
+      "id": "b801c3d4",
+      "user_id": "aluno_demo",
+      "memory": "Cliente prefere frete para Recife.",
+      "created_at": "2026-10-26T17:57:26Z",
+      "score": 2
+    }
+  ],
+  "search_frete_recife_depois_update": [
+    {
+      "id": "b801c3d4",
+      "user_id": "aluno_demo",
+      "memory": "Cliente prefere frete para Olinda (mudou de Recife).",
+      "created_at": "2026-10-26T17:57:26Z",
+      "updated_at": "2026-10-26T17:57:26Z",
+      "score": 2
+    }
+  ],
+  "search_frete_olinda_depois": [
+    {
+      "id": "b801c3d4",
+      "user_id": "aluno_demo",
+      "memory": "Cliente prefere frete para Olinda (mudou de Recife).",
+      "created_at": "2026-10-26T17:57:26Z",
+      "updated_at": "2026-10-26T17:57:26Z",
+      "score": 2
+    }
+  ],
+  "nota": "Store local JSON espelhando add/search/update. Mem0 Cloud / mem0ai é opcional; Graphiti/Letta/LangMem = outras camadas."
+}

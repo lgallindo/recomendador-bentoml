@@ -1,0 +1,25 @@
+# Open WebUI + Ollama — lab CPU (aula 10).
+# Suba na pasta deste arquivo: docker compose up -d
+# UI: http://127.0.0.1:3000  ·  Ollama API: http://ollama:11434 (rede interna)
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_data:/root/.ollama
+    # CPU only — sem devices NVIDIA
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    ports:
+      - "3000:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    volumes:
+      - open_webui_data:/app/backend/data
+    depends_on:
+      - ollama
+
+volumes:
+  ollama_data:
+  open_webui_data:

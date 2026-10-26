@@ -24,6 +24,11 @@ seguem o fio narrativo. Este script congela esse arco num HTML reproduzível.
 | [`demo_treino_mlp_demanda.py`](demo_treino_mlp_demanda.py) | MLP rasa + knobs; JSON em `material/redes/` |
 | [`demo_deep_vs_rasa.py`](demo_deep_vs_rasa.py) | Compara MLP rasa vs mais funda na série p01 |
 | [`demo_fine_tuning_mlp.py`](demo_fine_tuning_mlp.py) | Pré-treino multi-produto + fine-tune da cabeça em p01 |
+| [`demo_langchain_loja.py`](demo_langchain_loja.py) | Chain mínima no catálogo (puro ou `--with langchain-core`) |
+| [`demo_rag_fts.py`](demo_rag_fts.py) | Índice FTS5 da mini-wiki |
+| [`demo_rag_ancorar.py`](demo_rag_ancorar.py) | Resposta ancorada (template sobre hits FTS) |
+| [`gerar_figuras_rag.py`](gerar_figuras_rag.py) | Figuras do loop RAG e da ladder |
+| [`demo_mem0_preferencias.py`](demo_mem0_preferencias.py) | add/search/update de preferências (store JSON) |
 
 ```bash
 just slides

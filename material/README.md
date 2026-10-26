@@ -21,6 +21,17 @@ aula** — tutoriais, BI e figuras para ler e projetar ao lado do código.
 | [`tutorial-treino-redes-neurais-20261026.md`](tutorial-treino-redes-neurais-20261026.md) | Loop de treino (época, batch, loss, otimizador) + MLP rasa |
 | [`tutorial-deep-learning-visao-geral-20261026.md`](tutorial-deep-learning-visao-geral-20261026.md) | Profundidade, três famílias, MLP rasa vs mais funda |
 | [`tutorial-fine-tuning-20261026.md`](tutorial-fine-tuning-20261026.md) | Pré-treino → congelar tronco → adaptar cabeça (toy MLP) |
+| [`tutorial-langchain-20261026.md`](tutorial-langchain-20261026.md) | Chain mínima (prompt → lookup → “modelo” → JSON); stub ou langchain-core |
+| [`langchain/`](langchain/) | Saída JSON do demo de chain (`resultado_chain_loja.json`) |
+| [`tutorial-llmwiki-20261026.md`](tutorial-llmwiki-20261026.md) | Indexar mini-wiki Markdown com `llmwiki` |
+| [`mini-wiki-rag/`](mini-wiki-rag/) | Corpus Markdown (frete, devolução, catálogo) para llmwiki/RAG |
+| [`tutorial-rag-20261026.md`](tutorial-rag-20261026.md) | Loop retrieve→augment→generate + ladder FTS/llmwiki |
+| [`rag/`](rag/) | FTS local + JSON da resposta ancorada |
+| [`tutorial-memoria-agentes-mem0-20261026.md`](tutorial-memoria-agentes-mem0-20261026.md) | Preferências entre turnos (padrão Mem0, store JSON) |
+| [`memoria/`](memoria/) | Resultado do demo de memória |
+| [`tutorial-open-webui-20261026.md`](tutorial-open-webui-20261026.md) | Open WebUI + Ollama em Docker (CPU) |
+| [`open-webui/`](open-webui/) | `docker-compose.yml` do lab |
+| [`tutorial-litellm-20261026.md`](tutorial-litellm-20261026.md) | LiteLLM: SDK + proxy :4000 (rampa CESAR) |
 | [`redes/`](redes/) | JSON dos demos MLP / deep / fine-tune (`resultado_*.json`) |
 | [`tutorial-previsao-probabilistica-demanda-20261017.md`](tutorial-previsao-probabilistica-demanda-20261017.md) | Prever distribuição de contagens com regressão de Poisson |
 | [`bi-demanda/index.html`](bi-demanda/index.html) | Explorador local: série, erros, MAE por janela e exportações |

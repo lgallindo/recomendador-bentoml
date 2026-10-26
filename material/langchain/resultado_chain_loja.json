@@ -1,0 +1,21 @@
+{
+  "modo": "langchain",
+  "rastro": {
+    "entrada": "Fala do p04",
+    "pid": "p04",
+    "ferramenta_lookup": {
+      "id": "p04",
+      "nome": "Rendeira Alto do Moura",
+      "tecnica": "renda",
+      "regiao": "Alto do Moura"
+    },
+    "saida_modelo": "{\"ok\": true, \"produto\": \"p04\", \"resumo\": \"Rendeira Alto do Moura — técnica renda (Alto do Moura)\", \"pergunta\": \"Fala do p04\"}",
+    "nota": "ChatPromptTemplate + RunnableLambda (modelo fake) + StrOutputParser"
+  },
+  "saida": {
+    "ok": true,
+    "produto": "p04",
+    "resumo": "Rendeira Alto do Moura — técnica renda (Alto do Moura)",
+    "pergunta": "Fala do p04"
+  }
+}

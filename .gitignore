@@ -11,6 +11,9 @@ __pycache__/
 .gstack/
 DEVELOPMENT.md
 
+# llmwiki local index (rebuild with `llmwiki index --wiki-root …`)
+material/mini-wiki-rag/.index/
+
 # Agent/SDD working trees — local only (EDU-001 in bureaucracy STACK_EDU.md)
 openspec/
 .kiro/

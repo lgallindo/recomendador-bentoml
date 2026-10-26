@@ -1,0 +1,21 @@
+{
+  "pergunta": "Qual o prazo de devolução e o frete para Tracunhaém?",
+  "hits": [
+    {
+      "path": "frete.md",
+      "title": "Frete",
+      "snippet": "\n# >>>Frete<<<\n\n>>>Tracunhaém<<< e Alto do Moura: >>>frete<<< calculado por CEP na finalização do pedido.\nComunidade do Pilar: pedidos acima de…"
+    },
+    {
+      "path": "catalogo-p01.md",
+      "title": "p01 — Jarro barro Tracunhaém",
+      "snippet": "\n# p01 — Jarro barro >>>Tracunhaém<<<\n\nTécnica: cerâmica. Região: >>>Tracunhaém<<<. É o exemplo padrão dos `curl` da aula\n(`just curl-exemplo`). Combina…"
+    },
+    {
+      "path": "atendimento.md",
+      "title": "Atendimento",
+      "snippet": "…O bot responde >>>frete<<<,\n>>>prazo<<< e >>>devolução<<< a partir deste corpus. Pedidos de troca por defeito sobem\npara humano com…"
+    }
+  ],
+  "resposta_ancorada": "Com base em frete.md, catalogo-p01.md, atendimento.md:\n- (frete.md) \n# >>>Frete<<<\n\n>>>Tracunhaém<<< e Alto do Moura: >>>frete<<< calculado por CEP na finalização do pedido.\nComunidade do Pilar: pedidos acima de…\n- (catalogo-p01.md) \n# p01 — Jarro barro >>>Tracunhaém<<<\n\nTécnica: cerâmica. Região: >>>Tracunhaém<<<. É o exemplo padrão dos `curl` da aula\n(`just curl-exemplo`). Combina…\n- (atendimento.md) …O bot responde >>>frete<<<,\n>>>prazo<<< e >>>devolução<<< a partir deste corpus. Pedidos de troca por defeito sobem\npara humano com…"
+}
