@@ -269,8 +269,9 @@ n_star = min(scores, key=scores.get)
 print(scores, "N* =", n_star, "prev =", float(serie.iloc[-n_star:].mean()))
 ```
 
-O [explorador BI](https://lgallindo.github.io/recomendador-bentoml/demanda/)
-mostra MAE por janela nesta série.
+O [explorador local](bi-demanda/index.html) e a
+[versão web](https://lgallindo.github.io/recomendador-bentoml/demanda/)
+mostram a série, os erros e o MAE por janela nesta base sintética.
 
 ---
 

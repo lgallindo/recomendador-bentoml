@@ -33,9 +33,13 @@ aula** — tutoriais, BI e figuras para ler e projetar ao lado do código.
 | [`open-webui/`](open-webui/) | `docker-compose.yml` do lab |
 | [`tutorial-litellm-20261026.md`](tutorial-litellm-20261026.md) | LiteLLM: SDK + proxy :4000 (rampa CESAR) |
 | [`redes/`](redes/) | JSON dos demos MLP / deep / fine-tune (`resultado_*.json`) |
+| [Versão web · demanda (Poisson)](https://lgallindo.github.io/recomendador-bentoml/demanda-poisson/) | Tutorial probabilístico com explorador de PMF e cobertura |
 | [`tutorial-previsao-probabilistica-demanda-20261017.md`](tutorial-previsao-probabilistica-demanda-20261017.md) | Prever distribuição de contagens com regressão de Poisson |
+| [`bi-demanda-poisson/index.html`](bi-demanda-poisson/index.html) | Explorador: λ, PMF, intervalo 95% e walk-forward |
+| [`planilha-minimos-quadrados-demanda.xlsx`](planilha-minimos-quadrados-demanda.xlsx) | Planilha de sala: ajuste MQ, resíduos e erros de teste |
 | [`bi-demanda/index.html`](bi-demanda/index.html) | Explorador local: série, erros, MAE por janela e exportações |
 | [`planilha-media-movel-demanda.xlsx`](planilha-media-movel-demanda.xlsx) | Planilha de sala: uma aba por produto para contas de média móvel |
+| [Versão web · associação (logs)](https://lgallindo.github.io/recomendador-bentoml/logs-auth/) | Tutorial de associação em sessões de autenticação sintéticas |
 | [`tutorial-regras-associacao-logs-autenticacao-20261017.md`](tutorial-regras-associacao-logs-autenticacao-20261017.md) | Variante independente: logs sintéticos, reconstrução de sessões, associação e validação |
 | [`logs-autenticacao/`](logs-autenticacao/) | Sessões auditáveis e CSVs reproduzíveis de descoberta e validação |
 | [`tutorial-regras-associacao-20261017.md`](tutorial-regras-associacao-20261017.md) | Estudo de 75 minutos: IA, aprendizado de máquina, sistemas especialistas, mineração, generalização, validação, BI e marketing |

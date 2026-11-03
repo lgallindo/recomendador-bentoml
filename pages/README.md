@@ -4,12 +4,16 @@ Você pode ler os tutoriais com explorador incorporado em:
 
 - [Associação](https://lgallindo.github.io/recomendador-bentoml/) — regras de
   associação ([Markdown](../material/tutorial-regras-associacao-20261017.md))
+- [Associação (logs)](https://lgallindo.github.io/recomendador-bentoml/logs-auth/) —
+  ([Markdown](../material/tutorial-regras-associacao-logs-autenticacao-20261017.md))
 - [Média móvel](https://lgallindo.github.io/recomendador-bentoml/demanda/) —
   ([Markdown](../material/tutorial-media-movel-demanda-20261017.md))
 - [Mínimos quadrados](https://lgallindo.github.io/recomendador-bentoml/demanda-mq/) —
   ([Markdown](../material/tutorial-regressao-quadrados-minimos-demanda-20261017.md))
 - [LMS / perceptron](https://lgallindo.github.io/recomendador-bentoml/demanda-perc/) —
   ([Markdown](../material/tutorial-perceptron-demanda-20261026.md))
+- [Poisson](https://lgallindo.github.io/recomendador-bentoml/demanda-poisson/) —
+  ([Markdown](../material/tutorial-previsao-probabilistica-demanda-20261017.md))
 
 As fórmulas são convertidas para MathML; o navegador não precisa baixar uma
 biblioteca externa para renderizá-las.
@@ -22,9 +26,11 @@ Com Python 3 e Pandoc instalados, execute na raiz:
 python3 scripts/gerar_site_tutorial.py
 ```
 
-Abra `.local/pages-build/index.html`, `demanda/` e `demanda-mq/` no navegador,
-ou sirva essa pasta localmente. Os exploradores também ficam em
-`material/bi/`, `material/bi-demanda/` e `material/bi-demanda-mq/`. A saída de
+Abra `.local/pages-build/index.html`, `demanda/`, `demanda-mq/`,
+`demanda-perc/`, `demanda-poisson/` e `logs-auth/` no navegador, ou sirva essa
+pasta localmente. Os exploradores também ficam em `material/bi/`,
+`material/bi-demanda/`, `material/bi-demanda-mq/`,
+`material/bi-demanda-perceptron/` e `material/bi-demanda-poisson/`. A saída de
 publicação contém somente os arquivos necessários aos tutoriais; backups em
 `.local/pages-backups/` não integram essa saída.
 
@@ -33,6 +39,7 @@ Antes de gerar, atualize os painéis se necessário:
 ```bash
 uv run python scripts/gerar_bi_demanda.py
 uv run --with scikit-learn python scripts/gerar_bi_demanda_mq.py
+uv run python scripts/gerar_bi_demanda_poisson.py
 ```
 
 ## Publicação

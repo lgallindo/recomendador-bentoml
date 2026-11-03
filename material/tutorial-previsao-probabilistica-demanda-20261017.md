@@ -1,5 +1,7 @@
 # Previsão probabilística de demanda com regressão de Poisson
 
+[Versão web com explorador](https://lgallindo.github.io/recomendador-bentoml/demanda-poisson/).
+
 O tutorial de mínimos quadrados produz uma estimativa pontual: um único número
 de demanda esperada. Neste tutorial, ampliaremos a pergunta:
 
@@ -271,7 +273,28 @@ de quase quatro contagens. Intervalos muito amplos podem cobrir observações
 sem oferecer informação útil. Avalie **cobertura e largura em conjunto**,
 idealmente em muitos períodos reais ainda não usados na modelagem.
 
-## 5. Interpretar com cuidado
+## 5. Como BI ajuda você a visualizar a distribuição
+
+O explorador em [`bi-demanda-poisson/index.html`](bi-demanda-poisson/index.html)
+repete a conta deste tutorial para os doze produtos: mostra λ, a PMF, o
+intervalo central de 95% e a cobertura no walk-forward das quatro últimas
+semanas. Use-o para conferir o exercício do Jarro e para comparar produtos
+sem reexecutar o notebook à mão.
+
+![PMF Poisson no explorador — Jarro](imagens/bi-demanda-poisson-p01.png)
+
+*Figura — mesma lógica da distribuição do tutorial, materializada no painel.*
+
+Para regenerar dados e figura:
+
+```bash
+uv run python scripts/gerar_bi_demanda_poisson.py
+```
+
+A [versão web](https://lgallindo.github.io/recomendador-bentoml/demanda-poisson/)
+incorpora o explorador quando o site estiver atualizado.
+
+## 6. Interpretar com cuidado
 
 1. `λ` é a média condicional prevista pelo modelo; não significa que esse número
    de linhas ocorrerá exatamente.
@@ -287,7 +310,7 @@ idealmente em muitos períodos reais ainda não usados na modelagem.
 5. “Probabilidade de exceder duas linhas” só vira decisão de estoque depois
    que custo, capacidade, lead time e significado de uma linha forem definidos.
 
-## 6. Exercício: risco para estoque de dois
+## 7. Exercício: risco para estoque de dois
 
 Use `p01` e o modelo acima. Calcule `P(Y > 2)` e `P(Y ≤ 2)` para a próxima
 semana. Se a loja reservar capacidade para duas linhas, escreva uma frase

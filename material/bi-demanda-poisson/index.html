@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore a PMF de Poisson, o intervalo preditivo e a cobertura no teste walk-forward.">
+  <title>Demanda · regressão de Poisson</title>
+  <link rel="stylesheet" href="painel.css">
+  <script src="dados.js" defer></script>
+  <script src="painel.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para os resultados</a>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Laboratório de previsão probabilística</p>
+      <h1>Taxa,<br>PMF e intervalo.</h1>
+      <p>Escolha um produto. Veja λ, a massa de probabilidade e se as semanas de teste caíram no intervalo de 95%.</p>
+      <nav>
+        <a href="../tutorial-previsao-probabilistica-demanda-20261017.md">Tutorial completo</a>
+        <a href="README.md">Como explorar</a>
+      </nav>
+    </div>
+    <img src="../imagens/distribuicao-poisson-p01.png" alt="Distribuição de Poisson prevista para o Jarro (p01).">
+  </header>
+  <div class="layout">
+    <aside class="filters" aria-label="Controles do relatório">
+      <p class="eyebrow">01 · Escolha o recorte</p>
+      <h2>Explore a distribuição</h2>
+      <p>Modelo: indicadores de produto + tendência temporal comum na série sintética de 16 semanas.</p>
+      <label for="produto">Produto</label>
+      <select id="produto"></select>
+      <button id="reset" type="button">Restaurar Jarro (p01)</button>
+      <div class="note"><strong>Base sintética.</strong> λ resume a taxa esperada; a PMF e o intervalo assumem Poisson. Não é evidência de mercado real.</div>
+    </aside>
+    <main id="conteudo">
+      <section class="summary" aria-label="Resumo da seleção">
+        <div><span id="nome-produto">—</span><p>produto selecionado</p></div>
+        <div><span id="lambda">—</span><p>λ (próxima semana)</p></div>
+        <div><span id="p-gt-2">—</span><p>P(Y &gt; 2)</p></div>
+      </section>
+      <section class="panel detail" aria-labelledby="titulo-pmf">
+        <p class="eyebrow">02 · Leia a PMF</p>
+        <h2 id="titulo-pmf">Probabilidades por contagem</h2>
+        <p id="interpretacao"></p>
+        <p>Intervalo central de 95%: <strong id="intervalo">—</strong>. Log-perda média no teste: <strong id="log-perda">—</strong>.</p>
+        <div class="plot-scroll"><svg id="pmf" viewBox="0 0 780 340" role="img" aria-label="Função de massa de probabilidade de Poisson"></svg></div>
+        <button type="button" class="secondary export" data-svg="pmf">Baixar PMF em PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-tabela">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">03 · Audite o teste</p>
+            <h2 id="titulo-tabela">Walk-forward (4 semanas)</h2>
+          </div>
+          <button id="csv" type="button">Baixar teste em CSV</button>
+        </div>
+        <p id="estado" role="status" aria-live="polite"></p>
+        <div class="table-scroll">
+          <table id="tabela">
+            <caption>Refit só com o passado; cobertura do intervalo de 95%.</caption>
+            <thead>
+              <tr>
+                <th>Semana</th>
+                <th>Observado</th>
+                <th>λ</th>
+                <th>Intervalo</th>
+                <th>Coberto?</th>
+                <th>Log-perda</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

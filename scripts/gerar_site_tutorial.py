@@ -18,14 +18,14 @@ REPO = "https://github.com/lgallindo/recomendador-bentoml/blob/main/"
 @dataclass(frozen=True)
 class Tutorial:
     fonte: Path
-    saida_relativa: Path  # relativo ao destino de build (ex.: Path(".") ou Path("demanda"))
-    bi_dir: Path  # relativo à raiz (ex.: material/bi)
+    saida_relativa: Path
+    bi_dir: Path | None
     pagetitle: str
     embed_titulo: str
     embed_intro: str
     embed_iframe_title: str
     md_nav_label: str
-    tutorial_md_href: str  # path no GitHub blob
+    tutorial_md_href: str
 
 
 TUTORIAIS = (
@@ -42,6 +42,17 @@ TUTORIAIS = (
         embed_iframe_title="Explorador interativo de regras de associação",
         md_nav_label="Versão Markdown",
         tutorial_md_href="material/tutorial-regras-associacao-20261017.md",
+    ),
+    Tutorial(
+        fonte=Path("material/tutorial-regras-associacao-logs-autenticacao-20261017.md"),
+        saida_relativa=Path("logs-auth"),
+        bi_dir=None,
+        pagetitle="Regras de associação a partir de logs de autenticação",
+        embed_titulo="",
+        embed_intro="",
+        embed_iframe_title="",
+        md_nav_label="Versão Markdown",
+        tutorial_md_href="material/tutorial-regras-associacao-logs-autenticacao-20261017.md",
     ),
     Tutorial(
         fonte=Path("material/tutorial-media-movel-demanda-20261017.md"),
@@ -85,6 +96,20 @@ TUTORIAIS = (
         md_nav_label="Versão Markdown",
         tutorial_md_href="material/tutorial-perceptron-demanda-20261026.md",
     ),
+    Tutorial(
+        fonte=Path("material/tutorial-previsao-probabilistica-demanda-20261017.md"),
+        saida_relativa=Path("demanda-poisson"),
+        bi_dir=Path("material/bi-demanda-poisson"),
+        pagetitle="Previsão probabilística de demanda com regressão de Poisson",
+        embed_titulo="Experimente a distribuição neste tutorial",
+        embed_intro=(
+            "Escolha o produto e leia a PMF, o intervalo de 95% e a cobertura no teste. "
+            "As 16 semanas são sintéticas."
+        ),
+        embed_iframe_title="Explorador interativo de regressão de Poisson",
+        md_nav_label="Versão Markdown",
+        tutorial_md_href="material/tutorial-previsao-probabilistica-demanda-20261017.md",
+    ),
 )
 
 
@@ -99,6 +124,7 @@ def pandoc(args: list[str], texto: str) -> str:
 
 
 def embed_html(tutorial: Tutorial) -> str:
+    assert tutorial.bi_dir is not None
     bi = tutorial.bi_dir.as_posix()
     return f"""<section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
 <h3 id="explorer-heading">{tutorial.embed_titulo}</h3>
@@ -113,27 +139,39 @@ loading="lazy" allow="fullscreen" allowfullscreen></iframe>
 </section>"""
 
 
-def nav_hrefs(saida: Path) -> tuple[str, str, str, str, str]:
-    """home, associação, média móvel, mínimos quadrados, perceptron/LMS."""
-    if saida == Path("."):
-        return "./", "./", "demanda/", "demanda-mq/", "demanda-perc/"
-    if saida == Path("demanda"):
-        return "../", "../", "./", "../demanda-mq/", "../demanda-perc/"
-    if saida == Path("demanda-mq"):
-        return "../", "../", "../demanda/", "./", "../demanda-perc/"
-    if saida == Path("demanda-perc"):
-        return "../", "../", "../demanda/", "../demanda-mq/", "./"
-    raise ValueError(f"saida_relativa sem mapa de nav: {saida}")
+def nav_hrefs(saida: Path) -> dict[str, str]:
+    """Paths relative to the page being generated."""
+    roots = {
+        "home": Path("."),
+        "assoc": Path("."),
+        "logs": Path("logs-auth"),
+        "demanda": Path("demanda"),
+        "mq": Path("demanda-mq"),
+        "perc": Path("demanda-perc"),
+        "poisson": Path("demanda-poisson"),
+    }
+
+    def rel(target: Path) -> str:
+        if saida == Path("."):
+            if target == Path("."):
+                return "./"
+            return target.as_posix() + "/"
+        if target == Path("."):
+            return "../"
+        if target == saida:
+            return "./"
+        return f"../{target.as_posix()}/"
+
+    return {chave: rel(alvo) for chave, alvo in roots.items()}
 
 
 def gerar_tutorial(destino: Path, tutorial: Tutorial) -> None:
     assetroot = "" if tutorial.saida_relativa == Path(".") else "../"
-    homehref, assoc_href, demanda_href, demanda_mq_href, demanda_perc_href = nav_hrefs(
-        tutorial.saida_relativa
+    nav = nav_hrefs(tutorial.saida_relativa)
+    bi_index = (
+        tutorial.bi_dir.as_posix() + "/index.html" if tutorial.bi_dir else None
     )
-    bi_index = tutorial.bi_dir.as_posix() + "/index.html"
-    # Marcador no Markdown fonte (caminho relativo à pasta material/)
-    bi_md_href = tutorial.bi_dir.name + "/index.html"
+    bi_md_href = tutorial.bi_dir.name + "/index.html" if tutorial.bi_dir else None
 
     arvore = json.loads(
         pandoc(
@@ -152,30 +190,45 @@ def gerar_tutorial(destino: Path, tutorial: Tutorial) -> None:
                 alvo = no["c"][2]
                 uri = urlsplit(alvo[0])
                 if uri.path and not uri.scheme and not uri.netloc:
-                    relativo = Path(posixpath.normpath(str(tutorial.fonte.parent / uri.path)))
+                    relativo = Path(
+                        posixpath.normpath(str(tutorial.fonte.parent / uri.path))
+                    )
                     if relativo.is_absolute() or ".." in relativo.parts:
                         raise ValueError(f"Caminho fora do repositório: {relativo}")
                     if relativo == tutorial.fonte:
                         novo = "index.html"
-                    elif no["t"] == "Image" or relativo.suffix in {".json", ".csv", ".xlsx"}:
+                    elif no["t"] == "Image" or relativo.suffix in {
+                        ".json",
+                        ".csv",
+                        ".xlsx",
+                        ".jsonl",
+                    }:
                         arquivos.add(relativo)
-                        # páginas em demanda/ precisam subir um nível até a raiz do build
-                        novo = (Path(assetroot) / relativo).as_posix() if assetroot else relativo.as_posix()
-                    elif relativo.as_posix() == bi_index:
-                        novo = (Path(assetroot) / relativo).as_posix() if assetroot else relativo.as_posix()
+                        novo = (
+                            (Path(assetroot) / relativo).as_posix()
+                            if assetroot
+                            else relativo.as_posix()
+                        )
+                    elif bi_index and relativo.as_posix() == bi_index:
+                        novo = (
+                            (Path(assetroot) / relativo).as_posix()
+                            if assetroot
+                            else relativo.as_posix()
+                        )
                     else:
                         novo = REPO + relativo.as_posix()
                     alvo[0] = urlunsplit(("", "", novo, uri.query, uri.fragment))
             for valor in no.values():
                 ajustar(valor)
 
-    # Inserir o iframe antes de reescrever URLs, usando o href do Markdown.
     blocos = []
-    incorporado = False
+    incorporado = tutorial.bi_dir is None
     for bloco in arvore["blocks"]:
         blocos.append(bloco)
         if (
-            bloco.get("t") == "Para"
+            tutorial.bi_dir is not None
+            and bi_md_href
+            and bloco.get("t") == "Para"
             and bi_md_href in json.dumps(bloco, ensure_ascii=False)
             and not incorporado
         ):
@@ -190,6 +243,13 @@ def gerar_tutorial(destino: Path, tutorial: Tutorial) -> None:
 
     pasta = destino / tutorial.saida_relativa
     pasta.mkdir(parents=True, exist_ok=True)
+    bi_meta = ""
+    if tutorial.bi_dir is not None:
+        bi_meta = (
+            (Path(assetroot) / tutorial.bi_dir / "index.html").as_posix()
+            if assetroot
+            else (tutorial.bi_dir / "index.html").as_posix()
+        )
     html = pandoc(
         [
             "--from=json",
@@ -201,19 +261,20 @@ def gerar_tutorial(destino: Path, tutorial: Tutorial) -> None:
             "--template=" + str(RAIZ / "pages/template.html"),
             f"--metadata=pagetitle:{tutorial.pagetitle}",
             f"--metadata=assetroot:{assetroot}",
-            f"--metadata=homehref:{homehref}",
-            f"--metadata=assoc_href:{assoc_href}",
-            f"--metadata=demanda_href:{demanda_href}",
-            f"--metadata=demanda_mq_href:{demanda_mq_href}",
-            f"--metadata=demanda_perc_href:{demanda_perc_href}",
+            f"--metadata=homehref:{nav['home']}",
+            f"--metadata=assoc_href:{nav['assoc']}",
+            f"--metadata=logs_href:{nav['logs']}",
+            f"--metadata=demanda_href:{nav['demanda']}",
+            f"--metadata=demanda_mq_href:{nav['mq']}",
+            f"--metadata=demanda_perc_href:{nav['perc']}",
+            f"--metadata=demanda_poisson_href:{nav['poisson']}",
             f"--metadata=md_href:{REPO + tutorial.tutorial_md_href}",
             f"--metadata=md_label:{tutorial.md_nav_label}",
-            f"--metadata=bi_nova_aba:{(Path(assetroot) / tutorial.bi_dir / 'index.html').as_posix() if assetroot else (tutorial.bi_dir / 'index.html').as_posix()}",
+            f"--metadata=bi_nova_aba:{bi_meta}",
         ],
         json.dumps(arvore, ensure_ascii=False),
     )
-    # Corrige caminhos do embed (iframe/link) quando a página está em /demanda/
-    if assetroot:
+    if tutorial.bi_dir is not None and assetroot:
         html = html.replace(
             f'src="{tutorial.bi_dir.as_posix()}/index.html"',
             f'src="{assetroot}{tutorial.bi_dir.as_posix()}/index.html"',
@@ -229,36 +290,40 @@ def gerar_tutorial(destino: Path, tutorial: Tutorial) -> None:
         alvo.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(RAIZ / relativo, alvo)
 
-    for nome in ["index.html", "painel.css", "painel.js", "dados.js"]:
-        relativo = tutorial.bi_dir / nome
-        alvo = destino / relativo
-        alvo.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(RAIZ / relativo, alvo)
+    if tutorial.bi_dir is not None:
+        for nome in ["index.html", "painel.css", "painel.js", "dados.js"]:
+            relativo = tutorial.bi_dir / nome
+            alvo = destino / relativo
+            alvo.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(RAIZ / relativo, alvo)
 
-    painel = destino / tutorial.bi_dir / "index.html"
-    texto = painel.read_text(encoding="utf-8")
-    # Do explorador (material/bi*/index.html no build) até a página do tutorial
-    if tutorial.saida_relativa == Path("."):
-        voltar = "../../index.html#explorador-interativo"
+        painel = destino / tutorial.bi_dir / "index.html"
+        texto = painel.read_text(encoding="utf-8")
+        if tutorial.saida_relativa == Path("."):
+            voltar = "../../index.html#explorador-interativo"
+        else:
+            voltar = (
+                f"../../{tutorial.saida_relativa.as_posix()}/index.html"
+                "#explorador-interativo"
+            )
         md_local = f"../{tutorial.fonte.name}"
-    else:
-        voltar = f"../../{tutorial.saida_relativa.as_posix()}/index.html#explorador-interativo"
-        md_local = f"../{tutorial.fonte.name}"
-    texto = texto.replace(f'href="{md_local}"', f'href="{voltar}" target="_top"')
-    texto = texto.replace(
-        f'href="../{tutorial.fonte.name}"',
-        f'href="{voltar}" target="_top"',
-    )
-    texto = texto.replace(
-        'href="README.md"',
-        f'href="{REPO}{tutorial.bi_dir.as_posix()}/README.md" target="_blank" rel="noopener"',
-    )
-    texto = texto.replace(
-        "Abra este arquivo diretamente no navegador. Os dados e recursos são locais; nenhuma conexão é necessária.",
-        "Este explorador também está disponível para uso offline na cópia local do repositório.",
-    )
-    # Imagens do hero no build: caminho relativo ao bi dir
-    painel.write_text(texto, encoding="utf-8")
+        texto = texto.replace(f'href="{md_local}"', f'href="{voltar}" target="_top"')
+        texto = texto.replace(
+            f'href="../{tutorial.fonte.name}"',
+            f'href="{voltar}" target="_top"',
+        )
+        texto = texto.replace(
+            'href="README.md"',
+            f'href="{REPO}{tutorial.bi_dir.as_posix()}/README.md" '
+            'target="_blank" rel="noopener"',
+        )
+        texto = texto.replace(
+            "Abra este arquivo diretamente no navegador. Os dados e recursos "
+            "são locais; nenhuma conexão é necessária.",
+            "Este explorador também está disponível para uso offline na cópia "
+            "local do repositório.",
+        )
+        painel.write_text(texto, encoding="utf-8")
     print(f"  · {tutorial.fonte} → {pasta / 'index.html'} ({len(arquivos)} recursos)")
 
 
@@ -279,7 +344,7 @@ def gerar(destino: Path) -> None:
         alvo.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(RAIZ / "pages" / nome, alvo)
     (destino / ".nojekyll").write_text("", encoding="utf-8")
-    print(f"Site com {len(TUTORIAIS)} tutoriais e exploradores incorporados.")
+    print(f"Site com {len(TUTORIAIS)} tutoriais.")
 
 
 def main() -> None:

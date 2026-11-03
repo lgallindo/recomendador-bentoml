@@ -1,5 +1,7 @@
 # Regras de associação a partir de logs de autenticação
 
+[Leia a versão web](https://lgallindo.github.io/recomendador-bentoml/logs-auth/).
+
 Ao concluir este roteiro, você conseguirá transformar linhas de log em sessões,
 calcular suporte, confiança e lift, minerar associações e avaliar uma regra fixa
 em outro conjunto. O objetivo é investigar o fluxo de autenticação de um servidor.
