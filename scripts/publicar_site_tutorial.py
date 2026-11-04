@@ -1,4 +1,12 @@
-"""Publique os tutoriais pré-construídos no branch gh-pages, preservando o histórico."""
+"""Publique os tutoriais pré-construídos no branch gh-pages, preservando o histórico.
+
+Runbook do autor (fora de pages/README): gerar com ``scripts/gerar_site_tutorial.py``
+após atualizar os painéis BI se preciso; em seguida executar este módulo na raiz.
+Pré-requisitos: Pandoc, Git, GitHub CLI autenticado, permissão no origin.
+Confirme o deploy com
+``gh api repos/lgallindo/recomendador-bentoml/pages/builds/latest --jq .status``.
+Cópia narrativa: ``.local/handoff/NOTE_*_PAGES_BUILD_PUBLISH.md``.
+"""
 
 from __future__ import annotations
 

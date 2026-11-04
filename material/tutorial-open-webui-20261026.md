@@ -13,7 +13,7 @@ Compose canônico:
 Mini-wiki para injetar contexto:
 [`material/mini-wiki-rag/`](mini-wiki-rag/).
 
-### Roteiro (~75–90 min)
+### Roteiro
 
 | Bloco | O que você faz |
 | --- | --- |

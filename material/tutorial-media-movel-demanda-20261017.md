@@ -12,7 +12,7 @@ Dados:
 [`dados/vendas_semanais.csv`](../dados/vendas_semanais.csv) (16 semanas × 12
 produtos).
 
-### Roteiro (~90 min)
+### Roteiro
 
 | Bloco | O que você faz |
 | --- | --- |
