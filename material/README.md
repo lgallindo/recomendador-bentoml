@@ -29,7 +29,7 @@ aula** — tutoriais, BI e figuras para ler e projetar ao lado do código.
 | [`rag/`](rag/) | FTS local + JSON da resposta ancorada |
 | [`tutorial-memoria-agentes-mem0-20261026.md`](tutorial-memoria-agentes-mem0-20261026.md) | Preferências entre turnos (padrão Mem0, store JSON) |
 | [`memoria/`](memoria/) | Resultado do demo de memória |
-| [`tutorial-open-webui-20261026.md`](tutorial-open-webui-20261026.md) | Open WebUI + Ollama em Docker (CPU) |
+| [`tutorial-open-webui-20261026.md`](tutorial-open-webui-20261026.md) | Open WebUI + Ollama: Compose CPU, ancoragem e divergentes |
 | [`open-webui/`](open-webui/) | `docker-compose.yml` do lab |
 | [`tutorial-litellm-20261026.md`](tutorial-litellm-20261026.md) | LiteLLM: SDK + proxy :4000 neste clone |
 | [`redes/`](redes/) | JSON dos demos MLP / deep / fine-tune (`resultado_*.json`) |
