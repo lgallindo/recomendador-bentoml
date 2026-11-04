@@ -10,15 +10,11 @@ trás. Separe **chave do provedor** e **master key do proxy**.
 3. Subir o proxy (uv **ou** Docker); health/models na porta **4000**.
 4. Cliente OpenAI-compatible em `http://127.0.0.1:4000/v1` com a master key.
 
-## Material canônico (CESAR)
+## Como rodar neste repositório
 
-A rampa completa com `just setup` / `sdk` / `proxy` / `smoke` vive em:
-
-- `CESAR/teaching/litellm-setup/`
-- variante agente: `CESAR/teaching/ads032-agente-litellm/`
-
-Clone ou abra essa pasta na máquina da aula. Este tutorial só fixa os quatro
-objetivos e o vocabulário.
+Tudo abaixo usa só este clone. Crie um diretório de trabalho local (por
+exemplo `material/litellm-lab/`, fora do Git se preferir) com um `.env` e os
+comandos desta página. Não é necessário abrir outro repositório de ensino.
 
 ## 1. Duas chaves
 
@@ -33,20 +29,31 @@ servidor LiteLLM (ou no ambiente do script SDK).
 
 ## 2. SDK (sem proxy)
 
-Na pasta `litellm-setup`:
+Com as variáveis carregadas do `.env`:
 
 ```bash
-just setup    # depois edite .env
-just sdk
+uv run --no-project --with litellm python -c "
+import os
+from litellm import completion
+r = completion(
+    model='gpt-4o-mini',  # ou o modelo/local que a aula indicar
+    messages=[{'role': 'user', 'content': 'ping'}],
+    api_key=os.environ['OPENAI_API_KEY'],
+)
+print(r.choices[0].message.content)
+"
 ```
 
-Cole I/O ou trecho da execução (sem colar chaves).
+Cole I/O ou trecho da execução (sem colar chaves). Se a aula usar só Ollama,
+aponta o SDK para a URL local do Ollama em vez da chave do provedor.
 
 ## 3. Proxy na :4000
 
+Suba o proxy LiteLLM (binário `litellm` via `uv`/`pip`, ou imagem Docker
+oficial) escutando em `127.0.0.1:4000`, com a chave do provedor no ambiente
+do processo e a master key para clientes.
+
 ```bash
-just proxy-uv          # terminal 1
-# ou: just proxy-docker
 curl -s http://127.0.0.1:4000/health
 curl -s http://127.0.0.1:4000/v1/models -H "Authorization: Bearer $LITELLM_MASTER_KEY"
 ```

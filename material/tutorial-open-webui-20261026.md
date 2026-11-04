@@ -1,8 +1,7 @@
 # Open WebUI + Ollama — chat local em Docker (CPU)
 
 Sobe uma interface de chat e um runtime de modelos locais. Ollama gera;
-Open WebUI é a UI. Complementa as assíncronas ADS032 (conceito/CLI): aqui o
-caminho é **Compose**.
+Open WebUI é a UI. O caminho desta aula é **Docker Compose** neste repositório.
 
 ## Objetivos
 
@@ -24,8 +23,8 @@ docker compose ps
 
 UI: [http://127.0.0.1:3000](http://127.0.0.1:3000)
 
-**Caminho B:** se a máquina não puxar imagem, documente o erro e use o vídeo
-da assíncrona + este runbook como leitura (sem nota de UI).
+**Caminho B:** se a máquina não puxar a imagem, documente o erro e use este
+runbook como leitura (sem nota de UI).
 
 ## 2. Modelo pequeno
 

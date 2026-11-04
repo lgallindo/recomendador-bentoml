@@ -31,7 +31,7 @@ aula** — tutoriais, BI e figuras para ler e projetar ao lado do código.
 | [`memoria/`](memoria/) | Resultado do demo de memória |
 | [`tutorial-open-webui-20261026.md`](tutorial-open-webui-20261026.md) | Open WebUI + Ollama em Docker (CPU) |
 | [`open-webui/`](open-webui/) | `docker-compose.yml` do lab |
-| [`tutorial-litellm-20261026.md`](tutorial-litellm-20261026.md) | LiteLLM: SDK + proxy :4000 (rampa CESAR) |
+| [`tutorial-litellm-20261026.md`](tutorial-litellm-20261026.md) | LiteLLM: SDK + proxy :4000 neste clone |
 | [`redes/`](redes/) | JSON dos demos MLP / deep / fine-tune (`resultado_*.json`) |
 | [Versão web · demanda (Poisson)](https://lgallindo.github.io/recomendador-bentoml/demanda-poisson/) | Tutorial probabilístico com explorador de PMF e cobertura |
 | [`tutorial-previsao-probabilistica-demanda-20261017.md`](tutorial-previsao-probabilistica-demanda-20261017.md) | Prever distribuição de contagens com regressão de Poisson |
