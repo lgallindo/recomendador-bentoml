@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutoriais com explorador interativo: associação de regras e previsão de demanda.">
+  <title>Previsão probabilística de demanda com regressão de
+Poisson · Aprender com dados</title>
+  <link rel="stylesheet" href="../assets/tutorial.css">
+  <script src="../assets/tutorial.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir ao conteúdo principal</a>
+  <header class="site-header">
+    <a class="brand" href="../">Aprender com dados</a>
+    <nav aria-label="Navegação principal">
+      <a href="../">Associação</a>
+      <a href="../logs-auth/">Logs</a>
+      <a href="../demanda/">Média móvel</a>
+      <a href="../demanda-mq/">Mín. quadrados</a>
+      <a href="../demanda-perc/">LMS</a>
+      <a href="./">Poisson</a>
+      <a href="#explorador-interativo">Explorar</a>
+      <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-previsao-probabilistica-demanda-20261017.md">Versão
+Markdown</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="toc">
+      <details open><summary>Neste tutorial</summary><nav aria-label="Índice"><ul>
+<li><a
+href="#previsão-probabilística-de-demanda-com-regressão-de-poisson"
+id="toc-previsão-probabilística-de-demanda-com-regressão-de-poisson">Previsão
+probabilística de demanda com regressão de Poisson</a>
+<ul>
+<li><a href="#1-da-estimativa-pontual-à-distribuição"
+id="toc-1-da-estimativa-pontual-à-distribuição">1. Da estimativa pontual
+à distribuição</a></li>
+<li><a href="#2-a-distribuição-de-poisson"
+id="toc-2-a-distribuição-de-poisson">2. A distribuição de
+Poisson</a></li>
+<li><a href="#3-ajustar-o-modelo-com-scikit-learn"
+id="toc-3-ajustar-o-modelo-com-scikit-learn">3. Ajustar o modelo com
+scikit-learn</a></li>
+<li><a href="#4-avaliar-probabilidades-em-semanas-futuras"
+id="toc-4-avaliar-probabilidades-em-semanas-futuras">4. Avaliar
+probabilidades em semanas futuras</a></li>
+<li><a href="#5-como-bi-ajuda-você-a-visualizar-a-distribuição"
+id="toc-5-como-bi-ajuda-você-a-visualizar-a-distribuição">5. Como BI
+ajuda você a visualizar a distribuição</a></li>
+<li><a href="#6-interpretar-com-cuidado"
+id="toc-6-interpretar-com-cuidado">6. Interpretar com cuidado</a></li>
+<li><a href="#7-exercício-risco-para-estoque-de-dois"
+id="toc-7-exercício-risco-para-estoque-de-dois">7. Exercício: risco para
+estoque de dois</a></li>
+<li><a href="#referências" id="toc-referências">Referências</a></li>
+</ul></li>
+</ul></nav></details>
+    </aside>
+    <main id="conteudo"><h1
+id="previsão-probabilística-de-demanda-com-regressão-de-poisson">Previsão
+probabilística de demanda com regressão de Poisson</h1>
+<p><a
+href="https://lgallindo.github.io/recomendador-bentoml/demanda-poisson/">Versão
+web com explorador</a>.</p>
+<p>O tutorial de mínimos quadrados produz uma estimativa pontual: um
+único número de demanda esperada. Neste tutorial, ampliaremos a
+pergunta:</p>
+<blockquote>
+<p>Quais contagens de vendas são plausíveis na próxima semana, e com que
+probabilidades?</p>
+</blockquote>
+<p>Usaremos regressão de Poisson para prever uma taxa <code>λ</code> e a
+distribuição de probabilidade das contagens inteiras. O exemplo depende
+da série semanal sintética do marketplace e não representa transações
+reais. É útil conhecer os conceitos de avaliação temporal da <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-media-movel-demanda-20261017.md">média
+móvel</a> e da <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-regressao-quadrados-minimos-demanda-20261017.md">regressão
+por mínimos quadrados</a>.</p>
+<h3 id="roteiro">Roteiro</h3>
+<table>
+<thead>
+<tr>
+<th>Tempo sugerido</th>
+<th>Atividade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8 min</td>
+<td>Diferenciar ponto estimado e distribuição</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Entender a distribuição de Poisson</td>
+</tr>
+<tr>
+<td>12 min</td>
+<td>Ajustar regressão e calcular probabilidades</td>
+</tr>
+<tr>
+<td>12 min</td>
+<td>Avaliar previsões e intervalos no tempo</td>
+</tr>
+<tr>
+<td>8 min</td>
+<td>Interpretar risco, hipóteses e limitações</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-da-estimativa-pontual-à-distribuição">1. Da estimativa pontual
+à distribuição</h2>
+<p>Uma previsão pontual, como “2,4 linhas na semana seguinte”, resume a
+demanda em um único valor esperado. Ela não informa se a contagem mais
+plausível é 2, se zero é comum ou se 5 ainda é possível.</p>
+<p>Uma previsão probabilística atribui uma distribuição a resultados
+possíveis. Neste tutorial, o alvo é uma contagem não negativa: linhas de
+pedido por produto por semana. O modelo estima uma taxa esperada
+<code>λ</code>; a distribuição de Poisson transforma essa taxa em
+probabilidades para 0, 1, 2, ... linhas.</p>
+<p><strong>Inteligência artificial (IA)</strong> é o campo amplo de
+sistemas que podem aprender ou apoiar decisões; <strong>aprendizado de
+máquina (ML)</strong> inclui métodos que ajustam parâmetros a partir de
+exemplos. Regressão de Poisson é um modelo supervisionado para uma
+variável-alvo de contagem. A distribuição estimada acrescenta informação
+de incerteza à previsão, mas continua dependendo da qualidade dos dados
+e das hipóteses do modelo.</p>
+<h2 id="2-a-distribuição-de-poisson">2. A distribuição de Poisson</h2>
+<p>Se <code>Y</code> é uma contagem com taxa esperada
+<code>λ &gt; 0</code>, sua probabilidade de assumir um valor inteiro
+<code>k ≥ 0</code> é:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>Y</mi><mo>=</mo><mi>k</mi><mo>∣</mo><mi>λ</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><msup><mi>e</mi><mrow><mi>−</mi><mi>λ</mi></mrow></msup><msup><mi>λ</mi><mi>k</mi></msup></mrow><mrow><mi>k</mi><mi>!</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+P(Y=k\mid\lambda)=\frac{e^{-\lambda}\lambda^k}{k!}
+</annotation></semantics></math></p>
+<p><img src="../material/imagens/poisson-formas-lambda.png"
+alt="Quatro gráficos de barras da distribuição de Poisson. Com λ = 0,5, zero tem probabilidade de 61%; com λ = 1, 37%; com λ = 2, 14%; com λ = 4, 2%. A linha tracejada marca a média λ, e a massa se espalha à medida que λ cresce." /></p>
+<p><em>Figura 1 — A mesma fórmula com quatro taxas. Para λ pequeno, o
+zero domina e a distribuição é assimétrica; para λ maior, ela se espalha
+e fica mais simétrica. A largura acompanha a média porque, em Poisson, a
+variância também vale λ.</em></p>
+<p>Leia a figura da esquerda para a direita: uma peça que vende em média
+meia linha por semana passa a maior parte das semanas sem venda,
+enquanto uma peça com média 4 raramente zera. Quando você estima
+<code>λ</code>, escolhe qual desses formatos descreve a próxima
+semana.</p>
+<p>Na distribuição de Poisson, a média e a variância são ambas
+<code>λ</code>. Esse vínculo é uma hipótese importante, não uma verdade
+sobre todo marketplace. Demanda com variância muito maior que a média
+(sobredispersão), dependência temporal, excesso de zeros ou eventos
+promocionais pode exigir outro modelo.</p>
+<p>O modelo de regressão liga as características à taxa por meio de uma
+função logarítmica:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>λ</mi><mrow><mi>p</mi><mo>,</mo><mi>t</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>β</mi><mn>0</mn></msub><mo>+</mo><msub><mi>α</mi><mi>p</mi></msub><mo>+</mo><msub><mi>β</mi><mn>1</mn></msub><mi>t</mi></mrow><annotation encoding="application/x-tex">
+\log(\lambda_{p,t}) = \beta_0 + \alpha_p + \beta_1t
+</annotation></semantics></math></p>
+<p><code>α_p</code> representa um efeito por produto; <code>t</code> é o
+índice semanal. O log garante que <code>λ</code> previsto permaneça
+positivo. Neste exemplo, a regressão agrupa produtos, usa indicadores de
+produto e compartilha uma tendência temporal. O ajuste regularizado
+reduz a instabilidade, mas não cria informação que o histórico curto não
+contém.</p>
+<p>No ajuste da seção 3 com as 16 semanas, os coeficientes para o Jarro
+(<code>p01</code>) são
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>β</mi><mn>0</mn></msub><mo>≈</mo><mn>0</mn><mo>,</mo><mn>406</mn></mrow><annotation encoding="application/x-tex">\beta_0 \approx 0{,}406</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mrow><mi>p</mi><mn>01</mn></mrow></msub><mo>≈</mo><mn>0</mn><mo>,</mo><mn>458</mn></mrow><annotation encoding="application/x-tex">\alpha_{p01} \approx 0{,}458</annotation></semantics></math>
+e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>β</mi><mn>1</mn></msub><mo>≈</mo><mi>−</mi><mn>0</mn><mo>,</mo><mn>184</mn></mrow><annotation encoding="application/x-tex">\beta_1 \approx -0{,}184</annotation></semantics></math>
+por unidade de
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mi>/</mi><mn>10</mn></mrow><annotation encoding="application/x-tex">t/10</annotation></semantics></math>.
+Na escala do log, isso é uma reta; na escala das contagens, vira um
+fator multiplicativo:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>λ</mi><mrow><mi>p</mi><mn>01</mn><mo>,</mo><mi>t</mi></mrow></msub><mo>=</mo><msup><mi>e</mi><mrow><mn>0</mn><mo>,</mo><mn>406</mn><mo>+</mo><mn>0</mn><mo>,</mo><mn>458</mn><mo>−</mo><mn>0</mn><mo>,</mo><mn>184</mn><mspace width="0.222em"></mspace><mi>t</mi><mi>/</mi><mn>10</mn></mrow></msup><mo>≈</mo><mn>2</mn><mo>,</mo><mn>374</mn><mo>×</mo><mn>0</mn><mo>,</mo><msup><mn>982</mn><mrow><mspace width="0.222em"></mspace><mi>t</mi></mrow></msup><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\lambda_{p01,t} = e^{0{,}406 + 0{,}458 - 0{,}184\ t/10}
+\approx 2{,}374 \times 0{,}982^{\ t}.
+</annotation></semantics></math></p>
+<p>Cada semana multiplica a taxa por cerca de 0,982, uma queda de 1,8%
+por semana. Em
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>16</mn></mrow><annotation encoding="application/x-tex">t = 16</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>≈</mo><mn>2</mn><mo>,</mo><mn>374</mn><mo>×</mo><mn>0</mn><mo>,</mo><mn>745</mn><mo>≈</mo><mn>1</mn><mo>,</mo><mn>768</mn></mrow><annotation encoding="application/x-tex">\lambda \approx 2{,}374 \times 0{,}745 \approx 1{,}768</annotation></semantics></math>.</p>
+<p><img src="../material/imagens/poisson-ligacao-log.png"
+alt="Dois gráficos. À esquerda, η = log λ decresce em linha reta de 0,86 na semana 0 para cerca de 0,57 na semana 16. À direita, as dezesseis contagens observadas de p01, entre 1 e 4, e a curva λ = e^η, que cai suavemente de 2,37 para 1,768 na semana 16, marcada com um losango." /></p>
+<p><em>Figura 2 — A função de ligação log. O modelo é linear em η
+(esquerda) e multiplicativo em λ (direita). Por mais negativo que η
+fique,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>e</mi><mi>η</mi></msup><annotation encoding="application/x-tex">e^\eta</annotation></semantics></math>
+continua positivo, então nenhuma taxa prevista sai abaixo de
+zero.</em></p>
+<h2 id="3-ajustar-o-modelo-com-scikit-learn">3. Ajustar o modelo com
+scikit-learn</h2>
+<p>O arquivo <code>dados/vendas_semanais.csv</code> contém 16 semanas e
+12 produtos. A soma de cada série coincide com o total
+<code>pedidos</code> do catálogo, mas a distribuição temporal foi
+construída para o exercício. Confira sua estrutura:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/validar_vendas_semanais.py</span></code></pre></div>
+<p>O código abaixo usa pandas para preparar dados,
+<code>PoissonRegressor</code> e <code>OneHotEncoder</code> do
+scikit-learn, e <code>poisson</code> do SciPy para calcular
+probabilidades. A partir da raiz, o pandas pode ser disponibilizado
+com:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run <span class="at">--with</span> pandas python</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> poisson</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> PoissonRegressor</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>vendas <span class="op">=</span> pd.read_csv(</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    Path(<span class="st">&quot;dados/vendas_semanais.csv&quot;</span>),</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    parse_dates<span class="op">=</span>[<span class="st">&quot;week_start&quot;</span>],</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>vendas <span class="op">=</span> vendas.sort_values([<span class="st">&quot;week_start&quot;</span>, <span class="st">&quot;product_id&quot;</span>]).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>semanas <span class="op">=</span> <span class="bu">sorted</span>(vendas[<span class="st">&quot;week_start&quot;</span>].unique())</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>produtos <span class="op">=</span> <span class="bu">sorted</span>(vendas[<span class="st">&quot;product_id&quot;</span>].unique())</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>vendas[<span class="st">&quot;week_index&quot;</span>] <span class="op">=</span> (</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    vendas[<span class="st">&quot;week_start&quot;</span>].rank(method<span class="op">=</span><span class="st">&quot;dense&quot;</span>).astype(<span class="bu">int</span>) <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>) <span class="op">/</span> <span class="dv">10</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>preprocessamento <span class="op">=</span> ColumnTransformer(</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>        (</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;produto&quot;</span>,</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>            OneHotEncoder(categories<span class="op">=</span>[produtos], handle_unknown<span class="op">=</span><span class="st">&quot;ignore&quot;</span>),</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>            [<span class="st">&quot;product_id&quot;</span>],</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>        (<span class="st">&quot;tempo&quot;</span>, <span class="st">&quot;passthrough&quot;</span>, [<span class="st">&quot;week_index&quot;</span>]),</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>modelo <span class="op">=</span> make_pipeline(</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    preprocessamento,</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    PoissonRegressor(alpha<span class="op">=</span><span class="fl">0.1</span>, max_iter<span class="op">=</span><span class="dv">1000</span>),</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>modelo.fit(</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    vendas[[<span class="st">&quot;product_id&quot;</span>, <span class="st">&quot;week_index&quot;</span>]],</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    vendas[<span class="st">&quot;order_line_count&quot;</span>],</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p><code>alpha=0.1</code> define a regularização usada neste exemplo. O
+índice de semana é dividido por 10 para manter a escala do preditor
+temporal moderada; todas as previsões devem usar a mesma
+transformação.</p>
+<h3 id="distribuição-prevista-para-o-jarro">Distribuição prevista para o
+Jarro</h3>
+<p>Para prever a próxima semana após 16 observações, use índice 16/10 =
+1,6 e calcule a distribuição de contagens para <code>p01</code>:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>entrada <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    [{<span class="st">&quot;product_id&quot;</span>: <span class="st">&quot;p01&quot;</span>, <span class="st">&quot;week_index&quot;</span>: <span class="dv">16</span> <span class="op">/</span> <span class="dv">10</span>}]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>taxa <span class="op">=</span> <span class="bu">float</span>(modelo.predict(entrada)[<span class="dv">0</span>])</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>limite_inferior, limite_superior <span class="op">=</span> poisson.ppf(</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.025</span>, <span class="fl">0.975</span>],</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    taxa,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>).astype(<span class="bu">int</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>probabilidades <span class="op">=</span> poisson.pmf(np.arange(<span class="dv">8</span>), taxa)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>probabilidade_mais_de_duas <span class="op">=</span> poisson.sf(<span class="dv">2</span>, taxa)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Taxa esperada (lambda): </span><span class="sc">{</span>taxa<span class="sc">:.3f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Intervalo preditivo central 95%: [</span><span class="sc">{</span>limite_inferior<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>limite_superior<span class="sc">}</span><span class="ss">]&quot;</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;P(demanda &gt; 2): </span><span class="sc">{</span>probabilidade_mais_de_duas<span class="sc">:.1%}</span><span class="ss">&quot;</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> contagem, probabilidade <span class="kw">in</span> <span class="bu">enumerate</span>(probabilidades):</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;P(demanda = </span><span class="sc">{</span>contagem<span class="sc">}</span><span class="ss">): </span><span class="sc">{</span>probabilidade<span class="sc">:.1%}</span><span class="ss">&quot;</span>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;P(demanda &gt;= 8): </span><span class="sc">{</span>poisson<span class="sc">.</span>sf(<span class="dv">7</span>, taxa)<span class="sc">:.1%}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<p>Para os parâmetros e dados deste tutorial, obtemos
+aproximadamente:</p>
+<ul>
+<li><code>λ = 1,768</code> linhas de pedido esperadas.</li>
+<li>Intervalo preditivo central de 95%: <strong>0 a 5</strong>
+linhas.</li>
+<li><code>P(demanda &gt; 2) ≈ 26,1%</code>.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Contagem</th>
+<th style="text-align: right;">Probabilidade aproximada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">17,1%</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">30,2%</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">26,7%</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">15,7%</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6,9%</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2,5%</td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0,7%</td>
+</tr>
+<tr>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0,2%</td>
+</tr>
+<tr>
+<td style="text-align: right;">8 ou mais</td>
+<td style="text-align: right;">&lt;0,1%</td>
+</tr>
+</tbody>
+</table>
+<p><img src="../material/imagens/distribuicao-poisson-p01.png"
+alt="Gráfico de barras da distribuição de Poisson prevista para Jarro: probabilidades de zero, uma, duas e mais linhas de pedido; a média estimada é aproximadamente 1,768 e o intervalo preditivo central de 95% vai de zero a cinco." /></p>
+<p><em>Figura 3 — A distribuição mostra vários resultados possíveis para
+uma previsão. O intervalo é condicional ao modelo de Poisson ajustado e
+não é uma garantia de que a demanda ficará dentro dos limites.</em></p>
+<p>Por exemplo, se a loja decidir guardar duas linhas de pedido de
+cobertura, a probabilidade modelada de a demanda exceder esse nível é
+cerca de 26,1%. Isso não é automaticamente uma recomendação de estoque:
+uma decisão também depende de custos de falta e sobra, lead time,
+unidades por linha, capacidade de produção e outras informações não
+presentes neste conjunto.</p>
+<p><img src="../material/imagens/poisson-cauda-estoque.png"
+alt="Barras da distribuição prevista para p01 com λ = 1,768. As contagens 0, 1 e 2 aparecem em verde, com 17,1%, 30,2% e 26,7%, somando 73,9%. As contagens de 3 em diante aparecem em terracota, com 15,7%, 6,9%, 2,5%, 0,7% e 0,2%, somando 26,1%. Uma linha pontilhada separa as duas regiões entre 2 e 3." /></p>
+<p><em>Figura 4 — O risco de passar de duas linhas é a área da cauda à
+direita da linha pontilhada:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>Y</mi><mo>&gt;</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1</mn><mo>−</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>Y</mi><mo>≤</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo><mo>≈</mo><mn>1</mn><mo>−</mo><mn>0</mn><mo>,</mo><mn>739</mn><mo>=</mo><mn>0</mn><mo>,</mo><mn>261</mn></mrow><annotation encoding="application/x-tex">P(Y &gt; 2) = 1 - P(Y \le 2) \approx 1 - 0{,}739 = 0{,}261</annotation></semantics></math>.
+Mudar a capacidade move a linha; mudar o modelo muda a altura das
+barras.</em></p>
+<h2 id="4-avaliar-probabilidades-em-semanas-futuras">4. Avaliar
+probabilidades em semanas futuras</h2>
+<p>Em cada ponto do teste, ajuste o modelo somente com semanas
+anteriores e produza uma previsão para cada produto da semana seguinte.
+Depois da previsão, compare a distribuição com a contagem observada. As
+quatro últimas semanas são o teste; os demais dados usados em cada
+origem são apenas o passado disponível.</p>
+<p>Além do MAE da taxa prevista, examinaremos:</p>
+<ul>
+<li><strong>Cobertura do intervalo de 95%:</strong> proporção de
+observações dentro do intervalo preditivo central calculado antes de
+observar a semana.</li>
+<li><strong>Largura média:</strong> média de
+<code>limite superior − limite inferior</code>. Intervalos mais
+estreitos são mais informativos, mas só se mantiverem cobertura
+adequada.</li>
+<li><strong>Log-verossimilhança negativa média:</strong> penaliza
+distribuições que dão pouca probabilidade aos valores realmente
+observados. Menor é melhor; não é uma percentagem nem está na escala de
+linhas de pedido.</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>inicio_teste <span class="op">=</span> <span class="bu">len</span>(semanas) <span class="op">-</span> <span class="dv">4</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>erros_pontuais <span class="op">=</span> []</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>coberturas <span class="op">=</span> []</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>larguras <span class="op">=</span> []</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>log_perdas <span class="op">=</span> []</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> posicao <span class="kw">in</span> <span class="bu">range</span>(inicio_teste, <span class="bu">len</span>(semanas)):</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    treino <span class="op">=</span> vendas[vendas[<span class="st">&quot;week_index&quot;</span>] <span class="op">&lt;</span> posicao <span class="op">/</span> <span class="dv">10</span>]</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    teste <span class="op">=</span> vendas[vendas[<span class="st">&quot;week_index&quot;</span>] <span class="op">==</span> posicao <span class="op">/</span> <span class="dv">10</span>].copy()</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    modelo_fold <span class="op">=</span> make_pipeline(</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        ColumnTransformer(</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>            [</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>                (</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>                    <span class="st">&quot;produto&quot;</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>                    OneHotEncoder(categories<span class="op">=</span>[produtos], handle_unknown<span class="op">=</span><span class="st">&quot;ignore&quot;</span>),</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>                    [<span class="st">&quot;product_id&quot;</span>],</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>                ),</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>                (<span class="st">&quot;tempo&quot;</span>, <span class="st">&quot;passthrough&quot;</span>, [<span class="st">&quot;week_index&quot;</span>]),</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>            ]</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        PoissonRegressor(alpha<span class="op">=</span><span class="fl">0.1</span>, max_iter<span class="op">=</span><span class="dv">1000</span>),</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    modelo_fold.fit(</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>        treino[[<span class="st">&quot;product_id&quot;</span>, <span class="st">&quot;week_index&quot;</span>]],</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>        treino[<span class="st">&quot;order_line_count&quot;</span>],</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    teste[<span class="st">&quot;taxa&quot;</span>] <span class="op">=</span> modelo_fold.predict(</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        teste[[<span class="st">&quot;product_id&quot;</span>, <span class="st">&quot;week_index&quot;</span>]]</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    observados <span class="op">=</span> teste[<span class="st">&quot;order_line_count&quot;</span>].to_numpy()</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    taxas <span class="op">=</span> teste[<span class="st">&quot;taxa&quot;</span>].to_numpy()</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    inferiores <span class="op">=</span> poisson.ppf(<span class="fl">0.025</span>, taxas).astype(<span class="bu">int</span>)</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    superiores <span class="op">=</span> poisson.ppf(<span class="fl">0.975</span>, taxas).astype(<span class="bu">int</span>)</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    erros_pontuais.extend(np.<span class="bu">abs</span>(observados <span class="op">-</span> taxas))</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    coberturas.extend(</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>        (observados <span class="op">&gt;=</span> inferiores) <span class="op">&amp;</span> (observados <span class="op">&lt;=</span> superiores)</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>    larguras.extend(superiores <span class="op">-</span> inferiores)</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    log_perdas.extend(<span class="op">-</span>poisson.logpmf(observados, taxas))</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;Previsões:&quot;</span>, <span class="bu">len</span>(erros_pontuais))</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;MAE da taxa: </span><span class="sc">{</span>np<span class="sc">.</span>mean(erros_pontuais)<span class="sc">:.3f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Cobertura dos intervalos: </span><span class="sc">{</span>np<span class="sc">.</span>mean(coberturas)<span class="sc">:.1%}</span><span class="ss">&quot;</span>)</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Largura média dos intervalos: </span><span class="sc">{</span>np<span class="sc">.</span>mean(larguras)<span class="sc">:.3f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Log-perda média: </span><span class="sc">{</span>np<span class="sc">.</span>mean(log_perdas)<span class="sc">:.3f}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<p>Saída reproduzida com a série deste exercício:</p>
+<table>
+<thead>
+<tr>
+<th>Medida</th>
+<th style="text-align: right;">Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Previsões no teste</td>
+<td style="text-align: right;">48</td>
+</tr>
+<tr>
+<td>MAE da taxa esperada</td>
+<td style="text-align: right;">0,523</td>
+</tr>
+<tr>
+<td>Cobertura do intervalo central de 95%</td>
+<td style="text-align: right;">100% (48/48)</td>
+</tr>
+<tr>
+<td>Largura média do intervalo discreto</td>
+<td style="text-align: right;">3,708 contagens</td>
+</tr>
+<tr>
+<td>Log-perda média</td>
+<td style="text-align: right;">1,169</td>
+</tr>
+</tbody>
+</table>
+<p>A cobertura de 100% parece alta, mas não prova boa calibração: são
+somente quatro semanas, os registros são sintéticos e os intervalos têm
+largura média de quase quatro contagens. Intervalos muito amplos podem
+cobrir observações sem oferecer informação útil. Avalie
+<strong>cobertura e largura em conjunto</strong>, idealmente em muitos
+períodos reais ainda não usados na modelagem.</p>
+<h3 id="comparar-com-uma-referência-simples">Comparar com uma referência
+simples</h3>
+<p>Uma log-perda de 1,169 só ganha sentido ao lado de uma alternativa. A
+referência mais simples é uma Poisson sem regressão: para cada produto,
+use como
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>
+a média das semanas anteriores à origem e pontue as mesmas 48 semanas de
+teste.</p>
+<p><img src="../material/imagens/poisson-log-perda-semanas.png"
+alt="Barras agrupadas por semana de teste. Regressão de Poisson: 1,198, 1,218, 1,181 e 1,080. Poisson com a média do passado por produto: 1,124, 1,161, 1,170 e 1,046. A referência tem log-perda menor nas quatro semanas; médias 1,169 e 1,125." /></p>
+<p><em>Figura 5 — Log-perda média dos 12 produtos em cada semana de
+teste. Menor é melhor. A referência sem tendência vence nas quatro
+semanas: média 1,125 contra 1,169 da regressão.</em></p>
+<p>Nesta série, a tendência comum não ajuda a pontuar a semana seguinte.
+Isso não condena a regressão de Poisson em geral: mostra que, com 16
+semanas sintéticas, um modelo mais rico precisa provar valor contra a
+referência <strong>antes</strong> de ir para o relato. O mesmo cuidado
+vale para qualquer métrica probabilística.</p>
+<h3 id="calibração-onde-caem-as-observações">Calibração: onde caem as
+observações?</h3>
+<p>A cobertura de 100% com intervalos largos sugere distribuições mais
+espalhadas que os dados. O <strong>PIT</strong> (<em>probability
+integral transform</em>) mede isso observação por observação: onde o
+valor observado
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math>
+cai dentro da distribuição prevista. Para contagens, usa-se o PIT
+médio</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">I</mi><mi mathvariant="normal">T</mi></mrow><mo>=</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>Y</mi><mo>≤</mo><mi>y</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mstyle displaystyle="false"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle><mspace width="0.222em"></mspace><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>Y</mi><mo>=</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\mathrm{PIT} = P(Y \le y - 1) + \tfrac{1}{2}\ P(Y = y).
+</annotation></semantics></math></p>
+<p>Se as distribuições estiverem calibradas, os PITs se espalham por
+igual entre 0 e 1. Uma corcova no meio indica previsões espalhadas
+demais; um formato de U indica previsões estreitas demais.</p>
+<p><img src="../material/imagens/poisson-pit.png"
+alt="Histograma de 48 valores de PIT em cinco faixas: 6, 7, 21, 11 e 3 previsões. Uma linha tracejada marca 9,6 previsões por faixa, o esperado com calibração. A faixa central, de 0,4 a 0,6, tem mais que o dobro do esperado. O título informa variância sobre média de aproximadamente 0,30." /></p>
+<p><em>Figura 6 — PIT das 48 previsões walk-forward. A corcova no meio
+mostra que os valores observados caem perto do centro das distribuições
+previstas com mais frequência do que deveriam.</em></p>
+<p>A causa aparece nos próprios dados: em todos os 12 produtos, a
+variância semanal é menor que a média, com razão média de cerca de 0,30.
+Poisson supõe razão 1. A série varia <strong>menos</strong> do que o
+modelo admite (subdispersão), por isso os intervalos de 95% sobram e
+cobrem tudo. Com 48 previsões e dados sintéticos, leia o histograma como
+diagnóstico qualitativo, sem teste formal.</p>
+<h2 id="5-como-bi-ajuda-você-a-visualizar-a-distribuição">5. Como BI
+ajuda você a visualizar a distribuição</h2>
+<p>O explorador em <a
+href="../material/bi-demanda-poisson/index.html"><code>bi-demanda-poisson/index.html</code></a>
+repete a conta deste tutorial para os doze produtos: mostra λ, a PMF, o
+intervalo central de 95% e a cobertura no walk-forward das quatro
+últimas semanas. Use-o para conferir o exercício do Jarro e para
+comparar produtos sem reexecutar o notebook à mão.</p>
+<section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
+<h3 id="explorer-heading">Experimente a distribuição neste tutorial</h3>
+<p>Escolha o produto e leia a PMF, o intervalo de 95% e a cobertura no teste. As 16 semanas são sintéticas.</p>
+<div class="explorer-actions">
+<button id="fullscreen-explorer" type="button">Ver explorador em tela cheia</button>
+<a href="../material/bi-demanda-poisson/index.html" target="_blank" rel="noopener">Abrir explorador em nova aba</a>
+</div>
+<p id="explorer-status" role="status"></p>
+<iframe id="explorer" src="../material/bi-demanda-poisson/index.html" title="Explorador interativo de regressão de Poisson"
+loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+</section>
+<p><img src="../material/imagens/bi-demanda-poisson-p01.png"
+alt="Espelho estático do explorador para o Jarro (p01): barras da distribuição de Poisson prevista para a semana seguinte, com média λ ≈ 1,768 e intervalo central de 95% de 0 a 5 linhas." /></p>
+<p><em>Figura 7 — A mesma distribuição da Figura 3, desenhada pelo
+explorador. No painel, troque o produto para comparar formatos de
+distribuição e coberturas.</em></p>
+<p>Para regenerar dados e figura:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/gerar_bi_demanda_poisson.py</span></code></pre></div>
+<p>A <a
+href="https://lgallindo.github.io/recomendador-bentoml/demanda-poisson/">versão
+web</a> incorpora o explorador quando o site estiver atualizado.</p>
+<h2 id="6-interpretar-com-cuidado">6. Interpretar com cuidado</h2>
+<ol type="1">
+<li><code>λ</code> é a média condicional prevista pelo modelo; não
+significa que esse número de linhas ocorrerá exatamente.</li>
+<li>O intervalo preditivo representa incerteza de contagem <strong>sob
+as hipóteses do modelo</strong>. Ele não incorpora automaticamente toda
+incerteza sobre parâmetros, mudança de mercado, ruptura de estoque ou
+qualidade dos dados.</li>
+<li>Poisson supõe média igual à variância e contagens condicionalmente
+independentes. Se os dados reais forem sobredispersos ou tiverem padrão
+de zeros diferente, a distribuição poderá subestimar ou distorcer o
+risco. Nesta série ocorre o inverso: a variância é menor que a média
+(Figura 6), e o modelo superestima a incerteza.</li>
+<li>A regressão aqui usa indicadores de produto e uma inclinação
+temporal comum. Com apenas 16 semanas artificiais, não há base para
+estimar sazonalidade anual, feriados ou efeitos promocionais.</li>
+<li>“Probabilidade de exceder duas linhas” só vira decisão de estoque
+depois que custo, capacidade, lead time e significado de uma linha forem
+definidos.</li>
+</ol>
+<h2 id="7-exercício-risco-para-estoque-de-dois">7. Exercício: risco para
+estoque de dois</h2>
+<p>Use <code>p01</code> e o modelo acima. Calcule
+<code>P(Y &gt; 2)</code> e <code>P(Y ≤ 2)</code> para a próxima semana.
+Se a loja reservar capacidade para duas linhas, escreva uma frase
+explicando o risco conforme o modelo e duas informações de negócio que
+ainda seriam necessárias antes de decidir a quantidade física a
+produzir.</p>
+<h3 id="resolução-comentada">Resolução comentada</h3>
+<p>Para <code>λ ≈ 1,768</code>, <code>P(Y &gt; 2) ≈ 0,261</code> e
+<code>P(Y ≤ 2) ≈ 0,739</code>. Portanto, segundo essa distribuição
+estimada, há cerca de 26% de chance de a contagem passar de duas linhas
+na semana. Isso não implica 26% de chance de faltar duas unidades: uma
+linha pode conter quantidades diferentes. A decisão também requer, por
+exemplo, unidades em cada linha, custos de excesso e falta, estoque
+disponível e prazo de reposição.</p>
+<h3 id="para-ir-além-a-referência-e-a-calibração">Para ir além: a
+referência e a calibração</h3>
+<p>Responda em três frases: (a) qual modelo teve menor log-perda nas
+semanas de teste, a regressão ou a Poisson com a média do passado
+(Figura 5)? (b) O que a corcova do PIT (Figura 6) diz sobre os
+intervalos de 95%? (c) Por que a cobertura de 100% não basta para chamar
+o modelo de bem calibrado?</p>
+<p><strong>Resolução comentada.</strong> (a) A referência: 1,125 contra
+1,169, e vence nas quatro semanas. (b) Os valores observados caem no
+centro das distribuições com frequência excessiva (21 de 48 na faixa
+0,4–0,6, contra 9,6 esperados): as distribuições estão espalhadas
+demais, e os intervalos ficam largos. (c) Intervalos largos demais
+cobrem quase tudo; calibração exige que as observações se distribuam
+como a previsão diz, inclusive nas caudas. A razão variância/média de
+cerca de 0,30 explica o excesso de largura.</p>
+<h2 id="referências">Referências</h2>
+<ol type="1">
+<li>SCIKIT-LEARN. <code>PoissonRegressor</code>: modelo generalizado de
+regressão de Poisson. <a
+href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.PoissonRegressor.html">Documentação</a>.</li>
+<li>SCI-PY. <code>scipy.stats.poisson</code>: função de massa de
+probabilidade, quantis e funções de sobrevivência para a distribuição de
+Poisson. <a
+href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.poisson.html">Documentação</a>.</li>
+<li>CZADO, Claudia; GNEITING, Tilmann; HELD, Leonhard.
+<strong>Predictive model assessment for count data</strong>.
+<em>Biometrics</em>, v. 65, n. 4, p. 1254–1261, 2009. DOI:
+10.1111/j.1541-0420.2009.01191.x. <strong>Para aprofundar:</strong> PIT
+para contagens e diagnóstico de calibração.</li>
+<li>GNEITING, Tilmann; RAFTERY, Adrian E. <strong>Strictly proper
+scoring rules, prediction, and estimation</strong>. <em>Journal of the
+American Statistical Association</em>, v. 102, n. 477, p. 359–378, 2007.
+DOI: 10.1198/016214506000001437. <strong>Para aprofundar:</strong> por
+que a log-perda recompensa previsões honestas.</li>
+<li>CAMERON, A. Colin; TRIVEDI, Pravin K. <strong>Regression analysis of
+count data</strong>. 2. ed. Cambridge: Cambridge University Press, 2013.
+<strong>Para aprofundar:</strong> sobredispersão, subdispersão e
+alternativas à Poisson.</li>
+</ol>
+<p>A distribuição do Jarro (Figura 3) pode ser recriada a partir da raiz
+do repositório:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run <span class="at">--with</span> scikit-learn python scripts/gerar_figuras_demanda.py</span></code></pre></div>
+<p>As Figuras 1, 2, 4, 5 e 6 vêm de um script que repete o mesmo
+ajuste:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/gerar_figuras_poisson.py</span></code></pre></div></main>
+  </div>
+</body>
+</html>

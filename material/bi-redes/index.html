@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore o treino de uma rede neural rasa, a profundidade e o fine-tuning na série semanal sintética de demanda.">
+  <title>Redes neurais · laboratório de demanda</title>
+  <link rel="stylesheet" href="painel.css">
+  <script src="dados.js" defer></script>
+  <script src="painel.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para os resultados</a>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Laboratório de redes neurais</p>
+      <h1>Doze semanas<br>bastam para uma rede?</h1>
+      <p>Compare corridas de uma MLP rasa, redes mais fundas e um fine-tune com as referências simples no mesmo teste de quatro semanas do Jarro (<code>p01</code>).</p>
+      <nav>
+        <a href="../../treino-redes/index.html#explorador-interativo" target="_top">Tutorial completo · treino</a>
+        <a href="../../deep-learning/index.html#explorador-interativo" target="_top">Tutorial completo · deep learning</a>
+        <a href="../../fine-tuning/index.html#explorador-interativo" target="_top">Tutorial completo · fine-tuning</a>
+        <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-redes/README.md" target="_blank" rel="noopener">Como explorar</a>
+      </nav>
+    </div>
+    <img src="../imagens/bi-redes-mae.png" alt="Barras de MAE no teste de p01: quatro corridas da MLP entre 0,96 e 1,47 e referências média 0,83, ingênua 1,00, MA(4) 0,75 e LMS 0,93.">
+  </header>
+  <div class="layout">
+    <aside class="filters" aria-label="Controles do relatório">
+      <p class="eyebrow">01 · Escolha o recorte</p>
+      <h2>Corrida e referências</h2>
+      <p>Série de <strong>16 semanas</strong> de <code>p01</code>: treino nas semanas 0–11, teste nas 12–15, sem embaralhar.</p>
+      <label for="corrida">Corrida da MLP rasa</label>
+      <select id="corrida"></select>
+      <fieldset class="checks">
+        <legend>Referências no gráfico</legend>
+        <div id="refs"></div>
+      </fieldset>
+      <label for="semente">Semente (painel de profundidade)</label>
+      <select id="semente"></select>
+      <button id="reset" type="button">Restaurar base · MA(4)</button>
+      <div class="note"><strong>Base sintética.</strong> Quatro semanas de teste: diferenças pequenas de MAE podem mudar com a semente.</div>
+    </aside>
+    <main id="conteudo">
+      <section class="summary" aria-label="Resumo">
+        <div><span id="mae-corrida">—</span><p>MAE da corrida</p></div>
+        <div><span id="mae-ref">—</span><p>MAE da melhor referência</p></div>
+        <div><span id="diferenca">—</span><p>corrida − referência</p></div>
+      </section>
+      <section class="panel detail" aria-labelledby="titulo-perda">
+        <p class="eyebrow">02 · Aprendizado</p>
+        <h2 id="titulo-perda">Perda de treino por época</h2>
+        <p id="leitura-perda"></p>
+        <div class="plot-scroll"><svg id="perda" viewBox="0 0 780 320" role="img" aria-label="Perda de treino por época das quatro corridas"></svg></div>
+        <button type="button" class="secondary export" data-svg="perda">Baixar perda PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-serie">
+        <p class="eyebrow">03 · Teste</p>
+        <h2 id="titulo-serie">Série observada e previsões no teste</h2>
+        <p id="leitura-serie"></p>
+        <div class="plot-scroll"><svg id="serie" viewBox="0 0 780 340" role="img" aria-label="Série observada com previsões no teste"></svg></div>
+        <button type="button" class="secondary export" data-svg="serie">Baixar série PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-mae">
+        <p class="eyebrow">04 · Compare</p>
+        <h2 id="titulo-mae">MAE: corridas e referências</h2>
+        <div class="plot-scroll"><svg id="mae" viewBox="0 0 780 320" role="img" aria-label="MAE das corridas e das referências"></svg></div>
+        <button type="button" class="secondary export" data-svg="mae">Baixar MAE PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-prof">
+        <p class="eyebrow">05 · Profundidade</p>
+        <h2 id="titulo-prof">Parâmetros × MAE de teste</h2>
+        <p id="leitura-prof"></p>
+        <div class="plot-scroll"><svg id="prof" viewBox="0 0 780 340" role="img" aria-label="MAE de teste por número de parâmetros e semente"></svg></div>
+        <button type="button" class="secondary export" data-svg="prof">Baixar profundidade PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-ft">
+        <p class="eyebrow">06 · Fine-tuning</p>
+        <h2 id="titulo-ft">Pré-treino, fine-tune e do zero</h2>
+        <p id="leitura-ft"></p>
+        <div class="plot-scroll"><svg id="ft" viewBox="0 0 780 340" role="img" aria-label="MAE de p01 e esquecimento nos outros produtos"></svg></div>
+        <button type="button" class="secondary export" data-svg="ft">Baixar fine-tuning PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-tabela">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">07 · Auditoria</p>
+            <h2 id="titulo-tabela">Tabela do teste</h2>
+          </div>
+          <button id="csv" type="button">Baixar CSV</button>
+        </div>
+        <p id="estado" role="status"></p>
+        <div class="table-scroll">
+          <table id="tabela">
+            <caption>Quatro semanas de teste: observado, previsão da corrida e das referências.</caption>
+            <thead>
+              <tr><th>Semana</th><th>Observado</th><th>Corrida</th><th>Erro abs.</th><th>Média</th><th>MA(4)</th><th>LMS</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p id="export-status" role="status"></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

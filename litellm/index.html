@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutoriais com explorador interativo: associação de regras e previsão de demanda.">
+  <title>LiteLLM: SDK e proxy compatível com a API
+OpenAI · Aprender com dados</title>
+  <link rel="stylesheet" href="../assets/tutorial.css">
+  <script src="../assets/tutorial.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir ao conteúdo principal</a>
+  <header class="site-header">
+    <a class="brand" href="../">Aprender com dados</a>
+    <nav aria-label="Navegação principal">
+      <a href="../">Associação</a>
+      <a href="../logs-auth/">Logs</a>
+      <a href="../demanda/">Média móvel</a>
+      <a href="../demanda-mq/">Mín. quadrados</a>
+      <a href="../demanda-perc/">LMS</a>
+      <a href="../demanda-poisson/">Poisson</a>
+      <a href="#explorador-interativo">Explorar</a>
+      <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-litellm-20261026.md">Versão
+Markdown</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="toc">
+      <details open><summary>Neste tutorial</summary><nav aria-label="Índice"><ul>
+<li><a href="#um-gateway-para-modelos-de-linguagem-com-litellm"
+id="toc-um-gateway-para-modelos-de-linguagem-com-litellm">Um gateway
+para modelos de linguagem com LiteLLM</a>
+<ul>
+<li><a href="#1-o-que-um-gateway-faz" id="toc-1-o-que-um-gateway-faz">1.
+O que um gateway faz</a></li>
+<li><a href="#2-duas-chaves-dois-trechos"
+id="toc-2-duas-chaves-dois-trechos">2. Duas chaves, dois
+trechos</a></li>
+<li><a href="#3-o-model_list-aliases-no-lugar-de-modelos"
+id="toc-3-o-model_list-aliases-no-lugar-de-modelos">3. O
+<code>model_list</code>: aliases no lugar de modelos</a></li>
+<li><a href="#4-pré-requisito-um-ollama-alcançável"
+id="toc-4-pré-requisito-um-ollama-alcançável">4. Pré-requisito: um
+Ollama alcançável</a></li>
+<li><a href="#5-caminho-a--biblioteca-sem-proxy"
+id="toc-5-caminho-a--biblioteca-sem-proxy">5. Caminho A — biblioteca,
+sem proxy</a></li>
+<li><a href="#6-caminhos-b-e-c--o-proxy-na-porta-4000"
+id="toc-6-caminhos-b-e-c--o-proxy-na-porta-4000">6. Caminhos B e C — o
+proxy na porta 4000</a></li>
+<li><a href="#7-o-cliente-fala-só-com-o-proxy"
+id="toc-7-o-cliente-fala-só-com-o-proxy">7. O cliente fala só com o
+proxy</a></li>
+<li><a href="#8-quando-dá-errado-ler-o-status-e-a-mensagem"
+id="toc-8-quando-dá-errado-ler-o-status-e-a-mensagem">8. Quando dá
+errado: ler o status e a mensagem</a></li>
+<li><a href="#9-limitações" id="toc-9-limitações">9. Limitações</a></li>
+<li><a href="#10-exercício" id="toc-10-exercício">10. Exercício</a></li>
+<li><a href="#referências-e-artefatos"
+id="toc-referências-e-artefatos">Referências e artefatos</a></li>
+</ul></li>
+</ul></nav></details>
+    </aside>
+    <main id="conteudo"><h1
+id="um-gateway-para-modelos-de-linguagem-com-litellm">Um gateway para
+modelos de linguagem com LiteLLM</h1>
+<p>A loja de artesanato já tem três programas que querem conversar com
+um modelo de linguagem: a interface de chat do atendimento, um script
+que resume avaliações e um agente que consulta o catálogo. Cada um foi
+escrito para a API da OpenAI. Hoje o modelo é local, num Ollama; amanhã
+pode ser um provedor em nuvem, ou os dois, com um de reserva. Se cada
+programa guardar sua própria chave e seu próprio endereço, toda troca
+vira três mudanças de código e três cópias de segredo espalhadas.</p>
+<p>Um <strong>gateway</strong> resolve isso: os programas falam um único
+contrato (OpenAI-compatible) com um único endereço, e o gateway decide
+para onde encaminhar cada pedido. Nesta aula você monta esse gateway com
+<strong>LiteLLM</strong>, usando um modelo local no Ollama, sem chave
+paga.</p>
+<p>Ao concluir, você deverá conseguir separar a <strong>chave do
+provedor</strong> da <strong>chave do proxy</strong>, escrever um
+<code>model_list</code> com aliases, rodar LiteLLM como biblioteca e
+como proxy (no host ou em contêiner), apontar um cliente para
+<code>http://127.0.0.1:4000/v1</code> e diagnosticar os erros mais
+comuns pelo status e pela mensagem. Tudo o que você precisa está em <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/litellm"><code>litellm/</code></a>
+e em dois scripts da raiz. As respostas de erro mostradas aqui foram
+registradas com LiteLLM 1.108.2; outras versões podem mudar textos e
+códigos.</p>
+<h3 id="roteiro-de-estudo">Roteiro de estudo</h3>
+<table>
+<thead>
+<tr>
+<th>Tempo sugerido</th>
+<th>Atividade de estudo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10 min</td>
+<td>Situar o gateway entre aplicações e modelos</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Separar as duas chaves e preparar o <code>.env</code></td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Ler o <code>model_list</code> e os aliases</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Caminho A: uma completion pela biblioteca, sem proxy</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Caminhos B e C: subir o proxy na porta 4000</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Cliente OpenAI-compatible contra o proxy</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Provocar e diagnosticar falhas com o explorador</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Exercício e resolução comentada</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-o-que-um-gateway-faz">1. O que um gateway faz</h2>
+<p><img src="../material/imagens/litellm-gateway.png"
+alt="Três clientes (Open WebUI, script Python, agente) enviam POST /v1/chat/completions com model &quot;loja-chat&quot; ao proxy LiteLLM na porta 4000. O model_list mapeia loja-chat para ollama_chat/qwen2.5:0.5b e loja-chat-nuvem para openai/gpt-4o-mini. Do proxy saem setas para Ollama local, OpenAI e outros provedores." /></p>
+<p><em>Figura 1 — Um contrato de entrada, vários destinos. O proxy
+traduz o formato, guarda as chaves dos destinos, registra uso e pode
+tentar um destino de reserva. A figura mostra papéis; ela não indica
+desempenho nem custo.</em></p>
+<table>
+<thead>
+<tr>
+<th>Termo</th>
+<th>Definição nesta aula</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>API OpenAI-compatible</strong></td>
+<td>Conjunto de rotas e formatos popularizado pela OpenAI:
+<code>POST /v1/chat/completions</code>, <code>GET /v1/models</code>,
+cabeçalho <code>Authorization: Bearer &lt;chave&gt;</code></td>
+</tr>
+<tr>
+<td><strong>Provedor</strong></td>
+<td>Quem de fato executa o modelo: um serviço em nuvem ou um runtime
+local como o Ollama</td>
+</tr>
+<tr>
+<td><strong>Gateway / proxy</strong></td>
+<td>Serviço intermediário que recebe pedidos no contrato comum e os
+encaminha ao provedor certo</td>
+</tr>
+<tr>
+<td><strong>Alias</strong></td>
+<td>Nome estável que o cliente pede (<code>loja-chat</code>), mapeado no
+proxy para um modelo concreto</td>
+</tr>
+<tr>
+<td><strong>Master key</strong></td>
+<td>Chave que os clientes apresentam ao proxy; ela não serve no
+provedor</td>
+</tr>
+<tr>
+<td><strong>Chave do provedor</strong></td>
+<td>Chave que o proxy apresenta ao provedor; os clientes nunca a
+veem</td>
+</tr>
+</tbody>
+</table>
+<p>LiteLLM tem duas formas. Como <strong>biblioteca</strong>
+(<code>import litellm</code>), ela traduz chamadas dentro do seu
+programa, sem servidor. Como <strong>proxy</strong>, ela vira um
+processo HTTP que qualquer programa alcança. Os dois usam a mesma
+notação de modelo: <code>provedor/modelo</code>, como
+<code>ollama_chat/qwen2.5:0.5b</code> ou
+<code>openai/gpt-4o-mini</code>.</p>
+<h2 id="2-duas-chaves-dois-trechos">2. Duas chaves, dois trechos</h2>
+<p><img src="../material/imagens/litellm-duas-chaves.png"
+alt="Cliente envia Authorization Bearer LITELLM_MASTER_KEY ao proxy LiteLLM na porta 4000; o proxy envia Authorization Bearer OPENAI_API_KEY ao provedor. O cliente guarda só a master key, o proxy guarda as duas no .env e o provedor só vê a sua chave." /></p>
+<p><em>Figura 2 — Cada chave vale num trecho. Trocar de provedor muda o
+<code>.env</code> do proxy; nenhum cliente precisa receber uma chave
+nova.</em></p>
+<p>O pacote traz o modelo de variáveis em <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/litellm/.env.example"><code>litellm/.env.example</code></a>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Chave do PROXY: quem chama http://127.0.0.1:4000 apresenta esta no header.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">LITELLM_MASTER_KEY</span><span class="op">=</span>sk-loja-local-troque</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Onde o proxy encontra o Ollama.</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="va">OLLAMA_API_BASE</span><span class="op">=</span>http://127.0.0.1:11434</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Chave do PROVEDOR (opcional; só para o alias loja-chat-nuvem).</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="va">OPENAI_API_KEY</span><span class="op">=</span></span></code></pre></div>
+<p>Prepare as cópias de trabalho e confirme que o Git as ignora:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> material/litellm/.env.example material/litellm/.env</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> material/litellm/config.example.yaml material/litellm/config.yaml</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> check-ignore <span class="at">-v</span> material/litellm/.env material/litellm/config.yaml</span></code></pre></div>
+<p>O <code>check-ignore</code> deve citar
+<code>material/litellm/.gitignore</code> para os dois arquivos. Se não
+imprimir nada, <strong>pare</strong>: o arquivo seria versionado. Troque
+a master key de exemplo por um valor seu, começando com
+<code>sk-</code>. Ao relatar a aula, mostre as chaves redigidas
+(<code>sk-***</code>), nunca o valor.</p>
+<h2 id="3-o-model_list-aliases-no-lugar-de-modelos">3. O
+<code>model_list</code>: aliases no lugar de modelos</h2>
+<p><a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/litellm/config.example.yaml"><code>litellm/config.example.yaml</code></a>:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model_list</span><span class="kw">:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">model_name</span><span class="kw">:</span><span class="at"> loja-chat</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">litellm_params</span><span class="kw">:</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">model</span><span class="kw">:</span><span class="at"> ollama_chat/qwen2.5:0.5b</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">api_base</span><span class="kw">:</span><span class="at"> os.environ/OLLAMA_API_BASE</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">model_name</span><span class="kw">:</span><span class="at"> loja-chat-nuvem</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">litellm_params</span><span class="kw">:</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">model</span><span class="kw">:</span><span class="at"> openai/gpt-4o-mini</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">api_key</span><span class="kw">:</span><span class="at"> os.environ/OPENAI_API_KEY</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">litellm_settings</span><span class="kw">:</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">drop_params</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">  # fallbacks: [{&quot;loja-chat&quot;: [&quot;loja-chat-nuvem&quot;]}]</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="fu">general_settings</span><span class="kw">:</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">master_key</span><span class="kw">:</span><span class="at"> os.environ/LITELLM_MASTER_KEY</span></span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Chave</th>
+<th>Leitura</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>model_name</code></td>
+<td>O alias que o cliente pede no campo <code>model</code></td>
+</tr>
+<tr>
+<td><code>litellm_params.model</code></td>
+<td>O destino real, no formato <code>provedor/modelo</code></td>
+</tr>
+<tr>
+<td><code>api_base</code></td>
+<td>Endereço do provedor; para o Ollama, a URL do runtime</td>
+</tr>
+<tr>
+<td><code>os.environ/VAR</code></td>
+<td>Lê o valor da variável de ambiente <code>VAR</code> quando o proxy
+sobe; o YAML não guarda segredo</td>
+</tr>
+<tr>
+<td><code>drop_params</code></td>
+<td>Descarta parâmetros que o destino não aceita, em vez de falhar</td>
+</tr>
+<tr>
+<td><code>fallbacks</code></td>
+<td>(comentado) Se <code>loja-chat</code> falhar, tentar
+<code>loja-chat-nuvem</code></td>
+</tr>
+<tr>
+<td><code>master_key</code></td>
+<td>A chave que o proxy exige dos clientes</td>
+</tr>
+</tbody>
+</table>
+<p>O alias é o que torna a troca barata: os três programas da loja pedem
+<code>loja-chat</code>. Mudar de <code>qwen2.5:0.5b</code> para outro
+modelo é editar uma linha do YAML e reiniciar o proxy.</p>
+<h2 id="4-pré-requisito-um-ollama-alcançável">4. Pré-requisito: um
+Ollama alcançável</h2>
+<p>O destino local é o Ollama do stack de Open WebUI (<a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/open-webui"><code>open-webui/</code></a>).
+Quem chama o Ollama precisa de um endereço que funcione <strong>de onde
+ele roda</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Quem chama</th>
+<th>Endereço do Ollama</th>
+<th>Como garantir</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Processo no host (biblioteca, proxy via <code>uv</code>)</td>
+<td><code>http://127.0.0.1:11434</code></td>
+<td>Subir o stack com <code>docker-compose.ollama-host.yml</code>, que
+publica a porta só em <code>127.0.0.1</code></td>
+</tr>
+<tr>
+<td>Contêiner na rede do stack (proxy via Docker)</td>
+<td><code>http://ollama:11434</code></td>
+<td>O compose de <code>litellm/</code> entra na rede
+<code>open-webui_default</code> e sobrescreve
+<code>OLLAMA_API_BASE</code></td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> material/open-webui</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.yml <span class="at">-f</span> docker-compose.ollama-host.yml up <span class="at">-d</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose exec ollama ollama pull qwen2.5:0.5b</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-s</span> http://127.0.0.1:11434/api/tags</span></code></pre></div>
+<p>O <code>curl</code> deve devolver um JSON cuja lista
+<code>models</code> inclui <code>qwen2.5:0.5b</code>. Sem Docker, você
+ainda pode fazer as seções 5 a 8 no modo <code>--offline</code> dos
+scripts e no explorador; a seção 10 descreve esse caminho.</p>
+<h2 id="5-caminho-a--biblioteca-sem-proxy">5. Caminho A — biblioteca,
+sem proxy</h2>
+<p>O script <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/scripts/demo_litellm_sdk.py"><code>demo_litellm_sdk.py</code></a>
+faz uma completion com <code>litellm.completion</code>. Comece pelo modo
+<code>--offline</code>, que não acessa a rede e não exige o pacote:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_litellm_sdk.py <span class="at">--offline</span></span></code></pre></div>
+<p>Saída esperada (início):</p>
+<pre class="text"><code>Chamada que litellm.completion receberia:
+{
+  &quot;model&quot;: &quot;ollama_chat/qwen2.5:0.5b&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;Política da loja: o cliente tem 7 dias corridos após o recebimento para solicitar devolução de peça sem uso, com embalagem original.&quot;
+    },</code></pre>
+<p>A chamada termina com <code>"max_tokens": 80</code> e
+<code>"api_base": "http://127.0.0.1:11434"</code>. Com o Ollama no ar,
+rode de verdade:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run <span class="at">--with</span> litellm python scripts/demo_litellm_sdk.py</span></code></pre></div>
+<p>A saída é uma frase gerada pelo modelo (varia a cada execução) e uma
+linha <code>tokens: prompt=… resposta=…</code>. Nesse caminho
+<strong>não há porta 4000</strong>: o processo da biblioteca é o seu
+script, que fala direto com o Ollama. É o jeito mais curto para um
+script isolado. O custo aparece quando há vários programas: cada um
+embute biblioteca, endereço e chave.</p>
+<h2 id="6-caminhos-b-e-c--o-proxy-na-porta-4000">6. Caminhos B e C — o
+proxy na porta 4000</h2>
+<h3 id="b--proxy-no-host-via-uv">B — proxy no host, via
+<code>uv</code></h3>
+<p>Terminal 1, na raiz do repositório:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="at">-a</span> <span class="kw">&amp;&amp;</span> <span class="bu">.</span> material/litellm/.env <span class="kw">&amp;&amp;</span> <span class="bu">set</span> +a</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run <span class="at">--with</span> <span class="st">&#39;litellm[proxy]&#39;</span> litellm <span class="at">--config</span> material/litellm/config.yaml <span class="at">--host</span> 127.0.0.1 <span class="at">--port</span> 4000</span></code></pre></div>
+<p>Quando o log mostrar
+<code>Uvicorn running on http://127.0.0.1:4000</code>, o proxy está
+pronto. <code>--host 127.0.0.1</code> restringe o acesso à própria
+máquina; sem ele, o proxy escuta em todas as interfaces.</p>
+<h3 id="c--proxy-em-contêiner">C — proxy em contêiner</h3>
+<p>Com o stack de Open WebUI no ar (ele cria a rede
+<code>open-webui_default</code>):</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> material/litellm</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">-d</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose logs <span class="at">-f</span> litellm</span></code></pre></div>
+<p>O <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/litellm/docker-compose.yml"><code>docker-compose.yml</code></a>
+monta o <code>config.yaml</code> como somente leitura, lê o
+<code>.env</code>, publica <code>127.0.0.1:4000</code> e troca
+<code>OLLAMA_API_BASE</code> para <code>http://ollama:11434</code>, o
+nome do serviço na rede compartilhada. B e C expõem <strong>o mesmo
+contrato HTTP</strong>; o cliente não sabe qual dos dois está no ar. Use
+um de cada vez, porque os dois ocupam a porta 4000.</p>
+<h3 id="primeiras-verificações">Primeiras verificações</h3>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-s</span> http://127.0.0.1:4000/health/liveliness</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-s</span> http://127.0.0.1:4000/v1/models <span class="at">-H</span> <span class="st">&quot;Authorization: Bearer </span><span class="va">$LITELLM_MASTER_KEY</span><span class="st">&quot;</span></span></code></pre></div>
+<p>Respostas registradas com LiteLLM 1.108.2:</p>
+<pre class="text"><code>&quot;I&#39;m alive!&quot;
+{&quot;data&quot;:[{&quot;id&quot;:&quot;loja-chat&quot;,&quot;object&quot;:&quot;model&quot;,...},{&quot;id&quot;:&quot;loja-chat-nuvem&quot;,&quot;object&quot;:&quot;model&quot;,...}],&quot;object&quot;:&quot;list&quot;}</code></pre>
+<p><code>/v1/models</code> lista <strong>aliases</strong>, não os
+modelos do Ollama. O alias de nuvem aparece mesmo sem chave do provedor:
+o proxy só descobre a falta da chave quando tenta usá-la.</p>
+<h2 id="7-o-cliente-fala-só-com-o-proxy">7. O cliente fala só com o
+proxy</h2>
+<p>O script <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/scripts/demo_litellm_proxy.py"><code>demo_litellm_proxy.py</code></a>
+usa só a biblioteca padrão do Python. Ele lê
+<code>material/litellm/.env</code> (o ambiente do processo tem
+prioridade) e faz três pedidos: liveliness, modelos e uma chat
+completion no alias <code>loja-chat</code>. Veja primeiro o que ele
+enviaria:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_litellm_proxy.py <span class="at">--offline</span></span></code></pre></div>
+<pre class="text"><code>[chat]
+POST http://127.0.0.1:4000/v1/chat/completions
+  Authorization: Bearer sk-***
+  Content-Type: application/json
+  {&quot;model&quot;: &quot;loja-chat&quot;, &quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Em uma frase: o que faz um gateway de LLM?&quot;}], &quot;max_tokens&quot;: 80}</code></pre>
+<p>Depois, com o proxy no ar:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_litellm_proxy.py</span></code></pre></div>
+<p>A saída esperada tem três linhas de status 200
+(<code>[liveliness]</code>,
+<code>[modelos] HTTP 200: loja-chat, loja-chat-nuvem</code> e
+<code>[chat] HTTP 200</code>), seguidas da frase gerada. O mesmo pedido
+com <code>curl</code>:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-s</span> http://127.0.0.1:4000/v1/chat/completions <span class="dt">\</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Authorization: Bearer </span><span class="va">$LITELLM_MASTER_KEY</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Content-Type: application/json&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">&#39;{&quot;model&quot;:&quot;loja-chat&quot;,&quot;messages&quot;:[{&quot;role&quot;:&quot;user&quot;,&quot;content&quot;:&quot;oi&quot;}]}&#39;</span></span></code></pre></div>
+<p>E com o pacote <code>openai</code>, sem mudar nada além do endereço e
+da chave:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run <span class="at">--with</span> openai python <span class="at">-c</span> <span class="st">&#39;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="st">import os</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="st">from openai import OpenAI</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="st">cliente = OpenAI(base_url=&quot;http://127.0.0.1:4000/v1&quot;, api_key=os.environ[&quot;LITELLM_MASTER_KEY&quot;])</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="st">r = cliente.chat.completions.create(model=&quot;loja-chat&quot;, messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;oi&quot;}])</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="st">print(r.choices[0].message.content)&#39;</span></span></code></pre></div>
+<p>Em todos os casos, o cliente aponta para <code>127.0.0.1:4000</code>
+e apresenta a master key. Nenhum deles conhece
+<code>api.openai.com</code> nem a porta 11434. O Open WebUI também pode
+usar o proxy como conexão OpenAI-compatible: de dentro da rede do stack,
+o endereço é <code>http://litellm:4000/v1</code>, quando o proxy roda
+pelo caminho C.</p>
+<h2 id="8-quando-dá-errado-ler-o-status-e-a-mensagem">8. Quando dá
+errado: ler o status e a mensagem</h2>
+<p>O proxy devolve o erro do <strong>primeiro salto que falhou</strong>,
+mesmo quando a causa está mais adiante. Estas respostas foram
+registradas com LiteLLM 1.108.2, sem banco de dados e sem Ollama no ar;
+estão completas em <a
+href="../material/litellm/respostas-registradas.json"><code>litellm/respostas-registradas.json</code></a>.</p>
+<table>
+<thead>
+<tr>
+<th>Situação</th>
+<th style="text-align: right;">Status</th>
+<th>Trecho da mensagem</th>
+<th>Onde está o problema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chave diferente da master key</td>
+<td style="text-align: right;">400</td>
+<td><code>No connected db.</code></td>
+<td>Salto cliente → proxy</td>
+</tr>
+<tr>
+<td>Alias inexistente (<code>model=nao-existe</code>)</td>
+<td style="text-align: right;">400</td>
+<td><code>Invalid model name passed in model=nao-existe</code></td>
+<td><code>model_list</code> ou nome pedido</td>
+</tr>
+<tr>
+<td>Ollama fora do ar</td>
+<td style="text-align: right;">500</td>
+<td><code>Cannot connect to host … 11434</code></td>
+<td>Salto proxy → Ollama</td>
+</tr>
+<tr>
+<td>Alias de nuvem sem <code>OPENAI_API_KEY</code></td>
+<td style="text-align: right;">500</td>
+<td><code>Missing credentials</code></td>
+<td><code>.env</code> do proxy</td>
+</tr>
+<tr>
+<td>Proxy parado</td>
+<td style="text-align: right;">—</td>
+<td>conexão recusada (sem HTTP)</td>
+<td>Processo do proxy</td>
+</tr>
+<tr>
+<td>Outro serviço na porta 4000</td>
+<td style="text-align: right;">200</td>
+<td>HTML no lugar de JSON</td>
+<td>Conflito de porta</td>
+</tr>
+</tbody>
+</table>
+<p>A primeira linha merece atenção. Sem banco de dados, o proxy conhece
+uma única chave, a master key; qualquer outra é procurada num banco de
+chaves virtuais que não existe, e o erro sai como 400
+<code>No connected db.</code>. Com banco configurado, a mesma situação
+costuma dar 401. A última linha aconteceu de verdade na máquina de
+preparo desta aula: outro programa ocupava a porta 4000 e respondia
+páginas HTML. O script detecta esse caso e sugere
+<code>ss -ltnp | grep 4000</code>.</p>
+<p>Provoque três dessas falhas com o próprio cliente:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="va">LITELLM_MASTER_KEY</span><span class="op">=</span>sk-errada <span class="ex">uv</span> run python scripts/demo_litellm_proxy.py</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_litellm_proxy.py <span class="at">--modelo</span> nao-existe</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_litellm_proxy.py <span class="at">--base</span> http://127.0.0.1:4999</span></code></pre></div>
+<p>Cada execução termina com uma linha de diagnóstico: chave diferente
+da master key, alias desconhecido e conexão recusada,
+respectivamente.</p>
+<h3 id="o-caminho-de-cada-pedido-no-explorador">O caminho de cada pedido
+no explorador</h3>
+<p>O <a href="../material/bi-llm-local/index.html">explorador do caminho
+do pedido</a> mostra, para cada cenário, os saltos, a porta, a
+credencial que viaja e o status que volta. Os cenários de erro usam as
+respostas registradas acima. Consulte o <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-llm-local/README.md">roteiro
+de exploração</a>.</p>
+<section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
+<h3 id="explorer-heading">Percorra o caminho da requisição</h3>
+<p>Escolha um cenário e veja qual chave viaja em cada salto. Os conteúdos das mensagens são ilustrativos.</p>
+<div class="explorer-actions">
+<button id="fullscreen-explorer" type="button">Ver explorador em tela cheia</button>
+<a href="../material/bi-llm-local/index.html" target="_blank" rel="noopener">Abrir explorador em nova aba</a>
+</div>
+<p id="explorer-status" role="status"></p>
+<iframe id="explorer" src="../material/bi-llm-local/index.html" title="Explorador interativo do caminho das requisições"
+loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+</section>
+<p><img src="../material/imagens/bi-llm-local-cenario.png"
+alt="Espelho estático do explorador no cenário app → LiteLLM → Ollama: salto 1 do app ao proxy com Bearer LITELLM_MASTER_KEY, salto 2 do proxy ao Ollama sem credencial, salto 3 do Ollama ao volume de pesos." /></p>
+<p><em>Figura 3 — Espelho estático de um cenário. No explorador, troque
+o cenário e o salto em detalhe para ver pedido e resposta de cada
+trecho.</em></p>
+<p><strong>Atividade no explorador.</strong></p>
+<ol type="1">
+<li>Compare <strong>App → LiteLLM → Ollama</strong> e <strong>App →
+LiteLLM → provedor</strong>. Em qual salto aparece
+<code>OPENAI_API_KEY</code>?</li>
+<li>Abra <strong>Ollama fora do ar</strong> e escolha o salto 2. Por que
+o cliente recebe 500, e não um erro de conexão?</li>
+<li>Abra <strong>Master key errada</strong>. Quantos saltos
+acontecem?</li>
+<li>Exporte o CSV de um cenário de erro.</li>
+</ol>
+<p><strong>Resolução comentada.</strong> A chave do provedor só viaja no
+salto proxy → provedor; o app apresenta a master key nos dois cenários.
+No Ollama fora do ar, o cliente conversa normalmente com o proxy, que
+tenta o salto seguinte, recebe conexão recusada e traduz isso em 500
+para o cliente. Com a master key errada, o pedido para no primeiro
+salto: nenhum destino é acionado, e trocar de modelo não resolveria
+nada.</p>
+<h2 id="9-limitações">9. Limitações</h2>
+<ul>
+<li>O proxy desta aula roda <strong>sem banco de dados</strong>: não há
+chaves virtuais por equipe, limites de gasto nem painel administrativo.
+Esses recursos existem e exigem um banco (veja a documentação).</li>
+<li>Imagem <code>main-latest</code> e pacote sem versão fixada mudam com
+o tempo. Para reproduzir resultados, fixe uma versão.</li>
+<li>O <code>.gitignore</code> protege o repositório, não a máquina: um
+<code>.env</code> legível por outros usuários, colado num chat ou num
+print continua exposto.</li>
+<li>O modelo local pequeno responde mal a perguntas abertas. A aula
+avalia o caminho do pedido, não a qualidade da resposta.</li>
+</ul>
+<h2 id="10-exercício">10. Exercício</h2>
+<p>Entregue:</p>
+<ol type="1">
+<li>As três linhas do seu <code>.env</code> com valores redigidos
+(<code>sk-***</code>) e uma frase dizendo quem guarda cada chave.</li>
+<li>A saída de <code>git check-ignore -v</code> para <code>.env</code> e
+<code>config.yaml</code>.</li>
+<li>A saída do Caminho A (<code>demo_litellm_sdk.py</code>), real ou
+<code>--offline</code>.</li>
+<li>A saída de <code>/health/liveliness</code> e de
+<code>/v1/models</code> no proxy (caminho B ou C).</li>
+<li>Uma chat completion via proxy com o alias <code>loja-chat</code>
+(script, <code>curl</code> ou pacote <code>openai</code>).</li>
+<li>Duas falhas provocadas, com status, trecho da mensagem e o salto
+onde está o problema.</li>
+</ol>
+<p><strong>Caminho sem Docker nem Ollama.</strong> Entregue 1 e 2; para
+3 e 5, use o modo <code>--offline</code> dos dois scripts; para 4, suba
+o proxy pelo caminho B mesmo sem Ollama (ele sobe e responde a
+<code>/health</code> e <code>/v1/models</code>); para 6, provoque a
+master key errada e o Ollama ausente, que funcionam exatamente nessa
+situação.</p>
+<h3 id="resolução-comentada">Resolução comentada</h3>
+<p><strong>Chaves.</strong> <code>LITELLM_MASTER_KEY=sk-***</code> fica
+com os clientes e com o proxy; <code>OPENAI_API_KEY=sk-***</code> (ou
+vazia) fica só no proxy; <code>OLLAMA_API_BASE</code> é um endereço, não
+um segredo. O cliente nunca recebe a chave do provedor.</p>
+<p><strong>Ignore.</strong> As duas linhas citam
+<code>material/litellm/.gitignore</code> com os padrões
+<code>.env</code> e <code>config.yaml</code>.</p>
+<p><strong>Caminho A.</strong> No <code>--offline</code>, a chamada
+mostra <code>ollama_chat/qwen2.5:0.5b</code>, a mensagem de sistema com
+a política de devolução e <code>api_base</code>. Na execução real, a
+frase gerada deve mencionar 7 dias, porque a política está no sistema;
+um modelo pequeno às vezes erra mesmo assim.</p>
+<p><strong>Proxy.</strong> <code>"I'm alive!"</code> e uma lista com
+<code>loja-chat</code> e <code>loja-chat-nuvem</code>.</p>
+<p><strong>Completion.</strong>
+<code>[chat] HTTP 200 · modelo pedido: loja-chat</code>, seguida de uma
+frase. Os três clientes (script, <code>curl</code>, <code>openai</code>)
+usam a mesma URL base e a mesma master key.</p>
+<p><strong>Falhas.</strong> Master key errada: 400
+<code>No connected db.</code>, primeiro salto. Alias inexistente: 400
+<code>Invalid model name</code>, configuração ou nome pedido. Ollama
+ausente: 500 <code>Cannot connect to host … 11434</code>, segundo salto.
+Proxy parado: conexão recusada, sem status HTTP. Em cada caso, a
+correção acontece num lugar diferente; ler o status sem a mensagem
+levaria ao lugar errado.</p>
+<h2 id="referências-e-artefatos">Referências e artefatos</h2>
+<ol type="1">
+<li>LITELLM. <strong>Proxy — quick start</strong>. <a
+href="https://docs.litellm.ai/docs/proxy/quick_start">docs.litellm.ai/docs/proxy/quick_start</a>.
+<strong>Para consultar:</strong> <code>model_list</code>,
+<code>master_key</code> e primeira chamada.</li>
+<li>LITELLM. <strong>Proxy — configs</strong>. <a
+href="https://docs.litellm.ai/docs/proxy/configs">docs.litellm.ai/docs/proxy/configs</a>.
+<strong>Para aprofundar:</strong> <code>os.environ/</code>,
+<code>litellm_settings</code> e fallbacks.</li>
+<li>LITELLM. <strong>Providers — Ollama</strong>. <a
+href="https://docs.litellm.ai/docs/providers/ollama">docs.litellm.ai/docs/providers/ollama</a>.
+<strong>Para consultar:</strong> prefixos <code>ollama/</code> e
+<code>ollama_chat/</code> e o <code>api_base</code>.</li>
+<li>LITELLM. <strong>Docker deploy</strong>. <a
+href="https://docs.litellm.ai/docs/proxy/deploy">docs.litellm.ai/docs/proxy/deploy</a>.
+<strong>Para aprofundar:</strong> imagens, versões fixas e deploy com
+banco de dados.</li>
+<li>OPENAI. <strong>Chat Completions API reference</strong>. <a
+href="https://platform.openai.com/docs/api-reference/chat">platform.openai.com/docs/api-reference/chat</a>.
+<strong>Para consultar:</strong> o contrato que o proxy reproduz.</li>
+</ol>
+<p>Consulta dos materiais on-line: 7 nov. 2026.</p>
+<table>
+<thead>
+<tr>
+<th>Artefato</th>
+<th>Papel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>material/litellm/config.example.yaml</code></td>
+<td>Aliases <code>loja-chat</code> e <code>loja-chat-nuvem</code></td>
+</tr>
+<tr>
+<td><code>material/litellm/.env.example</code></td>
+<td>Forma das variáveis; a cópia <code>.env</code> é ignorada pelo
+Git</td>
+</tr>
+<tr>
+<td><code>material/litellm/docker-compose.yml</code></td>
+<td>Proxy em contêiner na rede do stack Ollama</td>
+</tr>
+<tr>
+<td><code>material/litellm/respostas-registradas.json</code></td>
+<td>Respostas reais do proxy em cenários de erro</td>
+</tr>
+<tr>
+<td><code>scripts/demo_litellm_sdk.py</code></td>
+<td>Caminho A, com <code>--offline</code></td>
+</tr>
+<tr>
+<td><code>scripts/demo_litellm_proxy.py</code></td>
+<td>Cliente do proxy só com biblioteca padrão, com
+<code>--offline</code> e diagnóstico</td>
+</tr>
+<tr>
+<td><code>material/open-webui/</code></td>
+<td>Stack Ollama usado como destino local</td>
+</tr>
+<tr>
+<td><code>material/bi-llm-local/</code></td>
+<td>Explorador do caminho do pedido</td>
+</tr>
+<tr>
+<td><code>material/imagens/</code> (regenerar:
+<code>.local/scripts/gerar_figuras_llm_local.py</code>),
+<code>scripts/gerar_bi_llm_local.py</code></td>
+<td>Figuras e dados do explorador</td>
+</tr>
+</tbody>
+</table></main>
+  </div>
+</body>
+</html>

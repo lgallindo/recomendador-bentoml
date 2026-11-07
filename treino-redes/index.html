@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutoriais com explorador interativo: associação de regras e previsão de demanda.">
+  <title>Treinar uma rede neural rasa na demanda
+semanal · Aprender com dados</title>
+  <link rel="stylesheet" href="../assets/tutorial.css">
+  <script src="../assets/tutorial.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir ao conteúdo principal</a>
+  <header class="site-header">
+    <a class="brand" href="../">Aprender com dados</a>
+    <nav aria-label="Navegação principal">
+      <a href="../">Associação</a>
+      <a href="../logs-auth/">Logs</a>
+      <a href="../demanda/">Média móvel</a>
+      <a href="../demanda-mq/">Mín. quadrados</a>
+      <a href="../demanda-perc/">LMS</a>
+      <a href="../demanda-poisson/">Poisson</a>
+      <a href="#explorador-interativo">Explorar</a>
+      <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-treino-redes-neurais-20261026.md">Versão
+Markdown</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="toc">
+      <details open><summary>Neste tutorial</summary><nav aria-label="Índice"><ul>
+<li><a href="#treinar-uma-rede-neural-rasa-para-prever-demanda"
+id="toc-treinar-uma-rede-neural-rasa-para-prever-demanda">Treinar uma
+rede neural rasa para prever demanda</a>
+<ul>
+<li><a href="#1-onde-uma-rede-neural-rasa-se-situa"
+id="toc-1-onde-uma-rede-neural-rasa-se-situa">1. Onde uma rede neural
+rasa se situa</a></li>
+<li><a href="#2-o-vocabulário-do-laço-de-treino"
+id="toc-2-o-vocabulário-do-laço-de-treino">2. O vocabulário do laço de
+treino</a></li>
+<li><a href="#3-um-passo-de-gradiente-com-números"
+id="toc-3-um-passo-de-gradiente-com-números">3. Um passo de gradiente
+com números</a></li>
+<li><a href="#4-da-série-a-uma-tabela-de-exemplos"
+id="toc-4-da-série-a-uma-tabela-de-exemplos">4. Da série a uma tabela de
+exemplos</a></li>
+<li><a href="#5-treinar-e-ler-o-resultado"
+id="toc-5-treinar-e-ler-o-resultado">5. Treinar e ler o
+resultado</a></li>
+<li><a href="#6-um-hiperparâmetro-de-cada-vez"
+id="toc-6-um-hiperparâmetro-de-cada-vez">6. Um hiperparâmetro de cada
+vez</a></li>
+<li><a href="#7-como-avaliar-sem-se-enganar"
+id="toc-7-como-avaliar-sem-se-enganar">7. Como avaliar sem se
+enganar</a></li>
+<li><a href="#8-explore-as-corridas-com-bi"
+id="toc-8-explore-as-corridas-com-bi">8. Explore as corridas com
+BI</a></li>
+<li><a href="#9-limitações" id="toc-9-limitações">9. Limitações</a></li>
+<li><a href="#10-exercício-seu-relatório-de-treino"
+id="toc-10-exercício-seu-relatório-de-treino">10. Exercício: seu
+relatório de treino</a></li>
+<li><a href="#referências-bibliográficas-e-roteiro-de-leitura"
+id="toc-referências-bibliográficas-e-roteiro-de-leitura">Referências
+bibliográficas e roteiro de leitura</a></li>
+</ul></li>
+</ul></nav></details>
+    </aside>
+    <main id="conteudo"><h1
+id="treinar-uma-rede-neural-rasa-para-prever-demanda">Treinar uma rede
+neural rasa para prever demanda</h1>
+<p><a
+href="https://lgallindo.github.io/recomendador-bentoml/treino-redes/">Leia
+a versão web com o explorador interativo incorporado</a>.</p>
+<p>A loja de artesanato já prevê as linhas de pedido da semana seguinte
+com regras simples: a média das últimas quatro semanas erra, em média,
+três quartos de linha por semana no Jarro (<code>p01</code>). Alguém da
+equipe propõe trocar essa conta por uma rede neural. A pergunta desta
+aula é concreta: <strong>com doze semanas de histórico, uma rede pequena
+aprende algo que a média móvel ainda não captura?</strong></p>
+<p>Ao concluir este tutorial, você deverá conseguir descrever o
+<strong>laço de treino</strong> (prever, medir a perda, calcular o
+gradiente, atualizar os pesos), executar um passo de gradiente à mão,
+ler uma curva de perda, treinar uma MLP rasa com o scikit-learn e
+comparar o resultado com referências simples no mesmo período de teste.
+Você também mudará um hiperparâmetro de cada vez e relatará o que se
+moveu.</p>
+<p>Os dados são <strong>sintéticos</strong>: as 16 semanas distribuem os
+totais do catálogo da loja didática. Os números servem para reproduzir o
+método e treinar o julgamento; eles não demonstram que redes neurais
+funcionam (ou falham) em vendas reais.</p>
+<h3 id="roteiro-de-estudo">Roteiro de estudo</h3>
+<table>
+<thead>
+<tr>
+<th>Tempo sugerido</th>
+<th>Atividade de estudo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8 min</td>
+<td>Situar redes neurais em IA e aprendizado de máquina</td>
+</tr>
+<tr>
+<td>12 min</td>
+<td>Vocabulário do laço: modelo, perda, gradiente, otimizador, época,
+lote</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Um passo de gradiente com números</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Montar entradas e alvo a partir da série; separar treino e teste no
+tempo</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Treinar a MLP, ler a curva de perda e comparar com referências</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Mudar um hiperparâmetro de cada vez no explorador</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Limitações e exercício com resolução</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-onde-uma-rede-neural-rasa-se-situa">1. Onde uma rede neural
+rasa se situa</h2>
+<p><strong>Inteligência artificial (IA)</strong> é o campo que
+desenvolve sistemas capazes de tarefas como perceber, prever e decidir.
+<strong>Aprendizado de máquina (ML)</strong> é a área da IA em que um
+algoritmo ajusta um modelo a partir de exemplos. Quando cada exemplo
+traz uma entrada e a resposta correta conhecida, o problema é de
+<strong>aprendizado supervisionado</strong>. Prever a demanda da semana
+a partir do que já aconteceu é um problema supervisionado: cada semana
+passada fornece um par (entradas, demanda observada).</p>
+<p>Uma <strong>rede neural artificial</strong> é uma família de modelos
+formada por unidades simples, os <strong>neurônios</strong>, organizadas
+em camadas. Cada neurônio combina suas entradas com pesos, soma um viés
+e aplica uma função não linear. Uma rede <strong>rasa</strong> tem uma
+única camada escondida entre a entrada e a saída. A sigla
+<strong>MLP</strong> (<em>multilayer perceptron</em>) é o nome usual
+dessas redes de camadas densas.</p>
+<p><img src="../material/imagens/treino-redes-mapa.png"
+alt="Diagrama de conjuntos encaixados: inteligência artificial contém aprendizado de máquina, que contém aprendizado supervisionado, que contém a rede neural rasa MLP com pesos ajustados por gradiente. Uma seta leva à tarefa de prever linhas de pedido da próxima semana; ao lado, as referências média do treino, MA(4) e LMS." /></p>
+<p><em>Figura 1 — A rede rasa é um modelo supervisionado dentro do
+aprendizado de máquina. As áreas indicam pertencimento, não tamanho
+relativo. As referências ao lado são o padrão de comparação: a rede só
+ganha espaço se errar menos que elas no mesmo teste.</em></p>
+<h2 id="2-o-vocabulário-do-laço-de-treino">2. O vocabulário do laço de
+treino</h2>
+<table>
+<thead>
+<tr>
+<th>Termo</th>
+<th>O que é</th>
+<th>Neste laboratório</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Modelo</strong></td>
+<td>Função com parâmetros ajustáveis que transforma entradas em
+previsão</td>
+<td>MLP 2 → 8 → 1</td>
+</tr>
+<tr>
+<td><strong>Parâmetros</strong> (pesos e vieses)</td>
+<td>Números que o treino altera</td>
+<td>33 na rede base</td>
+</tr>
+<tr>
+<td><strong>Perda</strong> (<em>loss</em>)</td>
+<td>Número que resume o erro nos exemplos de treino</td>
+<td>metade do erro quadrático médio mais penalidade L2</td>
+</tr>
+<tr>
+<td><strong>Gradiente</strong></td>
+<td>Direção, para cada parâmetro, em que a perda aumenta mais
+rápido</td>
+<td>calculado pelo scikit-learn com <em>backpropagation</em></td>
+</tr>
+<tr>
+<td><strong>Otimizador</strong></td>
+<td>Regra que usa o gradiente para atualizar os parâmetros</td>
+<td>Adam</td>
+</tr>
+<tr>
+<td><strong>Taxa de aprendizado</strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>η</mi><annotation encoding="application/x-tex">\eta</annotation></semantics></math></td>
+<td>Tamanho do passo de cada atualização</td>
+<td>0,01 na rede base</td>
+</tr>
+<tr>
+<td><strong>Lote</strong> (<em>batch</em>)</td>
+<td>Conjunto de exemplos usado em uma atualização</td>
+<td>as 12 semanas de treino de uma vez</td>
+</tr>
+<tr>
+<td><strong>Época</strong></td>
+<td>Uma passagem por todos os exemplos de treino</td>
+<td>40 na rede base</td>
+</tr>
+<tr>
+<td><strong>Hiperparâmetro</strong></td>
+<td>Escolha feita antes do treino, fora dos pesos</td>
+<td>épocas,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>η</mi><annotation encoding="application/x-tex">\eta</annotation></semantics></math>,
+largura da camada</td>
+</tr>
+</tbody>
+</table>
+<p>Com 12 exemplos e lote automático do scikit-learn
+(<code>min(200, n)</code>), cada época tem <strong>um único
+lote</strong> e, portanto, uma única atualização. Em bases grandes, uma
+época reúne muitos lotes e muitas atualizações.</p>
+<p><img src="../material/imagens/treino-redes-fluxo.png"
+alt="Fluxo de quatro caixas: dados em lote, modelo MLP, perda e otimizador que atualiza os pesos, ligados por setas; abaixo, a frase: uma época é passar todos os exemplos uma vez." /></p>
+<p><em>Figura 2 — O laço de treino. A cada volta, o modelo prevê, a
+perda mede o erro, o gradiente indica a direção de melhora e o
+otimizador altera os pesos. O laço se repete por um número fixo de
+épocas.</em></p>
+<h3 id="a-rede-em-fórmulas">A rede em fórmulas</h3>
+<p>Para uma entrada
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><msub><mi>x</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">x = (x_1, x_2)</annotation></semantics></math>,
+a camada escondida com 8 neurônios calcula</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo>=</mo><mrow><mi mathvariant="normal">R</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">L</mi><mi mathvariant="normal">U</mi></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>W</mi><mn>1</mn></msub><mi>x</mi><mo>+</mo><msub><mi>b</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><mrow><mi mathvariant="normal">R</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">L</mi><mi mathvariant="normal">U</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">max</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
+h = \mathrm{ReLU}(W_1 x + b_1), \qquad \mathrm{ReLU}(z) = \max(0, z),
+</annotation></semantics></math></p>
+<p>e a saída de regressão é uma combinação linear dessas ativações:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>y</mi><mo accent="true">̂</mo></mover><mo>=</mo><msubsup><mi>w</mi><mn>2</mn><mi>⊤</mi></msubsup><mi>h</mi><mo>+</mo><msub><mi>b</mi><mn>2</mn></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\widehat{y} = w_2^\top h + b_2 .
+</annotation></semantics></math></p>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>W</mi><mn>1</mn></msub><annotation encoding="application/x-tex">W_1</annotation></semantics></math>
+tem
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mn>8</mn></mrow><annotation encoding="application/x-tex">2 \times 8</annotation></semantics></math>
+pesos,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>b</mi><mn>1</mn></msub><annotation encoding="application/x-tex">b_1</annotation></semantics></math>
+tem 8 vieses,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>w</mi><mn>2</mn></msub><annotation encoding="application/x-tex">w_2</annotation></semantics></math>
+tem 8 pesos e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>b</mi><mn>2</mn></msub><annotation encoding="application/x-tex">b_2</annotation></semantics></math>
+é um número:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>16</mn><mo>+</mo><mn>8</mn><mo>+</mo><mn>8</mn><mo>+</mo><mn>1</mn><mo>=</mo><mn>33</mn></mrow><annotation encoding="application/x-tex">16 + 8 + 8 + 1 = 33</annotation></semantics></math>
+parâmetros. A <strong>ReLU</strong> zera valores negativos; sem ela,
+empilhar camadas lineares continuaria produzindo uma reta.</p>
+<h3 id="a-perda-que-o-scikit-learn-minimiza">A perda que o scikit-learn
+minimiza</h3>
+<p>O erro quadrático médio nos
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+exemplos de treino é</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">M</mi><mi mathvariant="normal">S</mi><mi mathvariant="normal">E</mi></mrow><mo>=</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\mathrm{MSE} = \frac{1}{n}\sum_{i=1}^{n}\left(y_i - \widehat{y}_i\right)^2 .
+</annotation></semantics></math></p>
+<p>O <code>MLPRegressor</code> minimiza <strong>metade</strong> dessa
+quantidade e soma uma penalidade pequena sobre o tamanho dos pesos,
+controlada por <code>alpha</code>:</p>
+<p>$$ L = \frac{1}{2n}\sum_{i=1}^{n}\left(y_i -
+\widehat{y}_i\right)^2</p>
+<ul>
+<li>\frac{\alpha}{2n}\sum_{w} w^2 . $$</li>
+</ul>
+<p>É esse
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>L</mi><annotation encoding="application/x-tex">L</annotation></semantics></math>
+que aparece em <code>loss_curve_</code> e nas curvas desta aula. Para
+comparar com o erro de outros métodos, usamos o <strong>MAE</strong> no
+teste, na mesma unidade da demanda:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">M</mi><mi mathvariant="normal">A</mi><mi mathvariant="normal">E</mi></mrow><mo>=</mo><mfrac><mn>1</mn><mi>m</mi></mfrac><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>m</mi></munderover><mrow><mo stretchy="true" form="prefix">|</mo><msub><mi>y</mi><mi>j</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>j</mi></msub><mo stretchy="true" form="postfix">|</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\mathrm{MAE} = \frac{1}{m}\sum_{j=1}^{m}\left|y_j - \widehat{y}_j\right| .
+</annotation></semantics></math></p>
+<h3 id="a-atualização">A atualização</h3>
+<p>O gradiente descendente move cada parâmetro um passo contra o
+gradiente:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>w</mi><mo>←</mo><mi>w</mi><mo>−</mo><mi>η</mi><mspace width="0.222em"></mspace><mfrac><mrow><mi>∂</mi><mi>L</mi></mrow><mrow><mi>∂</mi><mi>w</mi></mrow></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
+w \leftarrow w - \eta\ \frac{\partial L}{\partial w}.
+</annotation></semantics></math></p>
+<p>O <strong>Adam</strong> segue a mesma ideia, mas ajusta o tamanho do
+passo de cada parâmetro com médias móveis dos gradientes recentes
+(Kingma e Ba, 2015). O <em><strong>backpropagation</strong></em> é o
+procedimento que calcula todas as derivadas
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>∂</mi><mi>L</mi><mi>/</mi><mi>∂</mi><mi>w</mi></mrow><annotation encoding="application/x-tex">\partial L / \partial w</annotation></semantics></math>
+de uma rede reaproveitando os resultados camada a camada, da saída para
+a entrada (Rumelhart, Hinton e Williams, 1986).</p>
+<h2 id="3-um-passo-de-gradiente-com-números">3. Um passo de gradiente
+com números</h2>
+<p>Antes de deixar a biblioteca trabalhar, faça um passo à mão. Use
+<strong>um único neurônio de saída linear</strong>, sem camada
+escondida, para que as derivadas fiquem curtas:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>y</mi><mo accent="true">̂</mo></mover><mo>=</mo><msub><mi>w</mi><mn>1</mn></msub><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msub><mi>w</mi><mn>2</mn></msub><msub><mi>x</mi><mn>2</mn></msub><mo>+</mo><mi>b</mi><mo>,</mo><mspace width="2.0em"></mspace><mi>L</mi><mo>=</mo><mstyle displaystyle="false"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle><mspace width="0.222em"></mspace><msup><mi>e</mi><mn>2</mn></msup><mo>,</mo><mspace width="1.0em"></mspace><mi>e</mi><mo>=</mo><mi>y</mi><mo>−</mo><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\widehat{y} = w_1 x_1 + w_2 x_2 + b, \qquad L = \tfrac{1}{2}\ e^2, \quad e = y - \widehat{y}.
+</annotation></semantics></math></p>
+<p>As derivadas são
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>∂</mi><mi>L</mi><mi>/</mi><mi>∂</mi><msub><mi>w</mi><mn>1</mn></msub><mo>=</mo><mi>−</mi><mi>e</mi><mspace width="0.222em"></mspace><msub><mi>x</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">\partial L/\partial w_1 = -e\ x_1</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>∂</mi><mi>L</mi><mi>/</mi><mi>∂</mi><msub><mi>w</mi><mn>2</mn></msub><mo>=</mo><mi>−</mi><mi>e</mi><mspace width="0.222em"></mspace><msub><mi>x</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">\partial L/\partial w_2 = -e\ x_2</annotation></semantics></math>
+e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>∂</mi><mi>L</mi><mi>/</mi><mi>∂</mi><mi>b</mi><mo>=</mo><mi>−</mi><mi>e</mi></mrow><annotation encoding="application/x-tex">\partial L/\partial b = -e</annotation></semantics></math>.
+Tome a semana 3 de <code>p01</code>:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>=</mo><mn>3</mn><mi>/</mi><mn>15</mn><mo>=</mo><mn>0</mn><mo>,</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">x_1 = 3/15 = 0{,}2</annotation></semantics></math>,
+atraso
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>2</mn></msub><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">x_2 = 3</annotation></semantics></math>
+(demanda da semana 2) e alvo
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">y = 4</annotation></semantics></math>.
+Comece com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>w</mi><mn>1</mn></msub><mo>=</mo><msub><mi>w</mi><mn>2</mn></msub><mo>=</mo><mn>0</mn><mo>,</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">w_1 = w_2 = 0{,}5</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">b = 0</annotation></semantics></math>
+e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>η</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>05</mn></mrow><annotation encoding="application/x-tex">\eta = 0{,}05</annotation></semantics></math>.</p>
+<p><img src="../material/imagens/treino-redes-neuronio.png"
+alt="À esquerda, um neurônio com entradas x1 igual a 0,2 e x2 igual a 3, pesos 0,5, viés 0, soma z e ReLU até a saída. À direita, seis linhas da conta: prever 1,6; erro 2,4; perda 2,88; gradientes menos 0,48, menos 7,2 e menos 2,4; pesos atualizados 0,524, 0,860 e 0,120; nova previsão 2,80 e nova perda 0,71." /></p>
+<p><em>Figura 3 — Anatomia de um neurônio e um passo de gradiente. Na
+conta à mão a saída é linear; na rede do laboratório, os neurônios
+escondidos aplicam ReLU e a saída continua linear.</em></p>
+<table>
+<thead>
+<tr>
+<th>Etapa</th>
+<th>Conta</th>
+<th style="text-align: right;">Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prever</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>,</mo><mn>5</mn><mo>⋅</mo><mn>0</mn><mo>,</mo><mn>2</mn><mo>+</mo><mn>0</mn><mo>,</mo><mn>5</mn><mo>⋅</mo><mn>3</mn><mo>+</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">0{,}5 \cdot 0{,}2 + 0{,}5 \cdot 3 + 0</annotation></semantics></math></td>
+<td style="text-align: right;">1,6</td>
+</tr>
+<tr>
+<td>Errar</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mo>=</mo><mn>4</mn><mo>−</mo><mn>1</mn><mo>,</mo><mn>6</mn></mrow><annotation encoding="application/x-tex">e = 4 - 1{,}6</annotation></semantics></math></td>
+<td style="text-align: right;">2,4</td>
+</tr>
+<tr>
+<td>Perda</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="false"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle><mo>⋅</mo><mn>2</mn><mo>,</mo><msup><mn>4</mn><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\tfrac{1}{2} \cdot 2{,}4^2</annotation></semantics></math></td>
+<td style="text-align: right;">2,88</td>
+</tr>
+<tr>
+<td>Gradientes</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>2</mn><mo>,</mo><mn>4</mn><mo>⋅</mo><mn>0</mn><mo>,</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">-2{,}4 \cdot 0{,}2</annotation></semantics></math>;
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>2</mn><mo>,</mo><mn>4</mn><mo>⋅</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">-2{,}4 \cdot 3</annotation></semantics></math>;
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>2</mn><mo>,</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">-2{,}4</annotation></semantics></math></td>
+<td style="text-align: right;">−0,48; −7,2; −2,4</td>
+</tr>
+<tr>
+<td>Atualizar</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>w</mi><mn>1</mn></msub><mo>=</mo><mn>0</mn><mo>,</mo><mn>5</mn><mo>+</mo><mn>0</mn><mo>,</mo><mn>05</mn><mo>⋅</mo><mn>0</mn><mo>,</mo><mn>48</mn></mrow><annotation encoding="application/x-tex">w_1 = 0{,}5 + 0{,}05 \cdot 0{,}48</annotation></semantics></math>,
+e assim por diante</td>
+<td style="text-align: right;">0,524; 0,860; 0,120</td>
+</tr>
+<tr>
+<td>Conferir</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>,</mo><mn>524</mn><mo>⋅</mo><mn>0</mn><mo>,</mo><mn>2</mn><mo>+</mo><mn>0</mn><mo>,</mo><mn>860</mn><mo>⋅</mo><mn>3</mn><mo>+</mo><mn>0</mn><mo>,</mo><mn>120</mn></mrow><annotation encoding="application/x-tex">0{,}524 \cdot 0{,}2 + 0{,}860 \cdot 3 + 0{,}120</annotation></semantics></math></td>
+<td style="text-align: right;">2,80 (perda 0,71)</td>
+</tr>
+</tbody>
+</table>
+<p>A perda caiu de 2,88 para 0,71 em um passo. Repare no gradiente de
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>w</mi><mn>2</mn></msub><annotation encoding="application/x-tex">w_2</annotation></semantics></math>:
+ele é quinze vezes maior que o de
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>w</mi><mn>1</mn></msub><annotation encoding="application/x-tex">w_1</annotation></semantics></math>
+porque o atraso vale 3, enquanto o tempo normalizado vale 0,2. Entradas
+em escalas diferentes recebem passos de tamanhos diferentes; por isso é
+comum <strong>padronizar</strong> as entradas antes de treinar.</p>
+<h2 id="4-da-série-a-uma-tabela-de-exemplos">4. Da série a uma tabela de
+exemplos</h2>
+<p>A série de <code>p01</code> está em <a
+href="../dados/vendas_semanais.csv"><code>dados/vendas_semanais.csv</code></a>
+(campos <code>week_start</code>, <code>product_id</code>,
+<code>order_line_count</code>). As 16 semanas são:</p>
+<table>
+<thead>
+<tr>
+<th>t</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mi>t</mi></msub><annotation encoding="application/x-tex">y_t</annotation></semantics></math></td>
+<td>1</td>
+<td>3</td>
+<td>3</td>
+<td>4</td>
+<td>3</td>
+<td>1</td>
+<td>4</td>
+<td>3</td>
+<td>3</td>
+<td>4</td>
+<td>1</td>
+<td>2</td>
+<td>4</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p>Cada semana vira um exemplo com duas entradas e um alvo:</p>
+<table>
+<thead>
+<tr>
+<th>Entrada</th>
+<th>Fórmula</th>
+<th>Exemplo na semana 12</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tempo normalizado</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>=</mo><mi>t</mi><mi>/</mi><mn>15</mn></mrow><annotation encoding="application/x-tex">x_1 = t/15</annotation></semantics></math></td>
+<td>0,8</td>
+</tr>
+<tr>
+<td>Atraso</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>2</mn></msub><mo>=</mo><msub><mi>y</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">x_2 = y_{t-1}</annotation></semantics></math>
+(na semana 0, repete
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mn>0</mn></msub><annotation encoding="application/x-tex">y_0</annotation></semantics></math>)</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Alvo</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mi>t</mi></msub><annotation encoding="application/x-tex">y_t</annotation></semantics></math></td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+<p>O atraso usa apenas a semana anterior, que já é conhecida no momento
+da previsão. A separação é <strong>temporal</strong>: as semanas 0–11
+formam o treino e as semanas 12–15, o teste. Nada é embaralhado.</p>
+<p><img src="../material/imagens/treino-redes-split.png"
+alt="Barras das 16 semanas de p01 com os valores 1, 3, 3, 4, 3, 1, 4, 3, 3, 4, 1, 2 em verde para o treino e 4, 2, 2, 2 em laranja para o teste, separados por uma linha tracejada após a semana 11." /></p>
+<p><em>Figura 4 — Treino no passado, teste no futuro relativo.
+Embaralhar as semanas deixaria o modelo ver demandas posteriores às que
+ele precisa prever.</em></p>
+<p>Repare que, no teste,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mn>1</mn></msub><annotation encoding="application/x-tex">x_1</annotation></semantics></math>
+vai de 0,8 a 1,0, enquanto no treino ele vai de 0 a 0,733. A rede
+precisa <strong>extrapolar</strong> no tempo, uma tarefa em que redes
+com ReLU tendem a prolongar a última inclinação aprendida.</p>
+<h2 id="5-treinar-e-ler-o-resultado">5. Treinar e ler o resultado</h2>
+<p>Na raiz do repositório:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_treino_mlp_demanda.py</span></code></pre></div>
+<p>O script usa <code>MLPRegressor</code> com uma camada escondida ReLU,
+otimizador Adam, <code>random_state=0</code> e <code>alpha=1e-4</code>.
+Ele grava:</p>
+<table>
+<thead>
+<tr>
+<th>Arquivo</th>
+<th>Conteúdo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a
+href="../material/redes/resultado_mlp_p01.json"><code>redes/resultado_mlp_p01.json</code></a></td>
+<td>Formatos, MAE da referência e das quatro corridas</td>
+</tr>
+<tr>
+<td><a
+href="../material/redes/curvas_mlp_p01.json"><code>redes/curvas_mlp_p01.json</code></a></td>
+<td>Perda por época, previsões de teste de cada corrida e das
+referências</td>
+</tr>
+<tr>
+<td><code>imagens/treino-redes-mse-p01.png</code></td>
+<td>Curva de perda da corrida base</td>
+</tr>
+<tr>
+<td><code>imagens/treino-redes-fluxo.png</code></td>
+<td>Diagrama do laço</td>
+</tr>
+</tbody>
+</table>
+<p>Resultado esperado no JSON, com scikit-learn 1.9:</p>
+<ul>
+<li><code>shape_x_treino</code>: <code>[12, 2]</code> (12 exemplos, 2
+entradas);</li>
+<li><code>dtype_y</code>: <code>float64 (linhas de pedido)</code>;</li>
+<li><code>mae_baseline_media</code>: <code>0.8333…</code>;</li>
+<li><code>mae_mlp_base</code>: <code>1.4737…</code>.</li>
+</ul>
+<p>Versões diferentes da biblioteca podem alterar as casas decimais. Se
+isso acontecer, use os números do seu JSON e mantenha o raciocínio.</p>
+<p><img src="../material/imagens/treino-redes-mse-p01.png"
+alt="Curva da perda de treino da MLP rasa em p01 ao longo de 40 épocas, caindo de cerca de 9,6 para 0,76." /></p>
+<p><em>Figura 5 — A perda de treino cai de 9,61 para 0,76 em 40 épocas e
+ainda está descendo no fim. A curva mede o ajuste às semanas de treino;
+ela não informa o erro no teste.</em></p>
+<h3 id="a-rede-contra-as-referências">A rede contra as referências</h3>
+<p>No mesmo teste de quatro semanas (demanda observada 4, 2, 2, 2):</p>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Previsões nas semanas 12–15</th>
+<th style="text-align: right;">MAE no teste</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Média do treino
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>32</mn><mi>/</mi><mn>12</mn><mo>≈</mo><mn>2</mn><mo>,</mo><mn>67</mn></mrow><annotation encoding="application/x-tex">32/12 \approx 2{,}67</annotation></semantics></math>)</td>
+<td>2,67; 2,67; 2,67; 2,67</td>
+<td style="text-align: right;">0,833</td>
+</tr>
+<tr>
+<td>Ingênua (repete a semana anterior)</td>
+<td>2; 4; 2; 2</td>
+<td style="text-align: right;">1,000</td>
+</tr>
+<tr>
+<td>MA(4) (média das 4 semanas anteriores)</td>
+<td>2,50; 2,75; 2,25; 2,50</td>
+<td style="text-align: right;"><strong>0,750</strong></td>
+</tr>
+<tr>
+<td>LMS / ADALINE (reta online, reajustada a cada semana)</td>
+<td>2,49; 3,01; 2,71; 2,48</td>
+<td style="text-align: right;">0,928</td>
+</tr>
+<tr>
+<td>MLP base</td>
+<td>3,66; 3,79; 3,84; 3,93</td>
+<td style="text-align: right;">1,474</td>
+</tr>
+</tbody>
+</table>
+<p>A MLP base prevê quase 4 linhas em todas as semanas de teste. Ela não
+terminou de ajustar (a perda ainda caía) e extrapola uma tendência de
+alta que a série não confirma. A média móvel, sem parâmetro algum
+aprendido por gradiente, continua sendo a melhor previsão desta
+tabela.</p>
+<h2 id="6-um-hiperparâmetro-de-cada-vez">6. Um hiperparâmetro de cada
+vez</h2>
+<p>O script repete o treino mudando <strong>uma</strong> escolha por vez
+a partir da corrida base (40 épocas,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>η</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>01</mn></mrow><annotation encoding="application/x-tex">\eta = 0{,}01</annotation></semantics></math>,
+8 neurônios). Mudar uma coisa de cada vez permite atribuir a mudança no
+resultado à escolha alterada.</p>
+<table>
+<thead>
+<tr>
+<th>Corrida</th>
+<th>O que muda</th>
+<th style="text-align: right;">Perda final de treino</th>
+<th style="text-align: right;">MAE no teste</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>base</code></td>
+<td>—</td>
+<td style="text-align: right;">0,762</td>
+<td style="text-align: right;">1,474</td>
+</tr>
+<tr>
+<td><code>mais_epocas</code></td>
+<td>80 épocas</td>
+<td style="text-align: right;">0,620</td>
+<td style="text-align: right;">1,162</td>
+</tr>
+<tr>
+<td><code>lr_maior</code></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>η</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>05</mn></mrow><annotation encoding="application/x-tex">\eta = 0{,}05</annotation></semantics></math></td>
+<td style="text-align: right;">0,648</td>
+<td style="text-align: right;">0,964</td>
+</tr>
+<tr>
+<td><code>mais_larga</code></td>
+<td>16 neurônios (65 parâmetros)</td>
+<td style="text-align: right;">1,160</td>
+<td style="text-align: right;">1,102</td>
+</tr>
+</tbody>
+</table>
+<p>Leitura:</p>
+<ul>
+<li><strong>Mais épocas</strong> dá ao otimizador mais passos: a perda
+cai mais e o MAE de teste melhora, porque a rede base estava
+subajustada.</li>
+<li><strong>Taxa de aprendizado maior</strong> acelera a descida. A
+curva oscila nas primeiras épocas (veja no explorador) e termina com o
+melhor MAE das quatro corridas, 0,964.</li>
+<li><strong>Camada mais larga</strong>, com o mesmo número de épocas e a
+mesma taxa, termina com perda <em>maior</em>: mais parâmetros pedem mais
+passos para ajustar. O MAE melhora em relação à base por outra razão: a
+rede passa a seguir o atraso (prevê 4,04 na semana 13, logo depois do 4
+da semana 12).</li>
+<li><strong>Nenhuma corrida</strong> alcança a média do treino (0,833)
+nem a MA(4) (0,750).</li>
+</ul>
+<h2 id="7-como-avaliar-sem-se-enganar">7. Como avaliar sem se
+enganar</h2>
+<ul>
+<li><strong>Teste intocado.</strong> As semanas 12–15 não participam do
+treino nem da escolha de hiperparâmetros. Ao escolher a corrida com
+menor MAE de teste, você passa a usar o teste para selecionar; numa
+avaliação final, reserve outro período.</li>
+<li><strong>Referência antes do modelo.</strong> Uma rede só merece
+espaço se errar menos que as referências simples no
+<strong>mesmo</strong> período e com a <strong>mesma</strong>
+métrica.</li>
+<li><strong>Poucas semanas, muita variação.</strong> Com 4 semanas de
+teste, uma única semana difícil (o 4 da semana 12) pesa um quarto do
+MAE. Diferenças de poucos centésimos não sustentam uma conclusão.</li>
+<li><strong>Semente.</strong> A inicialização dos pesos é aleatória;
+<code>random_state=0</code> torna o resultado reprodutível, mas outra
+semente produziria outros números.</li>
+<li><strong>Sobreajuste e subajuste.</strong> A rede base está
+<strong>subajustada</strong> (perda ainda caindo). Com 33 parâmetros e
+12 exemplos, mais treino também pode levar ao
+<strong>sobreajuste</strong>: memorizar o ruído das semanas de
+treino.</li>
+</ul>
+<h2 id="8-explore-as-corridas-com-bi">8. Explore as corridas com BI</h2>
+<p>O <a href="../material/bi-redes/index.html">explorador de redes
+neurais</a> mostra as quatro curvas de perda sobrepostas, as previsões
+de cada corrida contra a série observada, as barras de MAE com as
+referências e uma tabela das semanas de teste com exportação em CSV e
+PNG. Você pode usá-lo incorporado à <a
+href="https://lgallindo.github.io/recomendador-bentoml/treino-redes/#explorador-interativo">versão
+web deste tutorial</a> ou abrir o HTML a partir de uma cópia local do
+repositório. Consulte o <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-redes/README.md">roteiro
+de exploração</a>.</p>
+<section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
+<h3 id="explorer-heading">Experimente o treino neste tutorial</h3>
+<p>Compare curvas de perda, previsões e MAE das corridas de treino. As 16 semanas são sintéticas.</p>
+<div class="explorer-actions">
+<button id="fullscreen-explorer" type="button">Ver explorador em tela cheia</button>
+<a href="../material/bi-redes/index.html" target="_blank" rel="noopener">Abrir explorador em nova aba</a>
+</div>
+<p id="explorer-status" role="status"></p>
+<iframe id="explorer" src="../material/bi-redes/index.html" title="Explorador interativo de treino de redes"
+loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+</section>
+<p>O painel apresenta resultados já calculados pelo script: trocar a
+corrida não treina uma rede nova no navegador.</p>
+<p><img src="../material/imagens/bi-redes-perdas.png"
+alt="Quatro curvas de perda de treino por época: base termina em 0,76, 80 épocas em 0,62, taxa 0,05 em 0,65 depois de oscilar no início, largura 16 em 1,16." /></p>
+<p><em>Figura 6 — Espelho estático do painel 02. A curva laranja
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>η</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>05</mn></mrow><annotation encoding="application/x-tex">\eta = 0{,}05</annotation></semantics></math>)
+desce rápido, oscila e se estabiliza; a roxa (largura 16) desce mais
+devagar.</em></p>
+<p><img src="../material/imagens/bi-redes-mae.png"
+alt="Barras de MAE no teste de p01: base 1,47; 80 épocas 1,16; taxa 0,05 0,96; largura 16 1,10; média do treino 0,83; ingênua 1,00; MA(4) 0,75; LMS 0,93. Uma linha tracejada marca 0,75." /></p>
+<p><em>Figura 7 — Espelho estático do painel 04. As barras coloridas são
+corridas da MLP; as cinzas, referências. A linha tracejada marca a
+MA(4), a menor barra.</em></p>
+<h3 id="atividade-no-painel">Atividade no painel</h3>
+<ol type="1">
+<li>Escolha a corrida <code>base</code> e marque <strong>Média do
+treino</strong>. Em que semana de teste a rede erra mais? Por quê?</li>
+<li>Troque para
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>η</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>05</mn></mrow><annotation encoding="application/x-tex">\eta = 0{,}05</annotation></semantics></math>.
+Descreva a forma da curva de perda nas primeiras dez épocas.</li>
+<li>Compare <code>80 épocas</code> e <code>largura 16</code>: qual
+termina com menor perda de treino e qual tem menor MAE de teste?
+Explique por que as duas ordens podem diferir.</li>
+<li>Exporte o CSV e um PNG e escreva três frases para a equipe da
+loja.</li>
+</ol>
+<p><strong>Resolução comentada:</strong> a rede base erra mais nas
+semanas 13–15 (prevê cerca de 3,8 quando a demanda foi 2), pois
+extrapola uma tendência de alta. Com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>η</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>05</mn></mrow><annotation encoding="application/x-tex">\eta = 0{,}05</annotation></semantics></math>,
+a perda cai de 9,61 para 0,65 em seis épocas, sobe até 1,84 nas épocas
+9–10 e volta a cair até cerca de 0,7: o passo grande ultrapassa a região
+de mínimo antes de se acomodar. <code>80 épocas</code> tem perda de
+treino menor (0,62 contra 1,16), mas MAE de teste maior (1,16 contra
+1,10): ajustar melhor o passado não garante prever melhor o futuro. Uma
+mensagem possível: “Testamos uma rede neural pequena nas últimas quatro
+semanas do Jarro. A melhor configuração errou 0,96 linha por semana; a
+média móvel de quatro semanas errou 0,75. Com este histórico,
+recomendamos manter a média móvel e reavaliar quando houver mais
+semanas.”</p>
+<h2 id="9-limitações">9. Limitações</h2>
+<ul>
+<li>Doze exemplos de treino e quatro de teste são suficientes para
+mostrar o laço, não para escolher um modelo de produção.</li>
+<li>A entrada de tempo normalizado força a rede a extrapolar no teste.
+Outras entradas (mais atrasos, médias móveis como atributo) mudariam o
+problema.</li>
+<li>O scikit-learn esconde o <em>backpropagation</em> e o Adam; o passo
+à mão da seção 3 usa um único neurônio linear para que a conta caiba no
+caderno.</li>
+<li>A série é sintética e de um único produto.</li>
+</ul>
+<h2 id="10-exercício-seu-relatório-de-treino">10. Exercício: seu
+relatório de treino</h2>
+<ol type="1">
+<li>Rode o script e copie <code>shape_x_treino</code>,
+<code>mae_baseline_media</code> e <code>mae_mlp_base</code>.</li>
+<li>Faça um passo de gradiente à mão para a <strong>semana 7</strong> de
+<code>p01</code> com o neurônio linear da seção 3, os mesmos pesos
+iniciais e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>η</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>05</mn></mrow><annotation encoding="application/x-tex">\eta = 0{,}05</annotation></semantics></math>.
+Informe previsão, erro, perda, gradientes, pesos novos e perda depois do
+passo.</li>
+<li>Conte os parâmetros da rede <code>mais_larga</code> (2 → 16 → 1) e
+mostre a conta.</li>
+<li>Para cada uma das três mudanças da seção 6, escreva uma frase sobre
+o que se moveu na perda de treino e no MAE de teste.</li>
+<li>Em um parágrafo, recomende manter ou trocar a MA(4) e cite uma
+limitação da evidência.</li>
+</ol>
+<h3 id="resolução-comentada">Resolução comentada</h3>
+<p><strong>1.</strong> <code>shape_x_treino = [12, 2]</code>,
+<code>mae_baseline_media ≈ 0,833</code>,
+<code>mae_mlp_base ≈ 1,474</code> (com scikit-learn 1.9; outras versões
+podem variar nas casas decimais).</p>
+<p><strong>2.</strong> Na semana 7:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>=</mo><mn>7</mn><mi>/</mi><mn>15</mn><mo>≈</mo><mn>0</mn><mo>,</mo><mn>467</mn></mrow><annotation encoding="application/x-tex">x_1 = 7/15 \approx 0{,}467</annotation></semantics></math>,
+atraso
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>2</mn></msub><mo>=</mo><msub><mi>y</mi><mn>6</mn></msub><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">x_2 = y_6 = 4</annotation></semantics></math>,
+alvo
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mn>7</mn></msub><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">y_7 = 3</annotation></semantics></math>.
+Previsão
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>,</mo><mn>5</mn><mo>⋅</mo><mn>0</mn><mo>,</mo><mn>467</mn><mo>+</mo><mn>0</mn><mo>,</mo><mn>5</mn><mo>⋅</mo><mn>4</mn><mo>=</mo><mn>2</mn><mo>,</mo><mn>233</mn></mrow><annotation encoding="application/x-tex">0{,}5 \cdot 0{,}467 + 0{,}5 \cdot 4 = 2{,}233</annotation></semantics></math>;
+erro
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>767</mn></mrow><annotation encoding="application/x-tex">e = 0{,}767</annotation></semantics></math>;
+perda
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="false"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle><mo>⋅</mo><mn>0</mn><mo>,</mo><msup><mn>767</mn><mn>2</mn></msup><mo>≈</mo><mn>0</mn><mo>,</mo><mn>294</mn></mrow><annotation encoding="application/x-tex">\tfrac{1}{2} \cdot 0{,}767^2 \approx 0{,}294</annotation></semantics></math>.
+Gradientes:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0</mn><mo>,</mo><mn>358</mn></mrow><annotation encoding="application/x-tex">-0{,}358</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>w</mi><mn>1</mn></msub><annotation encoding="application/x-tex">w_1</annotation></semantics></math>),
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>3</mn><mo>,</mo><mn>067</mn></mrow><annotation encoding="application/x-tex">-3{,}067</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>w</mi><mn>2</mn></msub><annotation encoding="application/x-tex">w_2</annotation></semantics></math>),
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0</mn><mo>,</mo><mn>767</mn></mrow><annotation encoding="application/x-tex">-0{,}767</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>).
+Pesos novos:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>w</mi><mn>1</mn></msub><mo>=</mo><mn>0</mn><mo>,</mo><mn>518</mn></mrow><annotation encoding="application/x-tex">w_1 = 0{,}518</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>w</mi><mn>2</mn></msub><mo>=</mo><mn>0</mn><mo>,</mo><mn>653</mn></mrow><annotation encoding="application/x-tex">w_2 = 0{,}653</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>038</mn></mrow><annotation encoding="application/x-tex">b = 0{,}038</annotation></semantics></math>.
+Nova previsão
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≈</mo><mn>2</mn><mo>,</mo><mn>893</mn></mrow><annotation encoding="application/x-tex">\approx 2{,}893</annotation></semantics></math>;
+perda
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≈</mo><mn>0</mn><mo>,</mo><mn>006</mn></mrow><annotation encoding="application/x-tex">\approx 0{,}006</annotation></semantics></math>.</p>
+<p><strong>3.</strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>⋅</mo><mn>16</mn><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mn>16</mn><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>⋅</mo><mn>1</mn><mo>=</mo><mn>48</mn><mo>+</mo><mn>17</mn><mo>=</mo><mn>65</mn></mrow><annotation encoding="application/x-tex">(2 + 1) \cdot 16 + (16 + 1) \cdot 1 = 48 + 17 = 65</annotation></semantics></math>
+parâmetros.</p>
+<p><strong>4.</strong> Mais épocas: a perda cai de 0,762 para 0,620 e o
+MAE, de 1,474 para 1,162. Taxa maior: perda 0,648 e MAE 0,964, o melhor
+das quatro. Mais largura: perda sobe para 1,160 porque 40 passos não
+bastam para 65 parâmetros; o MAE cai para 1,102 porque a rede passa a
+seguir o atraso.</p>
+<p><strong>5.</strong> Exemplo: “No teste das semanas 12–15 de
+<code>p01</code>, a MA(4) errou 0,75 linha por semana e a melhor rede,
+0,96. Recomendo manter a MA(4). A comparação usa apenas quatro semanas
+sintéticas de um produto e uma semente; uma rede pode se tornar
+competitiva com mais histórico e outras entradas, o que exigiria nova
+avaliação em período reservado.”</p>
+<h2 id="referências-bibliográficas-e-roteiro-de-leitura">Referências
+bibliográficas e roteiro de leitura</h2>
+<p>Consulta dos materiais on-line: 7 nov. 2026.</p>
+<ol type="1">
+<li>HAYKIN, Simon. <strong>Redes neurais: princípios e prática</strong>.
+2. ed. Porto Alegre: Bookman, 2001. <strong>Para aprofundar:</strong>
+neurônio, perceptron de múltiplas camadas e retropropagação, em
+português.</li>
+<li>GOODFELLOW, Ian; BENGIO, Yoshua; COURVILLE, Aaron. <strong>Deep
+learning</strong>. Cambridge, MA: MIT Press, 2016. <a
+href="https://www.deeplearningbook.org/">Texto on-line em inglês</a>.
+<strong>Para aprofundar:</strong> capítulos 6 (redes
+<em>feedforward</em>) e 8 (otimização).</li>
+<li>NIELSEN, Michael. <strong>Neural networks and deep
+learning</strong>. Determination Press, 2015. <a
+href="http://neuralnetworksanddeeplearning.com/">Livro on-line em
+inglês</a>. <strong>Para consultar:</strong> gradiente descendente e
+<em>backpropagation</em> passo a passo.</li>
+<li>RUMELHART, David E.; HINTON, Geoffrey E.; WILLIAMS, Ronald J.
+Learning representations by back-propagating errors.
+<strong>Nature</strong>, v. 323, p. 533–536, 1986. DOI:
+10.1038/323533a0.</li>
+<li>KINGMA, Diederik P.; BA, Jimmy. Adam: a method for stochastic
+optimization. In: <strong>ICLR</strong>, 2015. <a
+href="https://arxiv.org/abs/1412.6980">arXiv:1412.6980</a>.</li>
+<li>SCIKIT-LEARN. <strong>Neural network models (supervised)</strong>.
+<a
+href="https://scikit-learn.org/stable/modules/neural_networks_supervised.html">Guia
+do usuário em inglês</a> e <a
+href="https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPRegressor.html">referência
+do <code>MLPRegressor</code></a>. <strong>Para consultar:</strong>
+perda, <code>alpha</code>, <code>loss_curve_</code> e conselhos de
+padronização das entradas.</li>
+<li>HYNDMAN, Rob J.; ATHANASOPOULOS, George. <strong>Forecasting:
+principles and practice</strong>. 3. ed. OTexts, 2021. <a
+href="https://otexts.com/fpp3/">Livro on-line em inglês</a>.
+<strong>Para aprofundar:</strong> avaliação de previsões com origem
+temporal e referências simples.</li>
+</ol>
+<h3 id="artefatos-no-repositório">Artefatos no repositório</h3>
+<table>
+<thead>
+<tr>
+<th>Artefato</th>
+<th>Papel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dados/vendas_semanais.csv</code></td>
+<td>Série semanal sintética (16 semanas × 12 produtos)</td>
+</tr>
+<tr>
+<td><code>scripts/demo_treino_mlp_demanda.py</code></td>
+<td>Treino da MLP rasa, quatro corridas e referências</td>
+</tr>
+<tr>
+<td><code>material/redes/resultado_mlp_p01.json</code></td>
+<td>Resumo numérico das corridas</td>
+</tr>
+<tr>
+<td><code>material/redes/curvas_mlp_p01.json</code></td>
+<td>Curvas de perda e previsões de teste</td>
+</tr>
+<tr>
+<td><code>material/bi-redes/</code></td>
+<td>Explorador interativo</td>
+</tr>
+<tr>
+<td><code>material/imagens/</code> (regenerar:
+<code>.local/scripts/gerar_figuras_redes.py</code>)</td>
+<td>Diagramas desta aula</td>
+</tr>
+<tr>
+<td><code>scripts/gerar_bi_redes.py</code></td>
+<td>Dados do explorador e figuras <code>bi-redes-*.png</code></td>
+</tr>
+</tbody>
+</table></main>
+  </div>
+</body>
+</html>

@@ -6,10 +6,10 @@ if (fullscreen) {
     const frame = document.getElementById("explorer");
     const status = document.getElementById("explorer-status");
     if (!frame.requestFullscreen) {
-      status.textContent = "Use o link para abrir o explorador em uma nova aba.";
+      status.textContent = "Abra o explorador em nova aba pelo vínculo desta página.";
       return;
     }
     try { await frame.requestFullscreen(); }
-    catch { status.textContent = "Use o link para abrir o explorador em uma nova aba."; }
+    catch { status.textContent = "Abra o explorador em nova aba pelo vínculo desta página."; }
   });
 }

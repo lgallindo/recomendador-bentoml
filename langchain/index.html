@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutoriais com explorador interativo: associação de regras e previsão de demanda.">
+  <title>LangChain: uma chain mínima no catálogo da
+loja · Aprender com dados</title>
+  <link rel="stylesheet" href="../assets/tutorial.css">
+  <script src="../assets/tutorial.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir ao conteúdo principal</a>
+  <header class="site-header">
+    <a class="brand" href="../">Aprender com dados</a>
+    <nav aria-label="Navegação principal">
+      <a href="../">Associação</a>
+      <a href="../logs-auth/">Logs</a>
+      <a href="../demanda/">Média móvel</a>
+      <a href="../demanda-mq/">Mín. quadrados</a>
+      <a href="../demanda-perc/">LMS</a>
+      <a href="../demanda-poisson/">Poisson</a>
+      <a href="#explorador-interativo">Explorar</a>
+      <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-langchain-20261026.md">Versão
+Markdown</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="toc">
+      <details open><summary>Neste tutorial</summary><nav aria-label="Índice"><ul>
+<li><a
+href="#orquestrar-passos-ao-redor-de-um-modelo-uma-chain-mínima-com-langchain"
+id="toc-orquestrar-passos-ao-redor-de-um-modelo-uma-chain-mínima-com-langchain">Orquestrar
+passos ao redor de um modelo: uma chain mínima com LangChain</a>
+<ul>
+<li><a href="#1-onde-uma-chain-se-situa"
+id="toc-1-onde-uma-chain-se-situa">1. Onde uma chain se situa</a></li>
+<li><a href="#2-chain-como-composição-de-funções"
+id="toc-2-chain-como-composição-de-funções">2. Chain como composição de
+funções</a></li>
+<li><a href="#3-rodar-a-chain-pelos-dois-caminhos"
+id="toc-3-rodar-a-chain-pelos-dois-caminhos">3. Rodar a chain pelos dois
+caminhos</a></li>
+<li><a href="#4-o-rastro-o-que-viaja-em-cada-seta"
+id="toc-4-o-rastro-o-que-viaja-em-cada-seta">4. O rastro: o que viaja em
+cada seta</a></li>
+<li><a href="#5-explore-o-rastro-com-bi"
+id="toc-5-explore-o-rastro-com-bi">5. Explore o rastro com BI</a></li>
+<li><a href="#6-o-que-muda-com-um-modelo-de-linguagem-real"
+id="toc-6-o-que-muda-com-um-modelo-de-linguagem-real">6. O que muda com
+um modelo de linguagem real</a></li>
+<li><a href="#7-framework-ou-script-puro"
+id="toc-7-framework-ou-script-puro">7. Framework ou script
+puro?</a></li>
+<li><a href="#8-limitações" id="toc-8-limitações">8. Limitações</a></li>
+<li><a href="#9-exercício-endureça-a-chain"
+id="toc-9-exercício-endureça-a-chain">9. Exercício: endureça a
+chain</a></li>
+<li><a href="#referências-e-artefatos"
+id="toc-referências-e-artefatos">Referências e artefatos</a></li>
+</ul></li>
+</ul></nav></details>
+    </aside>
+    <main id="conteudo"><h1
+id="orquestrar-passos-ao-redor-de-um-modelo-uma-chain-mínima-com-langchain">Orquestrar
+passos ao redor de um modelo: uma chain mínima com LangChain</h1>
+<p><a
+href="https://lgallindo.github.io/recomendador-bentoml/langchain/">Leia
+a versão web com o explorador incorporado</a>.</p>
+<p>A loja de artesanato quer um atendimento por chat que responda a
+pedidos como “Fala do p04” com a ficha certa do catálogo, sem inventar
+técnica nem região. Um modelo de linguagem sozinho não conhece o
+catálogo da loja. Alguém precisa <strong>extrair o id da pergunta,
+buscar a ficha, montar o prompt, chamar o modelo e converter a
+resposta</strong> num formato que o site consiga usar. Essa sequência de
+passos é o que o mercado chama de <em>chain</em>.</p>
+<p>Ao concluir esta aula, você deverá conseguir descrever uma chain como
+composição de funções, nomear o papel de cada peça (template, modelo,
+parser, ferramenta), ler um rastro passo a passo, reconhecer três modos
+de falha da chain da loja e argumentar quando um framework como o
+LangChain ajuda e quando três funções Python bastam.</p>
+<p>O “modelo” desta aula é <strong>uma função determinística</strong>:
+lê a ficha e devolve um JSON. Assim você roda tudo sem chave de API e
+obtém sempre a mesma saída. O catálogo é sintético. Os resultados
+demonstram a mecânica da orquestração, e não a qualidade de um modelo de
+linguagem real.</p>
+<h3 id="roteiro-de-estudo">Roteiro de estudo</h3>
+<table>
+<thead>
+<tr>
+<th>Tempo sugerido</th>
+<th>Atividade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8 min</td>
+<td>Situar uma chain entre modelo e aplicação</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Definir chain como composição e conhecer as peças</td>
+</tr>
+<tr>
+<td>12 min</td>
+<td>Rodar o script puro e o modo LangChain; comparar saídas</td>
+</tr>
+<tr>
+<td>12 min</td>
+<td>Ler o rastro de seis perguntas, incluindo três falhas</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Percorrer o explorador passo a passo e exportar evidência</td>
+</tr>
+<tr>
+<td>8 min</td>
+<td>Discutir o que muda com um modelo real</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Decidir framework ou script e resolver o exercício</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-onde-uma-chain-se-situa">1. Onde uma chain se situa</h2>
+<p><strong>Inteligência artificial (IA)</strong> é o campo que
+desenvolve sistemas capazes de tarefas como perceber, raciocinar,
+aprender e decidir. <strong>Aprendizado de máquina (ML)</strong> é a
+área da IA em que modelos ajustam parâmetros a partir de dados. Um
+<strong>modelo de linguagem</strong> é um modelo de ML treinado em
+grandes volumes de texto para prever a continuação de uma sequência de
+palavras; seus parâmetros (os <strong>pesos</strong>) ficam fixos depois
+do treino.</p>
+<p><img src="../material/imagens/langchain-mapa.png"
+alt="Dois blocos lado a lado. À esquerda, IA contém aprendizado de máquina, que contém o modelo de linguagem com pesos treinados. À direita, a aplicação, em engenharia de software, reúne prompt, ferramenta de lookup, parser JSON e rastro; uma seta indica que o modelo é chamado pela chain." /></p>
+<p><em>Figura 1 — A chain vive do lado da aplicação. Ela não altera os
+pesos do modelo; ela decide o que entra no modelo e o que fazer com o
+que sai. Os tamanhos dos blocos não representam a importância relativa
+das partes.</em></p>
+<p>Uma <strong>chain</strong> é, portanto, código de aplicação. Ela
+pertence à engenharia de software ao redor do modelo: preparar entradas,
+chamar serviços, validar saídas, registrar o que aconteceu. Frameworks
+de orquestração, como o <a
+href="https://reference.langchain.com/python/langchain-core/runnables">LangChain</a>,
+oferecem peças prontas para esses passos e uma forma padronizada de
+encadeá-las.</p>
+<h2 id="2-chain-como-composição-de-funções">2. Chain como composição de
+funções</h2>
+<p>Cada passo recebe uma entrada e devolve uma saída. Encadear passos é
+compor funções: a saída de um vira a entrada do seguinte. Na chain da
+loja,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>q</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">r</mi></mrow><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">o</mi></mrow><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">p</mi><mi mathvariant="normal">t</mi></mrow><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><mrow><mi mathvariant="normal">l</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">k</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">p</mi></mrow><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><mrow><mi mathvariant="normal">e</mi><mi mathvariant="normal">x</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>q</mi><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
+f(q) = \mathrm{parser}\big(\mathrm{modelo}\big(\mathrm{prompt}\big(\mathrm{lookup}\big(\mathrm{extrair}(q)\big)\big)\big)\big),
+</annotation></semantics></math></p>
+<p>ou, na notação de composição,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo>=</mo><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">r</mi></mrow><mo>∘</mo><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">o</mi></mrow><mo>∘</mo><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">p</mi><mi mathvariant="normal">t</mi></mrow><mo>∘</mo><mrow><mi mathvariant="normal">l</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">k</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">p</mi></mrow><mo>∘</mo><mrow><mi mathvariant="normal">e</mi><mi mathvariant="normal">x</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">r</mi></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+f = \mathrm{parser}\circ\mathrm{modelo}\circ\mathrm{prompt}\circ\mathrm{lookup}\circ\mathrm{extrair}.
+</annotation></semantics></math></p>
+<p>A composição só funciona quando o <strong>tipo de saída</strong> de
+cada passo coincide com o <strong>tipo de entrada</strong> do seguinte.
+Grande parte dos defeitos de uma chain aparece nessas junções: um passo
+devolve texto quando o próximo espera um dicionário, ou devolve um id
+que a ferramenta não conhece.</p>
+<p>No LangChain, o mesmo encadeamento se escreve com o operador
+<code>|</code> da <em>LangChain Expression Language</em> (LCEL). Cada
+peça é um <strong>Runnable</strong>, objeto com o método
+<code>invoke</code>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>chain <span class="op">=</span> prompt <span class="op">|</span> modelo <span class="op">|</span> parser   <span class="co"># lê-se da esquerda para a direita</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>resposta <span class="op">=</span> chain.invoke({<span class="st">&quot;pergunta&quot;</span>: <span class="st">&quot;Fala do p04&quot;</span>})</span></code></pre></div>
+<p>A ordem de leitura é a inversa da notação
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>∘</mi><annotation encoding="application/x-tex">\circ</annotation></semantics></math>:
+em <code>a | b</code>, primeiro roda <code>a</code>, depois
+<code>b</code>.</p>
+<h3 id="as-peças-e-seus-papéis">As peças e seus papéis</h3>
+<table>
+<thead>
+<tr>
+<th>Peça</th>
+<th>Recebe</th>
+<th>Devolve</th>
+<th>Nesta aula</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Extrator</td>
+<td>texto da pergunta</td>
+<td><code>pid</code> (ex.: <code>"p04"</code>)</td>
+<td>expressão regular <code>p\d{2}</code></td>
+</tr>
+<tr>
+<td>Ferramenta (<em>tool</em>)</td>
+<td><code>pid</code></td>
+<td>ficha do produto</td>
+<td><code>lookup_produto</code> lê <code>dados/catalogo.json</code></td>
+</tr>
+<tr>
+<td>Template de prompt</td>
+<td>variáveis</td>
+<td>lista de mensagens</td>
+<td><code>ChatPromptTemplate</code> com <code>system</code> +
+<code>human</code></td>
+</tr>
+<tr>
+<td>Modelo</td>
+<td>mensagens / estado</td>
+<td>texto</td>
+<td>função determinística <code>modelo_stub</code></td>
+</tr>
+<tr>
+<td>Parser</td>
+<td>texto</td>
+<td>estrutura de dados</td>
+<td><code>StrOutputParser</code> garante texto; <code>json.loads</code>
+converte em dicionário</td>
+</tr>
+<tr>
+<td>Rastro</td>
+<td>cada passo</td>
+<td>registro auditável</td>
+<td><code>rastros.json</code></td>
+</tr>
+</tbody>
+</table>
+<p>Uma <strong>ferramenta</strong> é uma função externa ao modelo que a
+chain chama para obter um fato confiável — aqui, a ficha do catálogo. Um
+<strong>parser</strong> converte o texto do modelo num formato que o
+restante do sistema entende. O <strong>rastro</strong> registra o que
+entrou e saiu de cada passo; é com ele que você depura e audita.</p>
+<p>As classes citadas foram conferidas em <code>langchain-core</code>
+<strong>1.7.6</strong>:
+<code>langchain_core.prompts.ChatPromptTemplate</code>,
+<code>langchain_core.runnables.RunnableLambda</code> e
+<code>RunnablePassthrough</code>,
+<code>langchain_core.output_parsers.StrOutputParser</code> (e
+<code>JsonOutputParser</code>, que você usará no exercício). Nomes de
+pacotes e classes mudam entre versões; confira a <a
+href="https://reference.langchain.com/python/langchain-core/runnables">referência
+de Runnables</a> da versão instalada antes de copiar exemplos
+antigos.</p>
+<h2 id="3-rodar-a-chain-pelos-dois-caminhos">3. Rodar a chain pelos dois
+caminhos</h2>
+<p>O script <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/scripts/demo_langchain_loja.py"><code>demo_langchain_loja.py</code></a>
+implementa os mesmos passos duas vezes: em Python puro e com peças do
+LangChain. Rode na raiz do repositório.</p>
+<p><strong>Caminho A — script puro</strong>, sem pacote extra:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_langchain_loja.py <span class="at">--modo</span> puro</span></code></pre></div>
+<p><strong>Caminho B — LangChain</strong>, com o pacote de núcleo
+instalado só para esta execução (o <code>pyproject.toml</code> não
+muda):</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run <span class="at">--with</span> langchain-core python scripts/demo_langchain_loja.py <span class="at">--modo</span> langchain</span></code></pre></div>
+<p>Nos dois casos, a pergunta padrão é “Quero uma dica sobre o produto
+p01” e a saída esperada, em <code>saida</code>, é:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;ok&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;produto&quot;</span><span class="fu">:</span> <span class="st">&quot;p01&quot;</span><span class="fu">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;resumo&quot;</span><span class="fu">:</span> <span class="st">&quot;Jarro barro Tracunhaém — técnica ceramica (Tracunhaém)&quot;</span><span class="fu">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;pergunta&quot;</span><span class="fu">:</span> <span class="st">&quot;Quero uma dica sobre o produto p01&quot;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>O campo <code>modo</code> muda (<code>script_puro</code> ou
+<code>langchain</code>); <code>saida</code> fica idêntica. Esse é o
+primeiro resultado da aula: <strong>o framework não mudou o
+comportamento</strong>, apenas a forma de escrever o encadeamento. O
+arquivo <a
+href="../material/langchain/resultado_chain_loja.json"><code>langchain/resultado_chain_loja.json</code></a>
+guarda uma execução do caminho B com a pergunta “Fala do p04”:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run <span class="at">--with</span> langchain-core python scripts/demo_langchain_loja.py <span class="at">--modo</span> langchain <span class="at">--pergunta</span> <span class="st">&quot;Fala do p04&quot;</span></span></code></pre></div>
+<h3 id="leia-a-chain-do-caminho-b">Leia a chain do caminho B</h3>
+<p>O trecho essencial de <code>chain_langchain</code>:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>chain <span class="op">=</span> (</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    {<span class="st">&quot;pergunta&quot;</span>: RunnablePassthrough()}</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">|</span> RunnableLambda(<span class="kw">lambda</span> p: {<span class="st">&quot;pergunta&quot;</span>: p <span class="cf">if</span> <span class="bu">isinstance</span>(p, <span class="bu">str</span>) <span class="cf">else</span> p[<span class="st">&quot;pergunta&quot;</span>]})</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">|</span> RunnableLambda(ferramenta)            <span class="co"># extrai o id e faz o lookup</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">|</span> RunnableLambda(<span class="kw">lambda</span> estado: {<span class="op">**</span>estado,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;prompt_preview&quot;</span>: prompt.<span class="bu">format</span>(pergunta<span class="op">=</span>estado[<span class="st">&quot;pergunta&quot;</span>])})</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">|</span> RunnableLambda(chamar_modelo)         <span class="co"># modelo determinístico</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">|</span> StrOutputParser()</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p><code>RunnableLambda</code> transforma qualquer função Python num
+Runnable; o dicionário inicial com <code>RunnablePassthrough</code>
+repassa a entrada sob a chave <code>pergunta</code>. Repare num detalhe
+que um rastro revela e uma leitura rápida esconde: o template formata as
+mensagens, mas <strong>a ficha do produto não entra no prompt</strong>.
+O modelo determinístico recebe a ficha diretamente pelo estado. Um
+modelo de linguagem real só saberia da ficha se ela estivesse no texto
+enviado. O exercício pede que você corrija isso.</p>
+<h2 id="4-o-rastro-o-que-viaja-em-cada-seta">4. O rastro: o que viaja em
+cada seta</h2>
+<p>Para estudar a chain como um processo, rode o lote de seis perguntas.
+Ele executa os dois caminhos e grava, passo a passo, a carga de cada
+seta:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run <span class="at">--with</span> langchain-core python scripts/demo_langchain_loja.py <span class="at">--lote</span></span></code></pre></div>
+<p>Resultado esperado no terminal (uma linha por pergunta, abreviada
+aqui):</p>
+<pre class="text"><code>Quero uma dica sobre o produto p01 → {&quot;ok&quot;: true, &quot;produto&quot;: &quot;p01&quot;, …} | idênticas: True | []
+Fala do p04 → {&quot;ok&quot;: true, &quot;produto&quot;: &quot;p04&quot;, …} | idênticas: True | []
+Me conta da peça P07 → {&quot;ok&quot;: true, &quot;produto&quot;: &quot;p07&quot;, …} | idênticas: True | []
+Fala do p04 e do p07 → {&quot;ok&quot;: true, &quot;produto&quot;: &quot;p04&quot;, …} | idênticas: True | [&quot;vários ids [&#39;p04&#39;, &#39;p07&#39;]: só o primeiro foi usado&quot;]
+O que é o p13? → {&quot;ok&quot;: false, &quot;motivo&quot;: &quot;produto_nao_encontrado&quot;} | idênticas: True | [&#39;id inexistente no catálogo: ferramenta devolveu erro&#39;]
+Qual peça combina com renda? → {&quot;ok&quot;: true, &quot;produto&quot;: &quot;p01&quot;, …} | idênticas: True | [&#39;sem id na pergunta: extrator usou o padrão p01&#39;]</code></pre>
+<p>O arquivo <a
+href="../material/langchain/rastros.json"><code>langchain/rastros.json</code></a>
+guarda os seis rastros. Para “Fala do p04”, as cargas são:</p>
+<table>
+<thead>
+<tr>
+<th>Seta</th>
+<th>Tipo</th>
+<th>Carga</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>entrada → extrair</td>
+<td>texto</td>
+<td><code>"Fala do p04"</code></td>
+</tr>
+<tr>
+<td>extrair → lookup</td>
+<td>dicionário</td>
+<td><code>{"pid": "p04", "achado_no_texto": true}</code></td>
+</tr>
+<tr>
+<td>lookup → prompt</td>
+<td>dicionário</td>
+<td><code>{"id": "p04", "nome": "Rendeira Alto do Moura", "tecnica": "renda", "regiao": "Alto do Moura"}</code></td>
+</tr>
+<tr>
+<td>prompt → modelo</td>
+<td>lista de mensagens</td>
+<td><code>system</code>: “Você resume um produto do catálogo em JSON.”;
+<code>human</code>: “Fala do p04”</td>
+</tr>
+<tr>
+<td>modelo → parser</td>
+<td>texto</td>
+<td><code>'{"ok": true, "produto": "p04", "resumo": "Rendeira Alto do Moura — técnica renda (Alto do Moura)", …}'</code></td>
+</tr>
+<tr>
+<td>parser → aplicação</td>
+<td>dicionário</td>
+<td><code>{"ok": true, "produto": "p04", …}</code></td>
+</tr>
+</tbody>
+</table>
+<p><img src="../material/imagens/langchain-cadeia.png"
+alt="Cinco caixas em linha: extrair id, ferramenta lookup, prompt, modelo determinístico e parser JSON. Sob cada seta aparece a carga para a pergunta Fala do p04: pid igual a p04; ficha da Rendeira Alto do Moura, renda; mensagens system e human; texto bruto começando com ok true; e, sob o parser, um dicionário Python com ok True e produto p04." /></p>
+<p><em>Figura 2 — Cada seta carrega um tipo diferente: texto,
+dicionário, lista de mensagens, texto JSON e, por fim, dicionário. A
+fórmula na base é a mesma composição da seção 2. O modelo desta figura é
+determinístico.</em></p>
+<h3 id="três-modos-de-falha-nesta-chain">Três modos de falha nesta
+chain</h3>
+<p><img src="../material/imagens/bi-chain-alertas.png"
+alt="Seis perguntas com um marcador colorido cada. Três estão em verde, com produto p01, p04 e p07. Fala do p04 e do p07 está em âmbar, com o alerta de que só o primeiro id foi usado. O que é o p13 está em terracota, como falha explícita de id inexistente. Qual peça combina com renda está em âmbar, porque o extrator usou o padrão p01." /></p>
+<p><em>Figura 3 — Mesma chain, seis entradas. A cor indica o estado
+final: verde para resposta limpa, âmbar para resposta com alerta,
+terracota para falha explícita. Os alertas vêm do rastro, e não da saída
+final.</em></p>
+<ol type="1">
+<li><strong>Id inexistente (“O que é o p13?”).</strong> O catálogo tem
+12 produtos. A ferramenta devolve
+<code>{"id": "p13", "erro": "produto_nao_encontrado"}</code> e o modelo
+responde <code>{"ok": false, "motivo": "produto_nao_encontrado"}</code>.
+É uma <strong>falha explícita</strong>: o site sabe que não há resposta
+e pode pedir outro id.</li>
+<li><strong>Pergunta sem id (“Qual peça combina com renda?”).</strong> O
+extrator não encontra <code>p\d{2}</code> e usa <code>p01</code> como
+padrão. A saída tem <code>ok: true</code> e fala do Jarro, uma peça de
+cerâmica. É uma <strong>falha silenciosa</strong>: nada na saída final
+avisa que a pergunta foi ignorada. O padrão <code>p01</code> é uma
+escolha de projeto do script, conveniente para a demonstração e
+arriscada num atendimento real.</li>
+<li><strong>Dois ids (“Fala do p04 e do p07”).</strong> Só o primeiro é
+usado. A resposta está correta para metade da pergunta.</li>
+</ol>
+<p>Os casos 2 e 3 só aparecem porque o rastro registra
+<code>achado_no_texto</code> e os ids encontrados. Sem rastro, você
+veria três respostas com <code>ok: true</code>.</p>
+<h2 id="5-explore-o-rastro-com-bi">5. Explore o rastro com BI</h2>
+<p>O <a href="../material/bi-chain/index.html">explorador da chain</a>
+percorre os seis rastros passo a passo. Você escolhe a pergunta, avança
+seta por seta, vê a carga exata de cada passo e um fluxo em que falhas e
+alertas ficam destacados. A tabela de auditoria compara as saídas do
+script puro e do modo LangChain. Consulte o <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-chain/README.md">roteiro
+de exploração</a>. Para estudar offline, abra o HTML a partir de uma
+cópia local do repositório.</p>
+<section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
+<h3 id="explorer-heading">Percorra a chain neste tutorial</h3>
+<p>Escolha uma pergunta e acompanhe o que viaja em cada etapa. O modelo da demonstração é determinístico.</p>
+<div class="explorer-actions">
+<button id="fullscreen-explorer" type="button">Ver explorador em tela cheia</button>
+<a href="../material/bi-chain/index.html" target="_blank" rel="noopener">Abrir explorador em nova aba</a>
+</div>
+<p id="explorer-status" role="status"></p>
+<iframe id="explorer" src="../material/bi-chain/index.html" title="Explorador interativo de rastros da chain"
+loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+</section>
+<p>O painel <strong>relê rastros gravados</strong>: trocar a pergunta
+não executa a chain nem chama um modelo. Para outra pergunta,
+acrescente-a a <code>PERGUNTAS_LOTE</code> no script, rode
+<code>--lote</code> e depois:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/gerar_bi_chain.py</span></code></pre></div>
+<h3 id="atividade-no-painel">Atividade no painel</h3>
+<ol type="1">
+<li>Em “Fala do p04”, avance os seis passos e anote o tipo de cada
+carga.</li>
+<li>Em “O que é o p13?”, identifique o primeiro passo marcado como
+falha.</li>
+<li>Em “Qual peça combina com renda?”, encontre o passo em que a
+informação da pergunta se perdeu.</li>
+<li>Exporte o PNG do fluxo de um caso com alerta e o CSV da
+auditoria.</li>
+</ol>
+<p><strong>Resolução comentada:</strong> as cargas são texto,
+dicionário, dicionário, lista de duas mensagens, texto JSON e
+dicionário. Para <code>p13</code>, a primeira falha está na ferramenta
+(passo 3), que devolve <code>erro</code>; o parser também fica marcado
+porque a saída tem <code>ok: false</code>. Para “renda”, a perda
+acontece no passo 2: <code>pid = p01</code> com
+<code>achado_no_texto: false</code>. O CSV mostra “sim” na coluna de
+comparação para as seis perguntas.</p>
+<h2 id="6-o-que-muda-com-um-modelo-de-linguagem-real">6. O que muda com
+um modelo de linguagem real</h2>
+<p>Trocar <code>modelo_stub</code> por um modelo real mantém a forma da
+chain e muda quatro propriedades:</p>
+<table>
+<thead>
+<tr>
+<th>Propriedade</th>
+<th>Modelo determinístico da aula</th>
+<th>Modelo de linguagem real</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reprodutibilidade</td>
+<td>mesma entrada, mesma saída</td>
+<td>o texto pode variar entre chamadas; temperatura e versão do modelo
+influenciam</td>
+</tr>
+<tr>
+<td>Conhecimento</td>
+<td>lê a ficha diretamente</td>
+<td>sabe apenas o que está nos pesos e no prompt; a ficha precisa estar
+no texto</td>
+</tr>
+<tr>
+<td>Formato da saída</td>
+<td>JSON sempre válido</td>
+<td>pode devolver texto fora do formato; o parser precisa tratar erro ou
+pedir saída estruturada</td>
+</tr>
+<tr>
+<td>Custo e latência</td>
+<td>microssegundos, sem custo</td>
+<td>cobrança por <em>tokens</em> de entrada e saída, latência de
+rede</td>
+</tr>
+</tbody>
+</table>
+<p>Um <strong>token</strong> é a unidade de texto que o modelo processa
+(aproximadamente um pedaço de palavra). Provedores cobram por token e
+limitam quantos cabem numa chamada, por isso colar fichas inteiras no
+prompt tem custo. <strong>Saída estruturada</strong> é o recurso de
+pedir ao modelo, ou ao provedor, uma resposta que obedeça a um esquema
+JSON; ela reduz, sem eliminar, a necessidade de validar o resultado no
+parser.</p>
+<p>O padrão ferramenta → prompt → modelo, em que um fato confiável é
+buscado e colocado no prompt antes da geração, é o mesmo princípio da
+geração aumentada por recuperação (RAG), usada quando o fato está em
+documentos.</p>
+<h2 id="7-framework-ou-script-puro">7. Framework ou script puro?</h2>
+<p><img src="../material/imagens/langchain-decisao.png"
+alt="Quadrante com dois eixos: quantidade de passos, ferramentas e provedores no horizontal; necessidade de rastreio, troca de modelo e streaming no vertical. Embaixo à esquerda, três funções suas bastam, com uma estrela marcando a demo da loja. Em cima à direita, framework com LCEL, callbacks e integrações. Os outros dois quadrantes sugerem script com logging bem feito e script modular avaliando framework quando crescer." /></p>
+<p><em>Figura 4 — Um mapa de decisão qualitativo. Os eixos não têm
+escala medida; a posição da estrela resume o tamanho da demo da loja:
+cinco passos, uma ferramenta, nenhum provedor externo.</em></p>
+<table>
+<thead>
+<tr>
+<th>Situação</th>
+<th>Tendência</th>
+<th>Por quê</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Poucos passos, uma ferramenta, sem provedor externo</td>
+<td>script puro</td>
+<td>três funções são lidas por qualquer pessoa da equipe; o rastro é um
+<code>dict</code></td>
+</tr>
+<tr>
+<td>Vários provedores de modelo, troca frequente</td>
+<td>framework</td>
+<td>as integrações padronizam a interface de chamada</td>
+</tr>
+<tr>
+<td>Necessidade de streaming, callbacks e tracing</td>
+<td>framework</td>
+<td>o mecanismo de callbacks registra cada Runnable sem código
+extra</td>
+</tr>
+<tr>
+<td>Equipe aprendendo os conceitos</td>
+<td>script puro primeiro</td>
+<td>cada passo fica visível; o framework vem depois, com
+vocabulário</td>
+</tr>
+<tr>
+<td>Dependência estável e auditável é prioridade</td>
+<td>script puro ou núcleo mínimo</td>
+<td><code>langchain-core</code> sozinho é menor que o ecossistema
+completo; versões mudam APIs</td>
+</tr>
+</tbody>
+</table>
+<p>O critério de fundo é o mesmo da engenharia de software: adote a
+abstração quando ela remove mais complexidade do que acrescenta. Nesta
+aula, o script puro e a chain do LangChain produzem saídas idênticas; o
+que você ganha com o framework é vocabulário de mercado e um caminho
+para crescer.</p>
+<h2 id="8-limitações">8. Limitações</h2>
+<ul>
+<li>O modelo é determinístico; a aula não mede qualidade de geração de
+texto.</li>
+<li>O extrator por expressão regular cobre apenas ids no formato
+<code>pNN</code>. Nomes (“o jarro”) não são reconhecidos.</li>
+<li>O padrão <code>p01</code> para perguntas sem id é uma escolha de
+demonstração; num atendimento real ele produz respostas confiantes para
+a pergunta errada.</li>
+<li>O catálogo é sintético, com 12 produtos.</li>
+</ul>
+<h2 id="9-exercício-endureça-a-chain">9. Exercício: endureça a
+chain</h2>
+<p>Entregue:</p>
+<ol type="1">
+<li>A composição
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math>
+da sua chain, na notação
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>∘</mi><annotation encoding="application/x-tex">\circ</annotation></semantics></math>
+e na notação <code>|</code>, com o tipo de entrada e de saída de cada
+passo.</li>
+<li>A saída <code>saida</code> dos caminhos A e B para a pergunta “Me
+conta da peça P07”, com o comando usado, e uma frase sobre a
+comparação.</li>
+<li>Uma alteração no script que faça “Qual peça combina com renda?”
+devolver <code>{"ok": false, "motivo": "sem_id"}</code> em vez de usar
+<code>p01</code>. Rode <code>--lote</code> e mostre a linha nova.</li>
+<li>Um novo template de prompt que inclua a ficha (nome, técnica e
+região) na mensagem <code>human</code>. Mostre as mensagens formatadas
+para “Fala do p04”.</li>
+<li>Cinco linhas: em que situação da loja você adotaria o framework, e o
+que você mediria antes de decidir.</li>
+</ol>
+<h3 id="resolução-comentada">Resolução comentada</h3>
+<p><strong>1.</strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo>=</mo><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">r</mi></mrow><mo>∘</mo><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">o</mi></mrow><mo>∘</mo><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">p</mi><mi mathvariant="normal">t</mi></mrow><mo>∘</mo><mrow><mi mathvariant="normal">l</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">k</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">p</mi></mrow><mo>∘</mo><mrow><mi mathvariant="normal">e</mi><mi mathvariant="normal">x</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">r</mi></mrow></mrow><annotation encoding="application/x-tex">f = \mathrm{parser}\circ\mathrm{modelo}\circ\mathrm{prompt}\circ\mathrm{lookup}\circ\mathrm{extrair}</annotation></semantics></math>;
+em LCEL, <code>extrair | lookup | prompt | modelo | parser</code>.
+Tipos: texto → <code>pid</code> (texto) → ficha (dicionário) → mensagens
+(lista) → texto JSON → dicionário.</p>
+<p><strong>2.</strong> Os dois caminhos devolvem
+<code>{"ok": true, "produto": "p07", "resumo": "Xilogravura Pilar — técnica xilogravura (Comunidade do Pilar)", …}</code>.
+O extrator converte a pergunta para minúsculas, por isso
+<code>P07</code> é reconhecido. As saídas são idênticas, como mostra a
+coluna <code>saidas_identicas</code> do lote.</p>
+<p><strong>3.</strong> Uma solução mínima altera
+<code>extrair_pid</code> para devolver <code>None</code> quando não há
+id e faz <code>lookup_produto</code> tratar <code>None</code> com
+<code>{"erro": "sem_id"}</code>; o modelo determinístico já converte
+<code>erro</code> em <code>ok: false</code>. A linha do lote passa a ser
+<code>Qual peça combina com renda? → {"ok": false, "motivo": "sem_id"}</code>.
+A falha deixa de ser silenciosa.</p>
+<p><strong>4.</strong> Por exemplo,
+<code>("human", "Pergunta: {pergunta}\nFicha: {nome}, técnica {tecnica}, região {regiao}")</code>.
+Para <code>p04</code>, a mensagem <code>human</code> fica “Pergunta:
+Fala do p04 / Ficha: Rendeira Alto do Moura, técnica renda, região Alto
+do Moura”. Com essa mudança, um modelo real recebe o fato de que
+precisa.</p>
+<p><strong>5.</strong> Uma resposta possível: adotar o framework quando
+o chat precisar trocar entre dois provedores de modelo, registrar
+rastros num painel de observação e somar ferramentas (estoque, frete).
+Antes de decidir, medir quantas linhas de cola o framework remove, o
+tempo de atualização de versões e se a equipe consegue depurar um rastro
+nas duas versões.</p>
+<h2 id="referências-e-artefatos">Referências e artefatos</h2>
+<h3 id="leitura">Leitura</h3>
+<ol type="1">
+<li>LANGCHAIN. <strong>langchain_core.runnables</strong>. Referência da
+API em inglês, <a
+href="https://reference.langchain.com/python/langchain-core/runnables">disponível
+on-line</a>. <strong>Para consultar:</strong> o protocolo Runnable
+(<code>invoke</code>, <code>batch</code>, <code>stream</code>),
+<code>RunnableLambda</code>, <code>RunnablePassthrough</code> e a
+composição com <code>|</code>.</li>
+<li>LANGCHAIN. <strong>ChatPromptTemplate</strong>. <a
+href="https://reference.langchain.com/python/langchain-core/prompts/chat/ChatPromptTemplate">Referência
+em inglês</a>. <strong>Para consultar:</strong> mensagens
+<code>system</code> / <code>human</code> e variáveis do template.</li>
+<li>LANGCHAIN. <strong>output_parsers</strong> e
+<strong>StrOutputParser</strong>. <a
+href="https://reference.langchain.com/python/langchain-core/output_parsers">Módulo</a>
+· <a
+href="https://reference.langchain.com/python/langchain-core/output_parsers/string/StrOutputParser">StrOutputParser</a>.
+<strong>Para consultar:</strong> parsers de texto e JSON; a própria
+referência indica saída estruturada como alternativa moderna aos
+parsers.</li>
+<li>LANGCHAIN. <strong>Tools</strong> e <strong>Structured
+output</strong>. <a
+href="https://docs.langchain.com/oss/python/langchain/tools">Tools</a> ·
+<a
+href="https://docs.langchain.com/oss/python/langchain/structured-output">Structured
+output</a>. <strong>Para aprofundar:</strong> como um modelo real
+escolhe e chama ferramentas e devolve respostas num esquema.</li>
+</ol>
+<p>Consulta dos materiais on-line: 7 nov. 2026. As APIs citadas foram
+conferidas em <code>langchain-core</code> 1.7.6.</p>
+<h3 id="artefatos-no-repositório">Artefatos no repositório</h3>
+<table>
+<thead>
+<tr>
+<th>Artefato</th>
+<th>Papel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dados/catalogo.json</code></td>
+<td>Catálogo sintético de 12 produtos (ferramenta de lookup)</td>
+</tr>
+<tr>
+<td><code>scripts/demo_langchain_loja.py</code></td>
+<td>Chain nos dois caminhos; <code>--lote</code> grava os rastros</td>
+</tr>
+<tr>
+<td><code>material/langchain/resultado_chain_loja.json</code></td>
+<td>Uma execução do caminho B (“Fala do p04”)</td>
+</tr>
+<tr>
+<td><code>material/langchain/rastros.json</code></td>
+<td>Seis perguntas, passo a passo, nos dois caminhos</td>
+</tr>
+<tr>
+<td><code>material/bi-chain/</code></td>
+<td>Explorador do rastro</td>
+</tr>
+<tr>
+<td><code>scripts/gerar_bi_chain.py</code></td>
+<td>Gera <code>bi-chain/dados.js</code> a partir dos rastros</td>
+</tr>
+<tr>
+<td><code>material/imagens/</code> (regenerar:
+<code>.local/scripts/gerar_figuras_chain_memoria.py</code>)</td>
+<td>Gera as figuras desta aula</td>
+</tr>
+</tbody>
+</table></main>
+  </div>
+</body>
+</html>

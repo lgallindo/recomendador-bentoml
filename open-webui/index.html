@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutoriais com explorador interativo: associação de regras e previsão de demanda.">
+  <title>Open WebUI e Ollama: chat local em
+contêineres · Aprender com dados</title>
+  <link rel="stylesheet" href="../assets/tutorial.css">
+  <script src="../assets/tutorial.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir ao conteúdo principal</a>
+  <header class="site-header">
+    <a class="brand" href="../">Aprender com dados</a>
+    <nav aria-label="Navegação principal">
+      <a href="../">Associação</a>
+      <a href="../logs-auth/">Logs</a>
+      <a href="../demanda/">Média móvel</a>
+      <a href="../demanda-mq/">Mín. quadrados</a>
+      <a href="../demanda-perc/">LMS</a>
+      <a href="../demanda-poisson/">Poisson</a>
+      <a href="#explorador-interativo">Explorar</a>
+      <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-open-webui-20261026.md">Versão
+Markdown</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="toc">
+      <details open><summary>Neste tutorial</summary><nav aria-label="Índice"><ul>
+<li><a href="#open-webui--ollama--chat-local-em-docker-cpu"
+id="toc-open-webui--ollama--chat-local-em-docker-cpu">Open WebUI +
+Ollama — chat local em Docker (CPU)</a>
+<ul>
+<li><a href="#1-o-que-a-luz-verde-não-responde"
+id="toc-1-o-que-a-luz-verde-não-responde">1. O que a luz verde não
+responde</a></li>
+<li><a href="#2-dois-serviços-um-contrato"
+id="toc-2-dois-serviços-um-contrato">2. Dois serviços, um
+contrato</a></li>
+<li><a href="#3-fluxo-da-aula-esquerda--direita"
+id="toc-3-fluxo-da-aula-esquerda--direita">3. Fluxo da aula (esquerda →
+direita)</a></li>
+<li><a href="#4-subir-o-stack" id="toc-4-subir-o-stack">4. Subir o
+stack</a></li>
+<li><a href="#5-modelo-pequeno-em-cpu"
+id="toc-5-modelo-pequeno-em-cpu">5. Modelo pequeno em CPU</a></li>
+<li><a href="#6-ancorar-no-material-da-loja"
+id="toc-6-ancorar-no-material-da-loja">6. Ancorar no material da
+loja</a></li>
+<li><a href="#7-experimento-controle-versus-divergente"
+id="toc-7-experimento-controle-versus-divergente">7. Experimento:
+controle versus divergente</a></li>
+<li><a href="#8-falhas-típicas-e-checks"
+id="toc-8-falhas-típicas-e-checks">8. Falhas típicas e checks</a></li>
+<li><a href="#9-runbook-operacional" id="toc-9-runbook-operacional">9.
+Runbook operacional</a></li>
+<li><a href="#10-ritual-ao-vivo-ordem-fixa"
+id="toc-10-ritual-ao-vivo-ordem-fixa">10. Ritual ao vivo (ordem
+fixa)</a></li>
+<li><a href="#11-entrega" id="toc-11-entrega">11. Entrega</a></li>
+<li><a href="#12-irmã-de-trilha" id="toc-12-irmã-de-trilha">12. Irmã de
+trilha</a></li>
+<li><a href="#exercício-checklist"
+id="toc-exercício-checklist">Exercício (checklist)</a></li>
+<li><a href="#referência" id="toc-referência">Referência</a></li>
+</ul></li>
+</ul></nav></details>
+    </aside>
+    <main id="conteudo"><h1
+id="open-webui--ollama--chat-local-em-docker-cpu">Open WebUI + Ollama —
+chat local em Docker (CPU)</h1>
+<p>Uma janela de chat que responde com fluência e um
+<code>docker compose ps</code> todo verde ainda não garantem que o
+<strong>modelo certo</strong> está carregado, que a UI fala com o
+<strong>runtime</strong> pretendido, nem que a resposta está
+<strong>ancorada</strong> no material da loja. Esta aula sobe o stack
+neste repositório, separa os papéis de cada serviço e ensina a provar (e
+a falhar de propósito) o caminho Compose → Ollama → Open WebUI →
+conteúdo seu.</p>
+<p>Compose canônico: <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/open-webui/docker-compose.yml"><code>material/open-webui/docker-compose.yml</code></a>.</p>
+<p>Mini-wiki para injetar contexto: <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/mini-wiki-rag"><code>material/mini-wiki-rag/</code></a>.</p>
+<h3 id="roteiro">Roteiro</h3>
+<table>
+<thead>
+<tr>
+<th>Bloco</th>
+<th>O que você faz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Parábola</td>
+<td>Verde na UI ≠ conteúdo adequado</td>
+</tr>
+<tr>
+<td>Papéis</td>
+<td>Ollama (runtime) vs Open WebUI (interface)</td>
+</tr>
+<tr>
+<td>Fluxo</td>
+<td>Subir → puxar modelo → conversar → ancorar → derrubar</td>
+</tr>
+<tr>
+<td>Laboratório</td>
+<td>Ritual ao vivo + experimento controle vs divergente</td>
+</tr>
+<tr>
+<td>Entrega</td>
+<td>Evidências objetivas (ps, modelo, turnos, falha, runbook)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="1-o-que-a-luz-verde-não-responde">1. O que a luz verde não
+responde</h2>
+<p>Imagine a loja abrindo um “assistente” interno. Alguém pergunta o
+prazo de devolução de uma peça de Tracunhaém. A interface carrega, o
+status dos contêineres está saudável e o texto volta educado — porém
+cita uma política que <strong>não existe</strong> na mini-wiki, ou usa
+um modelo que a máquina mal aguenta e “esquece” o contexto no segundo
+turno.</p>
+<p>Disponibilidade do stack (imagens no ar, porta <code>3000</code>
+respondendo) responde apenas: <em>o pipeline de chat local está de
+pé?</em> A pergunta de adequação é outra: <em>este runtime, este modelo
+e este material injetado bastam para a tarefa da aula?</em></p>
+<p>Nesta página o caminho é <strong>Docker Compose em CPU</strong>, sem
+apontar outros repositórios de ensino. Tudo que você precisa está sob
+<code>material/open-webui/</code> e, para o exercício de conteúdo, sob
+<code>material/mini-wiki-rag/</code>.</p>
+<hr />
+<h2 id="2-dois-serviços-um-contrato">2. Dois serviços, um contrato</h2>
+<table>
+<thead>
+<tr>
+<th>Serviço</th>
+<th>Papel</th>
+<th>Onde vive neste lab</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ollama</strong></td>
+<td>Runtime que carrega pesos e atende a API de geração</td>
+<td>Contêiner <code>ollama</code> (rede interna
+<code>:11434</code>)</td>
+</tr>
+<tr>
+<td><strong>Open WebUI</strong></td>
+<td>Interface (contas, chats, uploads, system prompt) na frente do
+runtime</td>
+<td>Contêiner <code>open-webui</code> publicado em
+<code>http://127.0.0.1:3000</code></td>
+</tr>
+</tbody>
+</table>
+<p>No Compose deste repositório a UI recebe
+<code>OLLAMA_BASE_URL=http://ollama:11434</code>. Esse nome de host só
+resolve <strong>dentro</strong> da rede Docker criada pelo Compose. Do
+seu navegador você fala com a UI na porta <strong>3000</strong>; a UI,
+por sua vez, fala com o Ollama pelo nome do serviço.</p>
+<p>Se a UI estiver no ar mas <code>OLLAMA_BASE_URL</code> apontar para o
+lugar errado, o sintoma clássico é chat vazio, erro de conexão com o
+modelo, ou lista de modelos inexistente — com a home page ainda
+“bonita”.</p>
+<p>Volumes persistentes:</p>
+<ul>
+<li><code>ollama_data</code> — modelos baixados;</li>
+<li><code>open_webui_data</code> — dados da UI (contas, históricos,
+knowledge).</li>
+</ul>
+<p>Derrubar com <code>docker compose down</code> <strong>sem</strong>
+<code>-v</code> preserva esses volumes; com <code>-v</code> você apaga
+modelos e histórico locais do lab.</p>
+<hr />
+<h2 id="3-fluxo-da-aula-esquerda--direita">3. Fluxo da aula (esquerda →
+direita)</h2>
+<pre class="text"><code>[1 Compose up] → [2 Modelo leve] → [3 Chat 3 turnos]
+        → [4 Conteúdo seu] → [5 Divergente / falha] → [6 Down + runbook]</code></pre>
+<ol type="1">
+<li><strong>Compose up</strong> — imagens, rede, volumes; prova com
+<code>docker compose ps</code>.</li>
+<li><strong>Modelo leve</strong> — <code>tinyllama</code> ou equivalente
+pequeno em CPU; anote o id.</li>
+<li><strong>Chat</strong> — três turnos sobre a loja (frete, devolução,
+peça <code>p01</code>).</li>
+<li><strong>Conteúdo seu</strong> — upload ou system prompt a partir da
+mini-wiki; peça uma resposta que cite o trecho.</li>
+<li><strong>Divergente</strong> — uma falha deliberada (modelo ausente,
+URL errada, ou pergunta fora do corpus) e o check antes de confiar.</li>
+<li><strong>Down + runbook</strong> — parar o stack; preencher a tabela
+de operação.</li>
+</ol>
+<p>A figura completa do fluxo permanece estável; cada bloco abaixo só
+aprofunda o mesmo caminho.</p>
+<hr />
+<h2 id="4-subir-o-stack">4. Subir o stack</h2>
+<p>Na pasta do Compose:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> material/open-webui</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">-d</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose ps</span></code></pre></div>
+<p>Esperado: serviços <code>ollama</code> e <code>open-webui</code> em
+execução (ou reinício saudável). UI: <a
+href="http://127.0.0.1:3000"><span>http://127.0.0.1:3000</span></a>.</p>
+<p>Na primeira subida o Docker pode demorar para puxar
+<code>ollama/ollama</code> e <code>ghcr.io/open-webui/open-webui</code>.
+Não encerre o terminal no primeiro silêncio longo sem olhar
+<code>docker compose ps</code> e
+<code>docker compose logs --tail=50</code>.</p>
+<p><strong>Caminho B (máquina sem pull):</strong> se a imagem não
+baixar, registre o erro completo (<code>docker compose logs</code> +
+mensagem de rede/disco) e use o restante desta página como leitura do
+contrato UI ↔︎ runtime, sem nota de interface.</p>
+<hr />
+<h2 id="5-modelo-pequeno-em-cpu">5. Modelo pequeno em CPU</h2>
+<p>Prefira um modelo leve. Exemplos comuns em laboratório:
+<code>tinyllama</code>, <code>phi3:mini</code>. Modelos grandes em CPU
+costumam gerar <em>timeout</em>, troca excessiva ou OOM — isso é falha
+de <strong>adequação do modelo à máquina</strong>, não “UI
+quebrada”.</p>
+<p>Pelo host (com o stack no ar):</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose exec ollama ollama pull tinyllama</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose exec ollama ollama list</span></code></pre></div>
+<p>Na UI, selecione o mesmo id de modelo. Três turnos sugeridos:</p>
+<ol type="1">
+<li><em>Qual o prazo de devolução citado no material da loja?</em></li>
+<li><em>E o frete para Tracunhaém?</em></li>
+<li><em>A peça <code>p01</code> aparece no catálogo da
+mini-wiki?</em></li>
+</ol>
+<p>Guarde: id do modelo, se a UI listou o modelo <strong>antes</strong>
+do <code>pull</code>, e um resumo de uma frase por turno (sem colar
+paredes de texto).</p>
+<hr />
+<h2 id="6-ancorar-no-material-da-loja">6. Ancorar no material da
+loja</h2>
+<p>Sem conteúdo seu, o modelo responde do parâmetro geral. Com conteúdo,
+a aula exige disciplina de citação: a resposta deve poder apontar trecho
+ou arquivo que você mesmo forneceu.</p>
+<p>Fontes no repo (abra e escolha um parágrafo curto):</p>
+<ul>
+<li><a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/mini-wiki-rag/frete.md"><code>mini-wiki-rag/frete.md</code></a></li>
+<li><a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/mini-wiki-rag/devolucao.md"><code>mini-wiki-rag/devolucao.md</code></a></li>
+<li><a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/mini-wiki-rag/catalogo-p01.md"><code>mini-wiki-rag/catalogo-p01.md</code></a></li>
+</ul>
+<p>Caminhos na UI (nomes variam conforme a versão da imagem; use o que
+existir):</p>
+<ul>
+<li><strong>Upload / Knowledge</strong> de um <code>.md</code> da
+mini-wiki; ou</li>
+<li><strong>System prompt</strong> colando um parágrafo integral de
+<code>frete.md</code> ou <code>devolucao.md</code>.</li>
+</ul>
+<p>Peça de novo o prazo de devolução ou o frete e verifique se a
+resposta reproduz (ou cita) o trecho injetado. Se o modelo “completa de
+cabeça” com política inventada, registre isso como falha de ancoragem —
+a UI continua verde.</p>
+<p>Este bloco prepara o salto para as aulas de <strong>RAG</strong> e
+<strong>llmwiki</strong> no mesmo caderno: lá o retrieve é explícito;
+aqui a ênfase é o contrato interface ↔︎ runtime ↔︎ material colado.</p>
+<hr />
+<h2 id="7-experimento-controle-versus-divergente">7. Experimento:
+controle versus divergente</h2>
+<p>Congele o resto do stack. Mude <strong>uma</strong> variável por
+vez.</p>
+<table>
+<thead>
+<tr>
+<th>Condição</th>
+<th>O que fazer</th>
+<th>O que observar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Controle</strong></td>
+<td>Modelo leve listado; <code>OLLAMA_BASE_URL</code> padrão do Compose;
+pergunta coberta por <code>devolucao.md</code> injetado</td>
+<td>Resposta utilizável; ps verde</td>
+</tr>
+<tr>
+<td><strong>Divergente A</strong></td>
+<td>Chat <strong>antes</strong> de qualquer <code>ollama pull</code> (ou
+modelo apagado da lista)</td>
+<td>Erro / lista vazia; UI ainda abre</td>
+</tr>
+<tr>
+<td><strong>Divergente B</strong></td>
+<td>Pergunta deliberadamente <strong>fora</strong> do material injetado
+(“política de garantia estendida inventada”)</td>
+<td>Fluência sem trecho sustentado → não confiar</td>
+</tr>
+<tr>
+<td><strong>Divergente C</strong> (opcional)</td>
+<td>Alterar temporariamente <code>OLLAMA_BASE_URL</code> para um host
+inválido, recriar só o serviço da UI, depois
+<strong>reverter</strong></td>
+<td>UI no ar, geração indisponível</td>
+</tr>
+</tbody>
+</table>
+<p>Regra de inconclusivo: se o <code>pull</code> não terminou ou a
+máquina está em <em>thrash</em> de CPU/memória, marque
+<strong>INCONCLUSIVO</strong> e documente recursos
+(<code>docker stats</code> por um minuto) em vez de inventar métricas de
+qualidade do modelo.</p>
+<p>Ao testar o divergente C, devolva o <code>docker-compose.yml</code>
+ao estado do repositório antes de encerrar a aula
+(<code>git checkout -- material/open-webui/docker-compose.yml</code> se
+tiver editado o arquivo versionado).</p>
+<hr />
+<h2 id="8-falhas-típicas-e-checks">8. Falhas típicas e checks</h2>
+<table>
+<thead>
+<tr>
+<th>Sintoma</th>
+<th>Parece</th>
+<th>Check antes de confiar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Home da UI abre, chat falha</td>
+<td>“Rede / Docker quebrado”</td>
+<td><code>docker compose ps</code>; logs do <code>open-webui</code> e do
+<code>ollama</code>; URL <code>OLLAMA_BASE_URL</code></td>
+</tr>
+<tr>
+<td>Modelo não aparece na lista</td>
+<td>Bug da UI</td>
+<td><code>docker compose exec ollama ollama list</code> no host</td>
+</tr>
+<tr>
+<td>Resposta fluida, fato errado</td>
+<td>Assistente “inteligente”</td>
+<td>Confrontar com o <code>.md</code> injetado; se não estiver lá,
+recusar</td>
+</tr>
+<tr>
+<td>Pull eterno / OOM</td>
+<td>Stack “lento”</td>
+<td>Trocar para modelo menor; não insistir em pesos grandes em CPU</td>
+</tr>
+<tr>
+<td>Dados sumiram após <code>down -v</code></td>
+<td>Compose “apaga tudo sempre”</td>
+<td>Confirmar se usou <code>-v</code>; volumes nomeados no YAML</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-runbook-operacional">9. Runbook operacional</h2>
+<table>
+<thead>
+<tr>
+<th>Ação</th>
+<th>Comando / caminho</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Start</td>
+<td><code>docker compose up -d</code> em
+<code>material/open-webui/</code></td>
+</tr>
+<tr>
+<td>Status</td>
+<td><code>docker compose ps</code></td>
+</tr>
+<tr>
+<td>Logs</td>
+<td><code>docker compose logs --tail=80 open-webui ollama</code></td>
+</tr>
+<tr>
+<td>Pull modelo</td>
+<td><code>docker compose exec ollama ollama pull tinyllama</code></td>
+</tr>
+<tr>
+<td>Stop (mantém volumes)</td>
+<td><code>docker compose down</code></td>
+</tr>
+<tr>
+<td>Stop + apaga volumes do lab</td>
+<td><code>docker compose down -v</code> (destrutivo para
+modelos/históricos locais)</td>
+</tr>
+<tr>
+<td>UI</td>
+<td><code>http://127.0.0.1:3000</code></td>
+</tr>
+<tr>
+<td>API Ollama (rede interna)</td>
+<td><code>http://ollama:11434</code></td>
+</tr>
+</tbody>
+</table>
+<p>Não use opções <code>--force</code> em limpezas Docker neste lab. Se
+um comando exigir forçar remoção, pare e registre o bloqueio.</p>
+<hr />
+<h2 id="10-ritual-ao-vivo-ordem-fixa">10. Ritual ao vivo (ordem
+fixa)</h2>
+<ol type="1">
+<li><code>cd material/open-webui</code> →
+<code>docker compose up -d</code> → <code>docker compose ps</code>.</li>
+<li>Abrir a UI; criar/entrar na conta local do lab se a imagem
+pedir.</li>
+<li><code>ollama pull</code> de modelo leve; confirmar na UI.</li>
+<li>Três turnos da loja <strong>sem</strong> knowledge (baseline).</li>
+<li>Injetar trecho da mini-wiki; repetir uma pergunta coberta pelo
+trecho.</li>
+<li>Um divergente da tabela da seção 7; anotar o check.</li>
+<li><code>docker compose down</code> (sem <code>-v</code> salvo se a
+aula pedir reset limpo).</li>
+<li>Preencher a entrega abaixo.</li>
+</ol>
+<hr />
+<h2 id="11-entrega">11. Entrega</h2>
+<p>Entregue um pacote curto (Markdown ou PDF da aula), sem segredos:</p>
+<ol type="1">
+<li>Saída de <code>docker compose ps</code> (ou captura
+equivalente).</li>
+<li>Id do modelo e prova de <code>ollama list</code>.</li>
+<li>Resumo dos três turnos (baseline) + um turno ancorado com indicação
+do arquivo/trecho usado.</li>
+<li>Um divergente: o que mudou, o que quebrou, qual check aplicou.</li>
+<li>Runbook preenchido (start/stop/volumes/falha típica em CPU).</li>
+</ol>
+<p>Critério mínimo de fechamento: itens 1–4 presentes. UI verde sem
+modelo, sem turnos ou sem divergente <strong>não</strong> fecha.</p>
+<hr />
+<h2 id="12-irmã-de-trilha">12. Irmã de trilha</h2>
+<ul>
+<li><strong>LiteLLM</strong> (<a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-litellm-20261026.md"><code>tutorial-litellm-20261026.md</code></a>)
+— mesma família “falar API de chat”, porém SDK/proxy em vez de UI
+Compose.</li>
+<li><strong>RAG / llmwiki</strong> — retrieve explícito sobre a mesma
+mini-wiki; use depois que o contrato UI ↔︎ runtime estiver sólido.</li>
+</ul>
+<hr />
+<h2 id="exercício-checklist">Exercício (checklist)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Stack no ar; <code>ps</code>
+anexado</label></li>
+<li><label><input type="checkbox" />Modelo leve puxado e selecionado na
+UI</label></li>
+<li><label><input type="checkbox" />Três turnos baseline + um turno
+ancorado na mini-wiki</label></li>
+<li><label><input type="checkbox" />Um divergente com check
+escrito</label></li>
+<li><label><input type="checkbox" />Runbook preenchido; stack derrubado
+ao final</label></li>
+</ul>
+<h2 id="referência">Referência</h2>
+<ul>
+<li>Compose: <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/open-webui/docker-compose.yml"><code>open-webui/docker-compose.yml</code></a></li>
+<li>Mini-wiki: <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/mini-wiki-rag"><code>mini-wiki-rag/</code></a></li>
+<li>Imagens: <code>ollama/ollama</code>,
+<code>ghcr.io/open-webui/open-webui</code> (tags do YAML)</li>
+</ul></main>
+  </div>
+</body>
+</html>

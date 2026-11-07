@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutoriais com explorador interativo: associação de regras e previsão de demanda.">
+  <title>Deep learning: profundidade, capacidade e
+dados · Aprender com dados</title>
+  <link rel="stylesheet" href="../assets/tutorial.css">
+  <script src="../assets/tutorial.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir ao conteúdo principal</a>
+  <header class="site-header">
+    <a class="brand" href="../">Aprender com dados</a>
+    <nav aria-label="Navegação principal">
+      <a href="../">Associação</a>
+      <a href="../logs-auth/">Logs</a>
+      <a href="../demanda/">Média móvel</a>
+      <a href="../demanda-mq/">Mín. quadrados</a>
+      <a href="../demanda-perc/">LMS</a>
+      <a href="../demanda-poisson/">Poisson</a>
+      <a href="#explorador-interativo">Explorar</a>
+      <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-deep-learning-visao-geral-20261026.md">Versão
+Markdown</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="toc">
+      <details open><summary>Neste tutorial</summary><nav aria-label="Índice"><ul>
+<li><a
+href="#deep-learning-o-que-a-profundidade-compra-e-quando-ela-vale"
+id="toc-deep-learning-o-que-a-profundidade-compra-e-quando-ela-vale">Deep
+learning: o que a profundidade compra e quando ela vale</a>
+<ul>
+<li><a href="#1-uma-linha-do-tempo-curta"
+id="toc-1-uma-linha-do-tempo-curta">1. Uma linha do tempo curta</a></li>
+<li><a href="#2-o-que-profundo-significa"
+id="toc-2-o-que-profundo-significa">2. O que “profundo”
+significa</a></li>
+<li><a href="#3-três-famílias-de-problema"
+id="toc-3-três-famílias-de-problema">3. Três famílias de
+problema</a></li>
+<li><a href="#4-o-experimento-rasa-funda-e-a-semente"
+id="toc-4-o-experimento-rasa-funda-e-a-semente">4. O experimento: rasa,
+funda e a semente</a></li>
+<li><a href="#5-quando-insistir-em-profundidade"
+id="toc-5-quando-insistir-em-profundidade">5. Quando insistir em
+profundidade</a></li>
+<li><a href="#6-explore-a-profundidade-com-bi"
+id="toc-6-explore-a-profundidade-com-bi">6. Explore a profundidade com
+BI</a></li>
+<li><a href="#7-limitações" id="toc-7-limitações">7. Limitações</a></li>
+<li><a href="#8-exercício-responda-ao-fornecedor"
+id="toc-8-exercício-responda-ao-fornecedor">8. Exercício: responda ao
+fornecedor</a></li>
+<li><a href="#referências-bibliográficas-e-roteiro-de-leitura"
+id="toc-referências-bibliográficas-e-roteiro-de-leitura">Referências
+bibliográficas e roteiro de leitura</a></li>
+</ul></li>
+</ul></nav></details>
+    </aside>
+    <main id="conteudo"><h1
+id="deep-learning-o-que-a-profundidade-compra-e-quando-ela-vale">Deep
+learning: o que a profundidade compra e quando ela vale</h1>
+<p><a
+href="https://lgallindo.github.io/recomendador-bentoml/deep-learning/">Leia
+a versão web com o explorador interativo incorporado</a>.</p>
+<p>Um fornecedor de software oferece à loja de artesanato uma “IA de
+deep learning” para prever a demanda semanal. O argumento de venda é a
+profundidade: mais camadas, mais parâmetros, mais inteligência. Antes de
+assinar, a equipe quer entender o que “profundo” significa, em que tipo
+de problema essas redes mudaram o jogo e se o argumento se sustenta com
+as 16 semanas de histórico que a loja tem.</p>
+<p>Ao concluir este tutorial, você deverá conseguir explicar <em>deep
+learning</em> como o empilhamento de transformações aprendidas, contar
+os parâmetros de uma rede densa à mão, reconhecer três famílias de
+problema (visão, texto, dados tabulares) e o tipo de rede associado a
+cada uma, e argumentar com números se uma rede mais funda melhora a
+previsão de uma série curta. Você também verá como a semente aleatória
+pode pesar mais que a arquitetura quando o teste tem poucas semanas.</p>
+<p>Os dados de demanda são <strong>sintéticos</strong>. As comparações
+reproduzem o método de avaliação; elas não estabelecem o desempenho de
+redes profundas em outros problemas.</p>
+<h3 id="roteiro-de-estudo">Roteiro de estudo</h3>
+<table>
+<thead>
+<tr>
+<th>Tempo sugerido</th>
+<th>Atividade de estudo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8 min</td>
+<td>Situar <em>deep learning</em> em uma linha do tempo curta</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Definir profundidade e contar parâmetros</td>
+</tr>
+<tr>
+<td>12 min</td>
+<td>Ler três famílias de problema: visão, texto, tabular</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Rodar redes rasa e funda na série; varrer profundidade e
+sementes</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Explorar o painel de profundidade</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Decidir quando insistir em profundidade; exercício com
+resolução</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-uma-linha-do-tempo-curta">1. Uma linha do tempo curta</h2>
+<p>Redes neurais são uma ideia antiga que só se tornou dominante quando
+três ingredientes se encontraram: um método eficiente para calcular
+gradientes em muitas camadas, bases de dados enormes e hardware paralelo
+(GPUs).</p>
+<p><img src="../material/imagens/deep-learning-linha-tempo.png"
+alt="Linha do tempo com oito marcos: 1943 neurônio lógico de McCulloch e Pitts; 1958 perceptron de Rosenblatt; 1969 limite do XOR apontado por Minsky e Papert; 1986 backpropagation de Rumelhart, Hinton e Williams; 1998 LeNet com convolução; 2012 AlexNet no ImageNet; 2017 Transformer; 2020 GPT-3 com 175 bilhões de parâmetros. 1986 e 2012 aparecem em laranja." /></p>
+<p><em>Figura 1 — Marcos selecionados, sem pretensão de completude. Em
+laranja, os dois momentos que tornaram redes profundas treináveis (1986)
+e competitivamente úteis em escala (2012).</em></p>
+<p>Em 2012, a AlexNet, com cerca de 60 milhões de parâmetros, venceu a
+competição ImageNet de classificação de imagens, treinada em
+aproximadamente 1,2 milhão de fotos rotuladas. A loja tem 12 semanas de
+treino por produto. Guarde essa diferença de escala: ela volta na seção
+5.</p>
+<h2 id="2-o-que-profundo-significa">2. O que “profundo” significa</h2>
+<p>Uma rede densa transforma a entrada camada a camada. Com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>L</mi><annotation encoding="application/x-tex">L</annotation></semantics></math>
+camadas, cada camada
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ℓ</mi><annotation encoding="application/x-tex">\ell</annotation></semantics></math>
+aplica uma transformação afim seguida de uma não linearidade:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>h</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>ℓ</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo>=</mo><mrow><mi mathvariant="normal">R</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">L</mi><mi mathvariant="normal">U</mi></mrow><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>W</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>ℓ</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><msup><mi>h</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>ℓ</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo>+</mo><msup><mi>b</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>ℓ</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="2.0em"></mspace><msup><mi>h</mi><mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo>=</mo><mi>x</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">
+h^{(\ell)} = \mathrm{ReLU}\!\left(W^{(\ell)} h^{(\ell-1)} + b^{(\ell)}\right),
+\qquad h^{(0)} = x .
+</annotation></semantics></math></p>
+<p>A saída de regressão é uma combinação linear da última camada
+escondida. <strong>Profundidade</strong> é o número de transformações
+aprendidas empilhadas entre a entrada e a saída. Uma rede
+<strong>rasa</strong> tem uma camada escondida; chamamos de
+<strong>profunda</strong> (<em>deep</em>) uma rede com várias. Não há um
+número oficial de camadas que separe as duas: o termo descreve a prática
+de compor muitas etapas, em que as primeiras aprendem representações
+simples e as seguintes combinam essas representações.</p>
+<p>A não linearidade é indispensável. Sem a ReLU, a composição de
+camadas afins seria uma única transformação afim, e empilhar camadas não
+acrescentaria capacidade.</p>
+<h3 id="contar-parâmetros">Contar parâmetros</h3>
+<p>Entre uma camada com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mrow><mi>ℓ</mi><mo>−</mo><mn>1</mn></mrow></msub><annotation encoding="application/x-tex">n_{\ell-1}</annotation></semantics></math>
+neurônios e a seguinte com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mi>ℓ</mi></msub><annotation encoding="application/x-tex">n_\ell</annotation></semantics></math>,
+há
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mrow><mi>ℓ</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>⋅</mo><msub><mi>n</mi><mi>ℓ</mi></msub></mrow><annotation encoding="application/x-tex">n_{\ell-1} \cdot n_\ell</annotation></semantics></math>
+pesos e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mi>ℓ</mi></msub><annotation encoding="application/x-tex">n_\ell</annotation></semantics></math>
+vieses. O total da rede é</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo>=</mo><munderover><mo>∑</mo><mrow><mi>ℓ</mi><mo>=</mo><mn>1</mn></mrow><mi>L</mi></munderover><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>n</mi><mrow><mi>ℓ</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>n</mi><mi>ℓ</mi></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
+P = \sum_{\ell=1}^{L} \left(n_{\ell-1} + 1\right) n_\ell .
+</annotation></semantics></math></p>
+<p><img src="../material/imagens/deep-learning-parametros.png"
+alt="Duas redes desenhadas como caixas. Rasa 2, 8, 1 com ligações de 24 e 9 parâmetros, total 33. Mais funda 2, 8, 8, 8, 1 com ligações de 24, 72, 72 e 9 parâmetros, total 177." /></p>
+<p><em>Figura 2 — Cada caixa mostra o número de neurônios; cada seta,
+quantos parâmetros ligam duas camadas. Acrescentar duas camadas de 8
+neurônios multiplica o total por mais de cinco.</em></p>
+<table>
+<thead>
+<tr>
+<th>Rede</th>
+<th>Conta</th>
+<th style="text-align: right;">Parâmetros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2 → 8 → 1</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>⋅</mo><mn>8</mn><mo>+</mo><mn>9</mn><mo>⋅</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">3 \cdot 8 + 9 \cdot 1</annotation></semantics></math></td>
+<td style="text-align: right;">33</td>
+</tr>
+<tr>
+<td>2 → 8 → 8 → 1</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>24</mn><mo>+</mo><mn>9</mn><mo>⋅</mo><mn>8</mn><mo>+</mo><mn>9</mn></mrow><annotation encoding="application/x-tex">24 + 9 \cdot 8 + 9</annotation></semantics></math></td>
+<td style="text-align: right;">105</td>
+</tr>
+<tr>
+<td>2 → 8 → 8 → 8 → 1</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>24</mn><mo>+</mo><mn>72</mn><mo>+</mo><mn>72</mn><mo>+</mo><mn>9</mn></mrow><annotation encoding="application/x-tex">24 + 72 + 72 + 9</annotation></semantics></math></td>
+<td style="text-align: right;">177</td>
+</tr>
+<tr>
+<td>2 → 8 → 8 → 8 → 8 → 1</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>24</mn><mo>+</mo><mn>3</mn><mo>⋅</mo><mn>72</mn><mo>+</mo><mn>9</mn></mrow><annotation encoding="application/x-tex">24 + 3 \cdot 72 + 9</annotation></semantics></math></td>
+<td style="text-align: right;">249</td>
+</tr>
+</tbody>
+</table>
+<p>Com 12 semanas de treino, mesmo a rede rasa tem quase três parâmetros
+por exemplo. Em visão computacional, a AlexNet tinha cerca de 50
+parâmetros por imagem de treino, mas cada imagem traz mais de 150 mil
+números de entrada e as camadas de convolução reutilizam os mesmos pesos
+em toda a imagem.</p>
+<h2 id="3-três-famílias-de-problema">3. Três famílias de problema</h2>
+<p><img src="../material/imagens/deep-learning-familias.png"
+alt="Três cartões. Visão: imagem 224 por 224 por 3, convoluções empilhadas, classe jarro de barro; bibliotecas PyTorch com torchvision e Keras. Texto: tokens de uma frase de reclamação, camadas de atenção do Transformer, rótulo reclamação; biblioteca Hugging Face Transformers. Tabular: tempo e atraso, MLP ou árvores com boosting, cerca de 2,6 linhas de pedido; bibliotecas scikit-learn, XGBoost e LightGBM." /></p>
+<p><em>Figura 3 — A mesma estrutura em três domínios: entrada,
+transformação aprendida, saída. O que muda é o formato da entrada e o
+tipo de camada que explora sua estrutura.</em></p>
+<table>
+<thead>
+<tr>
+<th>Família</th>
+<th>Entrada típica</th>
+<th>Estrutura que a rede explora</th>
+<th>Arquitetura usual</th>
+<th>Exemplo na loja</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Visão</td>
+<td>Matriz de pixels (altura × largura × cor)</td>
+<td>Vizinhança espacial: bordas formam texturas, texturas formam
+objetos</td>
+<td>Convolucional (CNN); Transformer de visão</td>
+<td>Classificar fotos de peças enviadas por artesãos</td>
+</tr>
+<tr>
+<td>Texto / sequência</td>
+<td>Sequência de <em>tokens</em></td>
+<td>Ordem e contexto entre palavras</td>
+<td>Transformer (atenção)</td>
+<td>Separar mensagens de reclamação de dúvidas de frete</td>
+</tr>
+<tr>
+<td>Tabular / séries curtas</td>
+<td>Poucas colunas numéricas ou categóricas</td>
+<td>Relações entre atributos já definidos por pessoas</td>
+<td>MLP; com frequência, árvores com <em>boosting</em></td>
+<td>Prever linhas de pedido da semana</td>
+</tr>
+</tbody>
+</table>
+<p>Em visão e texto, a entrada bruta tem milhares ou milhões de números
+sem significado individual (um pixel isolado diz pouco), e as camadas
+profundas aprendem os atributos úteis. Em dados tabulares, as colunas
+costumam já ser atributos com significado; estudos comparativos mostram
+que árvores com <em>boosting</em> frequentemente igualam ou superam
+redes profundas nessas bases (Grinsztajn, Oyallon e Varoquaux,
+2022).</p>
+<p>Escolha uma das três famílias e aprofunde-se: qual biblioteca você
+usaria, qual seria a entrada e o que significaria “acertar” naquele
+problema.</p>
+<h2 id="4-o-experimento-rasa-funda-e-a-semente">4. O experimento: rasa,
+funda e a semente</h2>
+<p>Na raiz do repositório:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_deep_vs_rasa.py</span></code></pre></div>
+<p>O script usa a mesma série do Jarro (<code>p01</code>), as mesmas
+entradas (tempo normalizado
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mi>/</mi><mn>15</mn></mrow><annotation encoding="application/x-tex">t/15</annotation></semantics></math>
+e atraso
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><annotation encoding="application/x-tex">y_{t-1}</annotation></semantics></math>)
+e a mesma separação temporal: semanas 0–11 para treino, 12–15 para teste
+(demanda observada 4, 2, 2, 2). Todas as redes usam 8 neurônios por
+camada, Adam com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>η</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>05</mn></mrow><annotation encoding="application/x-tex">\eta = 0{,}05</annotation></semantics></math>
+e 80 épocas.</p>
+<table>
+<thead>
+<tr>
+<th>Arquivo</th>
+<th>Conteúdo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a
+href="../material/redes/resultado_deep_vs_rasa_p01.json"><code>redes/resultado_deep_vs_rasa_p01.json</code></a></td>
+<td>Rasa (1 camada) vs funda (3 camadas), semente 0</td>
+</tr>
+<tr>
+<td><a
+href="../material/redes/profundidade_p01.json"><code>redes/profundidade_p01.json</code></a></td>
+<td>1 a 4 camadas, cada uma com 5 sementes</td>
+</tr>
+<tr>
+<td><code>imagens/deep-learning-curvas-p01.png</code></td>
+<td>Curvas de perda da rasa e da funda</td>
+</tr>
+</tbody>
+</table>
+<p>Resultado esperado em <code>resultado_deep_vs_rasa_p01.json</code>,
+com scikit-learn 1.9:</p>
+<table>
+<thead>
+<tr>
+<th>Rede</th>
+<th style="text-align: right;">Parâmetros</th>
+<th style="text-align: right;">Perda final de treino</th>
+<th style="text-align: right;">MAE no teste</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rasa (8)</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">0,606</td>
+<td style="text-align: right;">0,836</td>
+</tr>
+<tr>
+<td>Mais funda (8-8-8)</td>
+<td style="text-align: right;">177</td>
+<td style="text-align: right;">0,574</td>
+<td style="text-align: right;">0,895</td>
+</tr>
+<tr>
+<td>Média do treino (referência)</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">0,833</td>
+</tr>
+<tr>
+<td>MA(4) (referência)</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">0,750</td>
+</tr>
+</tbody>
+</table>
+<p><img src="../material/imagens/deep-learning-curvas-p01.png"
+alt="Duas curvas de perda de treino ao longo de 80 épocas: a rasa termina em 0,61 e a mais funda em 0,57." /></p>
+<p><em>Figura 4 — A rede mais funda termina o treino com perda menor.
+Com mais parâmetros, ela se ajusta melhor às 12 semanas conhecidas; o
+teste mostra se esse ajuste se transfere para as semanas
+seguintes.</em></p>
+<p>A rede funda ajusta melhor o treino e erra mais no teste. Esse é o
+padrão clássico de <strong>mais capacidade sem mais dados</strong>. A
+perda de treino é a do scikit-learn: metade do erro quadrático médio,
+mais uma penalidade L2 pequena.</p>
+<h3 id="a-semente-pesa-tanto-quanto-a-arquitetura">A semente pesa tanto
+quanto a arquitetura</h3>
+<p>Uma comparação com uma única semente pode enganar. O script repete
+cada arquitetura com as sementes 0 a 4, que mudam apenas a inicialização
+aleatória dos pesos:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Camadas</th>
+<th style="text-align: right;">Parâmetros</th>
+<th>MAE de teste por semente (0, 1, 2, 3, 4)</th>
+<th style="text-align: right;">Média</th>
+<th>Faixa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">33</td>
+<td>0,836; 0,619; 0,922; 0,724; 0,869</td>
+<td style="text-align: right;">0,794</td>
+<td>0,62–0,92</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">105</td>
+<td>0,779; 0,871; 0,819; 0,893; 0,945</td>
+<td style="text-align: right;">0,861</td>
+<td>0,78–0,94</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">177</td>
+<td>0,895; 0,560; 0,846; 0,831; 1,124</td>
+<td style="text-align: right;">0,851</td>
+<td>0,56–1,12</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">249</td>
+<td>0,700; 0,809; 0,815; 0,791; 0,849</td>
+<td style="text-align: right;">0,793</td>
+<td>0,70–0,85</td>
+</tr>
+</tbody>
+</table>
+<p>Se você olhasse só a semente 0, concluiria que 4 camadas (0,700)
+vencem a MA(4) (0,750). Com cinco sementes, a média de 4 camadas é
+0,793, e as faixas de todas as arquiteturas se sobrepõem. Com quatro
+semanas de teste, as diferenças entre profundidades estão dentro da
+variação produzida pela inicialização.</p>
+<p>Há outra pista. As previsões de teste da rede rasa ficam entre 2,57 e
+2,69, muito perto da média do treino (2,67). As redes, rasas ou fundas,
+quase não encontram sinal nas entradas além do nível médio da série.
+Mais camadas não criam um sinal que os dados não têm.</p>
+<h2 id="5-quando-insistir-em-profundidade">5. Quando insistir em
+profundidade</h2>
+<table>
+<thead>
+<tr>
+<th>Situação</th>
+<th>Profundidade tende a ajudar?</th>
+<th>Por quê</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Milhões de exemplos rotulados, entrada bruta (pixels, áudio,
+texto)</td>
+<td>Sim</td>
+<td>Camadas aprendem atributos que seriam difíceis de escrever à
+mão</td>
+</tr>
+<tr>
+<td>Modelo pré-treinado disponível para a mesma família de dados</td>
+<td>Sim, com ajuste fino</td>
+<td>Reaproveita representações aprendidas em bases grandes</td>
+</tr>
+<tr>
+<td>Dados tabulares com colunas já significativas, milhares de
+linhas</td>
+<td>Às vezes</td>
+<td>Árvores com <em>boosting</em> são uma referência forte e mais
+barata</td>
+</tr>
+<tr>
+<td>Série curta (dezenas de pontos), um produto</td>
+<td>Raramente</td>
+<td>Mais parâmetros que exemplos; variação da semente domina</td>
+</tr>
+<tr>
+<td>Decisão que precisa ser auditada por pessoas</td>
+<td>Com cautela</td>
+<td>Cada camada a mais dificulta explicar uma previsão</td>
+</tr>
+</tbody>
+</table>
+<p>Para a loja, a resposta ao fornecedor é uma pergunta: “quantos
+exemplos o seu modelo usa, e qual é o erro dele no mesmo teste em que a
+média móvel erra 0,75?”.</p>
+<h2 id="6-explore-a-profundidade-com-bi">6. Explore a profundidade com
+BI</h2>
+<p>O <a href="../material/bi-redes/index.html">explorador de redes
+neurais</a> tem um painel de profundidade que mostra, para cada
+arquitetura, o número de parâmetros, o MAE de teste das cinco sementes e
+o MAE de treino, com as referências como linhas tracejadas. Você pode
+escolher uma semente e ver como a “vencedora” muda. Use-o incorporado à
+<a
+href="https://lgallindo.github.io/recomendador-bentoml/deep-learning/#explorador-interativo">versão
+web deste tutorial</a> ou abra o HTML a partir de uma cópia local do
+repositório. O <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-redes/README.md">roteiro
+de exploração</a> descreve todos os painéis.</p>
+<section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
+<h3 id="explorer-heading">Experimente a profundidade neste tutorial</h3>
+<p>Compare parâmetros e erros de redes com diferentes profundidades. As 16 semanas são sintéticas.</p>
+<div class="explorer-actions">
+<button id="fullscreen-explorer" type="button">Ver explorador em tela cheia</button>
+<a href="../material/bi-redes/index.html" target="_blank" rel="noopener">Abrir explorador em nova aba</a>
+</div>
+<p id="explorer-status" role="status"></p>
+<iframe id="explorer" src="../material/bi-redes/index.html" title="Explorador interativo de profundidade de redes"
+loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+</section>
+<p><img src="../material/imagens/bi-redes-profundidade.png"
+alt="Gráfico de dispersão do MAE de teste por número de parâmetros. Para 33, 105, 177 e 249 parâmetros, cinco pontos por semente e um losango na média: 0,79; 0,86; 0,85; 0,79. Linhas tracejadas marcam a média do treino, 0,83, e a MA(4), 0,75." /></p>
+<p><em>Figura 5 — Espelho estático do painel 05. Os pontos claros são
+sementes; os losangos, médias. Nenhuma média fica abaixo da
+MA(4).</em></p>
+<h3 id="atividade-no-painel">Atividade no painel</h3>
+<ol type="1">
+<li>Escolha a semente 0. Qual arquitetura parece a melhor? E com a
+semente 1?</li>
+<li>Volte para a média das sementes. Alguma arquitetura fica abaixo da
+linha da MA(4)?</li>
+<li>Qual arquitetura tem a maior faixa entre sementes? O que isso diz
+sobre a confiabilidade de uma única corrida?</li>
+</ol>
+<p><strong>Resolução comentada:</strong> com a semente 0, 4 camadas
+parecem vencer (0,70); com a semente 1, a vencedora é a de 3 camadas
+(0,56), que na semente 4 é a pior (1,12). Nenhuma média fica abaixo de
+0,75. A rede de 3 camadas tem a maior faixa (0,56–1,12): uma corrida
+isolada dela poderia sustentar conclusões opostas.</p>
+<h2 id="7-limitações">7. Limitações</h2>
+<ul>
+<li>Quatro semanas de teste e cinco sementes ainda são pouco para
+estimar a incerteza com rigor; o experimento ilustra o raciocínio.</li>
+<li>Todas as redes usam a mesma largura, o mesmo número de épocas e a
+mesma taxa de aprendizado. Redes mais fundas costumam pedir outros
+ajustes (normalização, regularização, <em>early stopping</em>), fora do
+escopo desta aula.</li>
+<li>As famílias de visão e texto aparecem como cartões conceituais;
+nenhuma rede convolucional ou Transformer é treinada aqui.</li>
+</ul>
+<h2 id="8-exercício-responda-ao-fornecedor">8. Exercício: responda ao
+fornecedor</h2>
+<ol type="1">
+<li>Escreva, em até dez linhas ou num diagrama, sua definição de
+<em>deep learning</em> com as palavras “transformação”, “camada” e “não
+linearidade”.</li>
+<li>Conte à mão os parâmetros da rede 2 → 16 → 8 → 1.</li>
+<li>Preencha um cartão (entrada, transformação, saída, biblioteca) para
+a família que você escolheu na seção 3 e cartões resumidos para as
+outras duas.</li>
+<li>Com os números de <code>profundidade_p01.json</code>, compare a
+média de MAE das redes de 1 e 3 camadas com a MA(4).</li>
+<li>Escreva um parágrafo ao fornecedor: o que você pediria como
+evidência e por que 16 semanas não bastam para justificar uma rede
+profunda.</li>
+</ol>
+<h3 id="resolução-comentada">Resolução comentada</h3>
+<p><strong>1.</strong> Exemplo: “<em>Deep learning</em> é treinar redes
+com várias camadas de transformações aprendidas. Cada camada combina
+linearmente as saídas da anterior e aplica uma não linearidade; a
+composição permite representar relações que uma única camada exigiria
+muito mais neurônios para aproximar.”</p>
+<p><strong>2.</strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>⋅</mo><mn>16</mn><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mn>16</mn><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>⋅</mo><mn>8</mn><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mn>8</mn><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>⋅</mo><mn>1</mn><mo>=</mo><mn>48</mn><mo>+</mo><mn>136</mn><mo>+</mo><mn>9</mn><mo>=</mo><mn>193</mn></mrow><annotation encoding="application/x-tex">(2+1) \cdot 16 + (16+1) \cdot 8 + (8+1) \cdot 1 = 48 + 136 + 9 = 193</annotation></semantics></math>.</p>
+<p><strong>3.</strong> Use a tabela da seção 3. Para visão, por exemplo:
+entrada 224 × 224 × 3 pixels; transformação, convoluções empilhadas;
+saída, a classe da peça; biblioteca, PyTorch com torchvision.</p>
+<p><strong>4.</strong> 1 camada: média 0,794; 3 camadas: média 0,851;
+MA(4): 0,750. As duas redes erram mais que a média móvel em média; a
+rede de 3 camadas tem faixa 0,56–1,12, o que torna sua comparação
+instável.</p>
+<p><strong>5.</strong> Exemplo: “Peço o erro do modelo no mesmo período
+de teste em que a média móvel de quatro semanas erra 0,75 linha por
+semana, com várias inicializações e sem uso das semanas de teste na
+escolha do modelo. Com 12 semanas de treino por produto, redes de 33 a
+249 parâmetros não superaram a média móvel em nosso teste e variaram
+mais com a semente que com a profundidade.”</p>
+<h2 id="referências-bibliográficas-e-roteiro-de-leitura">Referências
+bibliográficas e roteiro de leitura</h2>
+<p>Consulta dos materiais on-line: 7 nov. 2026.</p>
+<ol type="1">
+<li>GOODFELLOW, Ian; BENGIO, Yoshua; COURVILLE, Aaron. <strong>Deep
+learning</strong>. Cambridge, MA: MIT Press, 2016. <a
+href="https://www.deeplearningbook.org/">Texto on-line em inglês</a>.
+<strong>Para aprofundar:</strong> capítulo 1 (história) e capítulo 6
+(redes densas).</li>
+<li>HAYKIN, Simon. <strong>Redes neurais: princípios e prática</strong>.
+2. ed. Porto Alegre: Bookman, 2001. <strong>Para aprofundar:</strong>
+fundamentos do perceptron de múltiplas camadas em português.</li>
+<li>LECUN, Yann; BENGIO, Yoshua; HINTON, Geoffrey. Deep learning.
+<strong>Nature</strong>, v. 521, p. 436–444, 2015. DOI:
+10.1038/nature14539. <strong>Para consultar:</strong> panorama curto
+escrito por três pioneiros da área.</li>
+<li>KRIZHEVSKY, Alex; SUTSKEVER, Ilya; HINTON, Geoffrey E. ImageNet
+classification with deep convolutional neural networks. In:
+<strong>NeurIPS</strong>, 2012.</li>
+<li>VASWANI, Ashish et al. Attention is all you need. In:
+<strong>NeurIPS</strong>, 2017. <a
+href="https://arxiv.org/abs/1706.03762">arXiv:1706.03762</a>.</li>
+<li>GRINSZTAJN, Léo; OYALLON, Edouard; VAROQUAUX, Gaël. Why do
+tree-based models still outperform deep learning on typical tabular
+data? In: <strong>NeurIPS Datasets and Benchmarks</strong>, 2022. <a
+href="https://arxiv.org/abs/2207.08815">arXiv:2207.08815</a>.
+<strong>Para aprofundar:</strong> quando redes profundas perdem em dados
+tabulares.</li>
+<li>SCIKIT-LEARN. <strong>Neural network models (supervised)</strong>.
+<a
+href="https://scikit-learn.org/stable/modules/neural_networks_supervised.html">Guia
+do usuário em inglês</a>.</li>
+</ol>
+<h3 id="artefatos-no-repositório">Artefatos no repositório</h3>
+<table>
+<thead>
+<tr>
+<th>Artefato</th>
+<th>Papel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dados/vendas_semanais.csv</code></td>
+<td>Série semanal sintética</td>
+</tr>
+<tr>
+<td><code>scripts/demo_deep_vs_rasa.py</code></td>
+<td>Rasa vs funda; varredura de profundidade e sementes</td>
+</tr>
+<tr>
+<td><code>material/redes/resultado_deep_vs_rasa_p01.json</code></td>
+<td>Comparação com semente 0</td>
+</tr>
+<tr>
+<td><code>material/redes/profundidade_p01.json</code></td>
+<td>1–4 camadas × 5 sementes</td>
+</tr>
+<tr>
+<td><code>material/bi-redes/</code></td>
+<td>Explorador interativo</td>
+</tr>
+<tr>
+<td><code>material/imagens/</code> (regenerar:
+<code>.local/scripts/gerar_figuras_redes.py</code>)</td>
+<td>Linha do tempo, famílias e contagem de parâmetros</td>
+</tr>
+</tbody>
+</table></main>
+  </div>
+</body>
+</html>

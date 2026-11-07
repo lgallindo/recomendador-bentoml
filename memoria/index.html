@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutoriais com explorador interativo: associação de regras e previsão de demanda.">
+  <title>Memória de agentes: preferências entre
+turnos · Aprender com dados</title>
+  <link rel="stylesheet" href="../assets/tutorial.css">
+  <script src="../assets/tutorial.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir ao conteúdo principal</a>
+  <header class="site-header">
+    <a class="brand" href="../">Aprender com dados</a>
+    <nav aria-label="Navegação principal">
+      <a href="../">Associação</a>
+      <a href="../logs-auth/">Logs</a>
+      <a href="../demanda/">Média móvel</a>
+      <a href="../demanda-mq/">Mín. quadrados</a>
+      <a href="../demanda-perc/">LMS</a>
+      <a href="../demanda-poisson/">Poisson</a>
+      <a href="#explorador-interativo">Explorar</a>
+      <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-memoria-agentes-mem0-20261026.md">Versão
+Markdown</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="toc">
+      <details open><summary>Neste tutorial</summary><nav aria-label="Índice"><ul>
+<li><a
+href="#memória-de-agentes-lembrar-preferências-entre-turnos-no-padrão-mem0"
+id="toc-memória-de-agentes-lembrar-preferências-entre-turnos-no-padrão-mem0">Memória
+de agentes: lembrar preferências entre turnos no padrão Mem0</a>
+<ul>
+<li><a href="#1-três-lugares-para-guardar-o-que-o-sistema-sabe"
+id="toc-1-três-lugares-para-guardar-o-que-o-sistema-sabe">1. Três
+lugares para guardar o que o sistema “sabe”</a></li>
+<li><a href="#2-memória-como-estado-fora-do-modelo"
+id="toc-2-memória-como-estado-fora-do-modelo">2. Memória como estado
+fora do modelo</a></li>
+<li><a href="#3-a-pontuação-de-busca-do-laboratório"
+id="toc-3-a-pontuação-de-busca-do-laboratório">3. A pontuação de busca
+do laboratório</a></li>
+<li><a href="#4-linha-do-tempo-16-turnos-dois-usuários-uma-sessão"
+id="toc-4-linha-do-tempo-16-turnos-dois-usuários-uma-sessão">4. Linha do
+tempo: 16 turnos, dois usuários, uma sessão</a></li>
+<li><a href="#5-o-token-antigo-e-a-política-de-atualização"
+id="toc-5-o-token-antigo-e-a-política-de-atualização">5. O token antigo
+e a política de atualização</a></li>
+<li><a href="#6-explore-turnos-e-buscas-no-painel"
+id="toc-6-explore-turnos-e-buscas-no-painel">6. Explore turnos e buscas
+no painel</a></li>
+<li><a href="#7-privacidade-o-que-não-guardar"
+id="toc-7-privacidade-o-que-não-guardar">7. Privacidade: o que não
+guardar</a></li>
+<li><a href="#8-caminho-b-o-mem0-real-opcional"
+id="toc-8-caminho-b-o-mem0-real-opcional">8. Caminho B: o Mem0 real
+(opcional)</a></li>
+<li><a href="#9-limitações" id="toc-9-limitações">9. Limitações</a></li>
+<li><a href="#10-exercício-memória-de-uma-nova-cliente"
+id="toc-10-exercício-memória-de-uma-nova-cliente">10. Exercício: memória
+de uma nova cliente</a></li>
+<li><a href="#referências-e-artefatos"
+id="toc-referências-e-artefatos">Referências e artefatos</a></li>
+</ul></li>
+</ul></nav></details>
+    </aside>
+    <main id="conteudo"><h1
+id="memória-de-agentes-lembrar-preferências-entre-turnos-no-padrão-mem0">Memória
+de agentes: lembrar preferências entre turnos no padrão Mem0</h1>
+<p><a
+href="https://lgallindo.github.io/recomendador-bentoml/memoria/">Leia a
+versão web com o explorador incorporado</a>.</p>
+<p>Uma cliente volta ao chat da loja de artesanato e escreve: “quero o
+mesmo frete da outra vez”. Ela já tinha contado que recebe as compras em
+Recife, que não gosta de peças de palha e que gasta no máximo uns R$
+150. Um modelo de linguagem não guarda nada disso entre conversas: seus
+pesos são os mesmos para todas as pessoas e não mudam quando alguém fala
+com ele. Para o atendimento <strong>lembrar</strong>, a aplicação
+precisa guardar fatos sobre a cliente fora do modelo, recuperá-los na
+hora certa, corrigi-los quando mudam e apagá-los quando ela pedir.</p>
+<p>Ao concluir esta aula, você deverá conseguir distinguir memória de
+usuário, corpus documental e pesos do modelo; usar as quatro operações
+<code>add</code>, <code>search</code>, <code>update</code> e
+<code>delete</code>; explicar escopos de usuário e de sessão; calcular à
+mão a pontuação de busca do laboratório; reconhecer por que uma memória
+atualizada ainda pode casar com o valor antigo; e justificar o que
+<strong>não</strong> guardar à luz da LGPD.</p>
+<p>O laboratório usa um store JSON local com a mesma forma de operações
+do <a href="https://docs.mem0.ai/introduction">Mem0</a>, biblioteca de
+código aberto (Apache-2.0) para memória de aplicações com modelos de
+linguagem. A busca do laboratório conta palavras em comum; o Mem0 real
+usa um modelo de linguagem para extrair fatos e embeddings para buscar
+por semelhança. Os dados são sintéticos e os resultados demonstram o
+mecanismo, e não a qualidade de uma memória em produção.</p>
+<h3 id="roteiro-de-estudo">Roteiro de estudo</h3>
+<table>
+<thead>
+<tr>
+<th>Tempo sugerido</th>
+<th>Atividade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8 min</td>
+<td>Separar memória, corpus e pesos</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Vocabulário: memória, escopo e as quatro operações</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Calcular a pontuação de busca à mão</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Rodar a linha do tempo de 16 turnos e ler o store</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Entender o token antigo e uma política de atualização</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Explorar turnos e buscas no painel</td>
+</tr>
+<tr>
+<td>7 min</td>
+<td>Privacidade: o que não guardar e como apagar</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Exercício com resolução comentada</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-três-lugares-para-guardar-o-que-o-sistema-sabe">1. Três
+lugares para guardar o que o sistema “sabe”</h2>
+<p><img src="../material/imagens/memoria-tres-caixas.png"
+alt="Três caixas. Corpus ou RAG guarda documentos da loja, como “Devolução em 7 dias corridos”, vale para todos e se atualiza editando o documento. Memória de usuário guarda fatos sobre uma pessoa ou conversa, como “Prefere frete para Olinda”, vale para um user_id ou sessão e muda com add, update e delete. Pesos do modelo guardam padrões estatísticos do treino, como estilo e conhecimento geral, e mudam só com treino ou fine-tune." /></p>
+<p><em>Figura 1 — A pergunta que decide o lugar é “para quem este fato
+vale e quem pode mudá-lo?”. Uma política de devolução vale para todos os
+clientes; uma preferência de frete vale para uma pessoa; um estilo de
+escrita está espalhado nos pesos.</em></p>
+<table>
+<thead>
+<tr>
+<th>Lugar</th>
+<th>Guarda</th>
+<th>Exemplo nesta loja</th>
+<th>Como muda</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Corpus documental (RAG)</td>
+<td>Políticas e fichas</td>
+<td>“7 dias corridos para devolução”</td>
+<td>Editando o Markdown e reindexando</td>
+</tr>
+<tr>
+<td>Memória de usuário</td>
+<td>Preferências e fatos de uma pessoa ou conversa</td>
+<td>“Prefere frete para Olinda”</td>
+<td><code>add</code>, <code>update</code>, <code>delete</code> em tempo
+de execução</td>
+</tr>
+<tr>
+<td>Pesos do modelo</td>
+<td>Padrões estatísticos aprendidos</td>
+<td>Vocabulário, estilo, conhecimento geral</td>
+<td>Treino ou ajuste fino, offline e caro</td>
+</tr>
+</tbody>
+</table>
+<p>Misturar os lugares causa erros previsíveis. Uma regra de frete
+grátis gravada como memória de uma cliente vale só para ela e envelhece
+sem ninguém perceber quando a política muda. Uma preferência pessoal
+colocada no corpus aparece para todo mundo.</p>
+<h2 id="2-memória-como-estado-fora-do-modelo">2. Memória como estado
+fora do modelo</h2>
+<p>Na IA, um <strong>agente</strong> é um sistema que recebe uma
+situação, decide uma ação e a executa, muitas vezes em vários passos.
+Quando o agente usa um modelo de linguagem, a parte que
+<strong>lembra</strong> é o estado mantido pela aplicação.</p>
+<p><img src="../material/imagens/memoria-agente.png"
+alt="Fluxo: mensagem da cliente entra na aplicação ou agente, que consulta o store de memória por user_id e sessão e o corpus da loja, monta o prompt para o modelo de linguagem e produz a resposta. Setas indicam add, update e delete para o store e search trazendo fatos para o prompt. Uma nota diz que os pesos não mudam entre turnos." /></p>
+<p><em>Figura 2 — A aplicação escreve no store (<code>add</code>,
+<code>update</code>, <code>delete</code>) e lê dele
+(<code>search</code>) a cada turno. Os fatos recuperados viajam no
+prompt; o modelo não é retreinado.</em></p>
+<h3 id="vocabulário">Vocabulário</h3>
+<table>
+<thead>
+<tr>
+<th>Termo</th>
+<th>Definição nesta aula</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Memória</strong></td>
+<td>Um registro curto em linguagem natural sobre um usuário, com
+<code>id</code>, <code>user_id</code>, texto e datas</td>
+</tr>
+<tr>
+<td><strong>Store</strong></td>
+<td>Onde as memórias ficam; aqui,
+<code>material/memoria/store_preferencias.json</code></td>
+</tr>
+<tr>
+<td><strong>Escopo de usuário</strong></td>
+<td>A memória pertence a um <code>user_id</code> e só aparece em buscas
+desse usuário</td>
+</tr>
+<tr>
+<td><strong>Escopo de sessão</strong></td>
+<td>A memória também tem <code>session_id</code> e só aparece naquela
+conversa</td>
+</tr>
+<tr>
+<td><strong>Escopo de agente</strong></td>
+<td>No Mem0, memórias podem pertencer a um <code>agent_id</code> (o que
+o próprio agente aprendeu); o laboratório não usa</td>
+</tr>
+<tr>
+<td><code>add</code></td>
+<td>Cria uma memória nova</td>
+</tr>
+<tr>
+<td><code>search</code></td>
+<td>Devolve as memórias visíveis ao escopo, ordenadas por pontuação</td>
+</tr>
+<tr>
+<td><code>update</code></td>
+<td>Substitui o texto de uma memória existente pelo <code>id</code></td>
+</tr>
+<tr>
+<td><code>delete</code></td>
+<td>Remove a memória do store</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-a-pontuação-de-busca-do-laboratório">3. A pontuação de busca
+do laboratório</h2>
+<p>O script <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/scripts/demo_mem0_preferencias.py"><code>demo_mem0_preferencias.py</code></a>
+pontua cada memória por <strong>sobreposição de tokens</strong>. A
+consulta
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math>
+é convertida em minúsculas e quebrada em tokens nos caracteres que não
+são letras, dígitos ou sublinhado; chame essa lista de
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo stretchy="false" form="prefix">(</mo><mi>q</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">T(q)</annotation></semantics></math>.
+Para uma memória de texto
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math>,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo stretchy="false" form="prefix">(</mo><mi>q</mi><mo>,</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><munder><mo>∑</mo><mrow><mi>t</mi><mo>∈</mo><mi>T</mi><mo stretchy="false" form="prefix">(</mo><mi>q</mi><mo stretchy="false" form="postfix">)</mo></mrow></munder><mn mathvariant="double-struck">𝟙</mn><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">[</mo><mi>t</mi><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> aparece como trecho de </mtext><mspace width="0.333em"></mspace></mrow><mi>m</mi><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">]</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
+s(q, m) = \sum_{t \in T(q)} \mathbb{1}\big[t \text{ aparece como trecho de } m\big],
+</annotation></semantics></math></p>
+<p>em que
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn mathvariant="double-struck">𝟙</mn><mo stretchy="false" form="prefix">[</mo><mi>⋅</mi><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\mathbb{1}[\cdot]</annotation></semantics></math>
+vale 1 quando a condição é verdadeira e 0 caso contrário. A busca
+considera só as memórias <strong>visíveis</strong> ao escopo: mesmo
+<code>user_id</code> e, se a memória tiver sessão, a mesma
+<code>session_id</code>. Ela devolve as memórias com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">s&gt;0</annotation></semantics></math>,
+em ordem decrescente.</p>
+<p><strong>Minúcia.</strong> Consulta “frete Recife”,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo stretchy="false" form="prefix">(</mo><mi>q</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mtext mathvariant="normal">frete</mtext><mo>,</mo><mspace width="0.222em"></mspace><mtext mathvariant="normal">recife</mtext><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">T(q) = [\text{frete},\ \text{recife}]</annotation></semantics></math>.</p>
+<table>
+<thead>
+<tr>
+<th>Memória</th>
+<th style="text-align: center;">“frete” aparece?</th>
+<th style="text-align: center;">“recife” aparece?</th>
+<th
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cliente prefere frete para Recife.</td>
+<td style="text-align: center;">sim</td>
+<td style="text-align: center;">sim</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>Não gosta de peças de palha.</td>
+<td style="text-align: center;">não</td>
+<td style="text-align: center;">não</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Cliente prefere frete para Olinda (mudou de Recife).</td>
+<td style="text-align: center;">sim</td>
+<td style="text-align: center;">sim</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>Cliente prefere frete para Olinda.</td>
+<td style="text-align: center;">sim</td>
+<td style="text-align: center;">não</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+<p>O teste é “aparece como trecho”, e não “é a mesma palavra”. Uma
+consulta com o token <code>o</code> casaria com quase todas as memórias,
+e <code>rec</code> casaria com “Recife”. Essa simplicidade é deliberada:
+você consegue conferir cada número à mão. O Mem0 real compara
+<strong>embeddings</strong>, vetores numéricos que aproximam o sentido
+do texto, e por isso encontra “mora em Olinda” para a consulta “endereço
+de entrega”, coisa que a contagem de tokens não faz.</p>
+<h2 id="4-linha-do-tempo-16-turnos-dois-usuários-uma-sessão">4. Linha do
+tempo: 16 turnos, dois usuários, uma sessão</h2>
+<p>Rode na raiz do repositório:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_mem0_preferencias.py <span class="at">--roteiro</span></span></code></pre></div>
+<p>Saída esperada no terminal:</p>
+<pre class="text"><code> 1 add                   → Cliente prefere frete para Recife.
+ 2 add                   → Não gosta de peças de palha.
+ 3 add                   → Orçamento máximo cerca de R$ 150.
+ 4 add                   → Hoje procura presente para a mãe.
+ 5 add                   → Cliente prefere frete para Caruaru.
+ 6 search frete Recife   → [(&#39;m1&#39;, 2)]
+ 7 search frete          → [(&#39;m5&#39;, 1)]
+ 8 search presente mãe   → []
+ 9 search presente mãe   → [(&#39;m4&#39;, 2)]
+10 update                → Cliente prefere frete para Olinda (mudou de Recife).
+11 search frete Recife   → [(&#39;m1&#39;, 2)]
+12 update                → Cliente prefere frete para Olinda.
+13 search frete Recife   → [(&#39;m1&#39;, 1)]
+14 search frete Olinda   → [(&#39;m1&#39;, 2)]
+15 delete                → True
+16 search palha          → []</code></pre>
+<p>O arquivo <a
+href="../material/memoria/linha-do-tempo.json"><code>memoria/linha-do-tempo.json</code></a>
+guarda, para cada turno, a ação, o escopo, o resultado e o store
+completo depois do turno.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Turno</th>
+<th>Ação</th>
+<th>Escopo</th>
+<th>O que aconteceu</th>
+<th>Por quê</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1–3</td>
+<td><code>add</code></td>
+<td><code>aluno_demo</code></td>
+<td><code>m1</code> frete Recife, <code>m2</code> sem palha,
+<code>m3</code> orçamento</td>
+<td>Fatos duráveis da cliente</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>add</code></td>
+<td><code>aluno_demo</code>, sessão <code>s1</code></td>
+<td><code>m4</code> presente para a mãe</td>
+<td>Vale só nesta conversa</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td><code>add</code></td>
+<td><code>outra_cliente</code></td>
+<td><code>m5</code> frete Caruaru</td>
+<td>Outra pessoa</td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td><code>search</code> “frete Recife”</td>
+<td><code>aluno_demo</code></td>
+<td><code>m1</code> com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">s=2</annotation></semantics></math></td>
+<td>Os dois tokens aparecem</td>
+</tr>
+<tr>
+<td style="text-align: right;">7</td>
+<td><code>search</code> “frete”</td>
+<td><code>outra_cliente</code></td>
+<td>só <code>m5</code>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">s=1</annotation></semantics></math></td>
+<td><code>m1</code> pertence a outro <code>user_id</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">8</td>
+<td><code>search</code> “presente mãe”</td>
+<td><code>aluno_demo</code>, <code>s2</code></td>
+<td>nada</td>
+<td><code>m4</code> é da sessão <code>s1</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">9</td>
+<td><code>search</code> “presente mãe”</td>
+<td><code>aluno_demo</code>, <code>s1</code></td>
+<td><code>m4</code>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">s=2</annotation></semantics></math></td>
+<td>Mesma sessão</td>
+</tr>
+<tr>
+<td style="text-align: right;">10</td>
+<td><code>update m1</code></td>
+<td>—</td>
+<td>“Olinda (mudou de Recife)”</td>
+<td>Cliente se mudou</td>
+</tr>
+<tr>
+<td style="text-align: right;">11</td>
+<td><code>search</code> “frete Recife”</td>
+<td><code>aluno_demo</code></td>
+<td><code>m1</code> ainda com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">s=2</annotation></semantics></math></td>
+<td>O texto novo contém “Recife”</td>
+</tr>
+<tr>
+<td style="text-align: right;">12</td>
+<td><code>update m1</code> com histórico</td>
+<td>—</td>
+<td>texto “Olinda”; valor anterior em <code>historico</code></td>
+<td>Política de atualização limpa</td>
+</tr>
+<tr>
+<td style="text-align: right;">13</td>
+<td><code>search</code> “frete Recife”</td>
+<td><code>aluno_demo</code></td>
+<td><code>m1</code> com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">s=1</annotation></semantics></math></td>
+<td>Só “frete” casa</td>
+</tr>
+<tr>
+<td style="text-align: right;">14</td>
+<td><code>search</code> “frete Olinda”</td>
+<td><code>aluno_demo</code></td>
+<td><code>m1</code> com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">s=2</annotation></semantics></math></td>
+<td>O valor atual vence</td>
+</tr>
+<tr>
+<td style="text-align: right;">15</td>
+<td><code>delete m2</code></td>
+<td>—</td>
+<td><code>m2</code> sai do store</td>
+<td>A cliente pediu para esquecer</td>
+</tr>
+<tr>
+<td style="text-align: right;">16</td>
+<td><code>search</code> “palha”</td>
+<td><code>aluno_demo</code></td>
+<td>nada</td>
+<td>Nada mais menciona palha</td>
+</tr>
+</tbody>
+</table>
+<p><img src="../material/imagens/memoria-linha-tempo.png"
+alt="Linha do tempo com 16 turnos em duas faixas. Na faixa aluno_demo aparecem adds nos turnos 1 a 4, buscas nos turnos 6, 8, 9, 11, 13, 14 e 16, updates em 10 e 12 e o delete de m2 em 15. Na faixa outra_cliente aparecem o add de m5 no turno 5 e a busca por frete no turno 7. Cada busca mostra a consulta e os pares id:score, como m1:2 e m1:1." /></p>
+<p><em>Figura 3 — Cada marcador é um turno; a forma indica a operação.
+As buscas mostram <code>id:score</code>; “∅” significa nenhum resultado.
+A separação em faixas é o escopo de usuário: nenhuma busca de uma faixa
+enxerga a outra.</em></p>
+<p>O modo padrão do script, sem <code>--roteiro</code>, executa a versão
+curta (três <code>add</code>, uma busca, um <code>update</code>, duas
+buscas) e grava <a
+href="../material/memoria/resultado_memoria_preferencias.json"><code>memoria/resultado_memoria_preferencias.json</code></a>:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_mem0_preferencias.py</span></code></pre></div>
+<h2 id="5-o-token-antigo-e-a-política-de-atualização">5. O token antigo
+e a política de atualização</h2>
+<p>Os turnos 10 a 13 mostram um defeito sutil. Depois do primeiro
+<code>update</code>, a memória diz “Cliente prefere frete para Olinda
+(mudou de Recife).” e a busca por “frete Recife” continua devolvendo
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">s=2</annotation></semantics></math>,
+a mesma pontuação de antes. Quem consultar o store para decidir o
+endereço pode ler a frase errada.</p>
+<p><img src="../material/imagens/bi-memoria-scores.png"
+alt="Três barras com a pontuação de m1 para a consulta frete Recife: 2 antes do update, no turno 6; 2 depois do update que mantém “(mudou de Recife)”, no turno 11; 1 depois do update limpo com histórico, no turno 13." /></p>
+<p><em>Figura 4 — A pontuação só cai quando o valor antigo sai do texto
+pesquisável. Guardar o passado é útil; guardá-lo no mesmo campo que a
+busca lê confunde o presente com o histórico.</em></p>
+<p>A política do turno 12 separa os dois papéis: o campo
+<code>memory</code> guarda apenas o <strong>valor atual</strong> e o
+campo <code>historico</code> guarda os valores anteriores, fora da
+busca. Outras políticas possíveis:</p>
+<table>
+<thead>
+<tr>
+<th>Política</th>
+<th>Vantagem</th>
+<th>Custo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Substituir o texto e descartar o anterior</td>
+<td>Simples; busca limpa</td>
+<td>Perde a trilha de auditoria</td>
+</tr>
+<tr>
+<td>Texto atual + histórico separado (turno 12)</td>
+<td>Busca limpa e auditoria</td>
+<td>Mais um campo para manter e apagar</td>
+</tr>
+<tr>
+<td>Nova memória + marcar a anterior como inativa</td>
+<td>Nada se reescreve</td>
+<td>A busca precisa filtrar inativas</td>
+</tr>
+<tr>
+<td>Deixar um modelo decidir
+<code>ADD</code>/<code>UPDATE</code>/<code>DELETE</code></td>
+<td>Lida com frases livres</td>
+<td>Decisão menos previsível; exige revisão</td>
+</tr>
+</tbody>
+</table>
+<p>A última linha é o que o Mem0 faz por padrão: com
+<code>infer=True</code>, um modelo de linguagem extrai fatos das
+mensagens e decide se cada fato cria, atualiza ou remove uma memória
+existente.</p>
+<h2 id="6-explore-turnos-e-buscas-no-painel">6. Explore turnos e buscas
+no painel</h2>
+<p>O <a href="../material/bi-memoria/index.html">explorador da
+memória</a> percorre os 16 turnos gravados. A cada turno você vê a ação,
+o resultado e o store completo; à esquerda, escolhe
+<code>user_id</code>, <code>session_id</code> e uma consulta, e o painel
+recalcula a pontuação
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo stretchy="false" form="prefix">(</mo><mi>q</mi><mo>,</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">s(q,m)</annotation></semantics></math>
+sobre o store daquele turno, mostrando quais tokens casaram. Consulte o
+<a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-memoria/README.md">roteiro
+de exploração</a>. Para estudar offline, abra o HTML a partir de uma
+cópia local do repositório.</p>
+<section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
+<h3 id="explorer-heading">Percorra a memória neste tutorial</h3>
+<p>Avance turno a turno, consulte o store e teste buscas por usuário. Os fatos são sintéticos.</p>
+<div class="explorer-actions">
+<button id="fullscreen-explorer" type="button">Ver explorador em tela cheia</button>
+<a href="../material/bi-memoria/index.html" target="_blank" rel="noopener">Abrir explorador em nova aba</a>
+</div>
+<p id="explorer-status" role="status"></p>
+<iframe id="explorer" src="../material/bi-memoria/index.html" title="Explorador interativo de memória de agentes"
+loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+</section>
+<p>A linha do tempo é <strong>gravada pelo script</strong>; a busca é
+<strong>recalculada no navegador</strong> com a mesma regra. O painel
+não grava nada no store. Para regenerar os dados:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_mem0_preferencias.py <span class="at">--roteiro</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/gerar_bi_memoria.py</span></code></pre></div>
+<h3 id="atividade-no-painel">Atividade no painel</h3>
+<ol type="1">
+<li>No turno 6, busque “frete Recife” como <code>aluno_demo</code> e
+depois como <code>outra_cliente</code>. Compare os resultados.</li>
+<li>No turno 9, busque “presente mãe” sem sessão, com <code>s1</code> e
+com <code>s2</code>.</li>
+<li>Nos turnos 11 e 13, busque “frete Recife” e explique a diferença de
+score.</li>
+<li>No turno 16, busque “palha” e “peças”. O que o <code>delete</code>
+garantiu?</li>
+<li>Exporte o CSV de uma busca e o PNG de scores para o relato.</li>
+</ol>
+<p><strong>Resolução comentada:</strong> no turno 6,
+<code>aluno_demo</code> recebe <code>m1</code> com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">s=2</annotation></semantics></math>;
+<code>outra_cliente</code> recebe <code>m5</code> com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">s=1</annotation></semantics></math>,
+porque só “frete” aparece em “Cliente prefere frete para Caruaru.” e
+<code>m1</code> pertence a outro usuário. No turno 9, sem sessão e com
+<code>s2</code> não há resultado; com <code>s1</code>, <code>m4</code>
+tem
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">s=2</annotation></semantics></math>.
+No turno 11, <code>m1</code> contém “Recife” dentro de “(mudou de
+Recife)” e mantém
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">s=2</annotation></semantics></math>;
+no turno 13, o texto é só “Olinda” e o score cai para 1. No turno 16,
+nem “palha” nem “peças” encontram resultado, porque <code>m2</code> era
+a única memória com essas palavras. O <code>delete</code> removeu a
+memória do store; ele não apaga cópias em backups ou logs, que precisam
+de política própria.</p>
+<h2 id="7-privacidade-o-que-não-guardar">7. Privacidade: o que não
+guardar</h2>
+<p>Memória de usuário é <strong>tratamento de dados pessoais</strong> e
+está sujeita à Lei Geral de Proteção de Dados (LGPD, Lei nº
+13.709/2018). Três princípios orientam o desenho do store:</p>
+<ul>
+<li><strong>Necessidade (art. 6º, III):</strong> guarde o mínimo para a
+finalidade. A cidade de entrega ajuda a calcular frete; o CPF completo
+não é necessário para lembrar uma preferência.</li>
+<li><strong>Dados sensíveis (art. 5º, II, e art. 11):</strong> saúde,
+religião, origem racial, opinião política e vida sexual exigem cuidado
+reforçado. Um atendimento de loja não deve extrair esses fatos da
+conversa, mesmo quando a cliente os menciona de passagem.</li>
+<li><strong>Direitos do titular (art. 18):</strong> a pessoa pode pedir
+acesso, correção e eliminação. As operações <code>search</code>,
+<code>update</code> e <code>delete</code> precisam atender esses pedidos
+por <code>user_id</code>, incluindo o histórico guardado pela política
+do turno 12.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Guardar</th>
+<th>Evitar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cidade ou região de entrega preferida</td>
+<td>Endereço completo, CPF, dados de cartão</td>
+</tr>
+<tr>
+<td>Técnicas de artesanato de que gosta ou não</td>
+<td>Motivos de saúde ou religião para uma escolha</td>
+</tr>
+<tr>
+<td>Faixa de orçamento declarada</td>
+<td>Renda, situação financeira inferida</td>
+</tr>
+<tr>
+<td>Ocasião de compra na sessão (presente)</td>
+<td>Informações sobre terceiros (“minha mãe está doente”)</td>
+</tr>
+</tbody>
+</table>
+<p>O turno 4 grava “Hoje procura presente para a mãe.” com escopo de
+<strong>sessão</strong>: o fato ajuda nesta conversa e não precisa
+sobreviver a ela.</p>
+<h2 id="8-caminho-b-o-mem0-real-opcional">8. Caminho B: o Mem0 real
+(opcional)</h2>
+<p>O laboratório roda sem rede e sem chave. Para experimentar a
+biblioteca, o pacote é <code>mem0ai</code>. Por padrão, ela usa um
+modelo de linguagem para extrair fatos, um modelo de embeddings e um
+banco vetorial; a configuração padrão da documentação usa a API da
+OpenAI e, portanto, exige <code>OPENAI_API_KEY</code>. Outros
+provedores, inclusive locais, são configuráveis.</p>
+<p>A forma das chamadas, conforme a <a
+href="https://docs.mem0.ai/core-concepts/memory-operations/add">documentação
+de operações</a> consultada em 7 nov. 2026:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> mem0 <span class="im">import</span> Memory</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> Memory()  <span class="co"># configuração padrão: LLM + embeddings + banco vetorial</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>m.add([{<span class="st">&quot;role&quot;</span>: <span class="st">&quot;user&quot;</span>, <span class="st">&quot;content&quot;</span>: <span class="st">&quot;Recebo minhas compras em Recife.&quot;</span>}],</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>      user_id<span class="op">=</span><span class="st">&quot;aluno_demo&quot;</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>m.search(<span class="st">&quot;onde entregar?&quot;</span>, filters<span class="op">=</span>{<span class="st">&quot;user_id&quot;</span>: <span class="st">&quot;aluno_demo&quot;</span>})</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>m.update(memory_id<span class="op">=</span><span class="st">&quot;…&quot;</span>, text<span class="op">=</span><span class="st">&quot;Cliente prefere frete para Olinda.&quot;</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>m.delete(memory_id<span class="op">=</span><span class="st">&quot;…&quot;</span>)</span></code></pre></div>
+<p>Repare em duas diferenças em relação ao store da aula:
+<code>add</code> recebe <strong>mensagens</strong> e o modelo decide
+quais fatos extrair (com <code>infer=False</code>, a biblioteca grava o
+texto como veio); <code>search</code> filtra o escopo por
+<code>filters</code> e ordena por semelhança de embeddings. Confira a
+documentação da versão que você instalar: assinaturas mudam entre
+versões. Esta aula não executa o Caminho B.</p>
+<p>Outras bibliotecas resolvem problemas vizinhos com contratos
+diferentes, como grafos temporais de fatos (Graphiti) ou agentes com
+memória hierárquica (Letta). O vocabulário desta aula — escopo, quatro
+operações, política de atualização — serve para lê-las.</p>
+<h2 id="9-limitações">9. Limitações</h2>
+<ul>
+<li>A busca por sobreposição de tokens não entende sinônimos nem
+sentido; ela existe para você conferir cada número à mão.</li>
+<li>O store é um arquivo JSON local, sem concorrência, criptografia nem
+controle de acesso.</li>
+<li>Os 16 turnos são roteirizados; nenhum modelo decide o que
+gravar.</li>
+<li>Os dados são sintéticos e não representam clientes reais.</li>
+</ul>
+<h2 id="10-exercício-memória-de-uma-nova-cliente">10. Exercício: memória
+de uma nova cliente</h2>
+<p>Uma terceira cliente, <code>cliente_tres</code>, diz em três turnos:
+“moro em Caruaru”, “adoro xilogravura” e “hoje é para um aniversário”.
+Depois diz “me mudei para Garanhuns”. Entregue:</p>
+<ol type="1">
+<li>A classificação de cada fato em corpus, memória de usuário, memória
+de sessão ou nada, com uma frase de justificativa.</li>
+<li>As chamadas <code>add</code> (com escopo) para os fatos que você
+decidiu guardar.</li>
+<li>O cálculo à mão de
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo stretchy="false" form="prefix">(</mo><mi>q</mi><mo>,</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">s(q,m)</annotation></semantics></math>
+para a consulta “frete Caruaru” sobre a memória de endereço
+<strong>antes</strong> e <strong>depois</strong> do <code>update</code>,
+usando a política do turno 10 e a política do turno 12.</li>
+<li>O resultado de “frete Caruaru” buscado como <code>aluno_demo</code>,
+com justificativa.</li>
+<li>Que fatos você não guardaria se ela mencionasse que compra “porque a
+religião pede presentes artesanais nesta data”, citando o artigo da
+LGPD.</li>
+</ol>
+<h3 id="resolução-comentada">Resolução comentada</h3>
+<p><strong>1.</strong> “Moro em Caruaru” → memória de usuário (durável,
+usada no frete). “Adoro xilogravura” → memória de usuário (preferência).
+“Hoje é para um aniversário” → memória de sessão (vale nesta conversa).
+Nenhum dos três vai para o corpus, que guarda políticas válidas para
+todos os clientes.</p>
+<p><strong>2.</strong>
+<code>add("Cliente prefere frete para Caruaru.", user_id="cliente_tres")</code>,
+<code>add("Gosta de xilogravura.", user_id="cliente_tres")</code> e
+<code>add("Hoje procura presente de aniversário.", user_id="cliente_tres", session_id="s1")</code>.</p>
+<p><strong>3.</strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo stretchy="false" form="prefix">(</mo><mi>q</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mtext mathvariant="normal">frete</mtext><mo>,</mo><mspace width="0.222em"></mspace><mtext mathvariant="normal">caruaru</mtext><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">T(q) = [\text{frete},\ \text{caruaru}]</annotation></semantics></math>.
+Antes do update, “Cliente prefere frete para Caruaru.” tem
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">s=2</annotation></semantics></math>.
+Com a política do turno 10, o texto “Cliente prefere frete para
+Garanhuns (mudou de Caruaru).” mantém
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">s=2</annotation></semantics></math>.
+Com a política do turno 12, o texto “Cliente prefere frete para
+Garanhuns.” tem
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">s=1</annotation></semantics></math>,
+e “Caruaru” fica no campo <code>historico</code>, fora da busca.</p>
+<p><strong>4.</strong> Nenhuma memória de <code>cliente_tres</code>
+aparece, porque a busca filtra por <code>user_id</code>. Como
+<code>aluno_demo</code>, nada no store menciona Caruaru; “frete” casaria
+com <code>m1</code> (“Cliente prefere frete para Olinda.”), que seria
+devolvida com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">s=1</annotation></semantics></math>.
+Nesse ponto, uma pontuação mínima
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>≥</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">s \geq 2</annotation></semantics></math>,
+por exemplo) evitaria trazer uma memória que só compartilha a palavra
+“frete”.</p>
+<p><strong>5.</strong> A motivação religiosa é dado pessoal sensível
+(art. 5º, II, e art. 11 da LGPD) e não é necessária para sugerir peças
+ou calcular frete (princípio da necessidade, art. 6º, III). A memória
+pode registrar, no máximo, “procura presente” na sessão.</p>
+<h2 id="referências-e-artefatos">Referências e artefatos</h2>
+<h3 id="leitura">Leitura</h3>
+<ol type="1">
+<li>MEM0. <strong>Introduction</strong> e <strong>Open source
+overview</strong>. Documentação em inglês, <a
+href="https://docs.mem0.ai/introduction">introdução</a> · <a
+href="https://docs.mem0.ai/open-source/overview">código aberto</a>.
+<strong>Para consultar:</strong> componentes (LLM, embeddings, banco
+vetorial) e configuração padrão.</li>
+<li>MEM0. <strong>Memory operations: add, search, update,
+delete</strong>. <a
+href="https://docs.mem0.ai/core-concepts/memory-operations/add">add</a>
+· <a
+href="https://docs.mem0.ai/core-concepts/memory-operations/search">search</a>
+· <a
+href="https://docs.mem0.ai/core-concepts/memory-operations/update">update</a>
+· <a
+href="https://docs.mem0.ai/core-concepts/memory-operations/delete">delete</a>.
+<strong>Para consultar:</strong> assinaturas atuais, <code>infer</code>,
+<code>filters</code> e metadados.</li>
+<li>MEM0. <strong>Repositório mem0ai/mem0</strong>. <a
+href="https://github.com/mem0ai/mem0">GitHub</a>. <strong>Para
+aprofundar:</strong> código, licença Apache-2.0 e exemplos.</li>
+<li>BRASIL. <strong>Lei nº 13.709, de 14 de agosto de 2018</strong> (Lei
+Geral de Proteção de Dados Pessoais). <a
+href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm">Texto
+no Planalto</a>. <strong>Para consultar:</strong> arts. 5º, 6º, 11 e
+18.</li>
+</ol>
+<p>Consulta dos materiais on-line: 7 nov. 2026.</p>
+<h3 id="artefatos-no-repositório">Artefatos no repositório</h3>
+<table>
+<thead>
+<tr>
+<th>Artefato</th>
+<th>Papel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scripts/demo_mem0_preferencias.py</code></td>
+<td>Store local com
+<code>add</code>/<code>search</code>/<code>update</code>/<code>delete</code>;
+<code>--roteiro</code> grava a linha do tempo</td>
+</tr>
+<tr>
+<td><code>material/memoria/linha-do-tempo.json</code></td>
+<td>16 turnos com ação, escopo, resultado e store</td>
+</tr>
+<tr>
+<td><code>material/memoria/resultado_memoria_preferencias.json</code></td>
+<td>Versão curta do modo padrão</td>
+</tr>
+<tr>
+<td><code>material/memoria/store_preferencias.json</code></td>
+<td>Store de trabalho (não versionado)</td>
+</tr>
+<tr>
+<td><code>material/bi-memoria/</code></td>
+<td>Explorador turno a turno</td>
+</tr>
+<tr>
+<td><code>scripts/gerar_bi_memoria.py</code></td>
+<td>Gera <code>bi-memoria/dados.js</code></td>
+</tr>
+<tr>
+<td><code>material/imagens/</code> (regenerar:
+<code>.local/scripts/gerar_figuras_chain_memoria.py</code>)</td>
+<td>Gera as figuras desta aula</td>
+</tr>
+</tbody>
+</table></main>
+  </div>
+</body>
+</html>

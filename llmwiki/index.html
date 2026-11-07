@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutoriais com explorador interativo: associação de regras e previsão de demanda.">
+  <title>llmwiki: políticas em Markdown viram um índice
+local · Aprender com dados</title>
+  <link rel="stylesheet" href="../assets/tutorial.css">
+  <script src="../assets/tutorial.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir ao conteúdo principal</a>
+  <header class="site-header">
+    <a class="brand" href="../">Aprender com dados</a>
+    <nav aria-label="Navegação principal">
+      <a href="../">Associação</a>
+      <a href="../logs-auth/">Logs</a>
+      <a href="../demanda/">Média móvel</a>
+      <a href="../demanda-mq/">Mín. quadrados</a>
+      <a href="../demanda-perc/">LMS</a>
+      <a href="../demanda-poisson/">Poisson</a>
+      <a href="#explorador-interativo">Explorar</a>
+      <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-llmwiki-20261026.md">Versão
+Markdown</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="toc">
+      <details open><summary>Neste tutorial</summary><nav aria-label="Índice"><ul>
+<li><a href="#busca-local-em-markdown-índice-invertido-bm25-e-llmwiki"
+id="toc-busca-local-em-markdown-índice-invertido-bm25-e-llmwiki">Busca
+local em Markdown: índice invertido, BM25 e llmwiki</a>
+<ul>
+<li><a href="#1-onde-a-busca-por-palavra-chave-se-situa"
+id="toc-1-onde-a-busca-por-palavra-chave-se-situa">1. Onde a busca por
+palavra-chave se situa</a></li>
+<li><a href="#2-o-corpus-e-seu-contrato"
+id="toc-2-o-corpus-e-seu-contrato">2. O corpus e seu contrato</a></li>
+<li><a href="#3-o-índice-invertido" id="toc-3-o-índice-invertido">3. O
+índice invertido</a></li>
+<li><a href="#4-pontuar-tf-df-idf-e-bm25"
+id="toc-4-pontuar-tf-df-idf-e-bm25">4. Pontuar: TF, DF, IDF e
+BM25</a></li>
+<li><a href="#5-indexar-com-a-llmwiki"
+id="toc-5-indexar-com-a-llmwiki">5. Indexar com a llmwiki</a></li>
+<li><a href="#6-três-consultas-e-a-leitura-do-ranking"
+id="toc-6-três-consultas-e-a-leitura-do-ranking">6. Três consultas e a
+leitura do ranking</a></li>
+<li><a href="#7-o-experimento-do-erro-de-digitação"
+id="toc-7-o-experimento-do-erro-de-digitação">7. O experimento do erro
+de digitação</a></li>
+<li><a href="#8-palavra-chave-semântica-e-híbrida"
+id="toc-8-palavra-chave-semântica-e-híbrida">8. Palavra-chave, semântica
+e híbrida</a></li>
+<li><a href="#9-explorar-o-ranking-no-painel"
+id="toc-9-explorar-o-ranking-no-painel">9. Explorar o ranking no
+painel</a></li>
+<li><a href="#10-limitações" id="toc-10-limitações">10.
+Limitações</a></li>
+<li><a href="#11-exercício" id="toc-11-exercício">11. Exercício</a></li>
+<li><a href="#referências-bibliográficas-e-roteiro-de-leitura"
+id="toc-referências-bibliográficas-e-roteiro-de-leitura">Referências
+bibliográficas e roteiro de leitura</a></li>
+</ul></li>
+</ul></nav></details>
+    </aside>
+    <main id="conteudo"><h1
+id="busca-local-em-markdown-índice-invertido-bm25-e-llmwiki">Busca local
+em Markdown: índice invertido, BM25 e llmwiki</h1>
+<p><a
+href="https://lgallindo.github.io/recomendador-bentoml/llmwiki/">Leia a
+versão web com o explorador interativo incorporado</a>.</p>
+<p>A loja de artesanato guarda suas políticas em páginas Markdown:
+frete, devolução, prazos de produção, horário do atendimento. Quando um
+cliente pergunta “qual o prazo de devolução?”, alguém da equipe abre
+arquivo por arquivo até achar a frase certa. Com oito páginas isso ainda
+funciona; com oitenta, a resposta atrasa e às vezes sai errada. O que a
+equipe precisa é de uma busca que devolva, em ordem, as páginas que mais
+provavelmente contêm a resposta, e que mostre por que cada uma ficou
+naquela posição.</p>
+<p>Ao concluir este tutorial, você deverá conseguir construir à mão um
+<strong>índice invertido</strong> pequeno, calcular a pontuação
+<strong>BM25</strong> de um termo numa página, indexar uma pasta de
+Markdown com o binário <code>llmwiki</code> e ler um ranking explicando
+de onde vem cada posição. Você também verá, com números, como um erro de
+digitação muda o resultado e por que uma página “de entrada” pode vencer
+a página que de fato responde.</p>
+<p>O corpus é sintético: oito páginas curtas em <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/mini-wiki-rag"><code>mini-wiki-rag/</code></a>.
+Os scores servem para aprender o método; eles não descrevem o desempenho
+de uma busca num acervo real.</p>
+<h3 id="roteiro-de-estudo">Roteiro de estudo</h3>
+<table>
+<thead>
+<tr>
+<th>Tempo sugerido</th>
+<th>Atividade de estudo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8 min</td>
+<td>Situar busca por palavra-chave na IA e na recuperação de
+informação</td>
+</tr>
+<tr>
+<td>7 min</td>
+<td>Ler o corpus e o contrato de frontmatter</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Montar um índice invertido à mão</td>
+</tr>
+<tr>
+<td>15 min</td>
+<td>Calcular TF, DF, IDF e um score BM25 completo</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Indexar com a llmwiki e confirmar o que fica fora do Git</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Rodar três consultas e explicar o ranking</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Fazer o experimento do erro de digitação</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Explorar o ranking no painel e exportar uma evidência</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Resolver o exercício</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-onde-a-busca-por-palavra-chave-se-situa">1. Onde a busca por
+palavra-chave se situa</h2>
+<p><strong>Inteligência artificial (IA)</strong> é o campo que estuda
+sistemas capazes de tarefas como perceber, raciocinar, aprender e apoiar
+decisões. <strong>Recuperação de informação</strong> é a área que estuda
+como encontrar, numa coleção de documentos, aqueles que atendem a uma
+necessidade expressa numa consulta. Ela é mais antiga que os modelos de
+linguagem atuais e continua sendo a base de buscadores, catálogos e
+assistentes que respondem a partir de documentos.</p>
+<p><img src="../material/imagens/rag-mapa-ia.png"
+alt="Diagrama: dentro de inteligência artificial há duas caixas. À esquerda, recuperação de informação com índice invertido, FTS, BM25 (llmwiki), vetores, grafo e as métricas recall@k e precisão@k. À direita, aprendizado de máquina com modelos de linguagem, que geram texto aprendido de dados sem garantia de fato. Abaixo, RAG liga as duas: recuperar e gerar com citação." /></p>
+<p><em>Figura 1 — Mapa conceitual, não proporcional. Este tutorial fica
+na caixa da esquerda: o BM25 é uma fórmula estatística fixa, sem
+parâmetros aprendidos de exemplos. A busca semântica e a híbrida da
+llmwiki usam vetores produzidos por um modelo treinado, e por isso já
+tocam a caixa da direita.</em></p>
+<p>O BM25 conta palavras e pondera raridade e tamanho de documento. Ele
+não aprende com exemplos rotulados; você escolhe dois números,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>k</mi><mn>1</mn></msub><annotation encoding="application/x-tex">k_1</annotation></semantics></math>
+e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>,
+e a fórmula faz o resto. Essa transparência é a razão de começar por
+ele: cada ponto do score pode ser refeito com lápis e papel.</p>
+<h2 id="2-o-corpus-e-seu-contrato">2. O corpus e seu contrato</h2>
+<p>Cada página da mini-wiki começa com um <strong>frontmatter</strong>
+YAML com três campos:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> Política de devolução</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">description</span><span class="kw">:</span><span class="at"> Prazo, estado da peça e como abrir o pedido de devolução.</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tags</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">devolucao</span><span class="kw">,</span><span class="at"> politica</span><span class="kw">,</span><span class="at"> pt-br</span><span class="kw">]</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div>
+<p>A llmwiki só admite no índice arquivos que tragam esse cabeçalho. O
+<code>README.md</code> da pasta não tem frontmatter e fica de fora; a
+própria ferramenta avisa na indexação:</p>
+<pre class="text"><code>Warning: skipping README.md — No frontmatter found</code></pre>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th><code>title</code></th>
+<th>Assunto que responde</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inicio.md</code></td>
+<td>Início — loja de artesanato PE</td>
+<td>Apresenta o corpus e cita todos os temas</td>
+</tr>
+<tr>
+<td><code>frete.md</code></td>
+<td>Frete — polos de Pernambuco</td>
+<td>Frete por CEP; frete grátis acima de R$ 200 no Pilar; prazos de
+entrega</td>
+</tr>
+<tr>
+<td><code>devolucao.md</code></td>
+<td>Política de devolução</td>
+<td><strong>7 dias corridos</strong> após o recebimento, peça sem
+uso</td>
+</tr>
+<tr>
+<td><code>prazos.md</code></td>
+<td>Prazos de produção artesanal</td>
+<td>1–2 dias úteis de prateleira; até 15 dias úteis para encomenda de
+cerâmica</td>
+</tr>
+<tr>
+<td><code>atendimento.md</code></td>
+<td>Atendimento e canais</td>
+<td>Chat das 9h às 18h, dias úteis; o que sobe para humano</td>
+</tr>
+<tr>
+<td><code>recomendador.md</code></td>
+<td>Como o recomendador sugere peças</td>
+<td>Popularidade, co-ocorrência, <code>score</code> e
+<code>reason</code></td>
+</tr>
+<tr>
+<td><code>catalogo-p01.md</code></td>
+<td>Peça p01 — Jarro barro Tracunhaém</td>
+<td>Ficha da peça de cerâmica</td>
+</tr>
+<tr>
+<td><code>catalogo-p04.md</code></td>
+<td>Peça p04 — Rendeira Alto do Moura</td>
+<td>Ficha da peça de renda</td>
+</tr>
+</tbody>
+</table>
+<p>Repare em <code>inicio.md</code> e <code>atendimento.md</code>: são
+páginas que <strong>mencionam</strong> frete, devolução e prazo sem dar
+os números. Elas vão reaparecer na seção 6.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> material/mini-wiki-rag <span class="at">-name</span> <span class="st">&#39;*.md&#39;</span> <span class="kw">|</span> <span class="fu">sort</span></span></code></pre></div>
+<p>Resultado esperado: nove arquivos, dos quais oito têm
+frontmatter.</p>
+<h2 id="3-o-índice-invertido">3. O índice invertido</h2>
+<p>Um livro técnico traz no fim um índice remissivo: “frete, p. 12, 47,
+90”. O <strong>índice invertido</strong> é a mesma ideia: para cada
+termo, a lista das páginas onde ele aparece, com a contagem. Essa lista
+se chama <strong>lista de postagens</strong>. Em vez de ler todas as
+páginas a cada pergunta, a busca consulta só as listas dos termos da
+consulta.</p>
+<p>Para montar o índice, cada página passa por uma
+<strong>tokenização</strong>. Nas contas deste tutorial, feitas por <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/scripts/avaliar_rag.py"><code>scripts/avaliar_rag.py</code></a>,
+as regras são:</p>
+<ol type="1">
+<li>O texto pesquisável junta <code>title</code>,
+<code>description</code> e o corpo da página.</li>
+<li>Tudo vai para minúsculas; acentos são preservados
+(<code>devolução</code> ≠ <code>devolucao</code>).</li>
+<li>Um token é uma sequência de letras e dígitos; pontuação separa
+tokens.</li>
+<li>Palavras muito frequentes do português (<em>stopwords</em>, como
+“de”, “o”, “para”) e tokens de uma letra são descartados.</li>
+<li>Não há redução de plural nem de conjugação: <code>encomenda</code> e
+<code>encomendas</code> são termos diferentes.</li>
+</ol>
+<p><img src="../material/imagens/llmwiki-indice-invertido.png"
+alt="Quatro páginas à esquerda com seus primeiros tokens; à direita, o índice invertido de quatro termos. frete, df 3: frete 6, atendimento 1, inicio 1. devolução, df 3: devolucao 4, atendimento 1, inicio 1. tracunhaém, df 2: catalogo-p01 3, frete 1. prazo, df 3: atendimento 1, devolucao 1, prazos 1." /></p>
+<p><em>Figura 2 — Índice invertido parcial da mini-wiki. O número após
+cada página é a contagem do termo nela (tf). O <code>df</code> é o
+número de páginas da lista. Os valores vêm das oito páginas com as
+regras acima.</em></p>
+<p><strong>Minúcia.</strong> O termo <code>frete</code> aparece seis
+vezes no texto pesquisável de <code>frete.md</code>: uma no
+<code>title</code> (“Frete — polos…”), duas na <code>description</code>
+(“Regras de frete… frete grátis…”) e três no corpo (o título
+<code># Frete</code>, “frete calculado” e “frete grátis”). Ele aparece
+uma vez em <code>atendimento.md</code> e uma em <code>inicio.md</code>.
+Por isso a lista de postagens de <code>frete</code> tem três
+páginas.</p>
+<h2 id="4-pontuar-tf-df-idf-e-bm25">4. Pontuar: TF, DF, IDF e BM25</h2>
+<p>Saber <strong>onde</strong> um termo aparece não basta; a busca
+precisa <strong>ordenar</strong> as páginas. Três perguntas orientam a
+pontuação.</p>
+<h3
+id="frequência-do-termo-quantas-vezes-o-termo-aparece-na-página">Frequência
+do termo: quantas vezes o termo aparece na página?</h3>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">f</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>,</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathrm{tf}(t,d)</annotation></semantics></math>
+é a contagem do termo
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
+no documento
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>.
+Mais ocorrências sugerem que a página trata do assunto, mas a vigésima
+ocorrência acrescenta menos informação que a segunda.</p>
+<h3
+id="frequência-nos-documentos-em-quantas-páginas-o-termo-aparece">Frequência
+nos documentos: em quantas páginas o termo aparece?</h3>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">f</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathrm{df}(t)</annotation></semantics></math>
+é o número de documentos com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>.
+Um termo presente em quase todas as páginas ajuda pouco a distinguir uma
+da outra.</p>
+<h3 id="raridade-quanto-vale-encontrar-o-termo">Raridade: quanto vale
+encontrar o termo?</h3>
+<p>A <strong>frequência inversa nos documentos</strong> usada pelo BM25,
+com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+documentos, é</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">i</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">f</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">ln</mi><mo>&#8289;</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>+</mo><mfrac><mrow><mi>N</mi><mo>−</mo><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">f</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>0</mn><mo>,</mo><mn>5</mn></mrow><mrow><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">f</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>0</mn><mo>,</mo><mn>5</mn></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\mathrm{idf}(t) = \ln\left(1 + \frac{N - \mathrm{df}(t) + 0{,}5}{\mathrm{df}(t) + 0{,}5}\right).
+</annotation></semantics></math></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">df na mini-wiki
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>8</mn></mrow><annotation encoding="application/x-tex">N = 8</annotation></semantics></math>)</th>
+<th style="text-align: right;">idf</th>
+<th>Leitura</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1,7918</td>
+<td>Termo exclusivo de uma página: vale muito</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1,2809</td>
+<td>Termo raro</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0,9445</td>
+<td>Termo comum a três páginas</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0,6931</td>
+<td>Termo presente em metade do corpus</td>
+</tr>
+</tbody>
+</table>
+<h3 id="bm25-frequência-saturada-raridade-e-tamanho">BM25: frequência
+saturada, raridade e tamanho</h3>
+<p>O <strong>BM25</strong> (<em>Best Matching 25</em>) soma, para cada
+termo da consulta
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math>,
+uma contribuição que combina as três ideias:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">B</mi><mi mathvariant="normal">M</mi><mn mathvariant="normal">25</mn></mrow><mo stretchy="false" form="prefix">(</mo><mi>q</mi><mo>,</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><munder><mo>∑</mo><mrow><mi>t</mi><mo>∈</mo><mi>q</mi></mrow></munder><mrow><mi mathvariant="normal">i</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">f</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mspace width="0.222em"></mspace><mfrac><mrow><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">f</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>,</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mspace width="0.222em"></mspace><mo stretchy="false" form="prefix">(</mo><msub><mi>k</mi><mn>1</mn></msub><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">f</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>,</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>k</mi><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>b</mi><mo>+</mo><mi>b</mi><mspace width="0.222em"></mspace><mstyle displaystyle="true"><mfrac><mrow><mo stretchy="false" form="prefix">|</mo><mi>d</mi><mo stretchy="false" form="prefix">|</mo></mrow><mover><mrow><mo stretchy="false" form="prefix">|</mo><mi>d</mi><mo stretchy="false" form="prefix">|</mo></mrow><mo accent="true">¯</mo></mover></mfrac></mstyle><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\mathrm{BM25}(q,d) = \sum_{t \in q} \mathrm{idf}(t)\ 
+\frac{\mathrm{tf}(t,d)\ (k_1+1)}{\mathrm{tf}(t,d) + k_1\left(1 - b + b\ \dfrac{|d|}{\overline{|d|}}\right)}.
+</annotation></semantics></math></p>
+<ul>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mi>d</mi><mo stretchy="false" form="prefix">|</mo></mrow><annotation encoding="application/x-tex">|d|</annotation></semantics></math>
+é o número de tokens do documento e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mrow><mo stretchy="false" form="prefix">|</mo><mi>d</mi><mo stretchy="false" form="prefix">|</mo></mrow><mo accent="true">¯</mo></mover><annotation encoding="application/x-tex">\overline{|d|}</annotation></semantics></math>
+a média do corpus (36 tokens na mini-wiki).</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>k</mi><mn>1</mn></msub><annotation encoding="application/x-tex">k_1</annotation></semantics></math>
+controla a <strong>saturação</strong>: com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>k</mi><mn>1</mn></msub><mo>=</mo><mn>1</mn><mo>,</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">k_1 = 1{,}2</annotation></semantics></math>,
+a fração com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">f</mi></mrow><annotation encoding="application/x-tex">\mathrm{tf}</annotation></semantics></math>
+nunca passa de
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>k</mi><mn>1</mn></msub><mo>+</mo><mn>1</mn><mo>=</mo><mn>2</mn><mo>,</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">k_1 + 1 = 2{,}2</annotation></semantics></math>,
+por mais que o termo se repita.</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>
+controla a <strong>normalização por tamanho</strong>: com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>75</mn></mrow><annotation encoding="application/x-tex">b = 0{,}75</annotation></semantics></math>,
+uma página mais longa que a média precisa de mais ocorrências para obter
+o mesmo peso.</li>
+</ul>
+<p>Os valores
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>k</mi><mn>1</mn></msub><mo>=</mo><mn>1</mn><mo>,</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">k_1 = 1{,}2</annotation></semantics></math>
+e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>75</mn></mrow><annotation encoding="application/x-tex">b = 0{,}75</annotation></semantics></math>
+são usuais na literatura e são os deste tutorial.</p>
+<h3 id="conta-completa-frete-em-fretemd">Conta completa:
+<code>frete</code> em <code>frete.md</code></h3>
+<table>
+<thead>
+<tr>
+<th>Grandeza</th>
+<th style="text-align: right;">Valor</th>
+<th>De onde vem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math></td>
+<td style="text-align: right;">8</td>
+<td>páginas com frontmatter</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">f</mi></mrow><annotation encoding="application/x-tex">\mathrm{tf}</annotation></semantics></math></td>
+<td style="text-align: right;">6</td>
+<td>seção 3</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">f</mi></mrow><annotation encoding="application/x-tex">\mathrm{df}</annotation></semantics></math></td>
+<td style="text-align: right;">3</td>
+<td>frete, atendimento, inicio</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">i</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">f</mi></mrow><annotation encoding="application/x-tex">\mathrm{idf}</annotation></semantics></math></td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">ln</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mn>5</mn><mo>,</mo><mn>5</mn><mi>/</mi><mn>3</mn><mo>,</mo><mn>5</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">ln</mi><mo>&#8289;</mo></mrow><mn>2</mn><mo>,</mo><mn>5714</mn><mo>=</mo><mn>0</mn><mo>,</mo><mn>9445</mn></mrow><annotation encoding="application/x-tex">\ln(1 + 5{,}5/3{,}5) = \ln 2{,}5714 = 0{,}9445</annotation></semantics></math></td>
+<td>fórmula</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mi>d</mi><mo stretchy="false" form="postfix">|</mo><mi>/</mi><mover><mrow><mo stretchy="false" form="prefix">|</mo><mi>d</mi><mo stretchy="false" form="postfix">|</mo></mrow><mo accent="true">¯</mo></mover></mrow><annotation encoding="application/x-tex">\lvert d\rvert / \overline{\lvert d\rvert}</annotation></semantics></math></td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>38</mn><mi>/</mi><mn>36</mn><mo>=</mo><mn>1</mn><mo>,</mo><mn>0556</mn></mrow><annotation encoding="application/x-tex">38/36 = 1{,}0556</annotation></semantics></math></td>
+<td>contagem de tokens</td>
+</tr>
+<tr>
+<td>denominador</td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>6</mn><mo>+</mo><mn>1</mn><mo>,</mo><mn>2</mn><mspace width="0.222em"></mspace><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>25</mn><mo>+</mo><mn>0</mn><mo>,</mo><mn>75</mn><mo>⋅</mo><mn>1</mn><mo>,</mo><mn>0556</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>6</mn><mo>+</mo><mn>1</mn><mo>,</mo><mn>25</mn><mo>=</mo><mn>7</mn><mo>,</mo><mn>25</mn></mrow><annotation encoding="application/x-tex">6 + 1{,}2\ (0{,}25 + 0{,}75 \cdot 1{,}0556) = 6 + 1{,}25 = 7{,}25</annotation></semantics></math></td>
+<td></td>
+</tr>
+<tr>
+<td>contribuição</td>
+<td
+style="text-align: right;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>,</mo><mn>9445</mn><mo>⋅</mo><mn>6</mn><mo>⋅</mo><mn>2</mn><mo>,</mo><mn>2</mn><mi>/</mi><mn>7</mn><mo>,</mo><mn>25</mn><mo>=</mo><mn>1</mn><mo>,</mo><mn>7196</mn></mrow><annotation encoding="application/x-tex">0{,}9445 \cdot 6 \cdot 2{,}2 / 7{,}25 = 1{,}7196</annotation></semantics></math></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Para a consulta <code>frete Tracunhaém</code>, some a contribuição de
+<code>tracunhaém</code> em <code>frete.md</code>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">f</mi></mrow><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\mathrm{tf}=1</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">f</mi></mrow><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">\mathrm{df}=2</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">i</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">f</mi></mrow><mo>=</mo><mn>1</mn><mo>,</mo><mn>2809</mn></mrow><annotation encoding="application/x-tex">\mathrm{idf}=1{,}2809</annotation></semantics></math>):
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>,</mo><mn>2809</mn><mo>⋅</mo><mn>2</mn><mo>,</mo><mn>2</mn><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mn>1</mn><mo>,</mo><mn>25</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1</mn><mo>,</mo><mn>2525</mn></mrow><annotation encoding="application/x-tex">1{,}2809 \cdot 2{,}2 / (1 + 1{,}25) = 1{,}2525</annotation></semantics></math>.
+O total é
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>,</mo><mn>7196</mn><mo>+</mo><mn>1</mn><mo>,</mo><mn>2525</mn><mo>=</mo><mn>2</mn><mo>,</mo><mn>9721</mn></mrow><annotation encoding="application/x-tex">1{,}7196 + 1{,}2525 = 2{,}9721</annotation></semantics></math>.</p>
+<p>Confira com o script, que usa só a biblioteca padrão do Python:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/avaliar_rag.py <span class="at">--explicar</span> frete <span class="at">--pagina</span> frete.md</span></code></pre></div>
+<p>Resultado esperado (trecho): <code>"tf": 6</code>,
+<code>"df": 3</code>, <code>"idf": 0.9445</code>,
+<code>"comprimento": 38</code>, <code>"contribuicao": 1.7196</code>.
+Decimais no JSON usam ponto.</p>
+<h2 id="5-indexar-com-a-llmwiki">5. Indexar com a llmwiki</h2>
+<p>A <strong>llmwiki</strong> é um binário escrito em Rust que lê uma
+pasta de Markdown com frontmatter, grava um índice em
+<code>.index/</code> e responde a buscas por palavra-chave (BM25),
+semânticas (vetores) ou híbridas. Tudo fica no disco local; não há
+servidor.</p>
+<h3 id="caminho-a--com-rust-instalado">Caminho A — com Rust
+instalado</h3>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> install llmwiki        <span class="co"># uma vez; exige o Rust via rustup</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">llmwiki</span> <span class="at">--version</span></span></code></pre></div>
+<p>Este tutorial foi conferido com <code>llmwiki 0.2.1</code>. Se o
+binário já estiver em <code>~/.cargo/bin</code>, confira apenas se essa
+pasta está no <code>PATH</code>.</p>
+<p>Na raiz do repositório:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">llmwiki</span> init  <span class="at">--wiki-root</span> material/mini-wiki-rag</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">llmwiki</span> index <span class="at">--wiki-root</span> material/mini-wiki-rag</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">llmwiki</span> list  <span class="at">--wiki-root</span> material/mini-wiki-rag</span></code></pre></div>
+<p>A indexação avisa sobre o <code>README.md</code> sem frontmatter e
+termina com uma linha como <code>Indexed 9 files (… 1 skipped …)</code>.
+O <code>list</code> mostra as oito páginas, cada uma com sua
+<code>description</code> e suas <code>tags</code>. Dentro de
+<code>.index/</code> você encontra o índice de palavras
+(<code>tantivy/</code>), o índice de vetores
+(<code>vectors.usearch</code>) e os metadados dos arquivos.</p>
+<p>O índice é um artefato reconstruível e não deve ir para o Git.
+Confirme:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> check-ignore <span class="at">-v</span> material/mini-wiki-rag/.index</span></code></pre></div>
+<p>Resultado esperado:
+<code>material/mini-wiki-rag/.gitignore:1:.index/</code> seguido do
+caminho. O <code>.gitignore</code> da raiz também lista essa pasta.</p>
+<h3 id="caminho-b--sem-rust">Caminho B — sem Rust</h3>
+<p>Se não for possível instalar o Rust, você reproduz o BM25 com o
+script da seção 4, que lê as mesmas páginas, e acompanha o ranking no
+explorador da seção 9. Para uma busca textual com SQLite, também sem
+instalar nada:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_rag_fts.py <span class="at">--indexar</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_rag_fts.py <span class="st">&quot;frete Tracunhaém&quot;</span></span></code></pre></div>
+<h2 id="6-três-consultas-e-a-leitura-do-ranking">6. Três consultas e a
+leitura do ranking</h2>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">llmwiki</span> search <span class="at">--wiki-root</span> material/mini-wiki-rag <span class="at">--keyword</span> <span class="st">&quot;frete Tracunhaém&quot;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">llmwiki</span> search <span class="at">--wiki-root</span> material/mini-wiki-rag <span class="at">--keyword</span> <span class="st">&quot;devolução frete Tracunhaém&quot;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">llmwiki</span> search <span class="at">--wiki-root</span> material/mini-wiki-rag <span class="at">--keyword</span> <span class="st">&quot;Qual o prazo de devolução e o frete para Tracunhaém?&quot;</span></span></code></pre></div>
+<p>Resultados com <code>llmwiki 0.2.1</code> (três primeiras
+posições):</p>
+<table>
+<thead>
+<tr>
+<th>Consulta</th>
+<th>1º</th>
+<th>2º</th>
+<th>3º</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>frete Tracunhaém</code></td>
+<td><code>frete.md</code> 6,87</td>
+<td><code>catalogo-p01.md</code> 3,58</td>
+<td><code>atendimento.md</code> 0,98</td>
+</tr>
+<tr>
+<td><code>devolução frete Tracunhaém</code></td>
+<td><code>frete.md</code> 6,87</td>
+<td><code>devolucao.md</code> 4,94</td>
+<td><code>catalogo-p01.md</code> 3,58</td>
+</tr>
+<tr>
+<td>pergunta completa</td>
+<td><code>devolucao.md</code> 13,90</td>
+<td><code>atendimento.md</code> 11,93</td>
+<td><code>frete.md</code> 10,17</td>
+</tr>
+</tbody>
+</table>
+<p>Cada hit vem com a linha onde o termo casou
+(<code>→ match at: L2 "frete" · …</code>). Os scores da llmwiki diferem
+dos calculados na seção 4 porque a ferramenta usa sua própria
+tokenização e seus próprios pesos. <strong>Compare posições, não
+valores.</strong> Para <code>frete Tracunhaém</code>, o script da
+biblioteca padrão produz a mesma ordem: <code>frete.md</code> 2,97,
+<code>catalogo-p01.md</code> 2,05, <code>atendimento.md</code> 0,99,
+<code>inicio.md</code> 0,93.</p>
+<h3 id="por-que-uma-página-que-só-menciona-o-assunto-pode-vencer">Por
+que uma página que só menciona o assunto pode vencer</h3>
+<p>Na pergunta completa, o BM25 da seção 4 coloca
+<code>atendimento.md</code> empatada com <code>frete.md</code> e à
+frente de <code>devolucao.md</code>, a página que tem o prazo.</p>
+<p><img src="../material/imagens/llmwiki-bm25-contribuicoes.png"
+alt="Barras empilhadas do BM25 para a pergunta completa. frete.md 2,97 (frete e tracunhaém); atendimento.md 2,97 (prazo, devolução e frete, cerca de 0,99 cada); devolucao.md 2,44 (prazo e devolução); catalogo-p01.md 2,05; inicio.md 1,87; prazos.md 1,00." /></p>
+<p><em>Figura 3 — Cada cor é a contribuição de um termo.
+<code>atendimento.md</code> soma três contribuições pequenas porque cita
+três assuntos numa página curta; <code>devolucao.md</code> soma duas
+maiores. O BM25 recompensa cobrir vários termos da consulta, e isso não
+equivale a responder.</em></p>
+<p>O efeito fica mais forte na consulta curta
+<code>devolução frete Tracunhaém</code>: o BM25 da seção 4 põe
+<code>devolucao.md</code> em <strong>quinto</strong>, com 1,55, atrás de
+<code>atendimento.md</code> (1,98) e <code>inicio.md</code> (1,87). A
+llmwiki a põe em segundo. Duas buscas razoáveis, duas ordens diferentes:
+o ranking depende de tokenização, campos e pesos, e por isso precisa ser
+avaliado com perguntas de verdade, como no tutorial de RAG.</p>
+<h2 id="7-o-experimento-do-erro-de-digitação">7. O experimento do erro
+de digitação</h2>
+<p>Um índice só conhece os tokens que viu. Para sentir isso, troque
+temporariamente uma letra:</p>
+<ol type="1">
+<li>Em <code>material/mini-wiki-rag/frete.md</code>, troque
+<code>Tracunhaém e Alto</code> por <code>Tracunhaen e Alto</code>.</li>
+<li>Reindexe só o que mudou:
+<code>llmwiki index --wiki-root material/mini-wiki-rag --incremental</code>
+(saída: <code>… 1 updated, 8 skipped …</code>).</li>
+<li>Repita <code>llmwiki search … --keyword "frete Tracunhaém"</code> e
+anote.</li>
+<li>Busque o erro:
+<code>llmwiki search … --keyword "Tracunhaen"</code>.</li>
+<li><strong>Restaure</strong> o texto original, reindexe e confira com
+<code>git diff material/mini-wiki-rag/frete.md</code>, que deve sair
+vazio.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Situação</th>
+<th style="text-align: right;"><code>frete.md</code></th>
+<th style="text-align: right;"><code>catalogo-p01.md</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Original</td>
+<td style="text-align: right;">6,87</td>
+<td style="text-align: right;">3,58</td>
+</tr>
+<tr>
+<td>Com o erro</td>
+<td style="text-align: right;">5,64</td>
+<td style="text-align: right;">4,33</td>
+</tr>
+<tr>
+<td>Busca por <code>Tracunhaen</code></td>
+<td style="text-align: right;">1,72 (único hit)</td>
+<td style="text-align: right;">—</td>
+</tr>
+</tbody>
+</table>
+<p>Duas coisas mudaram. <code>frete.md</code> perdeu a contribuição de
+<code>tracunhaém</code> e caiu. <code>catalogo-p01.md</code>
+<strong>subiu</strong> sem ter sido editada: com o erro,
+<code>tracunhaém</code> passou de duas páginas para uma, e o idf desse
+termo foi de
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>,</mo><mn>2809</mn></mrow><annotation encoding="application/x-tex">1{,}2809</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">f</mi></mrow><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">\mathrm{df}=2</annotation></semantics></math>)
+para
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>,</mo><mn>7918</mn></mrow><annotation encoding="application/x-tex">1{,}7918</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">f</mi></mrow><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\mathrm{df}=1</annotation></semantics></math>).
+Uma edição numa página altera o score de outra, porque o idf é uma
+propriedade do corpus inteiro.</p>
+<p><img src="../material/imagens/llmwiki-ciclo.png"
+alt="Ciclo de vida: escrever página .md, frontmatter com title, description e tags, indexar com llmwiki index, buscar com llmwiki search, ler o hit e o trecho. Uma seta volta de ler para indexar: editou, reindexe com --incremental antes de confiar na busca. Sem frontmatter a página fica fora." /></p>
+<p><em>Figura 4 — O índice é uma fotografia do corpus. Até você
+reindexar, a busca responde sobre a versão antiga das páginas.</em></p>
+<h2 id="8-palavra-chave-semântica-e-híbrida">8. Palavra-chave, semântica
+e híbrida</h2>
+<p>Sem <code>--keyword</code>, a llmwiki faz busca
+<strong>híbrida</strong>: combina a lista do BM25 com uma lista por
+similaridade de vetores (<em>embeddings</em>). Com
+<code>--semantic</code>, usa só os vetores.</p>
+<table>
+<thead>
+<tr>
+<th>Modo</th>
+<th><code>devolução frete Tracunhaém</code>, três primeiros</th>
+<th>Escala dos scores</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--keyword</code></td>
+<td>frete, devolucao, catalogo-p01</td>
+<td>1,92 a 6,87</td>
+</tr>
+<tr>
+<td><code>--semantic</code></td>
+<td>devolucao, catalogo-p01, frete</td>
+<td>0,35 a 0,53</td>
+</tr>
+<tr>
+<td>híbrido (padrão)</td>
+<td>devolucao, frete, catalogo-p01</td>
+<td>cerca de 0,03</td>
+</tr>
+</tbody>
+</table>
+<p>A busca semântica pode aproximar “troca” de “devolução” sem palavra
+em comum; a busca por palavra-chave explica cada ponto do score. Nesta
+mini-wiki as duas acham as mesmas páginas, em ordens diferentes. As
+escalas não se comparam entre modos. Use <code>--keyword</code> quando
+precisar de resultados reproduzíveis e auditáveis, como nas tabelas
+deste tutorial.</p>
+<h2 id="9-explorar-o-ranking-no-painel">9. Explorar o ranking no
+painel</h2>
+<p>O <a href="../material/bi-rag/index.html">explorador de busca e
+RAG</a> recalcula o BM25 no navegador com as mesmas regras da seção 3,
+mostra a contribuição de cada termo por página e compara com os rankings
+já calculados do FTS5 e da llmwiki. Você pode usá-lo incorporado à <a
+href="https://lgallindo.github.io/recomendador-bentoml/llmwiki/#explorador-interativo">versão
+web deste tutorial</a> ou abrir o HTML numa cópia local do repositório.
+Consulte o <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-rag/README.md">roteiro
+de exploração</a>.</p>
+<section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
+<h3 id="explorer-heading">Experimente a busca neste tutorial</h3>
+<p>Digite uma consulta e veja a pontuação BM25 termo a termo. O corpus é a mini-wiki sintética da loja.</p>
+<div class="explorer-actions">
+<button id="fullscreen-explorer" type="button">Ver explorador em tela cheia</button>
+<a href="../material/bi-rag/index.html" target="_blank" rel="noopener">Abrir explorador em nova aba</a>
+</div>
+<p id="explorer-status" role="status"></p>
+<iframe id="explorer" src="../material/bi-rag/index.html" title="Explorador interativo de recuperação"
+loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+</section>
+<p>O painel não reindexa a pasta: ele traz o texto das oito páginas
+embutido. Se você editar a mini-wiki, regenere os dados com
+<code>uv run python scripts/gerar_bi_rag.py</code>.</p>
+<h3 id="atividade-no-painel">Atividade no painel</h3>
+<ol type="1">
+<li>Escolha <strong>BM25 ao vivo</strong> e digite
+<code>frete Tracunhaém</code>. Na tabela de termos, localize a linha
+<code>frete.md · frete</code> e confira os valores da seção 4.</li>
+<li>Escolha a pergunta pronta <strong>x1</strong>
+(<code>devolução frete Tracunhaém</code>). Em que posição fica
+<code>devolucao.md</code>? Quais termos sustentam
+<code>atendimento.md</code>?</li>
+<li>Troque para <strong>llmwiki</strong> e compare a posição de
+<code>devolucao.md</code>.</li>
+<li>Digite <code>encomenda cerâmica</code> e depois
+<code>encomendas cerâmica</code>. Explique a diferença pela regra 5 da
+seção 3.</li>
+<li>Exporte o PNG do ranking e escreva duas frases sobre o que ele
+mostra.</li>
+</ol>
+<h2 id="10-limitações">10. Limitações</h2>
+<ul>
+<li>Oito páginas curtas mostram o mecanismo, mas não a escala: em
+milhares de documentos, o idf se estabiliza e páginas “de entrada” pesam
+menos.</li>
+<li>A tokenização deste tutorial não junta plural e singular nem corrige
+acentos; ferramentas reais costumam ter estratégias para isso, com
+custos próprios.</li>
+<li>O score ordena páginas; ele não garante que a primeira contenha a
+resposta. Isso só se verifica com perguntas cujas respostas você
+conhece.</li>
+<li><code>--keyword</code> é determinística; os modos semântico e
+híbrido dependem do modelo de vetores embutido na versão da
+ferramenta.</li>
+</ul>
+<h2 id="11-exercício">11. Exercício</h2>
+<p>Use a mini-wiki e a consulta
+<strong><code>Qual o horário do chat?</code></strong>.</p>
+<ol type="1">
+<li>Liste os termos que sobram depois da tokenização.</li>
+<li>Monte a lista de postagens de cada termo (página e tf).</li>
+<li>Calcule à mão o BM25 de <code>atendimento.md</code>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mi>d</mi><mo stretchy="false" form="prefix">|</mo><mo>=</mo><mn>32</mn></mrow><annotation encoding="application/x-tex">|d| = 32</annotation></semantics></math>
+tokens).</li>
+<li>Rode a consulta na llmwiki com <code>--keyword</code> e registre o
+top-3.</li>
+<li>Diga qual página responde à pergunta e se ela ficou em primeiro nos
+dois cálculos.</li>
+<li>Explique, em até três frases, o que aconteceria com o score de
+<code>atendimento.md</code> se uma nova página <code>horarios.md</code>
+também citasse “horário”.</li>
+</ol>
+<h3 id="resolução-comentada">Resolução comentada</h3>
+<p><strong>Termos:</strong> <code>horário</code> e <code>chat</code>
+(“qual”, “o” e “do” são stopwords).</p>
+<p><strong>Postagens:</strong> <code>horário</code> →
+<code>atendimento.md</code> (2); <code>chat</code> →
+<code>atendimento.md</code> (2), <code>prazos.md</code> (1). Logo
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">f</mi></mrow><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">horário</mtext><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\mathrm{df}(\text{horário}) = 1</annotation></semantics></math>
+e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">f</mi></mrow><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">chat</mtext><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">\mathrm{df}(\text{chat}) = 2</annotation></semantics></math>.</p>
+<p><strong>Conta:</strong> a normalização de tamanho é
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>,</mo><mn>25</mn><mo>+</mo><mn>0</mn><mo>,</mo><mn>75</mn><mo>⋅</mo><mn>32</mn><mi>/</mi><mn>36</mn><mo>=</mo><mn>0</mn><mo>,</mo><mn>9167</mn></mrow><annotation encoding="application/x-tex">0{,}25 + 0{,}75 \cdot 32/36 = 0{,}9167</annotation></semantics></math>,
+e o denominador com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">f</mi></mrow><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">\mathrm{tf} = 2</annotation></semantics></math>
+é
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>+</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>⋅</mo><mn>0</mn><mo>,</mo><mn>9167</mn><mo>=</mo><mn>3</mn><mo>,</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2 + 1{,}2 \cdot 0{,}9167 = 3{,}1</annotation></semantics></math>.
+<code>horário</code>:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>,</mo><mn>7918</mn><mo>⋅</mo><mn>2</mn><mo>⋅</mo><mn>2</mn><mo>,</mo><mn>2</mn><mi>/</mi><mn>3</mn><mo>,</mo><mn>1</mn><mo>=</mo><mn>2</mn><mo>,</mo><mn>5432</mn></mrow><annotation encoding="application/x-tex">1{,}7918 \cdot 2 \cdot 2{,}2 / 3{,}1 = 2{,}5432</annotation></semantics></math>.
+<code>chat</code>:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>,</mo><mn>2809</mn><mo>⋅</mo><mn>2</mn><mo>⋅</mo><mn>2</mn><mo>,</mo><mn>2</mn><mi>/</mi><mn>3</mn><mo>,</mo><mn>1</mn><mo>=</mo><mn>1</mn><mo>,</mo><mn>8181</mn></mrow><annotation encoding="application/x-tex">1{,}2809 \cdot 2 \cdot 2{,}2 / 3{,}1 = 1{,}8181</annotation></semantics></math>.
+Total:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>4</mn><mo>,</mo><mn>3613</mn></mrow><annotation encoding="application/x-tex">4{,}3613</annotation></semantics></math>.
+<code>prazos.md</code> soma só <code>chat</code> e fica com 1,36.</p>
+<p><strong>llmwiki:</strong> <code>atendimento.md</code> 9,14;
+<code>catalogo-p04.md</code> 2,81; <code>recomendador.md</code> 2,58. A
+página certa fica em primeiro nos dois cálculos, mas os vizinhos mudam.
+A llmwiki pontua também palavras como “o” e “do”, que o script descarta
+como stopwords: a linha <code>→ match at: L2 "o" · …</code> de
+<code>catalogo-p04.md</code> mostra isso. Por esse motivo ela devolve
+páginas sem <code>horário</code> nem <code>chat</code>.</p>
+<p><strong>Nova página:</strong> <code>horário</code> passaria a ter
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">f</mi></mrow><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">\mathrm{df} = 2</annotation></semantics></math>,
+o idf cairia de 1,7918 para 1,2809 e o score de
+<code>atendimento.md</code> diminuiria, mesmo sem nenhuma edição nela. A
+ordem entre as duas dependeria de tf e de tamanho.</p>
+<h2 id="referências-bibliográficas-e-roteiro-de-leitura">Referências
+bibliográficas e roteiro de leitura</h2>
+<p>Consulta dos materiais on-line: 7 nov. 2026.</p>
+<ol type="1">
+<li>MANNING, Christopher D.; RAGHAVAN, Prabhakar; SCHÜTZE, Hinrich.
+<strong>Introduction to Information Retrieval</strong>. Cambridge:
+Cambridge University Press, 2008. <a
+href="https://nlp.stanford.edu/IR-book/">Texto integral on-line, em
+inglês</a>. <strong>Para aprofundar:</strong> os capítulos 1 (índice
+invertido), 2 (tokenização) e 6 (tf-idf) acompanham as seções 3 e
+4.</li>
+<li>ROBERTSON, Stephen; ZARAGOZA, Hugo. <strong>The probabilistic
+relevance framework: BM25 and beyond</strong>. <em>Foundations and
+Trends in Information Retrieval</em>, v. 3, n. 4, p. 333–389, 2009. DOI:
+10.1561/1500000019. <strong>Para aprofundar:</strong> a origem do BM25,
+o papel de
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>k</mi><mn>1</mn></msub><annotation encoding="application/x-tex">k_1</annotation></semantics></math>
+e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>
+e as variantes por campo.</li>
+<li>LLMWIKI. <strong>Repositório e documentação do binário
+<code>llmwiki</code></strong> (crate Rust). <a
+href="https://crates.io/crates/llmwiki">crates.io/crates/llmwiki</a>.
+<strong>Para consultar:</strong> opções de <code>init</code>,
+<code>index</code>, <code>search</code> e o formato do frontmatter na
+versão que você instalou.</li>
+<li>SQLITE. <strong>SQLite FTS5 Extension</strong>. <a
+href="https://www.sqlite.org/fts5.html">Documentação em inglês</a>.
+<strong>Para consultar:</strong> o caminho B da seção 5, tokenizadores e
+a função <code>bm25()</code>.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Artefato</th>
+<th>Papel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>material/mini-wiki-rag/</code></td>
+<td>Corpus de oito páginas com frontmatter</td>
+</tr>
+<tr>
+<td><code>scripts/avaliar_rag.py</code></td>
+<td>BM25 da biblioteca padrão; <code>--explicar</code> detalha um
+termo</td>
+</tr>
+<tr>
+<td><code>scripts/demo_rag_fts.py</code></td>
+<td>Índice FTS5 em SQLite (caminho B)</td>
+</tr>
+<tr>
+<td><code>material/bi-rag/</code></td>
+<td>Explorador de busca e RAG</td>
+</tr>
+<tr>
+<td><code>scripts/gerar_figuras_rag.py</code></td>
+<td>Figuras deste tutorial</td>
+</tr>
+</tbody>
+</table></main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutoriais com explorador interativo: associação de regras e previsão de demanda.">
+  <title>Fine-tuning: adaptar um modelo
+pré-treinado · Aprender com dados</title>
+  <link rel="stylesheet" href="../assets/tutorial.css">
+  <script src="../assets/tutorial.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir ao conteúdo principal</a>
+  <header class="site-header">
+    <a class="brand" href="../">Aprender com dados</a>
+    <nav aria-label="Navegação principal">
+      <a href="../">Associação</a>
+      <a href="../logs-auth/">Logs</a>
+      <a href="../demanda/">Média móvel</a>
+      <a href="../demanda-mq/">Mín. quadrados</a>
+      <a href="../demanda-perc/">LMS</a>
+      <a href="../demanda-poisson/">Poisson</a>
+      <a href="#explorador-interativo">Explorar</a>
+      <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-fine-tuning-20261026.md">Versão
+Markdown</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="toc">
+      <details open><summary>Neste tutorial</summary><nav aria-label="Índice"><ul>
+<li><a
+href="#fine-tuning-adaptar-um-modelo-pré-treinado-em-vez-de-começar-do-zero"
+id="toc-fine-tuning-adaptar-um-modelo-pré-treinado-em-vez-de-começar-do-zero">Fine-tuning:
+adaptar um modelo pré-treinado em vez de começar do zero</a>
+<ul>
+<li><a href="#1-três-modos-de-chegar-a-um-modelo-útil"
+id="toc-1-três-modos-de-chegar-a-um-modelo-útil">1. Três modos de chegar
+a um modelo útil</a></li>
+<li><a href="#2-tronco-cabeça-e-o-plano-de-congelamento"
+id="toc-2-tronco-cabeça-e-o-plano-de-congelamento">2. Tronco, cabeça e o
+plano de congelamento</a></li>
+<li><a href="#3-quanto-do-modelo-aprende-de-novo"
+id="toc-3-quanto-do-modelo-aprende-de-novo">3. Quanto do modelo aprende
+de novo?</a></li>
+<li><a href="#4-o-experimento" id="toc-4-o-experimento">4. O
+experimento</a></li>
+<li><a href="#5-o-modelo-esqueceu-os-outros-produtos"
+id="toc-5-o-modelo-esqueceu-os-outros-produtos">5. O modelo esqueceu os
+outros produtos?</a></li>
+<li><a href="#6-explore-o-ajuste-com-bi"
+id="toc-6-explore-o-ajuste-com-bi">6. Explore o ajuste com BI</a></li>
+<li><a href="#7-riscos-e-mitigação" id="toc-7-riscos-e-mitigação">7.
+Riscos e mitigação</a></li>
+<li><a href="#8-limitações" id="toc-8-limitações">8. Limitações</a></li>
+<li><a href="#9-exercício-plano-de-ajuste-para-a-loja"
+id="toc-9-exercício-plano-de-ajuste-para-a-loja">9. Exercício: plano de
+ajuste para a loja</a></li>
+<li><a href="#referências-bibliográficas-e-roteiro-de-leitura"
+id="toc-referências-bibliográficas-e-roteiro-de-leitura">Referências
+bibliográficas e roteiro de leitura</a></li>
+</ul></li>
+</ul></nav></details>
+    </aside>
+    <main id="conteudo"><h1
+id="fine-tuning-adaptar-um-modelo-pré-treinado-em-vez-de-começar-do-zero">Fine-tuning:
+adaptar um modelo pré-treinado em vez de começar do zero</h1>
+<p><a
+href="https://lgallindo.github.io/recomendador-bentoml/fine-tuning/">Leia
+a versão web com o explorador interativo incorporado</a>.</p>
+<p>A loja de artesanato tem doze produtos com histórico semanal. Quando
+chega uma peça nova, ou quando um produto muda de comportamento, a
+equipe se pergunta: vale a pena reaproveitar o que um modelo aprendeu
+com todo o catálogo e só <strong>ajustar</strong> para aquela peça? Essa
+é a ideia do <em>fine-tuning</em> (ajuste fino), o mesmo gesto que se
+faz com modelos grandes de imagem e de linguagem baixados de
+repositórios públicos.</p>
+<p>Ao concluir este tutorial, você deverá conseguir distinguir treino do
+zero, pré-treino e ajuste fino; escrever um <strong>plano de
+congelamento</strong> (que partes do modelo ficam fixas e quais são
+atualizadas); contar os parâmetros treináveis; medir o resultado antes e
+depois do ajuste no mesmo teste; e verificar se o ajuste fez o modelo
+<strong>esquecer</strong> o que sabia sobre os outros produtos. Você
+também conhecerá, como leitura, o LoRA, a técnica que torna o ajuste de
+modelos de linguagem viável em hardware modesto.</p>
+<p>O laboratório roda em CPU, em menos de um segundo, sem baixar pesos
+da internet: o “modelo pré-treinado” é uma MLP pequena treinada na
+própria série sintética. Ele reproduz o <strong>ritual</strong> do
+ajuste fino em miniatura; os números não indicam o que acontece com
+modelos de bilhões de parâmetros.</p>
+<h3 id="roteiro-de-estudo">Roteiro de estudo</h3>
+<table>
+<thead>
+<tr>
+<th>Tempo sugerido</th>
+<th>Atividade de estudo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8 min</td>
+<td>Três modos de chegar a um modelo útil</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Tronco, cabeça e o plano de congelamento</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Quanto do modelo aprende de novo: do congelamento ao LoRA</td>
+</tr>
+<tr>
+<td>12 min</td>
+<td>Rodar o pré-treino, o ajuste e o treino do zero</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Ler antes, depois, do zero e o esquecimento</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Explorar o painel de fine-tuning</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Riscos, mitigação e exercício com resolução</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-três-modos-de-chegar-a-um-modelo-útil">1. Três modos de chegar
+a um modelo útil</h2>
+<p><img src="../material/imagens/fine-tuning-tres-caixas.png"
+alt="Três caixas lado a lado: do zero, com pesos aleatórios e muitos dados; pré-treino, numa tarefa ampla que produz pesos úteis; fine-tune, com poucos rótulos que adaptam a cabeça." /></p>
+<p><em>Figura 1 — O ajuste fino começa de pesos que já representam algo
+útil e usa poucos exemplos da tarefa nova.</em></p>
+<table>
+<thead>
+<tr>
+<th>Modo</th>
+<th>Ponto de partida</th>
+<th>Dados usados</th>
+<th>Quando faz sentido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Do zero</strong></td>
+<td>Pesos aleatórios</td>
+<td>Só a tarefa alvo</td>
+<td>Há dados suficientes da tarefa alvo</td>
+</tr>
+<tr>
+<td><strong>Pré-treino</strong></td>
+<td>Pesos aleatórios</td>
+<td>Uma base ampla e relacionada</td>
+<td>Construir representações reutilizáveis</td>
+</tr>
+<tr>
+<td><strong>Ajuste fino</strong></td>
+<td>Pesos do pré-treino</td>
+<td>Poucos exemplos da tarefa alvo</td>
+<td>A tarefa alvo tem poucos dados e se parece com o pré-treino</td>
+</tr>
+</tbody>
+</table>
+<p>O pré-treino e o ajuste fino formam a <strong>aprendizagem por
+transferência</strong> (<em>transfer learning</em>): o que foi aprendido
+numa tarefa é transferido para outra. Em visão, uma rede treinada no
+ImageNet aprende bordas e texturas que servem para classificar fotos de
+cerâmica. Em texto, um modelo de linguagem pré-treinado em grandes
+coleções de texto aprende regularidades da língua que servem para
+classificar mensagens de clientes.</p>
+<h2 id="2-tronco-cabeça-e-o-plano-de-congelamento">2. Tronco, cabeça e o
+plano de congelamento</h2>
+<p>Uma rede pode ser lida em duas partes:</p>
+<ul>
+<li>o <strong>tronco</strong> (<em>backbone</em>), as camadas escondidas
+que transformam a entrada numa representação
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>h</mi><annotation encoding="application/x-tex">h</annotation></semantics></math>;</li>
+<li>a <strong>cabeça</strong> (<em>head</em>), a última camada, que
+transforma
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>h</mi><annotation encoding="application/x-tex">h</annotation></semantics></math>
+na resposta da tarefa.</li>
+</ul>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo>=</mo><msub><mi>ϕ</mi><msub><mi>θ</mi><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">o</mi></mrow></msub></msub><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><mover><mi>y</mi><mo accent="true">̂</mo></mover><mo>=</mo><msup><mi>w</mi><mi>⊤</mi></msup><mi>h</mi><mo>+</mo><mi>b</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">
+h = \phi_{\theta_{\mathrm{tronco}}}(x), \qquad
+\widehat{y} = w^\top h + b .
+</annotation></semantics></math></p>
+<p><strong>Congelar</strong> uma parte significa não atualizar seus
+parâmetros durante o ajuste. Se o tronco está congelado, só
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>w</mi><annotation encoding="application/x-tex">w</annotation></semantics></math>
+e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>
+recebem gradiente. Para a perda
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><mfrac><mn>1</mn><mrow><mn>2</mn><mi>n</mi></mrow></mfrac><msub><mo>∑</mo><mi>i</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">L = \frac{1}{2n}\sum_i (y_i - \widehat{y}_i)^2</annotation></semantics></math>,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mi>∂</mi><mi>L</mi></mrow><mrow><mi>∂</mi><mi>w</mi></mrow></mfrac><mo>=</mo><mi>−</mi><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>e</mi><mi>i</mi></msub><mspace width="0.222em"></mspace><msub><mi>h</mi><mi>i</mi></msub><mo>,</mo><mspace width="2.0em"></mspace><mfrac><mrow><mi>∂</mi><mi>L</mi></mrow><mrow><mi>∂</mi><mi>b</mi></mrow></mfrac><mo>=</mo><mi>−</mi><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>e</mi><mi>i</mi></msub><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>e</mi><mi>i</mi></msub><mo>=</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><mo>,</mo></mrow><annotation encoding="application/x-tex">
+\frac{\partial L}{\partial w} = -\frac{1}{n}\sum_{i=1}^{n} e_i\ h_i,
+\qquad
+\frac{\partial L}{\partial b} = -\frac{1}{n}\sum_{i=1}^{n} e_i,
+\qquad e_i = y_i - \widehat{y}_i ,
+</annotation></semantics></math></p>
+<p>e a atualização é
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>w</mi><mo>←</mo><mi>w</mi><mo>−</mo><mi>η</mi><mspace width="0.222em"></mspace><mi>∂</mi><mi>L</mi><mi>/</mi><mi>∂</mi><mi>w</mi></mrow><annotation encoding="application/x-tex">w \leftarrow w - \eta\ \partial L/\partial w</annotation></semantics></math>.
+Com o tronco fixo, a cabeça resolve uma regressão linear sobre atributos
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>h</mi><mi>i</mi></msub><annotation encoding="application/x-tex">h_i</annotation></semantics></math>
+que o pré-treino aprendeu.</p>
+<p><img src="../material/imagens/fine-tuning-congelar.png"
+alt="Diagrama da rede do laboratório: entrada com tempo normalizado e atraso; tronco congelado, com cadeados, formado por uma camada de 16 neurônios ReLU com 48 parâmetros e uma de 8 neurônios ReLU com 136 parâmetros; cabeça atualizada com 9 parâmetros; saída. Total de 184 parâmetros fixos e 9 treináveis, cerca de 4,7 por cento de 193." /></p>
+<p><em>Figura 2 — O plano de congelamento deste laboratório. O tronco
+foi pré-treinado em 144 exemplos (12 produtos × 12 semanas); a cabeça é
+ajustada às 12 semanas de treino do Jarro.</em></p>
+<p>Escreva o plano <strong>antes</strong> de treinar, em duas
+linhas:</p>
+<blockquote>
+<p><strong>Congela:</strong> as duas camadas escondidas (16 e 8
+neurônios, 184 parâmetros). <strong>Atualiza:</strong> a camada de saída
+(9 parâmetros), por 40 épocas com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>η</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>02</mn></mrow><annotation encoding="application/x-tex">\eta = 0{,}02</annotation></semantics></math>.</p>
+</blockquote>
+<h2 id="3-quanto-do-modelo-aprende-de-novo">3. Quanto do modelo aprende
+de novo?</h2>
+<p><img src="../material/imagens/fine-tuning-espectro.png"
+alt="Quatro cartões em sequência: extração de atributos, com tronco fixo e cabeça treinada, neste laboratório 9 de 193 parâmetros, 4,7 por cento; ajuste parcial, que descongela as últimas camadas; ajuste completo, com 100 por cento dos parâmetros; adaptadores ou LoRA, com pesos fixos e matrizes pequenas, por exemplo 65 536 de 16 777 216, 0,39 por cento." /></p>
+<p><em>Figura 3 — Estratégias de ajuste ordenadas pelo que você deixa
+mudar. O exemplo de LoRA usa uma matriz de pesos 4096 × 4096 com posto
+8.</em></p>
+<table>
+<thead>
+<tr>
+<th>Estratégia</th>
+<th>O que é atualizado</th>
+<th>Custo</th>
+<th>Risco principal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Extração de atributos</td>
+<td>Só a cabeça</td>
+<td>Muito baixo</td>
+<td>A representação do tronco pode não servir à tarefa nova</td>
+</tr>
+<tr>
+<td>Ajuste parcial</td>
+<td>As últimas camadas e a cabeça</td>
+<td>Médio</td>
+<td>Escolher quantas camadas liberar</td>
+</tr>
+<tr>
+<td>Ajuste completo</td>
+<td>Todos os parâmetros</td>
+<td>Alto (memória para todos os gradientes)</td>
+<td>Sobreajuste e esquecimento com poucos dados</td>
+</tr>
+<tr>
+<td>Adaptadores / LoRA</td>
+<td>Matrizes pequenas acrescentadas; pesos originais fixos</td>
+<td>Baixo</td>
+<td>Posto pequeno demais limita a adaptação</td>
+</tr>
+</tbody>
+</table>
+<h3 id="lora-em-uma-fórmula">LoRA em uma fórmula</h3>
+<p>No LoRA (<em>Low-Rank Adaptation</em>, Hu et al., 2022), uma matriz
+de pesos pré-treinada
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi><mo>∈</mo><msup><mi mathvariant="double-struck">ℝ</mi><mrow><mi>d</mi><mo>×</mo><mi>k</mi></mrow></msup></mrow><annotation encoding="application/x-tex">W \in \mathbb{R}^{d \times k}</annotation></semantics></math>
+fica congelada, e o ajuste aprende uma correção de posto baixo:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>W</mi><mo>′</mo></msup><mo>=</mo><mi>W</mi><mo>+</mo><mi>B</mi><mi>A</mi><mo>,</mo><mspace width="2.0em"></mspace><mi>B</mi><mo>∈</mo><msup><mi mathvariant="double-struck">ℝ</mi><mrow><mi>d</mi><mo>×</mo><mi>r</mi></mrow></msup><mo>,</mo><mspace width="0.278em"></mspace><mi>A</mi><mo>∈</mo><msup><mi mathvariant="double-struck">ℝ</mi><mrow><mi>r</mi><mo>×</mo><mi>k</mi></mrow></msup><mo>,</mo><mspace width="0.278em"></mspace><mi>r</mi><mo>≪</mo><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>k</mi><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
+W&#39; = W + B A, \qquad B \in \mathbb{R}^{d \times r},\; A \in \mathbb{R}^{r \times k},\; r \ll \min(d, k).
+</annotation></semantics></math></p>
+<p>Os parâmetros treináveis passam de
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>⋅</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">d \cdot k</annotation></semantics></math>
+para
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mspace width="0.222em"></mspace><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>+</mo><mi>k</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">r\ (d + k)</annotation></semantics></math>.
+Com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>=</mo><mi>k</mi><mo>=</mo><mn>4096</mn></mrow><annotation encoding="application/x-tex">d = k = 4096</annotation></semantics></math>
+e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>8</mn></mrow><annotation encoding="application/x-tex">r = 8</annotation></semantics></math>:
+de
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>16</mn><mspace width="0.222em"></mspace><mn>777</mn><mspace width="0.222em"></mspace><mn>216</mn></mrow><annotation encoding="application/x-tex">16\ 777\ 216</annotation></semantics></math>
+para
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>8</mn><mo>⋅</mo><mn>8192</mn><mo>=</mo><mn>65</mn><mspace width="0.222em"></mspace><mn>536</mn></mrow><annotation encoding="application/x-tex">8 \cdot 8192 = 65\ 536</annotation></semantics></math>,
+cerca de 0,39%. É por isso que se ajustam modelos de linguagem grandes
+em uma única GPU. Este laboratório não aplica LoRA; a fórmula está aqui
+para você reconhecer o termo e fazer a conta.</p>
+<h2 id="4-o-experimento">4. O experimento</h2>
+<p>Na raiz do repositório:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_fine_tuning_mlp.py</span></code></pre></div>
+<p>O script executa três treinos com a mesma arquitetura (2 → 16 → 8 →
+1, ReLU), as mesmas entradas (tempo normalizado
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mi>/</mi><mn>15</mn></mrow><annotation encoding="application/x-tex">t/15</annotation></semantics></math>
+e atraso
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><annotation encoding="application/x-tex">y_{t-1}</annotation></semantics></math>)
+e o mesmo teste (semanas 12–15 do Jarro, demanda observada 4, 2, 2,
+2):</p>
+<ol type="1">
+<li><strong>Pré-treino:</strong> 60 épocas de Adam nas semanas 0–11 dos
+12 produtos (144 exemplos). Nenhuma semana de teste participa.</li>
+<li><strong>Ajuste fino:</strong> copia os pesos do pré-treino, congela
+o tronco e aplica 40 passos de gradiente descendente à cabeça, só com as
+semanas 0–11 do Jarro.</li>
+<li><strong>Do zero:</strong> a mesma arquitetura, com pesos aleatórios,
+treinada 60 épocas só nas semanas 0–11 do Jarro.</li>
+</ol>
+<p>Resultado gravado em <a
+href="../material/redes/resultado_fine_tuning_p01.json"><code>redes/resultado_fine_tuning_p01.json</code></a>
+(scikit-learn 1.9; o tempo de relógio varia com a máquina):</p>
+<table>
+<thead>
+<tr>
+<th>Modelo</th>
+<th>Previsões nas semanas 12–15</th>
+<th style="text-align: right;">MAE no teste de p01</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pré-treino (antes do ajuste)</td>
+<td>1,64; 2,68; 1,62; 1,62</td>
+<td style="text-align: right;">0,951</td>
+</tr>
+<tr>
+<td>Ajuste fino (cabeça)</td>
+<td>2,10; 3,27; 2,09; 2,08</td>
+<td style="text-align: right;">0,834</td>
+</tr>
+<tr>
+<td>Do zero, só p01</td>
+<td>2,55; 2,55; 2,50; 2,48</td>
+<td style="text-align: right;"><strong>0,745</strong></td>
+</tr>
+<tr>
+<td>MA(4) (referência)</td>
+<td>2,50; 2,75; 2,25; 2,50</td>
+<td style="text-align: right;">0,750</td>
+</tr>
+</tbody>
+</table>
+<p>O pré-treino leva cerca de 0,01–0,03 s e o ajuste, menos de 0,01
+s.</p>
+<p><img src="../material/imagens/fine-tuning-curva-p01.png"
+alt="Curva do erro quadrático médio de treino durante as 40 épocas de ajuste da cabeça em p01, descendo de 1,92 para 1,68." /></p>
+<p><em>Figura 4 — O MSE de treino durante o ajuste cai de 1,92 para 1,68
+e ainda está descendo na época 40. Quarenta passos com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>η</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>02</mn></mrow><annotation encoding="application/x-tex">\eta = 0{,}02</annotation></semantics></math>
+deixam a cabeça a meio caminho.</em></p>
+<h3 id="leitura-honesta">Leitura honesta</h3>
+<ul>
+<li><strong>O ajuste ajudou em relação ao pré-treino.</strong> O modelo
+genérico prevê cerca de 1,6 linhas por semana, abaixo do nível do Jarro
+(média de treino 2,67); ajustar a cabeça eleva as previsões e reduz o
+MAE de 0,951 para 0,834.</li>
+<li><strong>O treino do zero venceu o ajuste.</strong> Com 12 semanas, o
+Jarro tem tantos exemplos quanto cada produto do pré-treino. Não há
+escassez de dados para a transferência compensar, e o tronco aprendeu
+uma representação do produto “médio” do catálogo, que não é o
+Jarro.</li>
+<li><strong>Nenhum dos três supera com folga a MA(4).</strong> O treino
+do zero (0,745) e a média móvel (0,750) empatam em quatro semanas de
+teste.</li>
+</ul>
+<p>Ajuste fino costuma compensar quando a base de pré-treino é muito
+maior que a da tarefa alvo e as duas compartilham estrutura: milhões de
+imagens para ajustar com algumas centenas de fotos de cerâmica, por
+exemplo. O exercício pede que você formule esse caso para a loja.</p>
+<h2 id="5-o-modelo-esqueceu-os-outros-produtos">5. O modelo esqueceu os
+outros produtos?</h2>
+<p>O tronco ficou congelado, mas a cabeça é compartilhada: os mesmos 9
+parâmetros produzem a previsão de qualquer produto. Ajustá-los ao Jarro
+pode piorar os demais. Esse fenômeno se chama <strong>esquecimento
+catastrófico</strong> (McCloskey e Cohen, 1989). O script mede o MAE nas
+semanas de teste dos outros 11 produtos antes e depois do ajuste:</p>
+<table>
+<thead>
+<tr>
+<th>Produto</th>
+<th style="text-align: right;">p02</th>
+<th style="text-align: right;">p03</th>
+<th style="text-align: right;">p04</th>
+<th style="text-align: right;">p05</th>
+<th style="text-align: right;">p06</th>
+<th style="text-align: right;">p07</th>
+<th style="text-align: right;">p08</th>
+<th style="text-align: right;">p09</th>
+<th style="text-align: right;">p10</th>
+<th style="text-align: right;">p11</th>
+<th style="text-align: right;">p12</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Antes</td>
+<td style="text-align: right;">0,62</td>
+<td style="text-align: right;">0,69</td>
+<td style="text-align: right;">0,76</td>
+<td style="text-align: right;">0,44</td>
+<td style="text-align: right;">0,56</td>
+<td style="text-align: right;">0,56</td>
+<td style="text-align: right;">0,48</td>
+<td style="text-align: right;">0,81</td>
+<td style="text-align: right;">0,56</td>
+<td style="text-align: right;">0,41</td>
+<td style="text-align: right;">0,81</td>
+</tr>
+<tr>
+<td>Depois</td>
+<td style="text-align: right;">0,69</td>
+<td style="text-align: right;">0,90</td>
+<td style="text-align: right;">0,83</td>
+<td style="text-align: right;">0,65</td>
+<td style="text-align: right;">0,79</td>
+<td style="text-align: right;">0,44</td>
+<td style="text-align: right;">0,54</td>
+<td style="text-align: right;">1,04</td>
+<td style="text-align: right;">0,80</td>
+<td style="text-align: right;">0,66</td>
+<td style="text-align: right;">1,17</td>
+</tr>
+</tbody>
+</table>
+<p>A média sobe de <strong>0,609 para 0,772</strong>. Só
+<code>p07</code> melhora. Se a loja precisa de um modelo único para todo
+o catálogo, o ajuste ao Jarro tem um custo visível nos outros produtos.
+A mitigação mais simples é manter <strong>uma cabeça por
+produto</strong> sobre o mesmo tronco congelado: o ajuste de uma cabeça
+não altera as outras.</p>
+<h2 id="6-explore-o-ajuste-com-bi">6. Explore o ajuste com BI</h2>
+<p>O <a href="../material/bi-redes/index.html">explorador de redes
+neurais</a> tem um painel de fine-tuning com o MAE de <code>p01</code>
+para pré-treino, ajuste e treino do zero, ao lado das barras de
+esquecimento dos outros 11 produtos. Use-o incorporado à <a
+href="https://lgallindo.github.io/recomendador-bentoml/fine-tuning/#explorador-interativo">versão
+web deste tutorial</a> ou abra o HTML a partir de uma cópia local do
+repositório. Consulte o <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-redes/README.md">roteiro
+de exploração</a>. Os outros painéis do mesmo explorador mostram as
+curvas de treino de uma MLP rasa e o efeito da profundidade, como
+contexto opcional.</p>
+<section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
+<h3 id="explorer-heading">Experimente o fine-tuning neste tutorial</h3>
+<p>Compare treino do zero, pré-treino e adaptação da cabeça. As 16 semanas são sintéticas.</p>
+<div class="explorer-actions">
+<button id="fullscreen-explorer" type="button">Ver explorador em tela cheia</button>
+<a href="../material/bi-redes/index.html" target="_blank" rel="noopener">Abrir explorador em nova aba</a>
+</div>
+<p id="explorer-status" role="status"></p>
+<iframe id="explorer" src="../material/bi-redes/index.html" title="Explorador interativo de fine-tuning"
+loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+</section>
+<p><img src="../material/imagens/bi-redes-fine-tune.png"
+alt="À esquerda, barras de MAE no teste de p01: pré-treino 0,95, fine-tune 0,83, do zero 0,75. À direita, pares de barras por produto de p02 a p12 com o MAE antes, média 0,61, e depois do fine-tune, média 0,77." /></p>
+<p><em>Figura 5 — Espelho estático do painel 06. O ajuste melhora o
+Jarro em relação ao pré-treino e piora a maioria dos outros
+produtos.</em></p>
+<h3 id="atividade-no-painel">Atividade no painel</h3>
+<ol type="1">
+<li>Qual produto teve o maior aumento de MAE depois do ajuste?
+Quanto?</li>
+<li>Algum produto melhorou? Proponha uma explicação para isso.</li>
+<li>Compare o ganho no Jarro (antes → depois) com a perda média nos
+outros produtos. O ajuste compensa para um modelo único do
+catálogo?</li>
+</ol>
+<p><strong>Resolução comentada:</strong> <code>p12</code> passa de 0,81
+para 1,17 (+0,36). <code>p07</code> melhora de 0,56 para 0,44; elevar o
+nível das previsões, que o ajuste fez para o Jarro, também aproximou as
+previsões de <code>p07</code> de sua demanda de teste. No Jarro, o MAE
+cai 0,12 (0,95 → 0,83); nos outros produtos, a média sobe 0,16 (0,61 →
+0,77). Para um modelo único, o ajuste não compensa; com uma cabeça por
+produto, o Jarro poderia receber o ajuste sem afetar os demais.</p>
+<h2 id="7-riscos-e-mitigação">7. Riscos e mitigação</h2>
+<table>
+<thead>
+<tr>
+<th>Risco</th>
+<th>Como aparece</th>
+<th>Mitigação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sobreajuste na tarefa alvo</td>
+<td>Perda de treino cai, MAE de teste sobe</td>
+<td>Congelar mais, poucas épocas, parar cedo com um período de
+validação</td>
+</tr>
+<tr>
+<td>Esquecimento</td>
+<td>Pior desempenho nas tarefas antigas</td>
+<td>Uma cabeça por tarefa; reavaliar as tarefas antigas depois do
+ajuste</td>
+</tr>
+<tr>
+<td>Vazamento entre pré-treino e teste</td>
+<td>Teste otimista porque o pré-treino viu o período avaliado</td>
+<td>Pré-treinar só com semanas anteriores ao teste (como aqui)</td>
+</tr>
+<tr>
+<td>Avaliação frágil</td>
+<td>Conclusões trocam com a semente ou com uma semana</td>
+<td>Mais semanas de teste; várias sementes; comparar com
+referências</td>
+</tr>
+<tr>
+<td>Representação inadequada</td>
+<td>O tronco não captura o que a tarefa nova precisa</td>
+<td>Ajuste parcial ou completo; outro modelo pré-treinado</td>
+</tr>
+<tr>
+<td>Licença e origem dos pesos</td>
+<td>Pesos baixados com restrições de uso</td>
+<td>Ler a licença e o cartão do modelo antes de ajustar</td>
+</tr>
+</tbody>
+</table>
+<h2 id="8-limitações">8. Limitações</h2>
+<ul>
+<li>O “pré-treino” usa a mesma série e a mesma tarefa, com apenas 144
+exemplos. Ele reproduz a mecânica do ajuste fino, não sua vantagem
+típica de escala.</li>
+<li>O ajuste da cabeça é um gradiente descendente simples escrito no
+script, com 40 passos; outra taxa ou mais passos mudariam o
+resultado.</li>
+<li>Modelos de visão (<code>torchvision</code>) e de linguagem
+(<code>transformers</code>) usam o mesmo padrão tronco/cabeça, mas
+exigem baixar pesos de centenas de megabytes ou mais. Eles ficam como
+leitura nas referências.</li>
+</ul>
+<h2 id="9-exercício-plano-de-ajuste-para-a-loja">9. Exercício: plano de
+ajuste para a loja</h2>
+<ol type="1">
+<li>Desenhe as três caixas (do zero, pré-treino, ajuste fino) com uma
+frase cada, aplicada à loja.</li>
+<li>Escreva o plano de congelamento do laboratório em duas linhas e
+calcule a fração de parâmetros treináveis.</li>
+<li>Se você descongelasse também a camada de 8 neurônios, quantos
+parâmetros seriam treináveis? Que fração do total?</li>
+<li>Copie do JSON o MAE antes, depois e do zero, e escreva uma frase: o
+ajuste ajudou, empatou ou piorou frente ao treino do zero? Por quê?</li>
+<li>Calcule os parâmetros treináveis de um LoRA de posto
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">r = 4</annotation></semantics></math>
+numa matriz
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>768</mn><mo>×</mo><mn>768</mn></mrow><annotation encoding="application/x-tex">768 \times 768</annotation></semantics></math>
+e compare com o ajuste completo dessa matriz.</li>
+<li>Escolha dois riscos da seção 7 e uma mitigação para cada, com suas
+palavras. Descreva um caso da loja em que o ajuste fino provavelmente
+compensaria.</li>
+</ol>
+<h3 id="resolução-comentada">Resolução comentada</h3>
+<p><strong>1.</strong> Do zero: treinar uma rede só com o histórico de
+uma peça. Pré-treino: treinar com o histórico de todo o catálogo. Ajuste
+fino: partir do modelo do catálogo e adaptá-lo à peça com poucas
+semanas.</p>
+<p><strong>2.</strong> Congela as camadas de 16 e 8 neurônios (184
+parâmetros); atualiza a saída (9 parâmetros). Fração:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>9</mn><mi>/</mi><mn>193</mn><mo>≈</mo><mn>4</mn><mo>,</mo><mn>7</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">9/193 \approx 4{,}7\%</annotation></semantics></math>.</p>
+<p><strong>3.</strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>136</mn><mo>+</mo><mn>9</mn><mo>=</mo><mn>145</mn></mrow><annotation encoding="application/x-tex">136 + 9 = 145</annotation></semantics></math>
+parâmetros treináveis;
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>145</mn><mi>/</mi><mn>193</mn><mo>≈</mo><mn>75</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">145/193 \approx 75\%</annotation></semantics></math>.</p>
+<p><strong>4.</strong> Antes 0,951; depois 0,834; do zero 0,745. O
+ajuste melhorou o pré-treino, mas perdeu para o treino do zero: o Jarro
+tem tantas semanas quanto cada produto do pré-treino, e o tronco
+representa o produto médio do catálogo.</p>
+<p><strong>5.</strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>+</mo><mi>k</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>4</mn><mo>⋅</mo><mn>1536</mn><mo>=</mo><mn>6144</mn></mrow><annotation encoding="application/x-tex">r(d + k) = 4 \cdot 1536 = 6144</annotation></semantics></math>
+parâmetros, contra
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>768</mn><mo>⋅</mo><mn>768</mn><mo>=</mo><mn>589</mn><mspace width="0.222em"></mspace><mn>824</mn></mrow><annotation encoding="application/x-tex">768 \cdot 768 = 589\ 824</annotation></semantics></math>
+no ajuste completo: cerca de 1,04%.</p>
+<p><strong>6.</strong> Exemplo: sobreajuste — com 12 semanas, muitas
+épocas na cabeça fariam o modelo seguir o ruído; mitigação: poucas
+épocas e um período de validação separado do teste. Esquecimento — a
+cabeça compartilhada piorou 10 de 11 produtos; mitigação: uma cabeça por
+produto. Caso favorável: um produto novo com três ou quatro semanas de
+vendas, numa loja com centenas de produtos de histórico longo; o tronco
+pré-treinado traria o padrão sazonal do catálogo que quatro semanas não
+revelam.</p>
+<h2 id="referências-bibliográficas-e-roteiro-de-leitura">Referências
+bibliográficas e roteiro de leitura</h2>
+<p>Consulta dos materiais on-line: 7 nov. 2026.</p>
+<ol type="1">
+<li>GOODFELLOW, Ian; BENGIO, Yoshua; COURVILLE, Aaron. <strong>Deep
+learning</strong>. Cambridge, MA: MIT Press, 2016. <a
+href="https://www.deeplearningbook.org/">Texto on-line em inglês</a>.
+<strong>Para aprofundar:</strong> seção 15.2, aprendizagem por
+transferência.</li>
+<li>YOSINSKI, Jason et al. How transferable are features in deep neural
+networks? In: <strong>NeurIPS</strong>, 2014. <a
+href="https://arxiv.org/abs/1411.1792">arXiv:1411.1792</a>. <strong>Para
+aprofundar:</strong> quais camadas transferem bem entre tarefas.</li>
+<li>HU, Edward J. et al. LoRA: low-rank adaptation of large language
+models. In: <strong>ICLR</strong>, 2022. <a
+href="https://arxiv.org/abs/2106.09685">arXiv:2106.09685</a>.</li>
+<li>MCCLOSKEY, Michael; COHEN, Neal J. Catastrophic interference in
+connectionist networks: the sequential learning problem.
+<strong>Psychology of Learning and Motivation</strong>, v. 24, p.
+109–165, 1989.</li>
+<li>KIRKPATRICK, James et al. Overcoming catastrophic forgetting in
+neural networks. <strong>PNAS</strong>, v. 114, n. 13, p. 3521–3526,
+2017. DOI: 10.1073/pnas.1611835114.</li>
+<li>PYTORCH. <strong>Transfer learning for computer vision
+tutorial</strong>. <a
+href="https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html">Tutorial
+em inglês</a>. <strong>Para consultar:</strong> congelar o tronco de uma
+rede de visão e treinar a cabeça (exige baixar pesos).</li>
+<li>HUGGING FACE. <strong>Fine-tuning a pretrained model</strong>. <a
+href="https://huggingface.co/docs/transformers/training">Documentação em
+inglês</a>. <strong>Para consultar:</strong> o mesmo ritual com modelos
+de linguagem.</li>
+</ol>
+<h3 id="artefatos-no-repositório">Artefatos no repositório</h3>
+<table>
+<thead>
+<tr>
+<th>Artefato</th>
+<th>Papel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dados/vendas_semanais.csv</code></td>
+<td>Série semanal sintética (12 produtos)</td>
+</tr>
+<tr>
+<td><code>scripts/demo_fine_tuning_mlp.py</code></td>
+<td>Pré-treino, ajuste da cabeça, treino do zero e esquecimento</td>
+</tr>
+<tr>
+<td><code>material/redes/resultado_fine_tuning_p01.json</code></td>
+<td>Números desta aula</td>
+</tr>
+<tr>
+<td><code>material/bi-redes/</code></td>
+<td>Explorador interativo</td>
+</tr>
+<tr>
+<td><code>material/imagens/</code> (regenerar:
+<code>.local/scripts/gerar_figuras_redes.py</code>)</td>
+<td>Diagramas de congelamento e de estratégias</td>
+</tr>
+</tbody>
+</table></main>
+  </div>
+</body>
+</html>

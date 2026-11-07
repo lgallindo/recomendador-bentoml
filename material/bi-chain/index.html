@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Percorra passo a passo uma chain mínima sobre o catálogo da loja: entrada, ferramenta, prompt, modelo e parser.">
+  <title>Chain da loja · rastro passo a passo</title>
+  <link rel="stylesheet" href="painel.css">
+  <script src="dados.js" defer></script>
+  <script src="painel.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para o rastro</a>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Laboratório de orquestração</p>
+      <h1>O que viaja<br>em cada seta.</h1>
+      <p>Escolha uma pergunta e percorra os seis passos da chain. Cada passo mostra a carga exata que sai dele, gravada pelo script da aula.</p>
+      <nav>
+        <a href="../../langchain/index.html#explorador-interativo" target="_top">Tutorial completo</a>
+        <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-chain/README.md" target="_blank" rel="noopener">Como explorar</a>
+      </nav>
+    </div>
+    <img src="../imagens/langchain-cadeia.png" alt="Cinco caixas em sequência: extrair id, ferramenta lookup, prompt, modelo determinístico e parser JSON, com a carga de cada seta para a pergunta Fala do p04.">
+  </header>
+  <div class="layout">
+    <aside class="filters" aria-label="Controles do rastro">
+      <p class="eyebrow">01 · Escolha a pergunta</p>
+      <h2>Seis entradas</h2>
+      <p>Mesma chain, mesmo catálogo de <strong>12 produtos</strong>. Três perguntas passam limpas; três exercitam falhas.</p>
+      <label for="pergunta">Pergunta</label>
+      <select id="pergunta"></select>
+      <button id="reset" type="button">Restaurar “Fala do p04”</button>
+      <div class="note"><strong>Modelo determinístico.</strong> Sem chave de API: a saída é reproduzível. Um modelo real variaria o texto do passo “modelo”.</div>
+    </aside>
+    <main id="conteudo">
+      <section class="summary" aria-label="Resumo">
+        <div><span id="k-produto">—</span><p>produto resolvido</p></div>
+        <div><span id="k-ok">—</span><p>campo <code>ok</code> da saída</p></div>
+        <div><span id="k-alertas">—</span><p>alertas do rastro</p></div>
+      </section>
+      <section class="panel detail" aria-labelledby="titulo-rastro">
+        <p class="eyebrow">02 · Rastro</p>
+        <h2 id="titulo-rastro">Passo a passo</h2>
+        <div class="plot-scroll"><svg id="fluxo" viewBox="0 0 780 150" role="img" aria-label="Fluxo da chain com o passo selecionado em destaque"></svg></div>
+        <div class="steps" id="passos" role="group" aria-label="Passos da chain"></div>
+        <div class="stepper">
+          <button id="anterior" type="button" class="secondary">← Passo anterior</button>
+          <button id="proximo" type="button">Próximo passo →</button>
+          <span id="posicao" role="status"></span>
+        </div>
+        <h3 id="titulo-carga">Carga</h3>
+        <pre class="carga" id="carga"></pre>
+        <button type="button" class="secondary export" data-svg="fluxo">Baixar fluxo PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-alertas">
+        <p class="eyebrow">03 · Alertas</p>
+        <h2 id="titulo-alertas">O que merece atenção</h2>
+        <ul class="alertas" id="alertas"></ul>
+      </section>
+      <section class="panel" aria-labelledby="titulo-tabela">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">04 · Auditoria</p>
+            <h2 id="titulo-tabela">Todas as perguntas</h2>
+          </div>
+          <button id="csv" type="button">Baixar CSV</button>
+        </div>
+        <div class="table-scroll">
+          <table id="tabela">
+            <caption>Saídas do modo script puro; a última coluna compara com o modo LangChain.</caption>
+            <thead>
+              <tr><th>Pergunta</th><th>pid</th><th>ok</th><th>Alertas</th><th>Puro = LangChain</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p id="export-status" role="status"></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

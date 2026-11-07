@@ -1,0 +1,1109 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutoriais com explorador interativo: associação de regras e previsão de demanda.">
+  <title>Crédito orientado por dados: árvores de
+decisão · Aprender com dados</title>
+  <link rel="stylesheet" href="../assets/tutorial.css">
+  <script src="../assets/tutorial.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir ao conteúdo principal</a>
+  <header class="site-header">
+    <a class="brand" href="../">Aprender com dados</a>
+    <nav aria-label="Navegação principal">
+      <a href="../">Associação</a>
+      <a href="../logs-auth/">Logs</a>
+      <a href="../demanda/">Média móvel</a>
+      <a href="../demanda-mq/">Mín. quadrados</a>
+      <a href="../demanda-perc/">LMS</a>
+      <a href="../demanda-poisson/">Poisson</a>
+      <a href="#explorador-interativo">Explorar</a>
+      <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-arvore-decisao-credito-20261017.md">Versão
+Markdown</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="toc">
+      <details open><summary>Neste tutorial</summary><nav aria-label="Índice"><ul>
+<li><a
+href="#crédito-orientado-por-dados-como-aprender-interpretar-e-avaliar-uma-árvore-de-decisão"
+id="toc-crédito-orientado-por-dados-como-aprender-interpretar-e-avaliar-uma-árvore-de-decisão">Crédito
+orientado por dados: como aprender, interpretar e avaliar uma árvore de
+decisão</a>
+<ul>
+<li><a href="#1-uma-pergunta-sobre-o-futuro-uma-decisão-no-presente"
+id="toc-1-uma-pergunta-sobre-o-futuro-uma-decisão-no-presente">1. Uma
+pergunta sobre o futuro, uma decisão no presente</a></li>
+<li><a href="#2-da-indução-de-regras-ao-aprendizado-supervisionado"
+id="toc-2-da-indução-de-regras-ao-aprendizado-supervisionado">2. Da
+indução de regras ao aprendizado supervisionado</a></li>
+<li><a href="#3-os-contratos-e-as-informações-disponíveis"
+id="toc-3-os-contratos-e-as-informações-disponíveis">3. Os contratos e
+as informações disponíveis</a></li>
+<li><a href="#4-antes-da-árvore-prever-a-maioria"
+id="toc-4-antes-da-árvore-prever-a-maioria">4. Antes da árvore: prever a
+maioria</a></li>
+<li><a href="#5-construir-perguntas-com-cartões"
+id="toc-5-construir-perguntas-com-cartões">5. Construir perguntas com
+cartões</a></li>
+<li><a href="#6-como-o-programa-aprende-uma-árvore"
+id="toc-6-como-o-programa-aprende-uma-árvore">6. Como o programa aprende
+uma árvore</a></li>
+<li><a href="#7-mais-perguntas-aprender-detalhes-ou-memorizar-exceções"
+id="toc-7-mais-perguntas-aprender-detalhes-ou-memorizar-exceções">7.
+Mais perguntas: aprender detalhes ou memorizar exceções?</a></li>
+<li><a href="#8-avaliar-em-contratos-separados"
+id="toc-8-avaliar-em-contratos-separados">8. Avaliar em contratos
+separados</a></li>
+<li><a href="#9-da-previsão-à-decisão-uma-política-fictícia-explícita"
+id="toc-9-da-previsão-à-decisão-uma-política-fictícia-explícita">9. Da
+previsão à decisão: uma política fictícia explícita</a></li>
+<li><a href="#10-como-escrever-um-relato-auditável"
+id="toc-10-como-escrever-um-relato-auditável">10. Como escrever um
+relato auditável</a></li>
+<li><a href="#11-exercício-produza-seu-relatório"
+id="toc-11-exercício-produza-seu-relatório">11. Exercício: produza seu
+relatório</a></li>
+<li><a href="#12-explorar-a-árvore-no-painel"
+id="toc-12-explorar-a-árvore-no-painel">12. Explorar a árvore no
+painel</a></li>
+<li><a href="#referências-e-reprodução"
+id="toc-referências-e-reprodução">Referências e reprodução</a></li>
+</ul></li>
+</ul></nav></details>
+    </aside>
+    <main id="conteudo"><h1
+id="crédito-orientado-por-dados-como-aprender-interpretar-e-avaliar-uma-árvore-de-decisão">Crédito
+orientado por dados: como aprender, interpretar e avaliar uma árvore de
+decisão</h1>
+<p><a
+href="https://lgallindo.github.io/recomendador-bentoml/credito/">Leia a
+versão web com o explorador interativo incorporado</a>.</p>
+<p>Uma loja de móveis recebe uma solicitação de compra parcelada. A
+atendente conhece a renda informada, as prestações já assumidas, a nova
+parcela e o histórico anterior de pagamentos. Ela ainda não sabe como
+esse novo contrato será pago. Como usar exemplos anteriores para apoiar
+a análise?</p>
+<p>Ao concluir este tutorial, você deverá conseguir ler uma árvore,
+acompanhar um contrato pelas suas perguntas, explicar a previsão com
+contagens e comparar seus erros com uma referência simples. Você também
+distinguirá <strong>resultado observado</strong>, <strong>previsão do
+modelo</strong> e <strong>decisão de conceder crédito</strong>.</p>
+<p>Começaremos com cartões e perguntas. Para acompanhar, basta contar
+casos, comparar números e reconhecer qual resultado aparece mais vezes.
+As porcentagens virão depois das contagens; as fórmulas de escolha das
+perguntas ficam para uma leitura opcional. Você pode realizar a primeira
+aula sem instalar programas.</p>
+<p>A loja, os contratos e os resultados são <strong>inteiramente
+sintéticos</strong>. As regras e os limites servem ao exercício, não são
+uma política recomendada para crédito real. Os dados são independentes
+das cestas, produtos e vendas dos outros tutoriais.</p>
+<p><img src="../material/imagens/credito-loja.png"
+alt="Em uma loja de móveis, um cliente conversa com uma atendente; formulários e perguntas aparecem entre a conversa e a análise conjunta de uma tela." /></p>
+<p><em>Figura 1 — Da solicitação à análise de crédito. Ilustração gerada
+por IA; as formas da tela são ilustrativas, não mostram a árvore
+aprendida nem resultados medidos. A árvore efetiva aparece adiante, com
+suas contagens.</em></p>
+<h3 id="roteiro-de-estudo">Roteiro de estudo</h3>
+<p>Reserve duas aulas de aproximadamente 75 minutos. No estudo
+individual, faça as atividades antes de consultar a resolução ao
+final.</p>
+<table>
+<thead>
+<tr>
+<th>Aula</th>
+<th style="text-align: right;">Tempo</th>
+<th>Atividade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td style="text-align: right;">10 min</td>
+<td>Compreender a solicitação e o instante da previsão</td>
+</tr>
+<tr>
+<td>1</td>
+<td style="text-align: right;">10 min</td>
+<td>Ler os contratos e definir a resposta que queremos aprender</td>
+</tr>
+<tr>
+<td>1</td>
+<td style="text-align: right;">10 min</td>
+<td>Prever sem perguntas e contar erros</td>
+</tr>
+<tr>
+<td>1</td>
+<td style="text-align: right;">20 min</td>
+<td>Separar cartões em pilhas e comparar perguntas</td>
+</tr>
+<tr>
+<td>1</td>
+<td style="text-align: right;">15 min</td>
+<td>Construir e percorrer uma árvore pequena</td>
+</tr>
+<tr>
+<td>1</td>
+<td style="text-align: right;">10 min</td>
+<td>Escrever regras SE–ENTÃO e encontrar exceções</td>
+</tr>
+<tr>
+<td>2</td>
+<td style="text-align: right;">10 min</td>
+<td>Reconstruir um caminho e suas contagens</td>
+</tr>
+<tr>
+<td>2</td>
+<td style="text-align: right;">15 min</td>
+<td>Executar a aprendizagem automática e ler a árvore curta</td>
+</tr>
+<tr>
+<td>2</td>
+<td style="text-align: right;">15 min</td>
+<td>Comparar árvores no desenvolvimento</td>
+</tr>
+<tr>
+<td>2</td>
+<td style="text-align: right;">15 min</td>
+<td>Explorar configurações no painel, ainda sem abrir o teste (seção
+12)</td>
+</tr>
+<tr>
+<td>2</td>
+<td style="text-align: right;">15 min</td>
+<td>Fixar o modelo e avaliar o teste separado</td>
+</tr>
+<tr>
+<td>2</td>
+<td style="text-align: right;">10 min</td>
+<td>Interpretar os dois tipos de erro</td>
+</tr>
+<tr>
+<td>2</td>
+<td style="text-align: right;">10 min</td>
+<td>Aplicar uma política fictícia e produzir um relato</td>
+</tr>
+</tbody>
+</table>
+<p>Materiais: <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/credito/cartoes-impressao.pdf">12
+cartões imprimíveis e rótulos separados</a>, <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/dados/credito/README.md">dados
+e dicionário</a> e <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/credito/README.md">artefatos
+reproduzíveis</a>.</p>
+<h2 id="1-uma-pergunta-sobre-o-futuro-uma-decisão-no-presente">1. Uma
+pergunta sobre o futuro, uma decisão no presente</h2>
+<p>A loja quer investigar: <strong>este novo contrato terá alguma
+parcela com mais de 30 dias de atraso dentro dos primeiros seis meses
+após a concessão?</strong></p>
+<p>Fixamos essa definição antes de contar resultados. Um pagamento com
+10 dias de atraso não atende a ela. Uma parcela que ultrapassou 30 dias
+e depois foi paga pode atender. “Com atraso” não significa
+necessariamente perda definitiva e não é uma classificação moral do
+cliente.</p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Pergunta</th>
+<th>Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resultado observado</td>
+<td>O que aconteceu depois?</td>
+<td>Uma parcela ultrapassou 30 dias de atraso nos seis meses
+iniciais</td>
+</tr>
+<tr>
+<td>Previsão</td>
+<td>O que o modelo espera, usando o que sabemos agora?</td>
+<td>Prever “com atraso”, pois esse resultado é maioria na folha
+alcançada</td>
+</tr>
+<tr>
+<td>Decisão de crédito</td>
+<td>O que a loja faz segundo sua política?</td>
+<td>Aprovar, recusar ou encaminhar para revisão</td>
+</tr>
+</tbody>
+</table>
+<p>A previsão não contém automaticamente a decisão. A loja também
+precisa definir critérios de capacidade de pagamento, custos, condições
+do contrato, tratamento justo e revisão. Neste exercício, usaremos uma
+política fictícia explícita para aprender essa separação.</p>
+<p><img src="../material/imagens/credito-linha-tempo.png"
+alt="Linha do tempo com informações na solicitação, previsão e decisão, seguidas de seis meses de observação do contrato." /></p>
+<p><em>Figura 2 — A pergunta usa informações disponíveis na solicitação.
+A resposta vem do acompanhamento posterior. Na base histórica, os dois
+momentos estão na mesma linha da tabela, mas não ocorreram ao mesmo
+tempo.</em></p>
+<p><strong>Verifique sua interpretação:</strong> “quantas parcelas do
+novo contrato já foram pagas?” pode entrar no modelo no instante da
+solicitação? Não. Essa informação ainda não existe. Incluí-la seria dar
+ao modelo uma pista do futuro, um caso de <strong>vazamento de
+dados</strong>.</p>
+<h2 id="2-da-indução-de-regras-ao-aprendizado-supervisionado">2. Da
+indução de regras ao aprendizado supervisionado</h2>
+<p>No estudo anterior, você aprendeu a contar casos, ler condições e
+verificar padrões em dados separados. Agora haverá uma mudança:
+escolhemos previamente <strong>uma resposta específica para
+prever</strong> e fornecemos exemplos com essa resposta.</p>
+<pre class="text"><code>Inteligência artificial
+└── Aprendizado de máquina
+    └── Aprendizado supervisionado
+        └── Árvore de decisão para classificação</code></pre>
+<p>Esse caminho localiza a técnica desta aula; não enumera todas as
+áreas de IA. “Supervisionado” significa que os exemplos de aprendizagem
+têm respostas registradas. Não significa que uma pessoa aprove cada
+previsão automaticamente. “Classificação” significa escolher uma
+categoria: aqui, “sem atraso” ou “com atraso”, segundo a definição
+estabelecida.</p>
+<p>Uma árvore aprende uma sequência de perguntas a partir dos exemplos.
+Cada caminho pode ser escrito como uma regra <strong>SE condições ENTÃO
+previsão</strong>. As condições são aprendidas nos dados; a política que
+decide o que fazer com a previsão é estabelecida separadamente. Árvores
+também podem prever números, mas nesta aula trabalharemos somente com
+classificação. Veja a <a
+href="https://scikit-learn.org/stable/modules/tree.html">introdução
+técnica a árvores do scikit-learn</a>.</p>
+<h2 id="3-os-contratos-e-as-informações-disponíveis">3. Os contratos e
+as informações disponíveis</h2>
+<p>Cada cartão representa um contrato anterior <strong>que foi
+aprovado</strong> e teve seis meses completos de acompanhamento. Não
+misturaremos contratos ainda sem tempo suficiente para observar o
+resultado. No exemplo, cada contrato pertence a uma pessoa diferente e
+não há informações faltantes.</p>
+<p>O arquivo <a href="../dados/credito/cartoes.csv">cartoes.csv</a>
+contém os valores monetários. A tabela abaixo destaca as duas
+informações usadas nas perguntas e a resposta:</p>
+<table>
+<thead>
+<tr>
+<th>Contrato</th>
+<th style="text-align: right;">Comprometimento mensal</th>
+<th style="text-align: right;">Atrasos anteriores</th>
+<th>Resultado posterior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td style="text-align: right;">15%</td>
+<td style="text-align: right;">0</td>
+<td>Sem atraso</td>
+</tr>
+<tr>
+<td>C02</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">0</td>
+<td>Sem atraso</td>
+</tr>
+<tr>
+<td>C03</td>
+<td style="text-align: right;">25%</td>
+<td style="text-align: right;">1</td>
+<td>Sem atraso</td>
+</tr>
+<tr>
+<td>C04</td>
+<td style="text-align: right;">30%</td>
+<td style="text-align: right;">0</td>
+<td>Sem atraso</td>
+</tr>
+<tr>
+<td>C05</td>
+<td style="text-align: right;">30%</td>
+<td style="text-align: right;">2</td>
+<td>Com atraso</td>
+</tr>
+<tr>
+<td>C06</td>
+<td style="text-align: right;">35%</td>
+<td style="text-align: right;">1</td>
+<td>Sem atraso</td>
+</tr>
+<tr>
+<td>C07</td>
+<td style="text-align: right;">40%</td>
+<td style="text-align: right;">0</td>
+<td>Sem atraso</td>
+</tr>
+<tr>
+<td>C08</td>
+<td style="text-align: right;">45%</td>
+<td style="text-align: right;">0</td>
+<td>Com atraso</td>
+</tr>
+<tr>
+<td>C09</td>
+<td style="text-align: right;">45%</td>
+<td style="text-align: right;">2</td>
+<td>Com atraso</td>
+</tr>
+<tr>
+<td>C10</td>
+<td style="text-align: right;">50%</td>
+<td style="text-align: right;">1</td>
+<td>Com atraso</td>
+</tr>
+<tr>
+<td>C11</td>
+<td style="text-align: right;">55%</td>
+<td style="text-align: right;">2</td>
+<td>Sem atraso</td>
+</tr>
+<tr>
+<td>C12</td>
+<td style="text-align: right;">60%</td>
+<td style="text-align: right;">3</td>
+<td>Com atraso</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Atrasos anteriores</strong> conta parcelas que ultrapassaram
+30 dias de atraso nos 12 meses antes da solicitação. É um histórico
+anterior, não o resultado do novo contrato. Nesta base fictícia o
+histórico é completo: zero significa nenhum atraso registrado no
+período. Em registros reais, “sem histórico disponível” precisaria ser
+distinguido de “histórico sem atrasos”.</p>
+<h3 id="o-que-significa-comprometimento">O que significa
+comprometimento?</h3>
+<p>No contrato C04, a renda mensal informada é R$2.000. As prestações
+existentes somam R$400 por mês, e a nova parcela proposta é R$200.
+Somando as duas, temos R$600 comprometidos. Isso corresponde a
+<strong>30 de cada R$100 de renda</strong>, ou 30%.</p>
+<p><img src="../material/imagens/credito-comprometimento.png"
+alt="Barra da renda de R$2.000 dividida em R$400 de dívidas atuais, R$200 de parcela proposta e R$1.400 restantes antes de outras despesas." /></p>
+<p><em>Figura 3 — Primeiro leia os valores; depois a proporção. O
+restante ainda precisa cobrir despesas como alimentação e moradia. Esta
+conta não mede sozinha a capacidade de pagamento.</em></p>
+<p>Se quiser conferir no papel ou na calculadora:</p>
+<pre class="text"><code>comprometimento = (dívidas mensais + parcela proposta) / renda mensal × 100
+               = (400 + 200) / 2.000 × 100
+               = 30%</code></pre>
+<p>As perguntas do modelo usam somente o comprometimento e os atrasos
+anteriores. Renda, dívidas e parcela permanecem no CSV para conferir a
+conta; não entram separadamente na árvore. O ID serve para localizar o
+contrato, nunca para prever seu pagamento.</p>
+<table>
+<thead>
+<tr>
+<th>Expressão cotidiana</th>
+<th>Nome técnico, quando precisar dele</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Informação disponível para perguntar</td>
+<td>Característica ou <em>feature</em></td>
+</tr>
+<tr>
+<td>Resposta registrada que queremos prever</td>
+<td>Alvo ou rótulo</td>
+</tr>
+<tr>
+<td>Pergunta que divide o grupo</td>
+<td>Divisão ou <em>split</em></td>
+</tr>
+<tr>
+<td>Ponto em que fazemos uma pergunta</td>
+<td>Nó interno</td>
+</tr>
+<tr>
+<td>Ponto em que paramos e fazemos a previsão</td>
+<td>Folha</td>
+</tr>
+<tr>
+<td>Sequência de perguntas até uma folha</td>
+<td>Caminho</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-antes-da-árvore-prever-a-maioria">4. Antes da árvore: prever a
+maioria</h2>
+<p>Conte os 12 cartões: <strong>7 sem atraso e 5 com atraso</strong>.
+Sem usar nenhuma pergunta, poderíamos prever “sem atraso” para todos.
+Acertaríamos 7 e erraríamos 5. Essa será nossa <strong>referência
+simples</strong>, também chamada de <em>baseline</em>.</p>
+<p>Não escolhemos “sem atraso” porque seria uma promessa segura.
+Escolhemos porque é a resposta mais frequente nesses exemplos. Antes de
+atribuir valor a uma árvore, precisamos perguntar se ela melhora essa
+referência em dados novos.</p>
+<p><strong>Atividade:</strong> se alguém anunciar “acertei mais da
+metade dos contratos”, isso já demonstra uma boa solução? Não: a
+referência já acerta 7 de 12 sem fazer nenhuma pergunta.</p>
+<h2 id="5-construir-perguntas-com-cartões">5. Construir perguntas com
+cartões</h2>
+<p>Imprima as páginas 1–2 do <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/credito/cartoes-impressao.pdf">PDF</a>.
+A página 3 contém os resultados para recortar e associar pelo ID.
+Durante a construção, mantenha as respostas visíveis; para prever um
+caso, esconda a resposta desse caso. Esconder um rótulo depois de usá-lo
+na construção não transforma o caso em teste independente: aqui estamos
+praticando a leitura.</p>
+<p>Experimente: <strong>“o comprometimento é menor ou igual a
+35%?”</strong>. O símbolo <code>≤</code> significa “menor ou igual”:
+C06, com 35%, fica no lado do <strong>sim</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th>Contratos</th>
+<th style="text-align: right;">Sem atraso</th>
+<th style="text-align: right;">Com atraso</th>
+<th>Prever a maioria</th>
+<th style="text-align: right;">Erros conhecidos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sim: até 35%</td>
+<td>C01–C06</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1</td>
+<td>Sem atraso</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>Não: acima de 35%</td>
+<td>C07–C12</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td>Com atraso</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>Total depois da pergunta</td>
+<td>Todos os 12</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">5</td>
+<td>Depende do grupo</td>
+<td style="text-align: right;"><strong>3</strong></td>
+</tr>
+</tbody>
+</table>
+<p><img src="../material/imagens/credito-pilhas.png"
+alt="Os mesmos 12 cartões antes da divisão e depois, separados em grupos de até 35% e acima de 35%, com rótulos SEM e COM atraso." /></p>
+<p><em>Figura 4 — A pergunta não altera os contratos nem seus
+resultados. Ela forma grupos com maior concentração de uma resposta.
+Prever a maioria em cada grupo reduz de cinco para três os erros nesses
+cartões.</em></p>
+<p>Compare outra pergunta: <strong>“o comprometimento é menor ou igual a
+50%?”</strong>. No lado do sim ficam seis sem e quatro com atraso:
+quatro erros ao prever a maioria. No lado do não ficam um sem e um com.
+Para resolver esse empate no exercício, prevemos “sem atraso”: um erro.
+Total: <strong>cinco erros</strong>.</p>
+<p>Entre essas duas perguntas, o corte em 35% foi mais útil pelo nosso
+critério manual. Isso não prova que seja um limite de crédito
+adequado.</p>
+<h3 id="uma-segunda-pergunta">Uma segunda pergunta</h3>
+<p>Volte ao grupo de até 35%. Pergunte: <strong>“há no máximo um atraso
+anterior?”</strong>. Os cinco contratos que respondem sim ficaram sem
+atraso; o único que responde não, C05, teve atraso. No grupo acima de
+35%, paramos e mantemos a maioria.</p>
+<p><img src="../material/imagens/credito-arvore-manual.png"
+alt="Árvore manual: até 35% leva à pergunta sobre no máximo um atraso anterior; acima de 35% leva à previsão com atraso, apoiada por quatro casos com e dois sem atraso." /></p>
+<p><em>Figura 5 — Essa árvore foi construída em sala. Ela faz dez
+previsões corretas e duas erradas nos mesmos 12 exemplos usados para
+construí-la. A folha de C05 tem apenas um caso: acertá-lo não demonstra
+estabilidade em outras pessoas.</em></p>
+<p>Leia dois caminhos em voz alta:</p>
+<pre class="text"><code>SE comprometimento ≤ 35%
+E atrasos anteriores ≤ 1
+ENTÃO prever SEM atraso.
+
+SE comprometimento &gt; 35%
+ENTÃO prever COM atraso.</code></pre>
+<p>No segundo caminho, a folha contém quatro com atraso e dois sem. A
+previsão segue a maioria, mas <strong>C07 e C11 são exceções</strong>.
+Uma árvore não elimina a incerteza nem converte uma frequência em
+certeza individual.</p>
+<p><strong>Sua vez:</strong> por qual caminho passa C05? Qual é a
+previsão? Quantos exemplos a sustentam? Responda antes de avançar.</p>
+<h2 id="6-como-o-programa-aprende-uma-árvore">6. Como o programa aprende
+uma árvore</h2>
+<p>A construção manual ajuda a entender o processo. O programa também
+compara perguntas e cortes, divide grupos e repete o procedimento nos
+ramos. Nesta implementação, usa uma medida chamada
+<strong>Gini</strong>, que quantifica a mistura das respostas em cada
+grupo. Grupos com uma única resposta têm mistura zero. Não é necessário
+calcular essa medida para ler ou avaliar a árvore.</p>
+<p>Contar erros ao prever a maioria foi nosso critério didático. Gini é
+outro critério: as escolhas do programa podem diferir das feitas à mão.
+A busca faz escolhas locais a cada passo; não garante a melhor árvore
+possível entre todas.</p>
+<p>Agora usaremos uma base maior, separada dos cartões:</p>
+<table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th style="text-align: right;">Contratos</th>
+<th style="text-align: right;">Sem atraso</th>
+<th style="text-align: right;">Com atraso</th>
+<th>Papel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Treino</td>
+<td style="text-align: right;">240</td>
+<td style="text-align: right;">143</td>
+<td style="text-align: right;">97</td>
+<td>Aprender perguntas, cortes e previsões das folhas</td>
+</tr>
+<tr>
+<td>Desenvolvimento</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">25</td>
+<td>Comparar configurações antes da escolha</td>
+</tr>
+<tr>
+<td>Teste</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">30</td>
+<td>Avaliar o modelo já escolhido</td>
+</tr>
+</tbody>
+</table>
+<p>Os grupos são sorteios sintéticos separados da mesma receita
+artificial; não são períodos reais. Veja <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/dados/credito/README.md">a
+receita, as sementes e o dicionário</a>. As características podem
+coincidir em contratos diferentes, e seus resultados podem discordar. Os
+cartões não são adicionados ao treino.</p>
+<h3 id="executar-sem-abrir-o-teste">Executar sem abrir o teste</h3>
+<p>Na raiz do repositório, com o ambiente do projeto instalado:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/arvore_credito.py <span class="at">--saida</span> material/credito-experimento</span></code></pre></div>
+<p>O script usa scikit-learn, já declarado nas dependências do projeto.
+Não exige subir a API BentoML. Se usa o ambiente virtual já preparado, o
+equivalente é
+<code>.venv/bin/python scripts/arvore_credito.py --saida material/credito-experimento</code>.
+A execução de referência deste texto usa scikit-learn 1.9.1.</p>
+<p>O comando lê somente treino e desenvolvimento. Gera dois arquivos de
+regras e um <code>relatorio.json</code> na pasta de experimento. Não lê
+o CSV de teste.</p>
+<p>Há duas configurações:</p>
+<ul>
+<li><strong>Curta:</strong> no máximo duas perguntas em cada caminho;
+pelo menos 12 contratos de treino por folha.</li>
+<li><strong>Profunda:</strong> sem limite explícito de profundidade;
+permite folhas com um contrato. Ela para quando não consegue ou não pode
+continuar a divisão.</li>
+</ul>
+<p><img src="../material/imagens/credito-arvore-curta.png"
+alt="Árvore curta aprendida: pergunta inicial sobre comprometimento até 35,5%, seguida de perguntas sobre atrasos anteriores; cada folha mostra a quantidade de contratos de treino de cada resposta." /></p>
+<p><em>Figura 6 — Árvore curta aprendida em 240 contratos, não nos 12
+cartões. “79 sem / 6 com” significa 85 exemplos de treino na folha. É
+possível prever sem atraso e ainda ter seis exemplos conhecidos do
+resultado oposto.</em></p>
+<p>O limite <code>35,5%</code> aparece porque os dados têm valores
+inteiros e o programa pode usar um ponto entre valores consecutivos.
+<code>Atrasos anteriores ≤ 1,5</code> significa, para esta contagem
+inteira, zero ou um. Ninguém teve “um atraso e meio”. O limite é um
+corte aprendido, não uma fronteira natural entre pessoas.</p>
+<p><strong>Exemplo completo:</strong> uma nova solicitação tem renda de
+R$2.000, dívidas mensais de R$400, parcela proposta de R$200 e nenhum
+atraso anterior. O comprometimento é 30%. Na árvore curta:
+<code>30 ≤ 35,5</code> → sim; <code>0 ≤ 1,5</code> → sim. A previsão é
+“sem atraso”, na folha com <strong>79 sem e 6 com atraso</strong>.</p>
+<p>Você pode dizer “79 dos 85 exemplos dessa folha ficaram sem atraso”,
+cerca de 93%. Não pode dizer “este cliente certamente pagará”. A
+frequência de treino não é, por si só, uma probabilidade individual bem
+calibrada para uso real.</p>
+<h2 id="7-mais-perguntas-aprender-detalhes-ou-memorizar-exceções">7.
+Mais perguntas: aprender detalhes ou memorizar exceções?</h2>
+<p><img src="../material/imagens/credito-arvore-profunda.png"
+alt="Visão inicial da árvore profunda, com os dois primeiros níveis de perguntas e caixas “Continua…” onde há outros ramos." /></p>
+<p><em>Figura 7 — A árvore profunda tem dez níveis e 67 folhas nesta
+execução. A figura mostra somente o início; “Continua…” não é uma
+previsão final. Todos os caminhos estão no <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/credito/arvore-profunda.txt">TXT
+completo</a>.</em></p>
+<p>Uma árvore muito detalhada pode aprender particularidades do treino
+que não se repetem. Chamamos esse problema de
+<strong>sobreajuste</strong>, ou <em>overfitting</em>. Por isso
+comparamos configurações em exemplos que não participaram da
+construção.</p>
+<p><img src="../material/imagens/credito-comparacao.png"
+alt="Comparação da proporção de acertos das árvores curta e profunda no treino e no desenvolvimento." /></p>
+<p><em>Figura 8 — A árvore profunda acerta mais nos dois grupos, mas seu
+desempenho no treino é melhor que no desenvolvimento. O gráfico ajuda a
+examinar essa diferença; não demonstra que a árvore curta deva
+vencer.</em></p>
+<table>
+<thead>
+<tr>
+<th>Modelo</th>
+<th style="text-align: right;">Treino: acertos</th>
+<th style="text-align: right;">Desenvolvimento: acertos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Referência: sempre prever sem atraso</td>
+<td style="text-align: right;">143/240</td>
+<td style="text-align: right;">55/80</td>
+</tr>
+<tr>
+<td>Árvore curta: 2 níveis, 4 folhas</td>
+<td style="text-align: right;">179/240</td>
+<td style="text-align: right;">54/80</td>
+</tr>
+<tr>
+<td>Árvore profunda: 10 níveis, 67 folhas</td>
+<td style="text-align: right;">212/240</td>
+<td style="text-align: right;">60/80</td>
+</tr>
+</tbody>
+</table>
+<p>O critério desta atividade foi fixado antes do teste:
+<strong>escolher a árvore com mais acertos no desenvolvimento</strong>.
+Se houver empate, preferir menor profundidade; persistindo o empate,
+menos folhas. Por esse critério, escolhemos a <strong>profunda</strong>.
+A curta ficou até um acerto abaixo da referência no desenvolvimento.</p>
+<p>Não vamos trocar a base para fazer a curta vencer. Limitar a
+complexidade é uma ferramenta, não uma garantia de vitória. A profunda
+também não chega a 100% no treino: há contratos com as mesmas duas
+entradas e resultados opostos, que nenhuma pergunta sobre essas duas
+entradas consegue separar.</p>
+<h3 id="experimento-opcional-antes-de-abrir-o-teste">Experimento
+opcional, antes de abrir o teste</h3>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/arvore_credito.py <span class="at">--profundidade</span> 3 <span class="at">--minimo-folha</span> 20 <span class="at">--saida</span> material/credito-experimento-3</span></code></pre></div>
+<p>Compare as configurações usando <strong>desenvolvimento</strong> e
+registre sua escolha. Não altere os valores depois de consultar o teste
+para tentar melhorar sua nota. Repetir muitas escolhas também pode
+ajustar suas decisões às particularidades do desenvolvimento; uma aula
+com duas configurações é um começo, não um procedimento completo de
+seleção para produção.</p>
+<h2 id="8-avaliar-em-contratos-separados">8. Avaliar em contratos
+separados</h2>
+<p>Depois de fixar os parâmetros, abra o teste uma única vez. Para
+reproduzir a execução padrão descrita aqui:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/arvore_credito.py <span class="at">--avaliar-teste</span> <span class="at">--saida</span> material/credito-experimento</span></code></pre></div>
+<p>O programa primeiro aprende com o treino e escolhe usando
+desenvolvimento. Somente depois lê o teste e avalia a árvore selecionada
+e a referência. Não retreina a árvore com desenvolvimento ou teste. Nas
+duas bases de avaliação, a referência mantém a classe majoritária
+<strong>do treino</strong>, sem reaprender a maioria.</p>
+<p>O <a href="../material/credito/relatorio.json">relatório
+publicado</a> e o <a href="../material/credito/previsoes-teste.csv">CSV
+de previsões</a> contêm o gabarito da execução padrão. Se estiver
+resolvendo a atividade, deixe-os para o final.</p>
+<p><strong>Resultado de referência:</strong> a árvore profunda acerta
+<strong>55 de 80</strong> contratos do teste e erra 25. A referência
+acerta <strong>50 de 80</strong> e erra 30. São cinco acertos adicionais
+nesta amostra, não uma demonstração de lucro ou de segurança para
+concessão real.</p>
+<p>Se quiser usar porcentagens: 55/80 corresponde a 68,75%; 50/80
+corresponde a 62,5%. A proporção de previsões corretas é chamada de
+<strong>acurácia</strong>. Os cinco acertos adicionais correspondem a
+6,25 pontos percentuais neste teste.</p>
+<h3 id="dois-tipos-de-erro">Dois tipos de erro</h3>
+<p><img src="../material/imagens/credito-matriz-teste.png"
+alt="Matriz de teste: entre os contratos sem atraso, 40 foram previstos sem e 10 com atraso; entre os com atraso, 15 foram previstos sem e 15 com atraso." /></p>
+<p><em>Figura 9 — Leia primeiro uma linha, depois a outra. A diagonal
+soma os acertos: 40 + 15 = 55. Fora da diagonal estão os erros: 10 + 15
+= 25.</em></p>
+<table>
+<thead>
+<tr>
+<th>O que aconteceu</th>
+<th style="text-align: right;">Previu sem atraso</th>
+<th style="text-align: right;">Previu com atraso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sem atraso</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;"><strong>10</strong></td>
+</tr>
+<tr>
+<td>Com atraso</td>
+<td style="text-align: right;"><strong>15</strong></td>
+<td style="text-align: right;">15</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Previu sem, mas houve atraso: 15 casos.</strong> Uma
+política que confiasse demais nessa previsão poderia assumir
+compromissos que depois apresentariam problemas.</li>
+<li><strong>Previu com, mas não houve atraso: 10 casos.</strong> Uma
+política que recusasse automaticamente poderia negar crédito a alguém
+que, no registro observado, pagou sem o atraso definido.</li>
+</ul>
+<p>Os dois erros têm consequências para a loja e para o solicitante. Seu
+peso depende de valores, custos e condições que não estão nesta base.
+Acurácia sozinha não determina a melhor política. Em uma leitura
+técnica, tomando “com atraso” como classe positiva, os dois erros são
+chamados de falsos negativos e falsos positivos, respectivamente. Veja a
+<a
+href="https://scikit-learn.org/stable/modules/model_evaluation.html#confusion-matrix">documentação
+de avaliação de classificadores</a>.</p>
+<p><strong>Verifique sua interpretação:</strong> acertar 55 de 80
+permite afirmar que a árvore é justa com todos os grupos de pessoas?
+Não. O total não mostra como os erros se distribuem entre grupos, e
+estes dados não permitem essa avaliação.</p>
+<h2 id="9-da-previsão-à-decisão-uma-política-fictícia-explícita">9. Da
+previsão à decisão: uma política fictícia explícita</h2>
+<p>Para praticar a diferença entre prever e agir, use esta política
+<strong>somente na simulação da aula</strong>. Ela foi escrita por
+pessoas; a árvore não a aprendeu:</p>
+<table>
+<thead>
+<tr>
+<th>Condição após percorrer a árvore</th>
+<th>Ação simulada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A folha tem menos de 5 exemplos de treino</td>
+<td>Encaminhar para revisão</td>
+</tr>
+<tr>
+<td>A folha tem pelo menos 5 e prevê sem atraso</td>
+<td>Aprovar na simulação</td>
+</tr>
+<tr>
+<td>A folha tem pelo menos 5 e prevê com atraso</td>
+<td>Recusar na simulação</td>
+</tr>
+</tbody>
+</table>
+<p>O mínimo de cinco é arbitrário e não comprova evidência suficiente. A
+política foi simplificada para tornar as ações auditáveis; não inclui
+uma avaliação completa de capacidade de pagamento e não deve ser adotada
+por uma loja real. Uma política real também precisa de critérios
+próprios de revisão, informação ao solicitante, contestação e avaliação
+de impactos. Aqui não estamos estabelecendo requisitos legais nem
+aprovando pedidos reais.</p>
+<p>Aplique a política à <strong>árvore manual da Figura 5</strong>, não
+à árvore selecionada no computador:</p>
+<table>
+<thead>
+<tr>
+<th>Contrato</th>
+<th>Caminho</th>
+<th>Previsão e apoio</th>
+<th>Ação simulada</th>
+<th>Resultado conhecido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C04</td>
+<td>Até 35%; até 1 atraso anterior</td>
+<td>Sem atraso; folha com 5 casos</td>
+<td>Aprovar</td>
+<td>Sem atraso</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>Até 35%; mais de 1 atraso anterior</td>
+<td>Com atraso; folha com 1 caso</td>
+<td>Revisão</td>
+<td>Com atraso</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>Acima de 35%</td>
+<td>Com atraso; folha com 6 casos</td>
+<td>Recusar</td>
+<td>Sem atraso</td>
+</tr>
+</tbody>
+</table>
+<p>C11 torna visível uma consequência da política: a simulação recusaria
+um contrato que, no registro histórico, não teve o atraso definido. C05
+mostra que prever “com atraso” não obriga a recusar: a política
+encaminha para revisão por haver pouca evidência na folha.</p>
+<h3 id="o-que-nossos-dados-não-respondem">O que nossos dados não
+respondem</h3>
+<p><strong>Quem foi recusado não está na base.</strong> Conhecemos os
+resultados dos contratos que a loja aprovou. Não observamos como os
+recusados teriam pago se recebessem crédito. Logo, o desempenho nesses
+contratos não pode ser automaticamente estendido a todos os
+solicitantes.</p>
+<p><strong>Informação financeira também pode refletir desigualdades
+anteriores.</strong> Não usar atributos como raça ou gênero não prova
+ausência de discriminação. Esta base não contém grupos demográficos e
+não permite medir diferenças de erro entre eles. Não devemos concluir
+que o modelo foi aprovado em uma avaliação de justiça que nem foi
+realizada.</p>
+<p><strong>Prever e mudar condições são perguntas distintas.</strong> A
+árvore relaciona entradas e resultados observados. Ela não demonstra que
+reduzir a parcela de alguém causará o resultado previsto para outras
+pessoas com parcelas menores.</p>
+<p><strong>O histórico não é garantia de futuro.</strong> Mudanças
+econômicas, novas condições de contrato e diferenças na população
+atendida podem alterar o desempenho. Esses temas exigiriam dados reais e
+uma avaliação apropriada, fora desta simulação.</p>
+<h2 id="10-como-escrever-um-relato-auditável">10. Como escrever um
+relato auditável</h2>
+<p>Prefira ligar cada conclusão à sua fonte e ao grupo de avaliação:</p>
+<blockquote>
+<p>Em contratos inteiramente sintéticos, aprendemos duas árvores com 240
+exemplos e escolhemos a profunda por seus 60 acertos em 80 casos de
+desenvolvimento. No teste separado, ela acertou 55 de 80, contra 50 da
+referência fixa que sempre prevê sem atraso. Houve 15 casos previstos
+sem atraso que tiveram atraso e 10 previstos com atraso que não tiveram.
+Esses resultados descrevem a classificação de contratos anteriormente
+aprovados; não demonstram lucro, tratamento justo ou desempenho sobre
+solicitantes recusados. A política de aprovar, recusar ou revisar é uma
+escolha adicional, que precisa ser avaliada separadamente.</p>
+</blockquote>
+<p>Para um caso individual, registre: informação disponível → perguntas
+percorridas → folha e contagens → previsão → regra da política → ação
+simulada. Dizer apenas “a IA negou” esconde as escolhas que produziram a
+ação.</p>
+<h2 id="11-exercício-produza-seu-relatório">11. Exercício: produza seu
+relatório</h2>
+<ol type="1">
+<li>Explique a pergunta-alvo e o instante em que a previsão é feita. Dê
+uma informação válida e uma informação futura que seria proibida como
+entrada.</li>
+<li>Refaça a conta do comprometimento de C04. Explique o resultado sem
+usar porcentagens na primeira frase.</li>
+<li>Conte os erros da referência nos 12 cartões e da primeira divisão em
+35%. Depois, trace C05 e C11 na árvore manual e aplique a política da
+seção 9.</li>
+<li>Para a solicitação de R$2.000 de renda, R$400 de dívidas, R$200 de
+parcela e nenhum atraso anterior, percorra a árvore curta. Informe as
+contagens da folha, a previsão e uma limitação da evidência.</li>
+<li>Use a execução padrão: justifique a escolha no desenvolvimento e
+interprete os dois tipos de erro no teste. Compare com a referência nos
+mesmos 80 casos.</li>
+<li>Explique por que esse procedimento é supervisionado e por que
+avaliar apenas contratos aprovados não responde como os solicitantes
+recusados teriam pago.</li>
+<li>Escreva um relato de até seis frases que identifique os dados, a
+previsão, a avaliação, a política e duas limitações. Evite prometer
+lucro ou certeza.</li>
+</ol>
+<p><strong>Extensão opcional:</strong> localize E001 no teste e trace
+seu caminho na árvore profunda completa. Compare o número de perguntas e
+a evidência da folha com os da árvore curta. Não altere o modelo depois
+de observar o resultado de E001.</p>
+<h3 id="resolução-comentada">Resolução comentada</h3>
+<p><strong>Pergunta e tempo:</strong> prever se alguma parcela
+ultrapassará 30 dias de atraso dentro dos seis meses iniciais, usando
+somente informações disponíveis na solicitação. A parcela proposta é
+válida; quantas parcelas futuras foram pagas não é. Os rótulos
+históricos são fornecidos ao treino, mas não são entradas para prever um
+novo contrato.</p>
+<p><strong>Conta:</strong> C04 compromete R$600 dos R$2.000 mensais
+informados. São 30 de cada R$100, ou 30%. O restante não considera
+outras despesas de vida.</p>
+<p><strong>Cartões:</strong> há sete sem e cinco com atraso; prever
+sempre sem gera cinco erros. Na divisão em 35%, o grupo de até 35% tem
+um erro e o grupo acima tem dois: três no total. A segunda pergunta da
+árvore manual isola C05 e deixa dois erros, C07 e C11. C05 segue
+<code>30 ≤ 35</code> e <code>2 ≤ 1</code> → não; prevê com atraso, mas
+vai para revisão porque a folha tem um caso. C11 segue
+<code>55 ≤ 35</code> → não; prevê com atraso em uma folha de seis e é
+recusado na simulação, embora seu resultado registrado seja sem atraso.
+As contagens da construção não são uma avaliação independente.</p>
+<p><strong>Árvore curta:</strong> a nova solicitação tem 30% e zero
+atrasos. Passa por <code>≤ 35,5</code> e <code>≤ 1,5</code>, chegando a
+79 sem e seis com atraso. Prevê sem atraso. A presença de resultados
+opostos e o fato de serem exemplos sintéticos impedem tratar essa
+previsão como garantia de pagamento ou recomendação real de
+concessão.</p>
+<p><strong>Escolha e teste:</strong> a profunda vence por 60/80 no
+desenvolvimento, contra 54/80 da curta. No teste, acerta 55/80, contra
+50/80 da referência. Sua matriz contém 40 sem atraso previstos sem, dez
+sem previstos com, 15 com previstos sem e 15 com previstos com. Os erros
+somam 25. Cinco acertos adicionais não informam o saldo financeiro nem a
+distribuição dos erros entre grupos.</p>
+<p><strong>Aprendizagem e limites:</strong> o alvo é definido
+previamente e os exemplos de treino incluem a resposta observada,
+caracterizando aprendizado supervisionado. A base só contém contratos
+concedidos e acompanhados; não oferece os resultados contrafactuais dos
+recusados. A política de ação é externa à árvore e não foi validada
+comercialmente por esta atividade.</p>
+<p><strong>Extensão E001:</strong> renda R$5.000, dívidas R$500, parcela
+R$100, comprometimento 12% e um atraso anterior. Na profunda, as
+respostas são: <code>12 ≤ 35,5</code> → sim; <code>1 ≤ 1,5</code> → sim;
+<code>12 ≤ 13,5</code> → sim; <code>12 ≤ 12,5</code> → sim;
+<code>12 ≤ 10,5</code> → não. Chega à folha 8, com quatro sem e zero com
+atraso no treino; prevê sem atraso, coincidindo com o resultado do
+teste. Pela política fictícia, haveria revisão, pois a folha tem menos
+de cinco exemplos. Na curta, seriam duas perguntas e uma folha com 85
+exemplos. O acerto isolado não prova qual árvore será melhor para outras
+solicitações.</p>
+<h2 id="12-explorar-a-árvore-no-painel">12. Explorar a árvore no
+painel</h2>
+<p>O <a href="../material/bi-credito/index.html">explorador de árvores
+de crédito</a> reúne, numa só tela, as etapas das seções 6 a 8: comparar
+configurações no desenvolvimento, ler a árvore escolhida, percorrer um
+contrato pelas perguntas e, só no fim, abrir o teste. Você pode usá-lo
+incorporado à <a
+href="https://lgallindo.github.io/recomendador-bentoml/credito/#explorador-interativo">versão
+web deste tutorial</a> ou abrir o HTML numa cópia local do repositório.
+Consulte o <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-credito/README.md">roteiro
+de exploração</a>. Use o painel depois da seção 7 e antes de executar
+<code>--avaliar-teste</code>.</p>
+<section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
+<h3 id="explorer-heading">Experimente a árvore neste tutorial</h3>
+<p>Escolha profundidade e folha mínima, percorra um contrato e só revele o teste depois de fixar a configuração. Os contratos são sintéticos.</p>
+<div class="explorer-actions">
+<button id="fullscreen-explorer" type="button">Ver explorador em tela cheia</button>
+<a href="../material/bi-credito/index.html" target="_blank" rel="noopener">Abrir explorador em nova aba</a>
+</div>
+<p id="explorer-status" role="status"></p>
+<iframe id="explorer" src="../material/bi-credito/index.html" title="Explorador interativo de árvores de decisão de crédito"
+loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+</section>
+<p>O painel traz 35 árvores aprendidas previamente nos mesmos 240
+contratos de treino: sete limites de profundidade (1, 2, 3, 4, 6, 8 e
+sem limite) combinados com cinco mínimos de contratos por folha (1, 5,
+12, 20 e 40). Trocar a configuração não retreina nada; o navegador
+percorre a árvore já aprendida com as entradas de cada contrato e
+confere se reproduz as contagens calculadas em Python. O teste fica
+bloqueado até você clicar em <strong>Fixar configuração e revelar
+teste</strong>. Depois disso, o painel mostra somente o teste da
+configuração fixada.</p>
+<p><img src="../material/imagens/bi-credito-grade.png"
+alt="Grade de acertos no desenvolvimento em 80 contratos. Profundidades 1, 2 e 3 acertam 54 em todos os mínimos por folha. Com profundidade 4 e mínimo 5, ou sem limite e mínimo 1, chegam a 60. Mínimo 40 fica em 54 em todas as profundidades." /></p>
+<p><em>Figura 10 — Cada célula é uma árvore aprendida no treino e
+contada no desenvolvimento. A referência que sempre prevê sem atraso
+acerta 55 de 80. A cor organiza a leitura; não indica que diferenças de
+um ou dois acertos sejam estáveis em outros contratos.</em></p>
+<p><img src="../material/imagens/bi-credito-profundidade.png"
+alt="Proporção de acertos por profundidade máxima, com mínimo de um contrato por folha. No treino, sobe de 179/240 para 212/240. No desenvolvimento, fica em 54/80 até a profundidade 3, sobe para 59/80 na profundidade 4 e oscila entre 58 e 60 até a árvore sem limite. Uma linha tracejada marca a referência de 55/80." /></p>
+<p><em>Figura 11 — Mais perguntas sempre ajudam no treino, onde a árvore
+já viu as respostas. No desenvolvimento o ganho para na profundidade 4.
+A distância entre as duas linhas cresce: é o sinal de sobreajuste
+discutido na seção 7.</em></p>
+<p>A grade amplia a comparação da seção 7, que tinha só duas candidatas.
+Com 35, duas configurações empatam com 60 acertos no desenvolvimento: a
+árvore profunda do tutorial (10 níveis, 67 folhas) e a de profundidade 4
+com mínimo de 5 contratos por folha (4 níveis, 15 folhas). Pelo mesmo
+critério fixado antes do teste (mais acertos; empate → menor
+profundidade; persistindo, menos folhas), a escolha passa a ser a de
+profundidade 4. Comparar muitas configurações no mesmo desenvolvimento
+também aumenta a chance de premiar uma coincidência: com 80 contratos,
+um acerto a mais é um contrato.</p>
+<h3 id="atividade-no-painel">Atividade no painel</h3>
+<ol type="1">
+<li>Clique em <strong>Árvore curta do tutorial</strong>. Confira os
+acertos no treino e no desenvolvimento e compare com a referência de
+55/80.</li>
+<li>Selecione o contrato D001 e percorra-o na árvore curta e na
+profunda. Anote o número de perguntas, as contagens da folha, a previsão
+e a ação da política fictícia em cada uma.</li>
+<li>Na grade, encontre as configurações com mais acertos no
+desenvolvimento. Aplique o critério de desempate e diga qual
+escolheria.</li>
+<li>Com mínimo de um contrato por folha, leia a Figura 11 ou percorra as
+profundidades no painel. Descreva o que acontece com treino e
+desenvolvimento.</li>
+<li>Escreva sua escolha e o motivo em uma frase. Só então revele o teste
+e relate acertos, os dois tipos de erro e a referência nos mesmos 80
+contratos.</li>
+</ol>
+<h3 id="resolução-comentada-1">Resolução comentada</h3>
+<p><strong>Árvore curta:</strong> acerta 179 de 240 no treino e 54 de 80
+no desenvolvimento, um acerto abaixo da referência. No desenvolvimento,
+previu sem atraso quatro contratos que tiveram atraso e previu com
+atraso 22 que não tiveram.</p>
+<p><strong>D001:</strong> renda de R$2.000, dívidas de R$90 e parcela de
+R$250 dão comprometimento de 17%; não há atrasos anteriores. Na árvore
+curta, duas perguntas (<code>17 ≤ 35,5</code> → sim;
+<code>0 ≤ 1,5</code> → sim) levam à folha com 79 sem e 6 com atraso:
+prevê sem atraso, e a política simulada aprova. Na profunda, são seis
+perguntas, até uma folha com 15 sem e nenhum com atraso; a previsão e a
+ação são as mesmas. O resultado observado é sem atraso nos dois casos.
+Uma folha “pura” com 15 exemplos parece mais convincente, mas é
+sustentada por menos contratos que a folha de 85 da árvore curta.</p>
+<p><strong>Grade:</strong> 60 de 80 é o máximo, alcançado pela profunda
+e pela profundidade 4 com mínimo 5. O desempate por profundidade escolhe
+a de 4 níveis e 15 folhas. Com as duas candidatas da seção 7, a escolha
+foi a profunda; com 35, mudou. Nenhuma das duas escolhas é “a certa”:
+cada uma segue o critério sobre o conjunto de candidatas comparado.</p>
+<p><strong>Profundidade:</strong> com mínimo de um contrato por folha, o
+treino sobe de 179 para 212 acertos em 240. O desenvolvimento fica em 54
+até a profundidade 3, salta para 59 na profundidade 4 e depois oscila
+(58, 59, 60). A árvore continua melhorando nos exemplos que já viu, sem
+melhora correspondente nos que não viu.</p>
+<p><strong>Teste:</strong> se fixou a árvore profunda, o painel mostra
+55 acertos em 80, contra 50 da referência, com 15 contratos previstos
+sem atraso que tiveram atraso e 10 previstos com atraso que não tiveram,
+os mesmos números da seção 8 e de <a
+href="../material/credito/previsoes-teste.csv"><code>previsoes-teste.csv</code></a>.
+Se fixou outra configuração, relate o seu número ao lado da referência
+de 50/80. Em nenhum caso use o teste para trocar a escolha: por isso o
+painel não mostra o teste das outras configurações.</p>
+<h2 id="referências-e-reprodução">Referências e reprodução</h2>
+<p>As referências técnicas abaixo são de consulta: você pode concluir a
+atividade pelas contagens, figuras e exemplos deste texto. Consulta: 17
+out. 2026.</p>
+<ol type="1">
+<li>SCIKIT-LEARN. <a
+href="https://scikit-learn.org/stable/modules/tree.html">Decision
+Trees</a>. Para aprofundar a estrutura, os critérios de divisão e os
+limites de complexidade.</li>
+<li>SCIKIT-LEARN. <a
+href="https://scikit-learn.org/stable/common_pitfalls.html">Common
+pitfalls and recommended practices</a>. Para compreender a separação das
+bases e o vazamento de informações.</li>
+<li>SCIKIT-LEARN. <a
+href="https://scikit-learn.org/stable/modules/model_evaluation.html#confusion-matrix">Confusion
+matrix</a>. Para consultar a organização das previsões corretas e dos
+dois tipos de erro.</li>
+</ol>
+<p>Arquivos deste exercício:</p>
+<ul>
+<li><a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/dados/credito/README.md">Dados,
+unidades, rótulos e receita sintética</a>.</li>
+<li><a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/scripts/gerar_dados_credito.py">Gerador
+de dados</a>, sem dependências externas.</li>
+<li><a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/scripts/arvore_credito.py">Aprendizagem
+e avaliação</a>.</li>
+<li><a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/scripts/gerar_figuras_credito.py">Gerador
+de diagramas, gráficos e cartões</a>.</li>
+<li><a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/credito/README.md">Cartões
+e artefatos de referência</a>.</li>
+<li><a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-credito/README.md">Explorador
+interativo</a> e o <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/scripts/gerar_bi_credito.py">gerador
+de seus dados</a>.</li>
+<li><a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/imagens/README.md#figuras-do-tutorial-de-crédito">Origem
+das figuras e prompt da ilustração</a>.</li>
+</ul>
+<p>Para reproduzir o material publicado, com o ambiente do projeto
+instalado:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/gerar_dados_credito.py</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/arvore_credito.py <span class="at">--avaliar-teste</span> <span class="at">--saida</span> material/credito</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/gerar_figuras_credito.py</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/gerar_bi_credito.py</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python <span class="at">-m</span> unittest discover <span class="at">-s</span> scripts <span class="at">-p</span> <span class="st">&#39;test_credito.py&#39;</span></span></code></pre></div>
+<p>Esses comandos geram também o gabarito. Para conduzir a aula sem
+revelar o teste, siga primeiro o comando da seção 6 e distribua as bases
+em etapas. O script de aprendizagem não concede crédito nem modifica a
+API de recomendação.</p></main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore busca BM25, FTS5 e llmwiki na mini-wiki da loja, monte o prompt aumentado e confira recall e citações.">
+  <title>Mini-wiki · busca e RAG</title>
+  <link rel="stylesheet" href="painel.css">
+  <script src="dados.js" defer></script>
+  <script src="painel.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para os resultados</a>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Laboratório de busca e RAG</p>
+      <h1>Achar o trecho<br>antes de responder.</h1>
+      <p>Oito páginas de políticas da loja. Compare recuperadores, veja por que cada página pontua, monte o prompt e confira se a resposta cita o que deveria.</p>
+      <nav>
+        <a href="../../llmwiki/index.html#explorador-interativo" target="_top">Tutorial completo · llmwiki</a>
+        <a href="../../rag/index.html#explorador-interativo" target="_top">Tutorial completo · RAG</a>
+        <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-rag/README.md" target="_blank" rel="noopener">Como explorar</a>
+      </nav>
+    </div>
+    <img src="../imagens/rag-loop.png" alt="Fluxo RAG: pergunta, recuperar top-k com path e trecho, enriquecer o prompt, gerar resposta citada e conferir citações.">
+  </header>
+  <div class="layout">
+    <aside class="filters" aria-label="Controles da busca">
+      <p class="eyebrow">01 · Escolha a consulta</p>
+      <h2>Pergunte ao corpus</h2>
+      <label for="pronta">Pergunta pronta</label>
+      <select id="pronta"></select>
+      <label for="consulta">Consulta (edite à vontade)</label>
+      <textarea id="consulta" rows="3"></textarea>
+      <label for="recuperador">Recuperador</label>
+      <select id="recuperador">
+        <option value="bm25">BM25 ao vivo (k1 = 1,2; b = 0,75)</option>
+        <option value="fts">FTS5 / SQLite (pré-calculado)</option>
+        <option value="llmwiki">llmwiki --keyword (pré-calculado)</option>
+      </select>
+      <label for="estrategia">Estratégia</label>
+      <select id="estrategia">
+        <option value="inteira">Pergunta inteira</option>
+        <option value="subperguntas">Subperguntas intercaladas</option>
+      </select>
+      <label for="k">Trechos no prompt (k)</label>
+      <input id="k" type="number" min="1" max="8" value="3">
+      <button id="reset" type="button">Restaurar q1 · FTS · k = 3</button>
+      <div class="note"><strong>Corpus sintético.</strong> O “gerador” é um template que cola trechos; nenhum modelo de linguagem roda aqui.</div>
+    </aside>
+    <main id="conteudo">
+      <section class="summary" aria-label="Resumo">
+        <div><span id="kpi-hits">—</span><p>trechos no prompt</p></div>
+        <div><span id="kpi-recall">—</span><p>recall@k (conjunto-ouro)</p></div>
+        <div><span id="kpi-cit">—</span><p>citações que existem</p></div>
+      </section>
+      <section class="panel detail" aria-labelledby="titulo-ranking">
+        <p class="eyebrow">02 · Recuperar</p>
+        <h2 id="titulo-ranking">Ranking das páginas</h2>
+        <p id="leitura-ranking" role="status"></p>
+        <div class="plot-scroll"><svg id="ranking" viewBox="0 0 780 320" role="img" aria-label="Score por página"></svg></div>
+        <button type="button" class="secondary export" data-svg="ranking">Baixar ranking PNG</button>
+        <div class="table-scroll">
+          <table id="termos">
+            <caption>Contribuição de cada termo (BM25). tf = vezes na página; df = páginas com o termo.</caption>
+            <thead><tr><th>Página</th><th>Termo</th><th>tf</th><th>df</th><th>idf</th><th>|d| / média</th><th>Contribuição</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="panel" aria-labelledby="titulo-prompt">
+        <p class="eyebrow">03 · Enriquecer</p>
+        <h2 id="titulo-prompt">Prompt aumentado</h2>
+        <p>É este texto, e só ele, que um modelo receberia. Se o fato não está aqui, o modelo não tem de onde tirá-lo.</p>
+        <pre id="prompt" tabindex="0"></pre>
+      </section>
+      <section class="panel" aria-labelledby="titulo-resposta">
+        <p class="eyebrow">04 · Gerar e conferir</p>
+        <h2 id="titulo-resposta">Resposta por template</h2>
+        <pre id="resposta" tabindex="0"></pre>
+        <ul id="checagens" class="checks"></ul>
+      </section>
+      <section class="panel" aria-labelledby="titulo-recall">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">05 · Avaliar</p>
+            <h2 id="titulo-recall">Recall@k no conjunto-ouro</h2>
+          </div>
+          <button id="csv" type="button">Baixar CSV</button>
+        </div>
+        <p id="leitura-recall"></p>
+        <div class="plot-scroll"><svg id="recall" viewBox="0 0 780 300" role="img" aria-label="Recall por pergunta"></svg></div>
+        <button type="button" class="secondary export" data-svg="recall">Baixar recall PNG</button>
+        <div class="table-scroll">
+          <table id="tabela">
+            <caption>Cinco perguntas com resposta no corpus e uma (q6) que pede abstenção.</caption>
+            <thead><tr><th>Id</th><th>Pergunta</th><th>Relevantes</th><th>Top-k</th><th>Recall@k</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p id="export-status" role="status"></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

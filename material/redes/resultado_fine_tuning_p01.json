@@ -1,0 +1,127 @@
+{
+  "alvo": "p01",
+  "pretreino": {
+    "n_exemplos": 144,
+    "wall_clock_s": 0.014,
+    "mae_teste_p01_antes_ft": 0.9511
+  },
+  "fine_tune": {
+    "congela": "camadas escondidas (tronco)",
+    "atualiza": "camada de saída (cabeça)",
+    "epocas": 40,
+    "wall_clock_s": 0.005,
+    "mae_teste_depois": 0.8337
+  },
+  "do_zero_so_p01": {
+    "mae_teste": 0.7452
+  },
+  "riscos": [
+    "overfit no conjunto minúsculo de p01",
+    "split temporal frágil (só 4 semanas de teste)"
+  ],
+  "mitigacao_usada": "congelar tronco; poucas épocas na cabeça; piso em zero na previsão",
+  "parametros": {
+    "total": 193,
+    "cabeca": 9,
+    "tronco": 184
+  },
+  "esquecimento": {
+    "pergunta": "A adaptação a p01 piorou a previsão dos outros produtos?",
+    "mae_teste_outros_antes_ft": {
+      "p02": 0.623,
+      "p03": 0.6852,
+      "p04": 0.7599,
+      "p05": 0.4352,
+      "p06": 0.558,
+      "p07": 0.5615,
+      "p08": 0.4797,
+      "p09": 0.8113,
+      "p10": 0.5646,
+      "p11": 0.4148,
+      "p12": 0.8054
+    },
+    "mae_teste_outros_depois_ft": {
+      "p02": 0.6881,
+      "p03": 0.9022,
+      "p04": 0.8308,
+      "p05": 0.6522,
+      "p06": 0.787,
+      "p07": 0.4417,
+      "p08": 0.5352,
+      "p09": 1.037,
+      "p10": 0.7969,
+      "p11": 0.6559,
+      "p12": 1.1687
+    },
+    "media_antes": 0.609,
+    "media_depois": 0.7723
+  },
+  "perda_ft_epocas": [
+    1.9198,
+    1.85791,
+    1.81792,
+    1.79181,
+    1.77449,
+    1.76274,
+    1.75451,
+    1.74853,
+    1.74396,
+    1.7403,
+    1.73721,
+    1.73449,
+    1.73201,
+    1.72968,
+    1.72745,
+    1.72528,
+    1.72316,
+    1.72107,
+    1.719,
+    1.71696,
+    1.71492,
+    1.7129,
+    1.71089,
+    1.70889,
+    1.7069,
+    1.70491,
+    1.70294,
+    1.70097,
+    1.69902,
+    1.69707,
+    1.69512,
+    1.69319,
+    1.69127,
+    1.68935,
+    1.68744,
+    1.68554,
+    1.68365,
+    1.68176,
+    1.67988,
+    1.67801
+  ],
+  "pred_teste_p01": {
+    "observado": [
+      4.0,
+      2.0,
+      2.0,
+      2.0
+    ],
+    "pretreino": [
+      1.6357,
+      2.6796,
+      1.6229,
+      1.6164
+    ],
+    "fine_tune": [
+      2.1013,
+      3.2701,
+      2.0867,
+      2.0794
+    ],
+    "do_zero": [
+      2.5518,
+      2.5466,
+      2.5047,
+      2.4812
+    ]
+  }
+}

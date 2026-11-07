@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutoriais com explorador interativo: associação de regras e previsão de demanda.">
+  <title>Regras de associação a partir de logs de
+autenticação · Aprender com dados</title>
+  <link rel="stylesheet" href="../assets/tutorial.css">
+  <script src="../assets/tutorial.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir ao conteúdo principal</a>
+  <header class="site-header">
+    <a class="brand" href="../">Aprender com dados</a>
+    <nav aria-label="Navegação principal">
+      <a href="../">Associação</a>
+      <a href="./">Logs</a>
+      <a href="../demanda/">Média móvel</a>
+      <a href="../demanda-mq/">Mín. quadrados</a>
+      <a href="../demanda-perc/">LMS</a>
+      <a href="../demanda-poisson/">Poisson</a>
+      <a href="#explorador-interativo">Explorar</a>
+      <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-regras-associacao-logs-autenticacao-20261017.md">Versão
+Markdown</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="toc">
+      <details open><summary>Neste tutorial</summary><nav aria-label="Índice"><ul>
+<li><a href="#regras-de-associação-a-partir-de-logs-de-autenticação"
+id="toc-regras-de-associação-a-partir-de-logs-de-autenticação">Regras de
+associação a partir de logs de autenticação</a>
+<ul>
+<li><a href="#1-roteiro-de-90-minutos"
+id="toc-1-roteiro-de-90-minutos">1. Roteiro de 90 minutos</a></li>
+<li><a href="#2-a-pergunta-e-o-significado-dos-registros"
+id="toc-2-a-pergunta-e-o-significado-dos-registros">2. A pergunta e o
+significado dos registros</a></li>
+<li><a href="#3-das-linhas-às-transações"
+id="toc-3-das-linhas-às-transações">3. Das linhas às transações</a></li>
+<li><a href="#4-três-métricas-três-denominadores"
+id="toc-4-três-métricas-três-denominadores">4. Três métricas, três
+denominadores</a></li>
+<li><a href="#5-executar-e-ler-os-relatórios"
+id="toc-5-executar-e-ler-os-relatórios">5. Executar e ler os
+relatórios</a></li>
+<li><a href="#6-avaliar-em-sessões-separadas"
+id="toc-6-avaliar-em-sessões-separadas">6. Avaliar em sessões
+separadas</a></li>
+<li><a href="#7-do-padrão-à-investigação"
+id="toc-7-do-padrão-à-investigação">7. Do padrão à investigação</a></li>
+<li><a href="#8-explorar-sessões-e-regras-no-painel"
+id="toc-8-explorar-sessões-e-regras-no-painel">8. Explorar sessões e
+regras no painel</a></li>
+<li><a href="#9-exercício-e-resolução"
+id="toc-9-exercício-e-resolução">9. Exercício e resolução</a></li>
+<li><a href="#10-reprodução-e-verificações"
+id="toc-10-reprodução-e-verificações">10. Reprodução e
+verificações</a></li>
+<li><a href="#referências-bibliográficas-e-roteiro-de-leitura"
+id="toc-referências-bibliográficas-e-roteiro-de-leitura">Referências
+bibliográficas e roteiro de leitura</a></li>
+</ul></li>
+</ul></nav></details>
+    </aside>
+    <main id="conteudo"><h1
+id="regras-de-associação-a-partir-de-logs-de-autenticação">Regras de
+associação a partir de logs de autenticação</h1>
+<p><a
+href="https://lgallindo.github.io/recomendador-bentoml/logs-auth/">Leia
+a versão web</a>.</p>
+<p>Ao concluir este roteiro, você conseguirá transformar linhas de log
+em sessões, calcular suporte, confiança e lift, minerar associações e
+avaliar uma regra fixa em outro conjunto. O objetivo é investigar o
+fluxo de autenticação de um servidor. Os registros são inteiramente
+sintéticos; não demonstram comportamento de pessoas, desempenho de um
+sistema real ou ocorrência de ataques.</p>
+<p>Este é um estudo independente da <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-regras-associacao-20261017.md">variante
+de compras</a>. O catálogo, as dez cestas de compras,
+<code>pedidos</code> e as vendas semanais permanecem inalterados. Os
+logs não são a origem dessas compras ou desses totais. Aqui a unidade de
+análise é uma sessão de autenticação fictícia, não uma compra.</p>
+<h2 id="1-roteiro-de-90-minutos">1. Roteiro de 90 minutos</h2>
+<table>
+<thead>
+<tr>
+<th>Minutos</th>
+<th>Atividade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10</td>
+<td>Situar IA, aprendizado de máquina e associação</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Ler o contrato dos logs e reconstruir sessões</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Calcular suporte, confiança e lift</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Executar a mineração e interpretar o CSV</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Avaliar uma regra fixa em sessões separadas</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Explorar sessões e regras no painel</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Produzir um relatório e resolver o exercício</td>
+</tr>
+</tbody>
+</table>
+<p>Mineração de associações procura conjuntos frequentes sem uma
+resposta-alvo rotulada por sessão: é uma tarefa de aprendizado não
+supervisionado, dentro de aprendizado de máquina e IA. O algoritmo induz
+padrões a partir de exemplos; as pessoas escolhem a representação e os
+critérios. Consulte a seção 1 do <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-regras-associacao-20261017.md">tutorial
+original</a> para o mapa conceitual e a discussão sobre sistemas
+especialistas.</p>
+<p>Uma regra estatística descreve frequências. Uma política operacional
+como “SE ocorrer determinada condição ENTÃO encaminhar para revisão” é
+uma decisão adicional. Uma base de conhecimento, fatos do caso e um
+motor de inferência podem usar regras aprovadas em um sistema
+especialista; um CSV sozinho não constitui esse sistema. Estes exemplos
+não justificam bloqueio automático de contas.</p>
+<h2 id="2-a-pergunta-e-o-significado-dos-registros">2. A pergunta e o
+significado dos registros</h2>
+<p><strong>Em quais sessões falhas de senha e desafios MFA aparecem
+juntos?</strong> MFA significa autenticação com múltiplos fatores. Nossa
+aplicação fictícia aceita senha e pode solicitar um fator adicional.
+Algumas sessões terminam sem sucesso.</p>
+<p>Os arquivos de entrada estão em <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/dados/logs-autenticacao/README.md"><code>dados/logs-autenticacao/</code></a>.
+São JSON Lines: cada linha é um objeto completo, sem lista externa.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;event_id&quot;</span><span class="fu">:</span><span class="st">&quot;descoberta-0001-01&quot;</span><span class="fu">,</span><span class="dt">&quot;timestamp&quot;</span><span class="fu">:</span><span class="st">&quot;2026-10-01T12:01:01+00:00&quot;</span><span class="fu">,</span><span class="dt">&quot;session_id&quot;</span><span class="fu">:</span><span class="st">&quot;descoberta-0001&quot;</span><span class="fu">,</span><span class="dt">&quot;evento&quot;</span><span class="fu">:</span><span class="st">&quot;falha_senha&quot;</span><span class="fu">}</span></span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Contrato</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>event_id</code></td>
+<td>Identificador único de uma ocorrência; reentrega preserva o ID</td>
+</tr>
+<tr>
+<td><code>timestamp</code></td>
+<td>Data/hora ISO com fuso; datas construídas, não períodos
+observados</td>
+</tr>
+<tr>
+<td><code>session_id</code></td>
+<td>Identificador de uma tentativa de fluxo que pode conter vários
+eventos</td>
+</tr>
+<tr>
+<td><code>evento</code></td>
+<td>Uma das cinco categorias abaixo</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Evento</th>
+<th>Significado no cenário</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>falha_senha</code></td>
+<td>Uma senha foi recusada; pode haver nova tentativa</td>
+</tr>
+<tr>
+<td><code>senha_aceita</code></td>
+<td>A senha foi aceita; não significa login concluído</td>
+</tr>
+<tr>
+<td><code>desafio_mfa</code></td>
+<td>O fator adicional foi solicitado</td>
+</tr>
+<tr>
+<td><code>falha_mfa</code></td>
+<td>O fator adicional foi recusado</td>
+</tr>
+<tr>
+<td><code>login_sucesso</code></td>
+<td>A autenticação terminou com sucesso</td>
+</tr>
+</tbody>
+</table>
+<p>Neste cenário, sucesso exige senha aceita; desafio exige senha aceita
+e falha MFA exige desafio. Há sucessos com e sem MFA. A ausência de
+sucesso representa um fluxo sem conclusão registrada; o log sozinho não
+explica o motivo. Não há usuários, senhas, tokens ou endereços IP. Uma
+sessão não equivale a uma pessoa: uma pessoa poderia abrir várias
+sessões em um sistema real.</p>
+<h2 id="3-das-linhas-às-transações">3. Das linhas às transações</h2>
+<p>O pipeline usa a biblioteca padrão do Python:</p>
+<ol type="1">
+<li>Ler cada linha, validando campos, strings, timestamp com fuso e
+categoria.</li>
+<li>Remover entregas exatamente repetidas pelo <code>event_id</code>.
+Reutilizar o ID com conteúdo diferente causa erro, com arquivo e
+linha.</li>
+<li>Agrupar por <code>session_id</code>, incluindo sessões sem
+sucesso.</li>
+<li>Guardar o conjunto de categorias presentes em cada sessão.</li>
+<li>Contar conjuntos frequentes, gerar regras e aplicar filtros.</li>
+</ol>
+<p><img src="../material/imagens/logs-pipeline.png"
+alt="Fluxo em cinco caixas: ler e validar 5901 linhas JSON; remover a reentrega, ficando 5900 eventos únicos; agrupar por session_id em 2000 sessões, com e sem sucesso; guardar o conjunto de eventos de cada sessão, sem ordem nem repetição; contar e filtrar com suporte de pelo menos 20%, confiança de pelo menos 60% e lift maior que 1, obtendo 27 regras. Abaixo, a sessão descoberta-0001 com cinco eventos vira o conjunto de quatro categorias." /></p>
+<p><em>Figura 1 — Cada etapa muda a unidade contada: linhas, eventos
+únicos, sessões, conjuntos e, por fim, regras. A quarta caixa, em
+destaque, é a escolha de representação que você faz antes de
+minerar.</em></p>
+<p>Na sessão <code>descoberta-0001</code>, a sequência construída é:</p>
+<pre class="text"><code>falha_senha, falha_senha, senha_aceita, desafio_mfa, login_sucesso</code></pre>
+<p>As duas falhas têm IDs diferentes: são duas ocorrências, não
+duplicatas. A cesta usada pela mineração é:</p>
+<pre class="text"><code>{falha_senha, senha_aceita, desafio_mfa, login_sucesso}</code></pre>
+<p>Uma reentrega da primeira linha aparece no fim do arquivo. Ela não
+acrescenta um evento único nem uma sessão. Repetições de categoria
+dentro da sessão também não aumentam sua presença. Já duas sessões
+distintas com o mesmo conjunto contam duas vezes. <strong>O denominador
+é o número de sessões, não o de linhas do log.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Cenário</th>
+<th style="text-align: right;">Linhas</th>
+<th style="text-align: right;">Eventos únicos</th>
+<th style="text-align: right;">Reentregas</th>
+<th style="text-align: right;">Sessões</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Descoberta</td>
+<td style="text-align: right;">5901</td>
+<td style="text-align: right;">5900</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2000</td>
+</tr>
+<tr>
+<td>Validação</td>
+<td style="text-align: right;">2401</td>
+<td style="text-align: right;">2400</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1000</td>
+</tr>
+</tbody>
+</table>
+<p>O gerador repete 100 vezes o bloco-base original (20 e 10 sessões).
+As proporções permanecem; as contagens absolutas crescem na mesma
+proporção.</p>
+<p><img src="../material/imagens/logs-matriz-sessoes.png"
+alt="Matriz com as 20 sessões do bloco-base da descoberta nas linhas e os cinco eventos nas colunas; células preenchidas indicam presença. As sessões 1 a 6 estão contornadas porque contêm falha de senha e desafio MFA: 6 de 20, ou 30%. A sessão 6 é a única com falha MFA; as sessões 11 a 17 têm só senha aceita e login com sucesso." /></p>
+<p><em>Figura 2 — Cada linha é uma transação; cada coluna, uma categoria
+de evento. Conte as células das colunas Falha de senha e Desafio MFA
+para reproduzir os denominadores da seção 4: 9 e 9 de 20, juntos em 6.
+Multiplicadas por 100, essas contagens viram 900, 900 e 600.</em></p>
+<p>O JSON de saída mostra todas as sessões reconstruídas. A ordem das
+linhas não altera a mineração: timestamps servem à leitura do exemplo,
+mas não são usados para inferir sequência. A seta de uma associação não
+significa “aconteceu depois”. Para investigar ordem ou tempo entre
+eventos seria necessário outro método.</p>
+<p>Em logs sem <code>session_id</code>, seria necessário definir uma
+janela e uma chave de agrupamento. Agrupar apenas por IP pode misturar
+pessoas; janelas diferentes podem produzir regras diferentes. Logs HTTP
+comuns também podem não registrar os eventos internos necessários. Esta
+versão usa sessões explícitas para tornar a construção auditável. Não
+filtra apenas logins bem-sucedidos, pois isso mudaria a população e
+excluiria justamente sessões com falha ou abandono.</p>
+<h2 id="4-três-métricas-três-denominadores">4. Três métricas, três
+denominadores</h2>
+<p>Sejam A e B conjuntos não vazios e disjuntos. <code>n(A)</code> conta
+sessões contendo todos os eventos de A; <code>N</code> é o total de
+sessões.</p>
+<table>
+<thead>
+<tr>
+<th>Métrica</th>
+<th>Fórmula</th>
+<th>Pergunta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Suporte</td>
+<td><code>n(A ∪ B) / N</code></td>
+<td>Em que fração das sessões os dois lados aparecem?</td>
+</tr>
+<tr>
+<td>Confiança</td>
+<td><code>n(A ∪ B) / n(A)</code></td>
+<td>Entre sessões com A, quantas também têm B?</td>
+</tr>
+<tr>
+<td>Lift</td>
+<td><code>N × n(A ∪ B) / (n(A) × n(B))</code></td>
+<td>Quanto a confiança supera a frequência geral de B?</td>
+</tr>
+</tbody>
+</table>
+<p>Na descoberta, para <strong>falha_senha → desafio_mfa</strong>:</p>
+<ul>
+<li>A aparece em 900 sessões.</li>
+<li>B aparece em 900 sessões.</li>
+<li>Ambos aparecem em 600 sessões.</li>
+<li><code>N = 2000</code>.</li>
+</ul>
+<p>Portanto, suporte = <code>600/2000 = 30%</code>; confiança =
+<code>600/900 ≈ 66,7%</code>; lift =
+<code>(600/900)/(900/2000) = 40/27 ≈ 1,48</code>.</p>
+<p>Relato: “Falha de senha e desafio MFA aparecem juntos em 600 das 2000
+sessões. Entre as 900 sessões com falha de senha, 600 incluem desafio
+MFA. Essa frequência é aproximadamente 1,48 vez a frequência geral de
+desafio MFA, de 45%.”</p>
+<p>Aqui a inversa tem as mesmas métricas porque os dois eventos aparecem
+em 900 sessões cada. Isso não é uma propriedade geral da confiança: o
+denominador troca ao inverter a regra. Suporte e lift são simétricos
+para a regra inversa.</p>
+<p>Lift &gt; 1 indica co-presença acima da referência de independência
+na amostra; lift = 1 coincide com essa referência; lift &lt; 1 fica
+abaixo. Confiança não é nível de confiança estatística, e lift &gt; 1
+não é teste de significância. Nenhuma métrica mede risco de ataque,
+causa ou efeito de uma mudança de política.</p>
+<h2 id="5-executar-e-ler-os-relatórios">5. Executar e ler os
+relatórios</h2>
+<p>Na raiz, com Python 3, sem instalar pacotes ou iniciar o BentoML:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> scripts/minerar_logs_autenticacao.py</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> scripts/minerar_logs_autenticacao.py <span class="at">--cenario</span> validacao</span></code></pre></div>
+<p>Os comandos geram, em <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/logs-autenticacao"><code>logs-autenticacao/</code></a>,
+um JSON com sessões, contagens e avaliação da regra fixa, e um CSV com
+todas as regras que passam nos filtros de cada cenário. A avaliação da
+regra fixa é calculada mesmo quando ela não passa nos filtros.</p>
+<p>Critérios definidos para o exercício: <strong>suporte ≥ 20%,
+confiança ≥ 60% e lift &gt; 1</strong>. Na descoberta isso exige pelo
+menos 400 sessões conjuntas. A seleção resulta em <strong>27
+regras</strong>; na validação exploratória, em <strong>9 regras</strong>
+— os mesmos totais do bloco-base, porque a mistura de caminhos não
+mudou. Não compare somente esses totais para avaliar generalização: o
+tamanho da base também importa.</p>
+<p>O script reutiliza a função de contagem do minerador original por
+meio de um adaptador interno. Os eventos são seus itens; nenhuma cesta
+de compras é lida. Enumera subconjuntos observados e suas partições: não
+implementa Apriori. O custo é exponencial no número de categorias
+distintas por sessão; mantenha a pequena representação deste exercício.
+Os filtros usam frações exatas e o CSV arredonda na exportação para seis
+casas. Suporte e confiança são proporções, não porcentagens. O CSV usa
+<code>total_sessoes</code> e é ordenado por lift, confiança, suporte e
+IDs.</p>
+<table>
+<thead>
+<tr>
+<th>Exemplo na descoberta</th>
+<th style="text-align: right;">Suporte</th>
+<th style="text-align: right;">Confiança</th>
+<th style="text-align: right;">Lift</th>
+<th>Passa?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>falha_senha → desafio_mfa</td>
+<td style="text-align: right;">30%</td>
+<td style="text-align: right;">66,7%</td>
+<td style="text-align: right;">1,48</td>
+<td>Sim</td>
+</tr>
+<tr>
+<td>desafio_mfa → senha_aceita</td>
+<td style="text-align: right;">45%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">1,11</td>
+<td>Sim</td>
+</tr>
+<tr>
+<td>falha_mfa → desafio_mfa</td>
+<td style="text-align: right;">5%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">2,22</td>
+<td>Não: suporte</td>
+</tr>
+</tbody>
+</table>
+<p>O segundo exemplo reflete uma dependência do fluxo construído: só se
+solicita MFA depois da aceitação da senha. O terceiro mostra por que
+confiança alta não basta: suporte fica em 5% (100 em 2000 sessões).
+Regras com vários eventos de cada lado exigem todos eles na sessão e
+podem repetir informações cobertas por regras simples. Ordenar por lift
+não define automaticamente prioridade operacional.</p>
+<p><img src="../material/imagens/logs-dispersao-regras.png"
+alt="Dois gráficos de dispersão com suporte no eixo horizontal e confiança no vertical, linhas tracejadas em 20% e 60%. À esquerda, descoberta: 27 regras em 11 posições; a posição de suporte 30% e confiança 66,7% reúne 5 regras, entre elas falha_senha → desafio_mfa; seis regras ficam em 100% de confiança. À direita, validação: 9 regras em 5 posições, três delas com suporte 20% e confiança 100%. A cor indica o maior lift de cada posição, até cerca de 2,04." /></p>
+<p><em>Figura 3 — O número dentro de cada círculo conta as regras que
+coincidem nessa posição; regras diferentes podem ter as mesmas métricas.
+A cor mostra o maior lift do grupo, não uma média. As regras com 100% de
+confiança refletem, em geral, dependências do fluxo construído, como
+desafio MFA → senha aceita.</em></p>
+<h2 id="6-avaliar-em-sessões-separadas">6. Avaliar em sessões
+separadas</h2>
+<p>Fixe <code>falha_senha → desafio_mfa</code> antes de consultar a
+validação.</p>
+<table>
+<thead>
+<tr>
+<th>Base</th>
+<th style="text-align: right;">N</th>
+<th style="text-align: right;">n(A)</th>
+<th style="text-align: right;">n(B)</th>
+<th style="text-align: right;">Juntos</th>
+<th style="text-align: right;">Suporte</th>
+<th style="text-align: right;">Confiança</th>
+<th style="text-align: right;">Lift</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Descoberta</td>
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">900</td>
+<td style="text-align: right;">900</td>
+<td style="text-align: right;">600</td>
+<td style="text-align: right;">30%</td>
+<td style="text-align: right;">66,7%</td>
+<td style="text-align: right;">1,48</td>
+</tr>
+<tr>
+<td>Validação</td>
+<td style="text-align: right;">1000</td>
+<td style="text-align: right;">400</td>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">10%</td>
+<td style="text-align: right;">25%</td>
+<td style="text-align: right;">0,83</td>
+</tr>
+</tbody>
+</table>
+<p><img src="../material/imagens/logs-descoberta-validacao.png"
+alt="Três gráficos de barras para a regra falha_senha → desafio_mfa. Suporte cai de 30% na descoberta para 10% na validação, abaixo do critério de 20%. Confiança cai de 66,7% para 25%, abaixo de 60%. Lift cai de 1,48 para 0,83, abaixo da referência 1." /></p>
+<p><em>Figura 4 — A mesma regra, fixada antes, recontada em sessões
+separadas. As linhas tracejadas são os critérios definidos na
+descoberta. Na validação as três métricas ficam abaixo deles; as
+contagens vêm dos dois arquivos JSON Lines.</em></p>
+<p>Na validação, a regra não passa nos três critérios originais. Isso
+demonstra o procedimento com números construídos; não diagnostica
+mudança de um servidor real. As datas sintéticas de 1 e 2 de outubro
+apenas organizam o exercício e não são períodos observados. As sessões
+dos dois arquivos têm IDs distintos.</p>
+<p>Selecionar muitas regras específicas pode favorecer coincidências da
+descoberta (sobreajuste). Uma representação restrita pode perder
+relações relevantes (subajuste), mas um filtro que exclui uma regra não
+basta para diagnosticá-lo. Variação amostral, política MFA, cobertura
+dos logs e população também podem alterar métricas. Estes logs são
+sintéticos e repetem o mesmo bloco-base: servem ao exercício, não a
+conclusões operacionais.</p>
+<p>Não reajuste os critérios repetidamente na validação e depois a
+apresente como avaliação independente. O CSV de regras de validação é
+uma exploração opcional; a comparação principal acompanha a regra
+previamente fixada. Uma avaliação final após ajustes exigiria outras
+sessões reservadas. Em uso real, sessões incompletas na fronteira da
+coleta e perdas de eventos também precisam ser examinadas.</p>
+<h2 id="7-do-padrão-à-investigação">7. Do padrão à investigação</h2>
+<p>Uma hipótese seria verificar se tipos de fluxo ou políticas explicam
+a associação. Seria necessário conhecer a política aplicável e a
+cobertura dos registros antes de interpretar diferenças. Não conclua que
+falhar a senha causa um desafio MFA.</p>
+<p>Uma mudança no fluxo de autenticação exigiria uma avaliação própria,
+com critérios de segurança, conclusão de login e atrito. Mineração
+descreve associações; avaliação em outra base examina persistência;
+avaliação de uma intervenção examina o efeito da mudança. Este tutorial
+realiza apenas as duas primeiras em dados sintéticos e não implementa
+detecção de intrusão nem recomenda relaxar MFA.</p>
+<p>Modelo de relatório:</p>
+<blockquote>
+<p>Analisamos 2000 sessões sintéticas, reconstruídas de 5901 linhas, com
+5900 eventos únicos e uma reentrega. Cada item indica presença de uma
+categoria na sessão. Com suporte ≥ 20%, confiança ≥ 60% e lift &gt; 1,
+obtivemos 27 regras. A associação falha_senha → desafio_mfa tem
+contagens 900, 900 e 600, suporte 30%, confiança 66,7% e lift 1,48. Nas
+1000 sessões separadas, as métricas são 10%, 25% e 0,83. Propomos
+investigar o papel da política de autenticação. O cenário construído não
+permite atribuir causas, identificar ataques ou decidir bloqueios.</p>
+</blockquote>
+<h2 id="8-explorar-sessões-e-regras-no-painel">8. Explorar sessões e
+regras no painel</h2>
+<p>O <a href="../material/bi-logs/index.html">explorador de logs</a>
+reúne, numa só página, as etapas deste tutorial: a reconstrução de uma
+sessão a partir das linhas do arquivo, os tipos de sessão, a dispersão
+das regras, a comparação da regra fixa entre as bases e a tabela de
+auditoria. Você também pode usá-lo incorporado à <a
+href="https://lgallindo.github.io/recomendador-bentoml/logs-auth/#explorador-interativo">versão
+web deste tutorial</a>. Para estudar offline, abra o HTML a partir de
+uma cópia local do repositório; a página do arquivo no GitHub mostra o
+código. O <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-logs/README.md">roteiro
+de exploração</a> descreve cada controle.</p>
+<section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
+<h3 id="explorer-heading">Explore sessões e regras neste tutorial</h3>
+<p>Reconstrua uma sessão, compare descoberta e validação e consulte as regras. Os logs são sintéticos.</p>
+<div class="explorer-actions">
+<button id="fullscreen-explorer" type="button">Ver explorador em tela cheia</button>
+<a href="../material/bi-logs/index.html" target="_blank" rel="noopener">Abrir explorador em nova aba</a>
+</div>
+<p id="explorer-status" role="status"></p>
+<iframe id="explorer" src="../material/bi-logs/index.html" title="Explorador interativo de sessões e regras de autenticação"
+loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+</section>
+<p>O painel aplica as mesmas regras de contagem do script: agrupa por
+<code>session_id</code>, descarta reentregas, guarda presenças e usa os
+critérios de suporte ≥ 20%, confiança ≥ 60% e lift &gt; 1. Os filtros
+escolhem quais regras já selecionadas aparecem; eles não mineram regras
+novas. O quadro da regra selecionada reconta a regra a partir dos tipos
+de sessão de cada base, por isso mostra valores mesmo quando ela não
+passa nos critérios.</p>
+<p><img src="../material/imagens/bi-logs-padroes.png"
+alt="Barras horizontais com os oito tipos de sessão da descoberta e os sete da validação. Na descoberta, login com sucesso mais senha aceita reúne 35% das sessões; o conjunto com desafio MFA, falha de senha, login com sucesso e senha aceita reúne 25%; falha de senha isolada, 10%. As barras que contêm falha de senha e desafio MFA somam 30% na descoberta e 10% na validação." /></p>
+<p><em>Figura 5 — Espelho estático do painel “Tipos de sessão”. Cada
+barra é um conjunto exato de eventos. As barras em terra contêm os dois
+lados da regra fixa; somá-las dá o suporte dessa regra em cada
+base.</em></p>
+<h3 id="atividade-no-painel">Atividade no painel</h3>
+<ol type="1">
+<li>Escolha a sessão <code>descoberta-0001</code>. Quantas linhas o
+arquivo tem para ela e qual delas é descartada? Por que a segunda falha
+de senha não é descartada?</li>
+<li>Em <strong>Tipos de sessão</strong>, some as barras em terra da
+descoberta e compare com o suporte da regra fixa.</li>
+<li>Na dispersão, selecione o círculo de suporte 30% e confiança 66,7%.
+Quantas regras ele reúne e quais têm lift diferente de 1,48?</li>
+<li>Na tabela, selecione <strong>Desafio MFA → Login com
+sucesso</strong> e leia a comparação entre as bases. A regra se
+mantém?</li>
+<li>Troque a base para <strong>Validação</strong>. Quantas regras passam
+nos filtros? A regra fixa aparece na tabela? E no quadro da regra
+selecionada?</li>
+</ol>
+<h3 id="resolução-comentada-da-atividade">Resolução comentada da
+atividade</h3>
+<ol type="1">
+<li>São seis linhas: as cinco ocorrências da sessão e a reentrega na
+linha 5901, que repete o <code>event_id</code>
+<code>descoberta-0001-01</code> com o mesmo conteúdo. A segunda falha de
+senha tem outro <code>event_id</code>: é uma nova tentativa, que não
+muda a presença da categoria no conjunto.</li>
+<li>As barras em terra são 25% (500 sessões) e 5% (100 sessões): somam
+30%, o suporte de falha_senha → desafio_mfa.</li>
+<li>Cinco regras. Quatro têm lift 1,48: falha_senha → desafio_mfa, a
+inversa, {desafio_mfa, senha_aceita} → falha_senha e falha_senha →
+{desafio_mfa, senha_aceita}. Nesta última, acrescentar senha aceita ao
+consequente não muda nada, porque todo desafio MFA já exige senha
+aceita: o consequente continua em 900 sessões. Só desafio_mfa →
+{falha_senha, senha_aceita} tem lift aproximadamente 1,90: seu
+consequente está em 700 sessões, uma referência menor que 900.</li>
+<li>Na descoberta: 700 sessões conjuntas, suporte 35%, confiança 77,8%,
+lift 1,04. Na validação: 200 de 1000, suporte 20%, confiança 66,7%, lift
+1,11. Ela passa nas duas bases, mas com lift próximo de 1: a co-presença
+pouco supera a frequência geral de login com sucesso.</li>
+<li>Nove regras. A regra fixa não aparece na tabela da validação porque
+não passa nos filtros, mas o quadro da regra selecionada continua
+mostrando suas contagens 100, 400 e 300 e o lift 0,83.</li>
+</ol>
+<h2 id="9-exercício-e-resolução">9. Exercício e resolução</h2>
+<ol type="1">
+<li>Reconstrua a sessão <code>descoberta-0001</code> e explique a
+diferença entre tentativa repetida e reentrega.</li>
+<li>Calcule <code>desafio_mfa → login_sucesso</code> e a inversa na
+descoberta.</li>
+<li>Verifique os filtros e explique por que uma confiança de 100% pode
+refletir política.</li>
+<li>Recalcule a regra fixa na validação e escreva um relatório com
+limitações.</li>
+<li>Explique por que isso é associação não supervisionada e que etapa
+adicional seria necessária para investigar sequência temporal.</li>
+</ol>
+<h3 id="resolução-comentada">Resolução comentada</h3>
+<p>A sessão <code>descoberta-0001</code> tem cinco eventos únicos e
+quatro categorias. As duas falhas são ocorrências distintas; a reentrega
+mantém o primeiro ID. Desafio aparece em 900 sessões; sucesso em 1500;
+ambos em 700. Para desafio → sucesso: suporte <code>700/2000=35%</code>,
+confiança <code>700/900≈77,8%</code>, lift
+<code>(700/900)/(1500/2000)=28/27≈1,04</code>; passa. Para sucesso →
+desafio, suporte e lift permanecem iguais, mas confiança
+<code>700/1500≈46,7%</code> não passa. Sucesso → senha aceita tem
+confiança 100% por construção do fluxo, não por descobrir um ataque. Na
+validação da regra fixa: suporte <code>100/1000</code>, confiança
+<code>100/400</code> e lift <code>(100/400)/(300/1000)=5/6</code>. Não
+há rótulo-alvo por sessão, e os conjuntos descartam a ordem; estudar
+sequência exigiria preservar e analisar a ordem dos eventos com um
+método apropriado.</p>
+<h2 id="10-reprodução-e-verificações">10. Reprodução e verificações</h2>
+<p>Os logs commitados permitem executar diretamente a mineração. Para
+reproduzi-los com o mesmo conteúdo e conferir os casos de erro e as
+contas:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> scripts/gerar_logs_autenticacao.py</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> unittest discover <span class="at">-s</span> scripts <span class="at">-p</span> <span class="st">&#39;test_logs_autenticacao.py&#39;</span></span></code></pre></div>
+<p>Para outro log que cumpra o contrato, preserve os relatórios do
+exercício:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> scripts/minerar_logs_autenticacao.py <span class="at">--logs</span> caminho/meu-log.jsonl <span class="at">--diretorio-saida</span> material/logs-experimento</span></code></pre></div>
+<p>Esse comando usa os mesmos filtros e a mesma regra fixa. Os nomes de
+saída seguem o cenário selecionado, não a data do log personalizado. O
+parser verifica o contrato; não é um validador universal de políticas de
+autenticação. A coerência dos caminhos dos fixtures é conferida pelos
+testes. Fundamentos e referências de IA, métricas, generalização e
+validação estão no <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-regras-associacao-20261017.md">tutorial
+original</a>.</p>
+<p>As figuras e os dados do explorador usam Matplotlib e as mesmas
+funções do minerador. Com o ambiente do projeto instalado:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/gerar_figuras_logs.py</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/gerar_bi_logs.py</span></code></pre></div>
+<p>O primeiro grava <code>logs-pipeline.png</code>,
+<code>logs-matriz-sessoes.png</code>,
+<code>logs-dispersao-regras.png</code> e
+<code>logs-descoberta-validacao.png</code> em
+<code>material/imagens/</code>. O segundo confere que as regras
+recalculadas coincidem com os CSVs de
+<code>material/logs-autenticacao/</code> e grava
+<code>material/bi-logs/dados.js</code> e
+<code>bi-logs-padroes.png</code>.</p>
+<h2 id="referências-bibliográficas-e-roteiro-de-leitura">Referências
+bibliográficas e roteiro de leitura</h2>
+<p>Consulta dos materiais on-line: 7 nov. 2026. Os livros podem exigir
+acesso por biblioteca; as fichas indicadas trazem sumário e
+apresentação.</p>
+<h3 id="associação-e-mineração-de-dados">Associação e mineração de
+dados</h3>
+<ol type="1">
+<li>AGRAWAL, Rakesh; IMIELIŃSKI, Tomasz; SWAMI, Arun. Mining association
+rules between sets of items in large databases. In: <strong>ACM SIGMOD
+International Conference on Management of Data</strong>, 1993, p.
+207–216. DOI: <a
+href="https://doi.org/10.1145/170036.170072">10.1145/170036.170072</a>.
+<strong>Para aprofundar:</strong> a formulação original de suporte e
+confiança sobre transações.</li>
+<li>AGRAWAL, Rakesh; SRIKANT, Ramakrishnan. Fast algorithms for mining
+association rules. In: <strong>20th International Conference on Very
+Large Data Bases (VLDB)</strong>, 1994, p. 487–499. <a
+href="https://www.vldb.org/conf/1994/P487.PDF">Artigo em inglês</a>.
+<strong>Para aprofundar:</strong> o algoritmo Apriori e a poda por
+subconjuntos, que o script deste tutorial não implementa.</li>
+<li>HAN, Jiawei; KAMBER, Micheline; PEI, Jian. <strong>Data mining:
+concepts and techniques</strong>. 3. ed. Waltham: Morgan Kaufmann, 2012.
+ISBN 9780123814791. <a
+href="https://shop.elsevier.com/books/data-mining-concepts-and-techniques/han/978-0-12-381479-1">Ficha
+da editora</a>; <a href="https://hanj.cs.illinois.edu/bk3/">página dos
+autores</a>. <strong>Para aprofundar:</strong> capítulos de padrões
+frequentes, avaliação de regras e medidas de interesse além do
+lift.</li>
+<li>MLXTEND. <strong>Association rules: association rules generation
+from frequent itemsets</strong>. <a
+href="https://rasbt.github.io/mlxtend/user_guide/frequent_patterns/association_rules/">Documentação
+em inglês</a>. <strong>Para consultar:</strong> definições de suporte,
+confiança e lift usadas nas contas.</li>
+</ol>
+<h3 id="logs-autenticação-e-avaliação">Logs, autenticação e
+avaliação</h3>
+<ol start="5" type="1">
+<li>KENT, Karen; SOUPPAYA, Murugiah. <strong>Guide to computer security
+log management</strong>. NIST Special Publication 800-92. Gaithersburg:
+NIST, 2006. <a
+href="https://csrc.nist.gov/pubs/sp/800/92/final">Publicação em
+inglês</a>. <strong>Para aprofundar:</strong> coleta, retenção e análise
+de logs, e por que cobertura e perdas de eventos afetam qualquer
+conclusão.</li>
+<li>OWASP. <strong>Logging Cheat Sheet</strong>. <a
+href="https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html">Guia
+em inglês</a>. <strong>Para consultar:</strong> que eventos de
+autenticação registrar e o que nunca gravar em log, como senhas e
+tokens.</li>
+<li>OWASP. <strong>Multifactor Authentication Cheat Sheet</strong>. <a
+href="https://cheatsheetseries.owasp.org/cheatsheets/Multifactor_Authentication_Cheat_Sheet.html">Guia
+em inglês</a>. <strong>Para consultar:</strong> quando um sistema
+solicita um fator adicional, o que ajuda a interpretar regras que
+refletem a política, e não o comportamento.</li>
+<li>JSON LINES. <strong>JSON Lines text file format</strong>. <a
+href="https://jsonlines.org/">Especificação</a>. <strong>Para
+consultar:</strong> o formato dos arquivos de entrada, um objeto por
+linha.</li>
+<li>SCIKIT-LEARN. <strong>Common pitfalls and recommended
+practices</strong>. <a
+href="https://scikit-learn.org/stable/common_pitfalls.html">Documentação
+em inglês</a>. <strong>Para consultar:</strong> por que ajustar
+critérios na base de avaliação torna a estimativa otimista.</li>
+</ol>
+<p>Para começar, leia o guia de logging da OWASP e a seção de regras de
+associação de Han, Kamber e Pei; use o artigo de 1994 para estudar a
+mineração eficiente.</p></main>
+  </div>
+</body>
+</html>

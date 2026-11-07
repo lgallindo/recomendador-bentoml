@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore árvores de decisão para crédito sintético: configurações, caminhos, erros no desenvolvimento e teste revelado só depois da escolha.">
+  <title>Crédito · árvores de decisão</title>
+  <link rel="stylesheet" href="painel.css">
+  <script src="dados.js" defer></script>
+  <script src="painel.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para os resultados</a>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Laboratório de crédito sintético</p>
+      <h1>Escolha no desenvolvimento.<br>Abra o teste uma vez.</h1>
+      <p>Compare 35 árvores aprendidas nos mesmos 240 contratos de treino, percorra um contrato pelas perguntas e só então revele o teste da configuração que você fixou.</p>
+      <nav>
+        <a href="../../credito/index.html#explorador-interativo" target="_top">Tutorial completo</a>
+        <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-credito/README.md" target="_blank" rel="noopener">Como explorar</a>
+      </nav>
+    </div>
+    <img src="../imagens/bi-credito-grade.png" alt="Grade de acertos no desenvolvimento: profundidades 1 a 3 acertam 54 de 80 em todas as folhas mínimas; profundidade 4 com mínimo 5 e a árvore sem limite com mínimo 1 chegam a 60 de 80.">
+  </header>
+  <div class="layout">
+    <aside class="filters" aria-label="Controles do relatório">
+      <p class="eyebrow">01 · Escolha a configuração</p>
+      <h2>Configure a árvore</h2>
+      <p>Treino: <strong>240</strong> contratos. Desenvolvimento: <strong>80</strong>. O teste de 80 fica bloqueado.</p>
+      <label for="profundidade">Profundidade máxima</label>
+      <select id="profundidade"></select>
+      <label for="minimo">Mínimo de contratos por folha</label>
+      <select id="minimo"></select>
+      <div class="presets">
+        <button id="preset-curta" type="button" class="secondary">Árvore curta do tutorial (2 · 12)</button>
+        <button id="preset-profunda" type="button" class="secondary">Árvore profunda do tutorial (sem limite · 1)</button>
+      </div>
+      <label for="contrato">Contrato do desenvolvimento</label>
+      <select id="contrato"></select>
+      <div class="note"><strong>Base sintética.</strong> Prever atraso não decide crédito; a política da aula é uma regra escrita à parte.</div>
+    </aside>
+    <main id="conteudo">
+      <section class="summary" aria-label="Resumo">
+        <div><span id="kpi-treino">—</span><p>acertos no treino</p></div>
+        <div><span id="kpi-dev">—</span><p>acertos no desenvolvimento (referência 55/80)</p></div>
+        <div><span id="kpi-forma">—</span><p>profundidade · folhas</p></div>
+      </section>
+      <section class="panel" aria-labelledby="titulo-grade">
+        <p class="eyebrow">02 · Compare</p>
+        <h2 id="titulo-grade">Acertos no desenvolvimento por configuração</h2>
+        <p id="leitura-grade"></p>
+        <div class="plot-scroll"><svg id="grade" viewBox="0 0 780 380" role="img" aria-label="Grade de acertos no desenvolvimento"></svg></div>
+        <button type="button" class="secondary export" data-svg="grade">Baixar grade PNG</button>
+      </section>
+      <section class="panel detail" aria-labelledby="titulo-arvore">
+        <p class="eyebrow">03 · Leia a árvore</p>
+        <h2 id="titulo-arvore">Perguntas aprendidas no treino</h2>
+        <p id="leitura-arvore"></p>
+        <div class="tree-scroll"><svg id="arvore" viewBox="0 0 780 420" role="img" aria-label="Árvore da configuração selecionada"></svg></div>
+        <button type="button" class="secondary export" data-svg="arvore">Baixar árvore PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-caminho">
+        <p class="eyebrow">04 · Percorra um contrato</p>
+        <h2 id="titulo-caminho">Caminho do contrato</h2>
+        <dl class="kv" id="ficha"></dl>
+        <ol class="steps" id="passos"></ol>
+        <p id="folha"></p>
+        <p id="politica"></p>
+      </section>
+      <section class="panel" aria-labelledby="titulo-dev">
+        <p class="eyebrow">05 · Erros no desenvolvimento</p>
+        <h2 id="titulo-dev">Dois tipos de erro</h2>
+        <div class="table-scroll"><table class="matrix" id="matriz-dev"></table></div>
+        <ul class="errs" id="erros-dev"></ul>
+      </section>
+      <section class="panel locked" aria-labelledby="titulo-teste">
+        <p class="eyebrow">06 · Avaliação final</p>
+        <h2 id="titulo-teste">Teste separado</h2>
+        <div id="teste-bloqueado">
+          <p class="lock-msg">O teste ainda não foi aberto. Escolha a configuração pelo desenvolvimento, registre o motivo e só então clique.</p>
+          <button id="revelar" type="button">Fixar configuração e revelar teste</button>
+        </div>
+        <div id="teste-aberto" class="hidden">
+          <p id="teste-fixada"></p>
+          <div class="table-scroll"><table class="matrix" id="matriz-teste"></table></div>
+          <ul class="errs" id="erros-teste"></ul>
+          <p id="aviso-teste" class="warn hidden"></p>
+          <button id="csv-teste" type="button" class="secondary">Baixar CSV do teste</button>
+        </div>
+      </section>
+      <section class="panel" aria-labelledby="titulo-tabela">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">07 · Auditoria</p>
+            <h2 id="titulo-tabela">Previsões no desenvolvimento</h2>
+          </div>
+          <button id="csv" type="button">Baixar CSV</button>
+        </div>
+        <p id="estado" role="status"></p>
+        <div class="table-scroll">
+          <table id="tabela">
+            <caption>Os 80 contratos de desenvolvimento na configuração selecionada.</caption>
+            <thead>
+              <tr><th>Contrato</th><th>Comprometimento</th><th>Atrasos ant.</th><th>Folha</th><th>Apoio (sem/com)</th><th>Previsto</th><th>Observado</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p id="export-status" role="status"></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

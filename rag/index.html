@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutoriais com explorador interativo: associação de regras e previsão de demanda.">
+  <title>RAG: recuperar, enriquecer e gerar com
+citações · Aprender com dados</title>
+  <link rel="stylesheet" href="../assets/tutorial.css">
+  <script src="../assets/tutorial.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir ao conteúdo principal</a>
+  <header class="site-header">
+    <a class="brand" href="../">Aprender com dados</a>
+    <nav aria-label="Navegação principal">
+      <a href="../">Associação</a>
+      <a href="../logs-auth/">Logs</a>
+      <a href="../demanda/">Média móvel</a>
+      <a href="../demanda-mq/">Mín. quadrados</a>
+      <a href="../demanda-perc/">LMS</a>
+      <a href="../demanda-poisson/">Poisson</a>
+      <a href="#explorador-interativo">Explorar</a>
+      <a href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-rag-20261026.md">Versão
+Markdown</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="toc">
+      <details open><summary>Neste tutorial</summary><nav aria-label="Índice"><ul>
+<li><a
+href="#respostas-ancoradas-em-documentos-recuperar-enriquecer-gerar-rag"
+id="toc-respostas-ancoradas-em-documentos-recuperar-enriquecer-gerar-rag">Respostas
+ancoradas em documentos: recuperar, enriquecer, gerar (RAG)</a>
+<ul>
+<li><a href="#1-onde-o-rag-se-situa" id="toc-1-onde-o-rag-se-situa">1.
+Onde o RAG se situa</a></li>
+<li><a href="#2-o-corpus-e-a-pergunta"
+id="toc-2-o-corpus-e-a-pergunta">2. O corpus e a pergunta</a></li>
+<li><a href="#3-vocabulário-do-loop" id="toc-3-vocabulário-do-loop">3.
+Vocabulário do loop</a></li>
+<li><a href="#4-rodar-o-loop-e-encontrar-a-falha"
+id="toc-4-rodar-o-loop-e-encontrar-a-falha">4. Rodar o loop e encontrar
+a falha</a></li>
+<li><a href="#5-duas-correções-medidas"
+id="toc-5-duas-correções-medidas">5. Duas correções, medidas</a></li>
+<li><a href="#6-avaliar-a-recuperação-com-um-conjunto-ouro"
+id="toc-6-avaliar-a-recuperação-com-um-conjunto-ouro">6. Avaliar a
+recuperação com um conjunto-ouro</a></li>
+<li><a href="#7-a-escada-de-recuperação-local"
+id="toc-7-a-escada-de-recuperação-local">7. A escada de recuperação
+local</a></li>
+<li><a href="#8-explorar-o-loop-no-painel"
+id="toc-8-explorar-o-loop-no-painel">8. Explorar o loop no
+painel</a></li>
+<li><a href="#9-limitações" id="toc-9-limitações">9. Limitações</a></li>
+<li><a href="#10-exercício" id="toc-10-exercício">10. Exercício</a></li>
+<li><a href="#referências-bibliográficas-e-roteiro-de-leitura"
+id="toc-referências-bibliográficas-e-roteiro-de-leitura">Referências
+bibliográficas e roteiro de leitura</a></li>
+</ul></li>
+</ul></nav></details>
+    </aside>
+    <main id="conteudo"><h1
+id="respostas-ancoradas-em-documentos-recuperar-enriquecer-gerar-rag">Respostas
+ancoradas em documentos: recuperar, enriquecer, gerar (RAG)</h1>
+<p><a href="https://lgallindo.github.io/recomendador-bentoml/rag/">Leia
+a versão web com o explorador interativo incorporado</a>.</p>
+<p>Um cliente escreve no chat da loja: <em>“Qual o prazo de devolução e
+o frete para Tracunhaém?”</em>. Um modelo de linguagem responderia com
+fluência, e talvez inventasse “30 dias” porque é um prazo comum no
+comércio. A loja quer outra coisa: uma resposta que use
+<strong>apenas</strong> o que está escrito nas suas políticas e que diga
+de qual página veio cada fato. Esse arranjo tem nome: <strong>geração
+aumentada por recuperação</strong>, ou RAG (<em>retrieval-augmented
+generation</em>). Primeiro o sistema busca trechos nos documentos;
+depois monta um prompt com esses trechos; por fim gera a resposta
+citando a origem.</p>
+<p>Ao concluir este tutorial, você deverá conseguir descrever o que
+viaja em cada etapa do RAG, montar um prompt aumentado, medir com
+<strong>recall@k</strong> se a busca trouxe as páginas certas e
+diagnosticar uma falha real: na pergunta acima, a busca padrão deste
+repositório deixa a política de devolução fora do prompt, e o prazo de 7
+dias desaparece da resposta. Você vai corrigir essa falha de duas
+maneiras e medir o efeito.</p>
+<p>Os documentos são uma mini-wiki sintética de oito páginas. A etapa de
+geração é um <strong>template</strong> que cola os trechos recuperados;
+nenhum modelo de linguagem roda nesta aula. A disciplina de recuperar,
+citar e se abster é a mesma quando o template for trocado por um
+modelo.</p>
+<h3 id="roteiro-de-estudo">Roteiro de estudo</h3>
+<table>
+<thead>
+<tr>
+<th>Tempo sugerido</th>
+<th>Atividade de estudo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8 min</td>
+<td>Situar RAG entre recuperação de informação e modelos de
+linguagem</td>
+</tr>
+<tr>
+<td>7 min</td>
+<td>Ler o corpus e a pergunta do cliente</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Definir trecho, top-k, prompt aumentado, ancoragem e abstenção</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Rodar o loop com FTS5 e encontrar a falha</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Explicar a falha e corrigi-la de duas maneiras</td>
+</tr>
+<tr>
+<td>12 min</td>
+<td>Avaliar com um conjunto-ouro: recall@k, precisão@k e abstenção</td>
+</tr>
+<tr>
+<td>8 min</td>
+<td>Escolher o degrau da escada de recuperação</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Explorar no painel e exportar uma evidência</td>
+</tr>
+<tr>
+<td>10 min</td>
+<td>Resolver o exercício</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-onde-o-rag-se-situa">1. Onde o RAG se situa</h2>
+<p><strong>Inteligência artificial (IA)</strong> é o campo que estuda
+sistemas capazes de perceber, raciocinar, aprender e apoiar decisões.
+Dentro dela, duas tradições se encontram no RAG. A <strong>recuperação
+de informação</strong> encontra, numa coleção de documentos, os que
+atendem a uma consulta: índices invertidos, BM25, busca por vetores. O
+<strong>aprendizado de máquina</strong> produz os <strong>modelos de
+linguagem</strong>, que geram texto plausível a partir de padrões
+aprendidos em grandes volumes de dados. Plausível não quer dizer
+verdadeiro para a sua loja: o modelo não conhece a política de devolução
+que só existe no seu Markdown.</p>
+<p><img src="../material/imagens/rag-mapa-ia.png"
+alt="Diagrama: dentro de inteligência artificial há duas caixas. À esquerda, recuperação de informação com índice invertido, FTS, BM25 (llmwiki), vetores, grafo e as métricas recall@k e precisão@k. À direita, aprendizado de máquina com modelos de linguagem, que geram texto aprendido de dados sem garantia de fato. Abaixo, RAG liga as duas: recuperar e gerar com citação." /></p>
+<p><em>Figura 1 — Mapa conceitual, não proporcional. O RAG usa a
+recuperação para decidir <strong>o que</strong> o gerador pode afirmar,
+e usa o gerador para redigir a resposta. Neste tutorial a caixa da
+direita é substituída por um template.</em></p>
+<p>O artigo que deu nome à técnica (Lewis et al., 2020) combinava um
+recuperador treinado com um gerador. Hoje o termo cobre qualquer arranjo
+em que a resposta é condicionada a trechos recuperados no momento da
+pergunta, inclusive com recuperadores clássicos como o deste
+tutorial.</p>
+<h2 id="2-o-corpus-e-a-pergunta">2. O corpus e a pergunta</h2>
+<p>Os documentos ficam em <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/mini-wiki-rag"><code>mini-wiki-rag/</code></a>.
+Cada página tem um frontmatter com <code>title</code>,
+<code>description</code> e <code>tags</code>, seguido do texto.</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>Fato que contém</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>devolucao.md</code></td>
+<td><strong>7 dias corridos</strong> após o recebimento, peça sem uso e
+com embalagem original</td>
+</tr>
+<tr>
+<td><code>frete.md</code></td>
+<td>Tracunhaém e Alto do Moura: frete calculado por CEP; Pilar: frete
+grátis acima de R$ 200 para Recife e Olinda; entrega em 3–5 dias úteis
+no Grande Recife</td>
+</tr>
+<tr>
+<td><code>prazos.md</code></td>
+<td>Peças de prateleira em 1–2 dias úteis; encomendas de cerâmica em até
+15 dias úteis</td>
+</tr>
+<tr>
+<td><code>atendimento.md</code></td>
+<td>Chat das 9h às 18h, dias úteis; o bot “responde frete, prazo e
+devolução”</td>
+</tr>
+<tr>
+<td><code>inicio.md</code></td>
+<td>Página de entrada; cita frete, devolução e prazos sem dar
+números</td>
+</tr>
+<tr>
+<td><code>recomendador.md</code></td>
+<td>A API sugere peças por popularidade e co-ocorrência, com
+<code>score</code> e <code>reason</code></td>
+</tr>
+<tr>
+<td><code>catalogo-p01.md</code></td>
+<td>Ficha do Jarro de barro de Tracunhaém (cerâmica)</td>
+</tr>
+<tr>
+<td><code>catalogo-p04.md</code></td>
+<td>Ficha da Rendeira do Alto do Moura (renda)</td>
+</tr>
+</tbody>
+</table>
+<p>A pergunta do cliente tem <strong>duas partes</strong>: o prazo de
+devolução, que está em <code>devolucao.md</code>, e o frete para
+Tracunhaém, que está em <code>frete.md</code>. Uma resposta correta
+precisa das duas páginas. Repare também em <code>atendimento.md</code> e
+<code>inicio.md</code>: mencionam os assuntos, mas não trazem os
+fatos.</p>
+<h2 id="3-vocabulário-do-loop">3. Vocabulário do loop</h2>
+<p><img src="../material/imagens/rag-loop.png"
+alt="Fluxo RAG: pergunta do cliente segue para 1 Recuperar (busca no corpus), que entrega o top-k com path, trecho e score para 2 Enriquecer (monta o prompt), que entrega instrução, trechos e pergunta para 3 Gerar (resposta citada). Abaixo, uma caixa de conferência: cada path citado existe e diz o fato? Sem trecho relevante, abster-se." /></p>
+<p><em>Figura 2 — Os rótulos sobre as setas dizem o que passa de uma
+etapa à seguinte. A conferência final faz parte do loop: sem ela, uma
+citação errada passa despercebida.</em></p>
+<table>
+<thead>
+<tr>
+<th>Termo</th>
+<th>Definição nesta aula</th>
+<th>Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Trecho</strong> (<em>chunk</em>)</td>
+<td>Unidade de texto que a busca devolve e o prompt recebe</td>
+<td>Aqui, uma página inteira com uma linha de destaque</td>
+</tr>
+<tr>
+<td><strong>Ranking</strong></td>
+<td>Lista de trechos ordenada por relevância estimada</td>
+<td><code>frete.md</code>, <code>catalogo-p01.md</code>, …</td>
+</tr>
+<tr>
+<td><strong>Top-k</strong></td>
+<td>Os
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+primeiros do ranking; só eles entram no prompt</td>
+<td>Com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">k = 3</annotation></semantics></math>,
+a quarta página fica de fora</td>
+</tr>
+<tr>
+<td><strong>Prompt aumentado</strong></td>
+<td>Instrução + trechos com origem + pergunta</td>
+<td>Figura 3</td>
+</tr>
+<tr>
+<td><strong>Ancoragem</strong> (<em>grounding</em>)</td>
+<td>Cada afirmação da resposta é sustentada por um trecho do prompt</td>
+<td>“7 dias (devolucao.md)”</td>
+</tr>
+<tr>
+<td><strong>Citação</strong></td>
+<td>O path do trecho que sustenta a afirmação</td>
+<td><code>(frete.md)</code></td>
+</tr>
+<tr>
+<td><strong>Abstenção</strong></td>
+<td>Responder que o corpus não contém a informação</td>
+<td>Pergunta sobre Pix</td>
+</tr>
+</tbody>
+</table>
+<p>A consequência prática do top-k é dura: <strong>o que não entra no
+prompt não pode ser citado</strong>. Se a página certa ficou na posição
+5 e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">k = 3</annotation></semantics></math>,
+nem o melhor modelo do mundo encontrará o fato no prompt; ou ele se
+abstém, ou inventa.</p>
+<h2 id="4-rodar-o-loop-e-encontrar-a-falha">4. Rodar o loop e encontrar
+a falha</h2>
+<p>Na raiz do repositório, sem instalar nada além do ambiente do
+projeto:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_rag_fts.py <span class="at">--indexar</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_rag_ancorar.py</span></code></pre></div>
+<p>O primeiro comando cria <code>material/rag/fts.sqlite</code>, um
+índice <strong>FTS5</strong> do SQLite (fora do Git). O segundo recupera
+os três melhores trechos para a pergunta do cliente, monta a resposta
+por template e grava <a
+href="../material/rag/resultado_rag_ancorado.json"><code>rag/resultado_rag_ancorado.json</code></a>.</p>
+<p>Resultado esperado:</p>
+<pre class="text"><code>Com base em frete.md, catalogo-p01.md, atendimento.md:
+- (frete.md) … Tracunhaém e Alto do Moura: frete calculado por CEP …
+- (catalogo-p01.md) … Jarro barro Tracunhaém … Região: Tracunhaém …
+- (atendimento.md) … O bot responde frete, prazo e devolução …</code></pre>
+<p>As três citações existem e estão no corpus. A resposta parece bem
+ancorada, mas <strong>não contém o prazo de devolução</strong>.
+<code>devolucao.md</code> ficou fora do top-3. Com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">k = 5</annotation></semantics></math>
+ela aparece, em quinto:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_rag_fts.py <span class="st">&quot;Qual o prazo de devolução e o frete para Tracunhaém?&quot;</span></span></code></pre></div>
+<p>Ordem: <code>frete.md</code>, <code>catalogo-p01.md</code>,
+<code>atendimento.md</code>, <code>inicio.md</code>,
+<code>devolucao.md</code>. Duas páginas que só
+<strong>mencionam</strong> o assunto ocupam vagas que a página com o
+fato precisava.</p>
+<h3 id="por-que-a-busca-errou">Por que a busca errou</h3>
+<p>O FTS5 ordena por uma variante de BM25: soma contribuições dos termos
+da consulta presentes em cada documento, ponderadas por raridade e
+tamanho. O script de indexação (<a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/scripts/demo_rag_fts.py"><code>demo_rag_fts.py</code></a>)
+grava o <strong>corpo</strong> de cada página, sem o frontmatter. No
+corpo de <code>devolucao.md</code> a palavra “prazo” não aparece; ela só
+existe na <code>description</code> (“Prazo, estado da peça…”). Assim,
+para essa consulta, <code>devolucao.md</code> casa apenas “devolução”,
+enquanto <code>atendimento.md</code> casa “frete”, “prazo” e “devolução”
+numa página curta. O BM25 recompensa cobrir vários termos, e cobrir não
+é responder.</p>
+<h2 id="5-duas-correções-medidas">5. Duas correções, medidas</h2>
+<h3 id="correção-1--dividir-a-pergunta">Correção 1 — dividir a
+pergunta</h3>
+<p>Uma pergunta com duas partes vira duas consultas. Cada subpergunta
+contribui com seu melhor trecho novo:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_rag_ancorar.py <span class="dt">\</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subpergunta</span> <span class="st">&quot;prazo de devolução&quot;</span> <span class="dt">\</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subpergunta</span> <span class="st">&quot;frete para Tracunhaém&quot;</span> <span class="dt">\</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--saida</span> material/rag/resultado_rag_subperguntas.json</span></code></pre></div>
+<p>Resultado esperado: <code>Com base em devolucao.md, frete.md:</code>
+e o trecho “O cliente tem <strong>7 dias corridos</strong> após o
+recebimento…”. Mesmo recuperador, mesmo índice; só a consulta mudou.</p>
+<h3 id="correção-2--indexar-também-o-frontmatter">Correção 2 — indexar
+também o frontmatter</h3>
+<p>O BM25 da biblioteca padrão em <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/scripts/avaliar_rag.py"><code>scripts/avaliar_rag.py</code></a>
+pesquisa <code>title</code>, <code>description</code> e corpo, com
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>k</mi><mn>1</mn></msub><mo>=</mo><mn>1</mn><mo>,</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">k_1 = 1{,}2</annotation></semantics></math>
+e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>75</mn></mrow><annotation encoding="application/x-tex">b = 0{,}75</annotation></semantics></math>:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_rag_ancorar.py <span class="at">--recuperador</span> bm25 <span class="dt">\</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--saida</span> material/rag/resultado_rag_bm25.json</span></code></pre></div>
+<p>Resultado esperado:
+<code>Com base em frete.md, atendimento.md, devolucao.md:</code>. Os
+scores são <code>frete.md</code> 2,97, <code>atendimento.md</code> 2,97
+e <code>devolucao.md</code> 2,44; a política entra no prompt porque
+agora “prazo” casa na <code>description</code>.</p>
+<p>As duas correções funcionam aqui por motivos diferentes, e a segunda
+é mais frágil: na consulta curta
+<code>devolução frete Tracunhaém</code>, sem “prazo”, o mesmo BM25 deixa
+<code>devolucao.md</code> em quinto. Dividir a pergunta ataca a causa
+(duas necessidades numa consulta); indexar o frontmatter ataca um
+sintoma (uma palavra que faltava no corpo).</p>
+<p><img src="../material/imagens/rag-prompt-aumentado.png"
+alt="Anatomia do prompt aumentado: à esquerda, os blocos Instrução (só os trechos, citar, abster-se), Trechos recuperados (um bloco por hit, com path) e Pergunta. À direita, o texto real gerado com subperguntas: instrução, trecho [1] de devolucao.md com 7 dias corridos, trecho [2] de frete.md com frete calculado por CEP, e a pergunta do cliente." /></p>
+<p><em>Figura 3 — O prompt aumentado da correção 1, tal como o script o
+grava no campo <code>prompt_aumentado</code> do JSON. A instrução manda
+usar só os trechos e se abster quando faltar informação; os números
+entre colchetes permitem citar.</em></p>
+<h2 id="6-avaliar-a-recuperação-com-um-conjunto-ouro">6. Avaliar a
+recuperação com um conjunto-ouro</h2>
+<p>Uma pergunta só não basta para escolher um recuperador. O <a
+href="../material/rag/perguntas-ouro.json"><code>rag/perguntas-ouro.json</code></a>
+traz seis perguntas com as páginas que contêm cada resposta. A q6
+pergunta algo que o corpus não responde.</p>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Pergunta</th>
+<th>Páginas relevantes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>q1</td>
+<td>Qual o prazo de devolução e o frete para Tracunhaém?</td>
+<td><code>devolucao.md</code>, <code>frete.md</code></td>
+</tr>
+<tr>
+<td>q2</td>
+<td>Tem frete grátis para Olinda?</td>
+<td><code>frete.md</code></td>
+</tr>
+<tr>
+<td>q3</td>
+<td>Quanto tempo leva uma encomenda de cerâmica?</td>
+<td><code>prazos.md</code></td>
+</tr>
+<tr>
+<td>q4</td>
+<td>Qual o horário do chat?</td>
+<td><code>atendimento.md</code></td>
+</tr>
+<tr>
+<td>q5</td>
+<td>Como o recomendador escolhe as sugestões?</td>
+<td><code>recomendador.md</code></td>
+</tr>
+<tr>
+<td>q6</td>
+<td>Vocês aceitam pagamento por Pix?</td>
+<td>nenhuma: abster-se</td>
+</tr>
+</tbody>
+</table>
+<p>Seja
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>R</mi><annotation encoding="application/x-tex">R</annotation></semantics></math>
+o conjunto de páginas relevantes de uma pergunta e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>k</mi></msub><annotation encoding="application/x-tex">T_k</annotation></semantics></math>
+o top-k devolvido.</p>
+<h3 id="recallk-das-páginas-necessárias-quantas-chegaram">Recall@k: das
+páginas necessárias, quantas chegaram?</h3>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">l</mi></mrow><mi>@</mi><mi>k</mi><mo>=</mo><mfrac><mrow><mo stretchy="false" form="prefix">|</mo><mi>R</mi><mo>∩</mo><msub><mi>T</mi><mi>k</mi></msub><mo stretchy="false" form="postfix">|</mo></mrow><mrow><mo stretchy="false" form="prefix">|</mo><mi>R</mi><mo stretchy="false" form="postfix">|</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+\mathrm{recall}@k = \frac{\lvert R \cap T_k\rvert}{\lvert R\rvert}
+</annotation></semantics></math></p>
+<h3
+id="precisãok-das-vagas-do-prompt-quantas-foram-bem-usadas">Precisão@k:
+das vagas do prompt, quantas foram bem usadas?</h3>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">precisão</mtext><mi>@</mi><mi>k</mi><mo>=</mo><mfrac><mrow><mo stretchy="false" form="prefix">|</mo><mi>R</mi><mo>∩</mo><msub><mi>T</mi><mi>k</mi></msub><mo stretchy="false" form="postfix">|</mo></mrow><mi>k</mi></mfrac></mrow><annotation encoding="application/x-tex">
+\text{precisão}@k = \frac{\lvert R \cap T_k\rvert}{k}
+</annotation></semantics></math></p>
+<p><strong>Minúcia.</strong> Na q1 com FTS5 e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">k = 3</annotation></semantics></math>:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mtext mathvariant="normal">devolucao</mtext><mo>,</mo><mtext mathvariant="normal">frete</mtext><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">R = \{\text{devolucao}, \text{frete}\}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mn>3</mn></msub><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mtext mathvariant="normal">frete</mtext><mo>,</mo><mtext mathvariant="normal">catalogo-p01</mtext><mo>,</mo><mtext mathvariant="normal">atendimento</mtext><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">T_3 = \{\text{frete}, \text{catalogo-p01}, \text{atendimento}\}</annotation></semantics></math>.
+A interseção tem uma página: recall
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mn>2</mn><mo>=</mo><mn>0</mn><mo>,</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">1/2 = 0{,}5</annotation></semantics></math>
+e precisão
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mn>3</mn><mo>≈</mo><mn>0</mn><mo>,</mo><mn>33</mn></mrow><annotation encoding="application/x-tex">1/3 \approx 0{,}33</annotation></semantics></math>.
+Numa pergunta com uma só página relevante, a precisão@3 nunca passa de
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">1/3</annotation></semantics></math>:
+duas vagas sempre vão para trechos que não ajudam. Por isso o recall é a
+métrica principal da recuperação no RAG, e a precisão mede o ruído que o
+gerador terá de ignorar.</p>
+<p>Rode a avaliação completa:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/avaliar_rag.py</span></code></pre></div>
+<p>O script avalia FTS5, BM25 e, se o binário <code>llmwiki</code>
+estiver no PATH, a busca <code>--keyword</code> da llmwiki (conferido
+com a versão 0.2.1). Grava <a
+href="../material/rag/avaliacao_rag.json"><code>rag/avaliacao_rag.json</code></a>.
+Resultado esperado:</p>
+<table>
+<thead>
+<tr>
+<th>Recuperador / estratégia</th>
+<th style="text-align: right;">Recall@1 médio</th>
+<th style="text-align: right;">Recall@3 médio</th>
+<th>Abstenção na q6</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FTS5, pergunta inteira</td>
+<td style="text-align: right;">0,90</td>
+<td style="text-align: right;"><strong>0,90</strong></td>
+<td>sim</td>
+</tr>
+<tr>
+<td>FTS5, subperguntas</td>
+<td style="text-align: right;">0,90</td>
+<td style="text-align: right;">1,00</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>BM25, pergunta inteira</td>
+<td style="text-align: right;">0,90</td>
+<td style="text-align: right;">1,00</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>BM25, subperguntas</td>
+<td style="text-align: right;">0,90</td>
+<td style="text-align: right;">1,00</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>llmwiki, pergunta inteira</td>
+<td style="text-align: right;">0,90</td>
+<td style="text-align: right;">1,00</td>
+<td><strong>não</strong></td>
+</tr>
+<tr>
+<td>llmwiki, subperguntas</td>
+<td style="text-align: right;">0,90</td>
+<td style="text-align: right;">1,00</td>
+<td><strong>não</strong></td>
+</tr>
+</tbody>
+</table>
+<p>O recall@1 médio é 0,90 para todos porque a q1 tem duas páginas
+relevantes: uma vaga só comporta metade da resposta, e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>5</mn><mo>+</mo><mn>4</mn><mo>×</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>5</mn><mo>=</mo><mn>0</mn><mo>,</mo><mn>9</mn></mrow><annotation encoding="application/x-tex">(0{,}5 + 4 \times 1)/5 = 0{,}9</annotation></semantics></math>.</p>
+<p><img src="../material/imagens/rag-falha-recall.png"
+alt="Barras de recall@3 por pergunta com a pergunta inteira. Em q1, FTS 0,5, BM25 1,0 e llmwiki 1,0. Em q2 a q5, os três recuperadores têm 1,0." /></p>
+<p><em>Figura 4 — Uma única pergunta separa os recuperadores neste
+corpus. Em cinco perguntas, uma diferença assim pode ser acaso; num
+projeto real, o conjunto-ouro precisa de dezenas de perguntas escritas
+antes de comparar ferramentas.</em></p>
+<h3 id="abstenção-quando-a-melhor-resposta-é-não-sei">Abstenção: quando
+a melhor resposta é “não sei”</h3>
+<p>Para a q6, FTS5 e BM25 não acham nenhum termo da pergunta no corpus e
+devolvem lista vazia; o template responde “Não encontrei trechos no
+corpus…”. A llmwiki devolve <code>frete.md</code> (2,09),
+<code>prazos.md</code> (1,40) e mais duas páginas, porque também pontua
+palavras curtas como “por”. Um gerador que recebesse esses trechos
+poderia montar uma resposta sobre frete para uma pergunta sobre Pix. Um
+recuperador que sempre devolve algo precisa de uma regra explícita de
+abstenção: um score mínimo, ou a exigência de que os termos principais
+da pergunta apareçam no trecho.</p>
+<h3 id="modos-de-falha-e-a-checagem-de-cada-um">Modos de falha e a
+checagem de cada um</h3>
+<table>
+<thead>
+<tr>
+<th>Modo de falha</th>
+<th>Como aparece</th>
+<th>Checagem antes de confiar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Página certa fora do top-k</td>
+<td>Resposta fluente e incompleta (q1 com FTS5)</td>
+<td>Recall@k num conjunto-ouro; dividir perguntas compostas</td>
+</tr>
+<tr>
+<td>Página que menciona sem responder</td>
+<td><code>atendimento.md</code> ocupa a vaga</td>
+<td>Precisão@k; ler o trecho, não só o título</td>
+</tr>
+<tr>
+<td>Pergunta sem resposta no corpus</td>
+<td>Trechos irrelevantes viram resposta (q6 com llmwiki)</td>
+<td>Pergunta-ouro sem relevantes; limiar de abstenção</td>
+</tr>
+<tr>
+<td>Citação inexistente</td>
+<td>Path plausível que não está na wiki</td>
+<td><code>test -f material/mini-wiki-rag/&lt;path&gt;</code>; o JSON
+traz <code>citacoes_existem</code></td>
+</tr>
+<tr>
+<td>Citação que não sustenta o fato</td>
+<td>Path real, fato de outra página</td>
+<td>Conferir se o trecho citado contém o número afirmado</td>
+</tr>
+<tr>
+<td>Índice desatualizado</td>
+<td>Política mudou, resposta antiga</td>
+<td>Reindexar depois de cada edição (<code>--indexar</code>)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-a-escada-de-recuperação-local">7. A escada de recuperação
+local</h2>
+<p><img src="../material/imagens/rag-ladder.png"
+alt="Escada de quatro degraus: 1 Markdown versionado (páginas com frontmatter; leitura direta, grep); 2 Busca textual FTS5 / SQLite (índice invertido; termos exatos, sem servidor); 3 BM25 / llmwiki (pesa raridade e tamanho; híbrido opcional); 4 Vetores ou grafo (sinônimos e paráfrases; mais custo e manutenção). Uma seta indica: suba só quando o degrau de baixo falhar nas suas perguntas-ouro." /></p>
+<p><em>Figura 5 — Cada degrau resolve um tipo de falha e traz um custo
+novo. O critério para subir é a medida no conjunto-ouro, não a novidade
+da ferramenta.</em></p>
+<table>
+<thead>
+<tr>
+<th>Degrau</th>
+<th>Quando basta</th>
+<th>Sinal para subir</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 · Markdown e grep</td>
+<td>Poucas páginas, perguntas com palavras exatas</td>
+<td>Equipe passa a ler arquivos demais por pergunta</td>
+</tr>
+<tr>
+<td>2 · FTS5</td>
+<td>Centenas de páginas, termos do cliente iguais aos do texto</td>
+<td>Recall@k baixo em perguntas compostas ou com campos fora do
+índice</td>
+</tr>
+<tr>
+<td>3 · BM25 com campos (llmwiki)</td>
+<td>Precisa pesar título e descrição; quer híbrido opcional</td>
+<td>Falhas por sinônimo: “troca” × “devolução”, “entrega” × “frete”</td>
+</tr>
+<tr>
+<td>4 · Vetores ou grafo</td>
+<td>Muitas paráfrases; relações entre entidades</td>
+<td>Custo de embeddings, reindexação e explicação do ranking passa a
+valer</td>
+</tr>
+</tbody>
+</table>
+<p>Na mini-wiki, a falha da q1 foi resolvida <strong>sem subir de
+degrau</strong>: dividir a pergunta bastou para o FTS5. Esse é o
+resultado que a escada pede que você procure primeiro.</p>
+<h2 id="8-explorar-o-loop-no-painel">8. Explorar o loop no painel</h2>
+<p>O <a href="../material/bi-rag/index.html">explorador de busca e
+RAG</a> reúne as etapas numa página: escolha a pergunta, o recuperador,
+a estratégia e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>;
+veja o ranking com a contribuição de cada termo, o prompt aumentado
+verbatim, a resposta por template com as checagens de citação e o
+recall@k das seis perguntas-ouro. Você pode usá-lo incorporado à <a
+href="https://lgallindo.github.io/recomendador-bentoml/rag/#explorador-interativo">versão
+web deste tutorial</a> ou abrir o HTML numa cópia local do repositório.
+Consulte o <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-rag/README.md">roteiro
+de exploração</a>.</p>
+<section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
+<h3 id="explorer-heading">Experimente o RAG neste tutorial</h3>
+<p>Escolha pergunta, recuperador e k; confira o prompt aumentado e as citações. O corpus é a mini-wiki sintética da loja.</p>
+<div class="explorer-actions">
+<button id="fullscreen-explorer" type="button">Ver explorador em tela cheia</button>
+<a href="../material/bi-rag/index.html" target="_blank" rel="noopener">Abrir explorador em nova aba</a>
+</div>
+<p id="explorer-status" role="status"></p>
+<iframe id="explorer" src="../material/bi-rag/index.html" title="Explorador interativo de RAG"
+loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+</section>
+<p>O painel recalcula o BM25 no navegador; FTS5 e llmwiki aparecem como
+rankings já calculados pelos scripts, e por isso só existem para as
+perguntas prontas. Nenhum modelo de linguagem é chamado.</p>
+<h3 id="atividade-no-painel">Atividade no painel</h3>
+<ol type="1">
+<li>Clique em <strong>Restaurar</strong> (q1, FTS5,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">k = 3</annotation></semantics></math>).
+Copie a checagem que acusa a página ausente.</li>
+<li>Mude
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+para 5. O recall sobe? Quantas vagas do prompt agora vão para páginas
+que não respondem?</li>
+<li>Volte a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">k = 3</annotation></semantics></math>
+e escolha <strong>Subperguntas intercaladas</strong>. Compare o prompt
+do painel 03 com a Figura 3.</li>
+<li>Escolha <strong>q6</strong> e alterne entre os três recuperadores.
+Registre qual se abstém.</li>
+<li>Exporte o CSV do painel 05 e o PNG do ranking; escreva uma
+recomendação de até cinco frases: recuperador, estratégia,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>,
+uma limitação e uma checagem obrigatória.</li>
+</ol>
+<h2 id="9-limitações">9. Limitações</h2>
+<ul>
+<li>Oito páginas e seis perguntas mostram o procedimento; não sustentam
+a escolha de um recuperador para um acervo real.</li>
+<li>O “gerador” é um template. Com um modelo de linguagem surgem falhas
+novas: ignorar a instrução, misturar conhecimento prévio com o trecho,
+citar o path certo para o fato errado. A checagem de citações continua
+necessária.</li>
+<li>Os trechos aqui são páginas inteiras. Em documentos longos, a forma
+de cortar o texto em trechos muda o recall tanto quanto o
+recuperador.</li>
+<li>O conjunto-ouro foi escrito por quem conhece o corpus; perguntas de
+clientes reais usam outras palavras e testam sinônimos que estas não
+testam.</li>
+</ul>
+<h2 id="10-exercício">10. Exercício</h2>
+<p>Use a pergunta <strong>“Tem frete grátis para Olinda e qual o prazo
+de entrega no Grande Recife?”</strong>.</p>
+<ol type="1">
+<li>Liste as páginas que contêm cada parte da resposta.</li>
+<li>Rode <code>demo_rag_ancorar.py</code> com FTS5 e
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">k = 3</annotation></semantics></math>
+(use <code>--pergunta</code> e uma <code>--saida</code> sua). Registre
+as citações e diga se a resposta está completa.</li>
+<li>Calcule recall@3 e precisão@3 da sua execução.</li>
+<li>Rode de novo com duas <code>--subpergunta</code> e compare.</li>
+<li>Escreva o prompt aumentado que um modelo receberia na melhor das
+duas execuções.</li>
+<li>Proponha uma sétima pergunta-ouro para o arquivo, com sua lista de
+relevantes, que teste abstenção ou sinônimo.</li>
+</ol>
+<h3 id="resolução-comentada">Resolução comentada</h3>
+<p><strong>Páginas:</strong> as duas partes estão em
+<code>frete.md</code> (“pedidos acima de R$ 200 têm frete grátis para
+Recife e Olinda” e “Grande Recife 3–5” dias úteis). Aqui
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mtext mathvariant="normal">frete.md</mtext><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">R = \{\text{frete.md}\}</annotation></semantics></math>;
+a pergunta é composta, mas uma página responde às duas partes.</p>
+<p><strong>FTS5, pergunta inteira:</strong></p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/demo_rag_ancorar.py <span class="dt">\</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--pergunta</span> <span class="st">&quot;Tem frete grátis para Olinda e qual o prazo de entrega no Grande Recife?&quot;</span> <span class="dt">\</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--saida</span> material/rag/exercicio-inteira.json</span></code></pre></div>
+<p><code>frete.md</code> aparece entre os três primeiros, então recall@3
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mn>1</mn><mi>/</mi><mn>1</mn><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">= 1/1 = 1</annotation></semantics></math>
+e precisão@3
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mn>1</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">= 1/3</annotation></semantics></math>.
+As outras duas vagas ficam com <code>devolucao.md</code> e
+<code>atendimento.md</code>, que casam palavras da pergunta sem conter o
+que foi perguntado.</p>
+<p><strong>Subperguntas:</strong> com
+<code>--subpergunta "frete grátis Olinda"</code> e
+<code>--subpergunta "prazo de entrega Grande Recife"</code>, o script
+toma o melhor trecho <strong>novo</strong> de cada subpergunta. Se as
+duas apontam para <code>frete.md</code>, a segunda subpergunta traz a
+próxima página do seu ranking, que não ajuda. Dividir a pergunta resolve
+necessidades em páginas diferentes; quando uma página responde a tudo,
+dividir só acrescenta ruído.</p>
+<p><strong>Prompt:</strong> a instrução do script, um bloco
+<code>[1] (frete.md) …</code> com o trecho e a pergunta original. Uma
+resposta ancorada diria: “Pedidos da Comunidade do Pilar acima de R$ 200
+têm frete grátis para Olinda; a entrega no Grande Recife leva de 3 a 5
+dias úteis (frete.md).” Repare que a condição “acima de R$ 200,
+Comunidade do Pilar” precisa ir junto: cortar o trecho no meio
+produziria uma resposta citada e enganosa.</p>
+<p><strong>Sétima pergunta:</strong> por exemplo, “Posso trocar uma peça
+que chegou quebrada?”, com relevantes <code>devolucao.md</code> e
+<code>atendimento.md</code>. Ela testa sinônimo (“trocar” e “quebrada”
+versus “devolução” e “avaria”) e mostra o limite da busca por
+palavra-chave.</p>
+<h2 id="referências-bibliográficas-e-roteiro-de-leitura">Referências
+bibliográficas e roteiro de leitura</h2>
+<p>Consulta dos materiais on-line: 7 nov. 2026.</p>
+<ol type="1">
+<li>LEWIS, Patrick et al. <strong>Retrieval-augmented generation for
+knowledge-intensive NLP tasks</strong>. In: <em>Advances in Neural
+Information Processing Systems 33 (NeurIPS 2020)</em>, 2020. <a
+href="https://arxiv.org/abs/2005.11401">arXiv:2005.11401</a>.
+<strong>Para aprofundar:</strong> a proposta original de condicionar a
+geração a trechos recuperados no momento da pergunta.</li>
+<li>MANNING, Christopher D.; RAGHAVAN, Prabhakar; SCHÜTZE, Hinrich.
+<strong>Introduction to Information Retrieval</strong>. Cambridge:
+Cambridge University Press, 2008. <a
+href="https://nlp.stanford.edu/IR-book/">Texto integral on-line</a>.
+<strong>Para aprofundar:</strong> o capítulo 8 trata de avaliação,
+conjuntos de relevância, precisão e recall.</li>
+<li>ROBERTSON, Stephen; ZARAGOZA, Hugo. <strong>The probabilistic
+relevance framework: BM25 and beyond</strong>. <em>Foundations and
+Trends in Information Retrieval</em>, v. 3, n. 4, p. 333–389, 2009. DOI:
+10.1561/1500000019. <strong>Para aprofundar:</strong> por que o BM25
+recompensa cobrir termos e como pesos por campo mudam o ranking.</li>
+<li>GAO, Yunfan et al. <strong>Retrieval-augmented generation for large
+language models: a survey</strong>. 2023. <a
+href="https://arxiv.org/abs/2312.10997">arXiv:2312.10997</a>.
+<strong>Para aprofundar:</strong> variações do loop, divisão de
+consultas e avaliação de ancoragem.</li>
+<li>SQLITE. <strong>SQLite FTS5 Extension</strong>. <a
+href="https://www.sqlite.org/fts5.html">Documentação em inglês</a>.
+<strong>Para consultar:</strong> colunas indexadas, tokenizadores e a
+ordenação por <code>rank</code>.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Artefato</th>
+<th>Papel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>material/mini-wiki-rag/</code></td>
+<td>Corpus de oito páginas</td>
+</tr>
+<tr>
+<td><code>scripts/demo_rag_fts.py</code></td>
+<td>Índice e busca FTS5</td>
+</tr>
+<tr>
+<td><code>scripts/demo_rag_ancorar.py</code></td>
+<td>Loop com template; <code>--recuperador</code>, <code>--k</code>,
+<code>--subpergunta</code>, <code>--saida</code></td>
+</tr>
+<tr>
+<td><code>scripts/avaliar_rag.py</code></td>
+<td>BM25 da biblioteca padrão e avaliação no conjunto-ouro</td>
+</tr>
+<tr>
+<td><code>material/rag/perguntas-ouro.json</code></td>
+<td>Seis perguntas com páginas relevantes</td>
+</tr>
+<tr>
+<td><code>material/rag/avaliacao_rag.json</code></td>
+<td>Rankings e recall@k dos recuperadores</td>
+</tr>
+<tr>
+<td><code>material/rag/resultado_rag_*.json</code></td>
+<td>Respostas ancoradas das seções 4 e 5</td>
+</tr>
+<tr>
+<td><code>material/bi-rag/</code></td>
+<td>Explorador de busca e RAG</td>
+</tr>
+<tr>
+<td><code>scripts/gerar_figuras_rag.py</code></td>
+<td>Figuras deste tutorial</td>
+</tr>
+</tbody>
+</table></main>
+  </div>
+</body>
+</html>
