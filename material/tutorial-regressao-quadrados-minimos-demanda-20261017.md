@@ -8,7 +8,7 @@ Ao concluir este tutorial, você deverá conseguir situar a regressão linear na
 história da medida e do aprendizado com dados, ajustar uma reta por **mínimos
 quadrados** à série semanal de um produto, extrapolar a semana seguinte com
 piso em zero quando preciso, e comparar o método com médias móveis e uma
-previsão ingênua no mesmo protocolo walk-forward da
+previsão ingênua no mesmo ritual de treinar só com o passado da
 [`média móvel`](tutorial-media-movel-demanda-20261017.md).
 
 Os dados são **sintéticos**: as 16 semanas distribuem os totais do catálogo e
@@ -35,10 +35,11 @@ O protocolo de avaliação continua temporal: treinar só com o passado, prever 
 próxima semana, só então incorporar o valor observado. O que muda é o **modelo**
 dentro desse ritual.
 
-![Fluxo CSV → reta MQ → walk-forward → métricas → BI.](imagens/fluxo-mq-demanda.png)
+![Do arquivo semanal ao painel: contagens, reta por peça, prever só com o passado, medir o erro, ver no painel.](imagens/fluxo-mq-demanda.png)
 
-*Figura 0 — Do arquivo semanal ao painel: a reta é o modelo; o walk-forward é o
-ritual de avaliação; o BI espelha os mesmos números.*
+*Figura 0 — Caminho desta aula: ler as contagens, ajustar uma reta por peça,
+prever a semana seguinte só com o que já fechou, medir o erro frente a outros
+métodos e conferir os mesmos números no painel.*
 
 ## 2. Da medida à previsão aprendida
 
