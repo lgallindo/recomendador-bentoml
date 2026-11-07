@@ -1,5 +1,9 @@
 # Previsão de demanda com perceptron / LMS (ADALINE)
 
+[Versão web com explorador](https://lgallindo.github.io/recomendador-bentoml/demanda-perc/).
+Explorador no repositório:
+[`bi-demanda-perceptron/index.html`](bi-demanda-perceptron/index.html).
+
 Ao concluir esta aula, você deverá conseguir situar o **perceptron** e a regra
 **LMS / ADALINE** numa linha histórica curta, marcar AND, OR e XOR como
 separáveis ou não por uma reta, treinar pesos com erro contínuo na série

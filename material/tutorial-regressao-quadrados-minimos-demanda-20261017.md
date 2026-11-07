@@ -1,5 +1,9 @@
 # Previsão de demanda com regressão por mínimos quadrados
 
+[Versão web com explorador](https://lgallindo.github.io/recomendador-bentoml/demanda-mq/).
+Explorador no repositório:
+[`bi-demanda-mq/index.html`](bi-demanda-mq/index.html).
+
 Ao concluir este tutorial, você deverá conseguir situar a regressão linear na
 história da medida e do aprendizado com dados, ajustar uma reta por **mínimos
 quadrados** à série semanal de um produto, extrapolar a semana seguinte com
