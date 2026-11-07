@@ -1,7 +1,8 @@
 # Explorador — demanda com mínimos quadrados
 
-Painel local para a série semanal sintética: reta ajustada, erros walk-forward
-e MAE ao lado de média móvel e previsão ingênua.
+Painel local para a série semanal sintética: reta ajustada com hastes de
+resíduo (ponto → reta), erros walk-forward e MAE ao lado de média móvel e
+previsão ingênua.
 
 Os tutoriais de MQ trabalham de ponta a ponta **Jarro (`p01`)** e **Boneca
 (`p03`)**. No seletor do painel, abra os dois produtos e compare intercepto,
