@@ -16,7 +16,7 @@ class TutorialWeb(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         subprocess.run(
-            [sys.executable, "scripts/gerar_site_tutorial.py"],
+            [sys.executable, ".local/scripts/gerar_site_tutorial.py"],
             cwd=RAIZ,
             check=True,
         )
