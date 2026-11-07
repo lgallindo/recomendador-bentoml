@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratório geométrico do Perceptron: fronteira de decisão, portas AND/OR/XOR e algoritmo PLA.">
+  <title>Laboratório · Perceptron no plano</title>
+  <link rel="stylesheet" href="lab.css">
+  <script src="lab.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#s1">Pular para o laboratório</a>
+  <header class="hero">
+    <p class="eyebrow">Caderno · geometria do Perceptron</p>
+    <h1>Uma reta no plano,<br>pesos que se corrigem.</h1>
+    <p>
+      Três painéis: a fronteira <span class="readout">θ₀ + θ₁x₁ + θ₂x₂ = 0</span>,
+      as portas lógicas que um único Perceptron resolve (e o XOR, que não resolve),
+      e o algoritmo de aprendizado (PLA) ao vivo. Codificação ±1; bias com
+      <span class="readout">x₀ = 1</span>; atualização
+      <span class="readout">θ ← θ + η·y·x</span>.
+    </p>
+    <nav>
+      <a href="../../tutorial-perceptron-demanda-20261026.md">Tutorial LMS / demanda</a>
+      <a href="../index.html">Explorador de demanda</a>
+      <a href="README.md">Como usar</a>
+    </nav>
+  </header>
+
+  <section id="s1" class="section">
+    <div class="panel">
+      <p class="eyebrow">01 · Fronteira</p>
+      <h2>Neurônio e semiplanos</h2>
+      <p>
+        A saída é <span class="readout">ŷ = sinal(θ₀ + θ₁x₁ + θ₂x₂)</span>.
+        O vetor <span class="readout">(θ₁, θ₂)</span> é perpendicular à reta e aponta
+        para a classe <span class="readout">+1</span>; <span class="readout">θ₀</span>
+        translada a reta.
+      </p>
+      <div class="controls">
+        <label>θ₁ = <span id="s1-t1-val">1.0</span>
+          <input type="range" id="s1-t1" min="-3" max="3" value="1" step="0.1">
+        </label>
+        <label>θ₂ = <span id="s1-t2-val">1.0</span>
+          <input type="range" id="s1-t2" min="-3" max="3" value="1" step="0.1">
+        </label>
+        <label>θ₀ = <span id="s1-t0-val">1.0</span>
+          <input type="range" id="s1-t0" min="-3" max="3" value="1" step="0.1">
+        </label>
+        <button type="button" class="btn" id="s1-resample">Reamostrar pontos</button>
+        <span class="readout" id="s1-eq"></span>
+      </div>
+      <div class="canvas-box square">
+        <p class="canvas-caption">Espaço de entrada: fronteira, vetor de pesos e pontos pela classe prevista</p>
+        <canvas id="s1-plane" width="400" height="400" aria-label="Fronteira de decisão no plano"></canvas>
+      </div>
+      <p class="hint">Zere θ₀ e gire a reta com θ₁ e θ₂; depois varie só θ₀ e veja a reta transladar.</p>
+    </div>
+  </section>
+
+  <section id="s2" class="section">
+    <div class="panel">
+      <p class="eyebrow">02 · Portas</p>
+      <h2>AND, OR e o XOR</h2>
+      <p>
+        Entradas e alvos em <span class="readout">{−1, +1}</span>.
+        Ajuste os pesos ou use as soluções prontas. No XOR a contagem trava:
+        nenhuma reta separa as duas diagonais.
+      </p>
+      <div class="controls">
+        <div class="tabs" role="tablist">
+          <button type="button" class="active" id="s2-tab-and">AND</button>
+          <button type="button" id="s2-tab-or">OR</button>
+          <button type="button" id="s2-tab-xor">XOR</button>
+        </div>
+        <button type="button" class="btn" id="s2-preset-and">Solução AND</button>
+        <button type="button" class="btn" id="s2-preset-or">Solução OR</button>
+        <label>θ₁ = <span id="s2-t1-val">1.0</span>
+          <input type="range" id="s2-t1" min="-3" max="3" value="1" step="0.1">
+        </label>
+        <label>θ₂ = <span id="s2-t2-val">1.0</span>
+          <input type="range" id="s2-t2" min="-3" max="3" value="1" step="0.1">
+        </label>
+        <label>θ₀ = <span id="s2-t0-val">−1.0</span>
+          <input type="range" id="s2-t0" min="-3" max="3" value="-1" step="0.1">
+        </label>
+      </div>
+      <div class="canvas-row">
+        <div class="canvas-box square">
+          <p class="canvas-caption">Quatro cantos (±1, ±1); contorno vermelho = linha errada</p>
+          <canvas id="s2-plane" width="400" height="400" aria-label="Portas lógicas no plano"></canvas>
+        </div>
+        <div class="canvas-box">
+          <p class="canvas-caption">Tabela verdade · <span id="s2-score">—</span></p>
+          <table class="truth" id="s2-truth">
+            <thead>
+              <tr><th>x₁</th><th>x₂</th><th>alvo</th><th>ŷ</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <p class="hint" id="s2-xor-note" hidden>
+            No XOR nenhuma escolha de θ acerta as quatro linhas com uma só reta.
+            Daí o interesse por redes com mais de uma camada.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="s3" class="section">
+    <div class="panel">
+      <p class="eyebrow">03 · Aprendizado</p>
+      <h2>PLA — um passo de cada vez</h2>
+      <p>
+        Enquanto houver ponto mal classificado, o algoritmo escolhe um e faz
+        <span class="readout">θ ← θ + η·y·x</span> (com x₀ = 1).
+        No modo separável a curva de erros chega a zero; no não separável ela oscila.
+      </p>
+      <div class="controls">
+        <div class="tabs">
+          <button type="button" class="active" id="s3-tab-sep">Separável</button>
+          <button type="button" id="s3-tab-nonsep">Não separável</button>
+        </div>
+        <label>η = <span id="s3-eta-val">1.00</span>
+          <input type="range" id="s3-eta" min="0.05" max="1" value="1" step="0.05">
+        </label>
+        <button type="button" class="btn" id="s3-step">Um passo</button>
+        <button type="button" class="btn primary" id="s3-train">Treinar</button>
+        <button type="button" class="btn" id="s3-reset">Reiniciar</button>
+        <button type="button" class="btn" id="s3-resample">Reamostrar</button>
+        <span class="readout" id="s3-status"></span>
+      </div>
+      <div class="canvas-row">
+        <div class="canvas-box square">
+          <p class="canvas-caption">Pontos pela classe verdadeira e fronteira atual</p>
+          <canvas id="s3-plane" width="400" height="400" aria-label="PLA no plano"></canvas>
+        </div>
+        <div class="canvas-box">
+          <p class="canvas-caption">Mal classificados após cada atualização</p>
+          <canvas id="s3-errors" width="400" height="180" aria-label="Curva de erros do PLA"></canvas>
+        </div>
+      </div>
+      <p class="hint">
+        Depois deste laboratório, o tutorial de demanda usa a mesma soma ponderada
+        com saída <strong>contínua</strong> (LMS / ADALINE) para contar linhas de pedido.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    Implementação do Caderno recomendador-bentoml.
+    Ideia pedagógica de laboratório interativo (fronteira, portas, PLA) alinhada a
+    materiais didáticos abertos de Deep Learning em pt-BR (ex.: curso Kup, CC BY-SA);
+    código e visual deste painel são próprios do repositório.
+  </footer>
+</body>
+</html>

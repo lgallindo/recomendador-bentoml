@@ -147,6 +147,17 @@ e aplica uma função não linear. Uma rede <strong>rasa</strong> tem uma
 única camada escondida entre a entrada e a saída. A sigla
 <strong>MLP</strong> (<em>multilayer perceptron</em>) é o nome usual
 dessas redes de camadas densas.</p>
+<p>O tutorial de <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-perceptron-demanda-20261026.md">perceptron
+/ LMS</a> mostrou uma <strong>única</strong> unidade linear
+(classificador com PLA ou reta LMS na demanda) e o limite do XOR com uma
+só reta. Aqui entram <strong>várias</strong> unidades e uma função de
+ativação suave: o erro de saída propaga-se pelas camadas
+(<em>backpropagation</em>) e a descida de gradiente atualiza todos os
+pesos. O <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-demanda-perceptron/lab/index.html">laboratório
+geométrico</a> do Caderno fica como lembrete visual da fronteira linear
+que a MLP generaliza.</p>
 <p><img src="../material/imagens/treino-redes-mapa.png"
 alt="Diagrama de conjuntos encaixados: inteligência artificial contém aprendizado de máquina, que contém aprendizado supervisionado, que contém a rede neural rasa MLP com pesos ajustados por gradiente. Uma seta leva à tarefa de prever linhas de pedido da próxima semana; ao lado, as referências média do treino, MA(4) e LMS." /></p>
 <p><em>Figura 1 — A rede rasa é um modelo supervisionado dentro do
@@ -644,8 +655,7 @@ referências e uma tabela das semanas de teste com exportação em CSV e
 PNG. Você pode usá-lo incorporado à <a
 href="https://lgallindo.github.io/recomendador-bentoml/treino-redes/#explorador-interativo">versão
 web deste tutorial</a> ou abrir o HTML a partir de uma cópia local do
-repositório. Consulte o <a
-href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-redes/README.md">roteiro
+repositório. Consulte o <a href="../material/bi-redes/README.md">roteiro
 de exploração</a>.</p>
 <section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
 <h3 id="explorer-heading">Experimente o treino neste tutorial</h3>

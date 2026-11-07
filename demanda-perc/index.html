@@ -41,23 +41,28 @@ reta</a></li>
 <li><a href="#3-história-curta-do-modelo-linear-adaptativo"
 id="toc-3-história-curta-do-modelo-linear-adaptativo">3. História curta
 do modelo linear adaptativo</a></li>
-<li><a href="#4-separabilidade-linear-no-plano"
-id="toc-4-separabilidade-linear-no-plano">4. Separabilidade linear no
+<li><a href="#4-laboratório-uma-reta-no-plano"
+id="toc-4-laboratório-uma-reta-no-plano">4. Laboratório: uma reta no
 plano</a></li>
-<li><a href="#5-corrigir-o-palpite-semana-a-semana"
-id="toc-5-corrigir-o-palpite-semana-a-semana">5. Corrigir o palpite
+<li><a href="#5-exemplo-numérico-do-pla"
+id="toc-5-exemplo-numérico-do-pla">5. Exemplo numérico do PLA</a></li>
+<li><a href="#6-da-classificação-à-contagem-pla-e-lms"
+id="toc-6-da-classificação-à-contagem-pla-e-lms">6. Da classificação à
+contagem: PLA e LMS</a></li>
+<li><a href="#7-corrigir-o-palpite-semana-a-semana"
+id="toc-7-corrigir-o-palpite-semana-a-semana">7. Corrigir o palpite
 semana a semana</a></li>
-<li><a href="#6-exemplo-trabalhado-1--jarro-p01"
-id="toc-6-exemplo-trabalhado-1--jarro-p01">6. Exemplo trabalhado 1 —
+<li><a href="#8-exemplo-trabalhado-1--jarro-p01"
+id="toc-8-exemplo-trabalhado-1--jarro-p01">8. Exemplo trabalhado 1 —
 Jarro (<code>p01</code>)</a></li>
-<li><a href="#7-exemplo-trabalhado-2--boneca-p03"
-id="toc-7-exemplo-trabalhado-2--boneca-p03">7. Exemplo trabalhado 2 —
+<li><a href="#9-exemplo-trabalhado-2--boneca-p03"
+id="toc-9-exemplo-trabalhado-2--boneca-p03">9. Exemplo trabalhado 2 —
 Boneca (<code>p03</code>)</a></li>
-<li><a href="#8-avaliar-no-tempo" id="toc-8-avaliar-no-tempo">8. Avaliar
-no tempo</a></li>
-<li><a href="#9-explorador-no-painel" id="toc-9-explorador-no-painel">9.
-Explorador no painel</a></li>
-<li><a href="#10-endpoint-bentoml" id="toc-10-endpoint-bentoml">10.
+<li><a href="#10-avaliar-no-tempo" id="toc-10-avaliar-no-tempo">10.
+Avaliar no tempo</a></li>
+<li><a href="#11-explorador-no-painel"
+id="toc-11-explorador-no-painel">11. Explorador no painel</a></li>
+<li><a href="#12-endpoint-bentoml" id="toc-12-endpoint-bentoml">12.
 Endpoint BentoML</a></li>
 <li><a href="#glossário" id="toc-glossário">Glossário</a></li>
 <li><a href="#referência" id="toc-referência">Referência</a></li>
@@ -70,7 +75,9 @@ com perceptron / LMS (ADALINE)</h1>
 <p><a
 href="https://lgallindo.github.io/recomendador-bentoml/demanda-perc/">Versão
 web com explorador</a>. Explorador no repositório: <a
-href="../material/bi-demanda-perceptron/index.html"><code>bi-demanda-perceptron/index.html</code></a>.</p>
+href="../material/bi-demanda-perceptron/index.html"><code>bi-demanda-perceptron/index.html</code></a>.
+Laboratório geométrico (fronteira, portas, PLA): <a
+href="../material/bi-demanda-perceptron/lab/index.html"><code>bi-demanda-perceptron/lab/index.html</code></a>.</p>
 <section id="explorador-interativo" class="interactive" aria-labelledby="explorer-heading">
 <h3 id="explorer-heading">Experimente o LMS neste tutorial</h3>
 <p>Escolha produto e método. Veja a curva de MSE e compare o MAE com os baselines. As 16 semanas são sintéticas.</p>
@@ -89,9 +96,13 @@ quadrados</a>. Aqui a reta é a <strong>mesma família</strong>; o que
 muda é o caminho até os pesos: em vez de ajustar o bloco de uma vez, a
 regra <strong>corrige o palpite a cada semana</strong>, guiada pelo erro
 contínuo (observado menos previsto).</p>
+<p>Antes de voltar às contagens, um <strong>laboratório no
+plano</strong> mostra o primo classificador: o Perceptron de Rosenblatt,
+a fronteira linear e o algoritmo PLA. Os dois usam a mesma soma
+ponderada; muda a saída (lado da classe versus nível contínuo).</p>
 <p>Os dados continuam <strong>sintéticos</strong>
-(<code>dados/vendas_semanais.csv</code>). Os exemplos trabalhados são
-Jarro (<code>p01</code>) e Boneca (<code>p03</code>).</p>
+(<code>dados/vendas_semanais.csv</code>). Os exemplos trabalhados de
+demanda são Jarro (<code>p01</code>) e Boneca (<code>p03</code>).</p>
 <p>Leitura em ritmo próprio. Termos técnicos reunidos no <a
 href="#glossário">glossário</a> ao final.</p>
 <h2 id="1-a-pergunta-que-já-conhecemos">1. A pergunta que já
@@ -136,25 +147,38 @@ contínuo: contagem observada menos palpite.</em></p>
 <h2 id="3-história-curta-do-modelo-linear-adaptativo">3. História curta
 do modelo linear adaptativo</h2>
 <p>A ideia de “somar entradas, atravessar um limiar ou uma saída
-contínua e corrigir pesos com o erro” tem nome e data. O caminho curto
-abaixo basta para saber <strong>por que</strong> falamos de perceptron e
-de LMS na mesma aula de demanda.</p>
+contínua e corrigir pesos com o erro” tem nome e data. O caminho abaixo
+prepara o laboratório no plano e o LMS na loja.</p>
 <h3 id="31-neurônio-formal-e-limiar">3.1 Neurônio formal e limiar</h3>
 <p>Nos anos 1940, <strong>Warren McCulloch</strong> e <strong>Walter
-Pitts</strong> propuseram um modelo simples de neurônio formal: combinar
-sinais de entrada e produzir uma saída ligada a um limiar. O desenho é
-lógico e abstrato — uma peça fundadora da ideia de rede — e ainda não é
-o algoritmo de treino que usaremos na planilha de demanda. Ele prepara o
-terreno: <strong>unidade linear (ou limiar) + composição</strong>.</p>
+Pitts</strong> propuseram um neurônio formal: entradas binárias,
+estímulos excitatórios (e, se houver, inibitórios) e um limiar (\theta).
+O neurônio dispara quando a soma dos estímulos ativos ultrapassa o
+limiar.</p>
+<p>Com duas entradas e limiar 2, o desenho realiza um
+<strong>AND</strong> lógico (precisam estar as duas ativas). Com limiar
+1, basta uma — um <strong>OR</strong>. Com uma entrada inibitória, dá
+para negar. O modelo é lógico e abstrato: ainda não há algoritmo de
+treino. Ele prepara o terreno: <strong>unidade + limiar +
+composição</strong>.</p>
 <h3 id="32-perceptron-de-rosenblatt">3.2 Perceptron de Rosenblatt</h3>
 <p>No fim dos anos 1950, <strong>Frank Rosenblatt</strong> descreveu o
-<strong>perceptron</strong>: um classificador que separa classes com um
-hiperplano e <strong>atualiza pesos</strong> quando o rótulo previsto
-discorda do rótulo verdadeiro. O erro que guia o passo é o erro de
-<strong>classificação</strong> (acerto ou erro de lado), típico de alvos
-0/1.</p>
+<strong>perceptron</strong>: entradas reais, cada uma com um
+<strong>peso</strong>, bias (o truque (x_0 = 1)) e ativação
+(\mathrm{sinal}):</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>y</mi><mo accent="true">̂</mo></mover><mo>=</mo><mrow><mi mathvariant="normal">s</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mn>0</mn></msub><mo>+</mo><msub><mi>θ</mi><mn>1</mn></msub><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msub><mi>θ</mi><mn>2</mn></msub><msub><mi>x</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><mrow><mi mathvariant="normal">s</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mi>+</mi><mn>1</mn></mtd><mtd columnalign="left" style="text-align: left"><mi>z</mi><mo>≥</mo><mn>0</mn></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mi>−</mi><mn>1</mn></mtd><mtd columnalign="left" style="text-align: left"><mi>z</mi><mo>&lt;</mo><mn>0</mn></mtd></mtr></mtable></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\widehat{y} = \mathrm{sinal}(\theta_0 + \theta_1 x_1 + \theta_2 x_2),\qquad
+\mathrm{sinal}(z)=\begin{cases}+1 &amp; z\ge 0\\ -1 &amp; z&lt; 0\end{cases}.
+</annotation></semantics></math></p>
+<p>Quando o rótulo previsto discorda do verdadeiro, a regra PLA
+(<em>Perceptron Learning Algorithm</em>) atualiza</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo>←</mo><mi>θ</mi><mo>+</mo><mi>η</mi><mspace width="0.167em"></mspace><mi>y</mi><mspace width="0.167em"></mspace><mi>x</mi></mrow><annotation encoding="application/x-tex">
+\theta \leftarrow \theta + \eta\, y\, x
+</annotation></semantics></math></p>
+<p>(com (x = (1, x_1, x_2)) e (y\in{-1,+1})). O erro que guia o passo é
+o erro de <strong>classificação</strong> (lado certo ou errado).</p>
 <p>O perceptron clássico responde bem a perguntas do tipo “a peça sai ou
-não sai?”. A demanda semanal desta loja pergunta outra coisa:
+não sai?”. A demanda semanal pergunta outra coisa:
 <strong>quantas</strong> linhas de pedido tendem a aparecer.</p>
 <h3 id="33-widrowhoff-adaline-e-lms">3.3 Widrow–Hoff, ADALINE e LMS</h3>
 <p><strong>Bernard Widrow</strong> e <strong>Marcian Hoff</strong>
@@ -178,84 +202,30 @@ não bit de prateleira</h3>
 <tbody>
 <tr>
 <td>Bit / classe (saiu / não saiu)</td>
-<td>Perceptron clássico (erro 0/1)</td>
+<td>Perceptron clássico + PLA</td>
 </tr>
 <tr>
 <td>Contagem / nível contínuo (linhas na semana)</td>
-<td>ADALINE / LMS (erro contínuo)</td>
+<td>ADALINE / LMS</td>
 </tr>
 </tbody>
 </table>
-<p>A demanda semanal pede o segundo quadro: um número, não um
-sim/não.</p>
-<h2 id="4-separabilidade-linear-no-plano">4. Separabilidade linear no
+<p>A demanda semanal pede o segundo quadro. O laboratório das seções 4–5
+fixa o primeiro.</p>
+<h2 id="4-laboratório-uma-reta-no-plano">4. Laboratório: uma reta no
 plano</h2>
-<p>Antes de voltar à série semanal, um laboratório mínimo de
-classificação mostra o alcance — e o limite — de <strong>uma</strong>
-reta no plano. O vocabulário nasce da história do perceptron; a demanda
-depois pede outra coisa.</p>
-<h3 id="quatro-cantos-no-plano">Quatro cantos no plano</h3>
-<p>Com duas entradas que só valem 0 ou 1, há exatamente quatro
-combinações:</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: right;">(x_1)</th>
-<th style="text-align: right;">(x_2)</th>
-<th>Canto</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td>canto inferior esquerdo</td>
-</tr>
-<tr>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">1</td>
-<td>canto superior esquerdo</td>
-</tr>
-<tr>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td>canto inferior direito</td>
-</tr>
-<tr>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td>canto superior direito</td>
-</tr>
-</tbody>
-</table>
-<p>Pense nesses quatro pontos como peças sobre uma mesa. Uma função
-booleana pinta cada peça de “verdadeiro” ou “falso”. A pergunta
-geométrica é simples: existe um <strong>traço reto</strong> que deixa
-todos os verdadeiros de um lado e todos os falsos do outro?</p>
-<h3 id="and-e-or-um-traço-basta">AND e OR: um traço basta</h3>
-<p>No <strong>AND</strong>, só o canto <code>(1,1)</code> é verdadeiro;
-os outros três são falsos. Um único traço isola aquele canto — os
-verdadeiros ficam juntos de um lado da reta.</p>
-<p>No <strong>OR</strong>, só o canto <code>(0,0)</code> é falso; os
-outros três são verdadeiros. De novo, um traço basta: o falso fica
-sozinho de um lado.</p>
-<p>Quando isso acontece, dizemos que a função é <strong>linearmente
-separável</strong>: existe uma reta (em dimensão maior, um hiperplano)
-que separa as duas classes.</p>
-<h3 id="xor-o-x-que-uma-reta-não-corta">XOR: o X que uma reta não
-corta</h3>
-<p>No <strong>XOR</strong>, os verdadeiros são <code>(0,1)</code> e
-<code>(1,0)</code> — cantos opostos na diagonal. Os falsos ocupam a
-outra diagonal. Qualquer reta que tente deixar os dois verdadeiros do
-mesmo lado acaba puxando consigo ao menos um falso, ou deixa um
-verdadeiro do lado errado.</p>
-<p>Uma única reta <strong>não</strong> realiza o XOR. Daí o interesse
-histórico por redes com mais de uma camada: compor fronteiras que um só
-traço não desenha.</p>
-<p><img src="../material/imagens/separabilidade-and-or-xor.png"
-alt="AND e OR separados por uma reta; XOR sem separação linear." /></p>
-<p><em>Figura 3 — Verde: alvo 1; terracota: alvo 0. AND e OR admitem um
-traço; XOR pede outra geometria.</em></p>
+<p>Abra o <a
+href="../material/bi-demanda-perceptron/lab/index.html">laboratório
+geométrico</a> e percorra os três painéis na ordem.</p>
+<h3 id="41-fronteira-e-vetor-de-pesos">4.1 Fronteira e vetor de
+pesos</h3>
+<p>Com duas entradas, a fronteira é a reta (\theta_0 + \theta_1 x_1 +
+\theta_2 x_2 = 0). O vetor ((\theta_1, \theta_2)) é
+<strong>perpendicular</strong> à reta e aponta para o semiplano da
+classe (+1). Mover só (\theta_0) translada a reta; mudar (\theta_1) e
+(\theta_2) gira a normal.</p>
+<h3 id="42-and-or-e-xor">4.2 AND, OR e XOR</h3>
+<p>Codificando falso como (-1) e verdadeiro como (+1):</p>
 <table>
 <thead>
 <tr>
@@ -278,16 +248,112 @@ traço; XOR pede outra geometria.</em></p>
 </tr>
 </tbody>
 </table>
-<h3 id="da-classificação-à-contagem-da-loja">Da classificação à contagem
-da loja</h3>
-<p>O quadro booleano fixa o vocabulário de <strong>separabilidade
-linear</strong>. Na demanda semanal, o alvo é uma
-<strong>contagem</strong> — quantas linhas de pedido — não um bit de
-classe. A reta desta aula resume um <strong>nível</strong> no tempo; ela
-não precisa cortar classes no plano (x_1 \times x_2). O laboratório de
-AND/OR/XOR fica como mapa histórico do perceptron; o trabalho com
-<code>p01</code> e <code>p03</code> volta à série de contagens.</p>
-<h2 id="5-corrigir-o-palpite-semana-a-semana">5. Corrigir o palpite
+<p>No <strong>AND</strong>, só o canto ((+1,+1)) é verdadeiro. No
+<strong>OR</strong>, só ((-1,-1)) é falso. No <strong>XOR</strong>, os
+verdadeiros ocupam cantos opostos na diagonal: qualquer reta que tente
+juntá-los puxa um falso ou deixa um verdadeiro do lado errado.</p>
+<p><img src="../material/imagens/separabilidade-and-or-xor.png"
+alt="AND e OR separados por uma reta; XOR sem separação linear." /></p>
+<p><em>Figura 3 — Verde: alvo 1; terracota: alvo 0 (na figura estática).
+AND e OR admitem um traço; XOR pede outra geometria. No laboratório a
+codificação é ±1.</em></p>
+<p>Uma rede com <strong>duas</strong> unidades na primeira camada e uma
+na saída consegue realizar o XOR compondo fronteiras. O PLA sozinho, em
+uma unidade, não sobe essa escada — daí a ponte para MLP e
+backpropagation no <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-treino-redes-neurais-20261026.md">tutorial
+de redes</a>.</p>
+<h3 id="43-pla-ao-vivo">4.3 PLA ao vivo</h3>
+<p>No terceiro painel, o algoritmo procura um ponto mal classificado e
+aplica (\theta \leftarrow \theta + \eta, y, x). No modo
+<strong>separável</strong>, a curva de erros chega a zero. No
+<strong>não separável</strong>, ela oscila: não há garantia de
+convergência.</p>
+<h2 id="5-exemplo-numérico-do-pla">5. Exemplo numérico do PLA</h2>
+<p>Quatro pontos no plano (OR com codificação ±1), bias com (x_0 =
+1):</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">(x_1)</th>
+<th style="text-align: right;">(x_2)</th>
+<th style="text-align: right;">(y)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">(+1)</td>
+</tr>
+<tr>
+<td style="text-align: right;">−1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">(+1)</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">−1</td>
+<td style="text-align: right;">(+1)</td>
+</tr>
+<tr>
+<td style="text-align: right;">−1</td>
+<td style="text-align: right;">−1</td>
+<td style="text-align: right;">(−1)</td>
+</tr>
+</tbody>
+</table>
+<p>Comece com (\theta^\top = (-1,-1,-1)) e (\eta = 1). O ponto ((-1,1))
+com alvo (+1) está do lado errado:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>−</mi><mn>1</mn><mo>&lt;</mo><mn>0</mn><mo>⇒</mo><mover><mi>y</mi><mo accent="true">̂</mo></mover><mo>=</mo><mi>−</mi><mn>1</mn><mo>≠</mo><mi>+</mi><mn>1</mn><mi>.</mi></mrow><annotation encoding="application/x-tex">
+(-1) + (-1)(-1) + (-1)(1) = -1 &lt; 0 \Rightarrow \widehat{y}=-1 \neq +1.
+</annotation></semantics></math></p>
+<p>Atualização:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo>←</mo><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>1</mn><mo>,</mo><mi>−</mi><mn>1</mn><mo>,</mo><mi>−</mi><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mi>+</mi><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>,</mo><mi>−</mi><mn>1</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mi>−</mi><mn>2</mn><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\theta \leftarrow (-1,-1,-1) + (+1)\,(1,-1,1) = (0,-2,0).
+</annotation></semantics></math></p>
+<p>Repita até não restar erro (no laboratório, use <strong>Um
+passo</strong> e acompanhe a curva). A intuição geométrica: somar (y,x)
+gira o vetor de pesos na direção que alinha melhor o semiplano com o
+ponto corrigido.</p>
+<h2 id="6-da-classificação-à-contagem-pla-e-lms">6. Da classificação à
+contagem: PLA e LMS</h2>
+<p>A mesma soma (w^\top x) aparece nos dois mundos.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Perceptron + PLA</th>
+<th>ADALINE + LMS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Saída</td>
+<td>(\mathrm{sinal}(w^\top x))</td>
+<td>(w^\top x) (contínua)</td>
+</tr>
+<tr>
+<td>Erro que guia</td>
+<td>lado da classe</td>
+<td>(y - \widehat{y})</td>
+</tr>
+<tr>
+<td>Atualização típica</td>
+<td>(w \leftarrow w + \eta, y, x) (se errou)</td>
+<td>(w \leftarrow w + \eta,(y-\widehat{y}), x)</td>
+</tr>
+<tr>
+<td>Pergunta da loja</td>
+<td>“sai / não sai?”</td>
+<td>“quantas linhas nesta semana?”</td>
+</tr>
+</tbody>
+</table>
+<p>Na demanda semanal, (x_t = (1,\ t/\mathrm{escala})) e o alvo é a
+contagem (y_t). O LMS é o primo <strong>regressivo</strong> do PLA:
+mesma geometria linear, perda quadrática, saída contínua.</p>
+<h2 id="7-corrigir-o-palpite-semana-a-semana">7. Corrigir o palpite
 semana a semana</h2>
 <p>Imagine que a loja já tem um palpite linear para o Jarro: “cerca de
 tantas linhas nesta semana”. Fecha a semana, conta o observado, e vê o
@@ -318,7 +384,7 @@ w \leftarrow w + \eta\,(y_t - \widehat{y}_t)\,x_t,
 <p>É o espírito do perceptron (atualização local pelo erro), com perda
 quadrática. O treino abaixo é <strong>uma</strong> unidade linear
 adaptativa — o ponto de partida histórico das redes mais profundas, sem
-ainda ser backprop de uma rede multilcamada. Nos exemplos trabalhados
+ainda ser backprop de uma rede multicamada. Nos exemplos trabalhados
 (<code>p01</code>, <code>p03</code>), esse laço roda com (\eta = 0{,}05)
 e 200 voltas completas (<em>épocas</em>) sobre as 12 primeiras
 semanas.</p>
@@ -327,7 +393,7 @@ alt="Laço: volta completa → uma semana → palpite e erro → empurrão nos p
 <p><em>Figura 4 — Dentro de cada volta, todas as semanas do bloco de
 treino passam pela correção; o erro médio da volta resume o
 ajuste.</em></p>
-<h2 id="6-exemplo-trabalhado-1--jarro-p01">6. Exemplo trabalhado 1 —
+<h2 id="8-exemplo-trabalhado-1--jarro-p01">8. Exemplo trabalhado 1 —
 Jarro (<code>p01</code>)</h2>
 <p>Gere o painel e os pesos (na raiz do repositório):</p>
 <div class="sourceCode" id="cb1"><pre
@@ -406,7 +472,7 @@ o ponto terracota extrapola a semana seguinte.</em></p>
 alt="Erro médio por época no treino LMS do Jarro." /></p>
 <p><em>Figura 6 — A curva deve descer e estabilizar ao longo das 200
 épocas.</em></p>
-<h2 id="7-exemplo-trabalhado-2--boneca-p03">7. Exemplo trabalhado 2 —
+<h2 id="9-exemplo-trabalhado-2--boneca-p03">9. Exemplo trabalhado 2 —
 Boneca (<code>p03</code>)</h2>
 <p>Com os mesmos hiperparâmetros nas 12 primeiras semanas de Boneca de
 barro:</p>
@@ -456,7 +522,7 @@ pesos.</em></p>
 alt="Erro médio por época no treino LMS da Boneca." /></p>
 <p><em>Figura 8 — Curva de treino de <code>p03</code> nas mesmas 200
 épocas.</em></p>
-<h2 id="8-avaliar-no-tempo">8. Avaliar no tempo</h2>
+<h2 id="10-avaliar-no-tempo">10. Avaliar no tempo</h2>
 <p>Nas quatro últimas semanas, a cada origem o modelo <strong>re-treina
 só com o passado</strong> e prevê a semana seguinte (piso em zero).
 Compare o erro absoluto médio com a previsão ingênua, a média móvel de
@@ -490,19 +556,23 @@ quatro semanas e os mínimos quadrados em lote — mesmas 48 previsões:</p>
 <p>Nesta amostra sintética curta, a reta passo a passo fica perto do
 ajuste em lote — o esperado quando a família de funções é a mesma e o
 treino online converge.</p>
-<h2 id="9-explorador-no-painel">9. Explorador no painel</h2>
+<h2 id="11-explorador-no-painel">11. Explorador no painel</h2>
 <p>O <a
 href="../material/bi-demanda-perceptron/index.html">explorador</a>
 mostra série, curva de treino, erro absoluto médio agregado e tabela.
 Selecione <strong>Jarro (<code>p01</code>)</strong> e <strong>Boneca
 (<code>p03</code>)</strong> — os dois exemplos deste tutorial. Guia
 curto em <a
-href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-demanda-perceptron/README.md"><code>bi-demanda-perceptron/README.md</code></a>.</p>
+href="../material/bi-demanda-perceptron/README.md"><code>bi-demanda-perceptron/README.md</code></a>.</p>
+<p>O <a
+href="../material/bi-demanda-perceptron/lab/index.html">laboratório
+geométrico</a> fica ao lado: fronteira, portas e PLA, antes de voltar às
+contagens.</p>
 <p><img src="../material/imagens/bi-demanda-perc-mae.png"
 alt="Erro absoluto médio agregado: baselines e reta passo a passo." /></p>
 <p><em>Figura 9 — Mesmas 48 previsões para todos os métodos. Menor valor
 é melhor nesta métrica.</em></p>
-<h2 id="10-endpoint-bentoml">10. Endpoint BentoML</h2>
+<h2 id="12-endpoint-bentoml">12. Endpoint BentoML</h2>
 <p>Com os pesos gerados para <code>p01</code> (serviço de
 demonstração):</p>
 <div class="sourceCode" id="cb3"><pre
@@ -533,14 +603,23 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a hr
 </thead>
 <tbody>
 <tr>
+<td><strong>Neurônio MP</strong></td>
+<td>Modelo de McCulloch–Pitts: entradas binárias e limiar.</td>
+</tr>
+<tr>
 <td><strong>Perceptron</strong></td>
-<td>Classificador de Rosenblatt: atualiza pesos quando erra o lado da
-classe (alvo 0/1).</td>
+<td>Classificador de Rosenblatt: (\mathrm{sinal}(w^\top x)); atualiza
+com PLA.</td>
+</tr>
+<tr>
+<td><strong>PLA</strong></td>
+<td>Algoritmo de aprendizado do Perceptron: (\theta \leftarrow \theta +
+\eta, y, x) nos erros.</td>
 </tr>
 <tr>
 <td><strong>ADALINE / LMS</strong></td>
-<td>Unidade linear adaptativa: saída contínua; atualiza pesos com o erro
-(y - \widehat{y}) (<em>least mean squares</em>).</td>
+<td>Unidade linear adaptativa: saída contínua; atualiza com (y -
+\widehat{y}).</td>
 </tr>
 <tr>
 <td><strong>Separabilidade linear</strong></td>
@@ -594,9 +673,14 @@ incorpora o observado (às vezes chamado <em>walk-forward</em>).</td>
 <h2 id="referência">Referência</h2>
 <ul>
 <li>ADALINE / LMS: atualização pelo erro contínuo (Widrow–Hoff).</li>
-<li>Perceptron: Rosenblatt; neurônio formal: McCulloch–Pitts (contexto
-histórico).</li>
-<li>Código: <code>scripts/lms_demanda.py</code>,
+<li>Perceptron / PLA: Rosenblatt; neurônio formal: McCulloch–Pitts.</li>
+<li>Laboratório interativo do Caderno:
+<code>material/bi-demanda-perceptron/lab/</code> (pedagogia de
+fronteira/portas/PLA alinhada a materiais abertos pt-BR, entre eles o
+curso de Deep Learning de L. S. Kupssinskü, CC BY-SA 4.0).</li>
+<li>Leituras CESAR ingeridas: <code>wiki/leituras/ads032/</code> (Kup,
+Minicurso RNAs, Harpya).</li>
+<li>Código LMS: <code>scripts/lms_demanda.py</code>,
 <code>scripts/gerar_bi_demanda_perceptron.py</code>,
 <code>service_perceptron_demanda.py</code>.</li>
 </ul></main>
