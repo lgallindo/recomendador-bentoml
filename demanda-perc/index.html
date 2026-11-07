@@ -32,26 +32,34 @@ Markdown</a>
 id="toc-previsão-de-demanda-com-perceptron--lms-adaline">Previsão de
 demanda com perceptron / LMS (ADALINE)</a>
 <ul>
-<li><a href="#1-a-reta-que-já-conhecemos"
-id="toc-1-a-reta-que-já-conhecemos">1. A reta que já conhecemos</a></li>
-<li><a href="#2-história-curta-do-modelo-linear-adaptativo"
-id="toc-2-história-curta-do-modelo-linear-adaptativo">2. História curta
+<li><a href="#1-a-pergunta-que-já-conhecemos"
+id="toc-1-a-pergunta-que-já-conhecemos">1. A pergunta que já
+conhecemos</a></li>
+<li><a href="#2-dois-caminhos-até-a-mesma-reta"
+id="toc-2-dois-caminhos-até-a-mesma-reta">2. Dois caminhos até a mesma
+reta</a></li>
+<li><a href="#3-história-curta-do-modelo-linear-adaptativo"
+id="toc-3-história-curta-do-modelo-linear-adaptativo">3. História curta
 do modelo linear adaptativo</a></li>
-<li><a href="#3-separabilidade-linear-no-plano"
-id="toc-3-separabilidade-linear-no-plano">3. Separabilidade linear no
+<li><a href="#4-separabilidade-linear-no-plano"
+id="toc-4-separabilidade-linear-no-plano">4. Separabilidade linear no
 plano</a></li>
-<li><a href="#4-exemplo-trabalhado-1--jarro-p01"
-id="toc-4-exemplo-trabalhado-1--jarro-p01">4. Exemplo trabalhado 1 —
+<li><a href="#5-corrigir-o-palpite-semana-a-semana"
+id="toc-5-corrigir-o-palpite-semana-a-semana">5. Corrigir o palpite
+semana a semana</a></li>
+<li><a href="#6-exemplo-trabalhado-1--jarro-p01"
+id="toc-6-exemplo-trabalhado-1--jarro-p01">6. Exemplo trabalhado 1 —
 Jarro (<code>p01</code>)</a></li>
-<li><a href="#5-exemplo-trabalhado-2--boneca-p03"
-id="toc-5-exemplo-trabalhado-2--boneca-p03">5. Exemplo trabalhado 2 —
+<li><a href="#7-exemplo-trabalhado-2--boneca-p03"
+id="toc-7-exemplo-trabalhado-2--boneca-p03">7. Exemplo trabalhado 2 —
 Boneca (<code>p03</code>)</a></li>
-<li><a href="#6-avaliar-no-tempo" id="toc-6-avaliar-no-tempo">6. Avaliar
+<li><a href="#8-avaliar-no-tempo" id="toc-8-avaliar-no-tempo">8. Avaliar
 no tempo</a></li>
-<li><a href="#7-explorador-bi" id="toc-7-explorador-bi">7. Explorador
-BI</a></li>
-<li><a href="#8-endpoint-bentoml" id="toc-8-endpoint-bentoml">8.
+<li><a href="#9-explorador-no-painel" id="toc-9-explorador-no-painel">9.
+Explorador no painel</a></li>
+<li><a href="#10-endpoint-bentoml" id="toc-10-endpoint-bentoml">10.
 Endpoint BentoML</a></li>
+<li><a href="#glossário" id="toc-glossário">Glossário</a></li>
 <li><a href="#referência" id="toc-referência">Referência</a></li>
 </ul></li>
 </ul></nav></details>
@@ -74,52 +82,71 @@ href="../material/bi-demanda-perceptron/index.html"><code>bi-demanda-perceptron/
 <iframe id="explorer" src="../material/bi-demanda-perceptron/index.html" title="Explorador interativo LMS / ADALINE"
 loading="lazy" allow="fullscreen" allowfullscreen></iframe>
 </section>
-<p>Ao concluir esta aula, você deverá conseguir situar o
-<strong>perceptron</strong> e a regra <strong>LMS / ADALINE</strong>
-numa linha histórica curta, marcar AND, OR e XOR como separáveis ou não
-por uma reta, treinar pesos com erro contínuo na série semanal, comparar
-o resultado com médias móveis e com a <a
-href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-regressao-quadrados-minimos-demanda-20261017.md">reta
-de mínimos quadrados</a> no mesmo walk-forward, e conferir a previsão
-num endpoint BentoML mínimo.</p>
-<p>Os dados de demanda são <strong>sintéticos</strong>
-(<code>dados/vendas_semanais.csv</code>).</p>
-<p>Leitura em ritmo próprio: os exemplos trabalhados usam Jarro
-(<code>p01</code>) e Boneca (<code>p03</code>); o painel BI e o JSON de
-pesos espelham os mesmos números.</p>
-<h2 id="1-a-reta-que-já-conhecemos">1. A reta que já conhecemos</h2>
+<p>A loja já sabe pedir uma <strong>reta</strong> para resumir a demanda
+semanal — isso foi a aula de <a
+href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-regressao-quadrados-minimos-demanda-20261017.md">mínimos
+quadrados</a>. Aqui a reta é a <strong>mesma família</strong>; o que
+muda é o caminho até os pesos: em vez de ajustar o bloco de uma vez, a
+regra <strong>corrige o palpite a cada semana</strong>, guiada pelo erro
+contínuo (observado menos previsto).</p>
+<p>Os dados continuam <strong>sintéticos</strong>
+(<code>dados/vendas_semanais.csv</code>). Os exemplos trabalhados são
+Jarro (<code>p01</code>) e Boneca (<code>p03</code>).</p>
+<p>Leitura em ritmo próprio. Termos técnicos reunidos no <a
+href="#glossário">glossário</a> ao final.</p>
+<h2 id="1-a-pergunta-que-já-conhecemos">1. A pergunta que já
+conhecemos</h2>
+<p>Quantas <strong>linhas de pedido</strong> cada peça tende a gerar na
+semana seguinte? A unidade é a mesma da média móvel e da reta de mínimos
+quadrados. O ritual de avaliação também: treinar só com o passado,
+prever a próxima semana, só então incorporar o valor observado.</p>
+<p>O que esta aula acrescenta é um <strong>modo de chegar à
+reta</strong>: empurrar os pesos um pouco depois de cada semana, em vez
+de resolver o lote inteiro de uma só vez.</p>
+<p><img src="../material/imagens/fluxo-lms-demanda.png"
+alt="Do arquivo semanal ao painel: contagens, reta que se corrige, prever só com o passado, medir o erro, ver no painel." /></p>
+<p><em>Figura 0 — Caminho desta aula: ler as contagens, deixar a reta se
+corrigir semana a semana, prever só com o que já fechou, medir o erro
+frente a outros métodos e conferir no painel.</em></p>
+<p><img src="../material/imagens/mapa-ia-lms-demanda.png"
+alt="Mapa: IA contém ML; reta adaptativa supervisionada prevê demanda semanal." /></p>
+<p><em>Figura 1 — A reta passo a passo fica no aprendizado
+supervisionado: entrada e alvo conhecidos, parâmetros ajustados com
+exemplos. As áreas são conceituais, não uma medida de tamanho.</em></p>
+<h2 id="2-dois-caminhos-até-a-mesma-reta">2. Dois caminhos até a mesma
+reta</h2>
 <p>No tutorial de mínimos quadrados, cada produto ganha uma reta</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>t</mi></msub><mo>=</mo><msub><mi>β</mi><mn>0</mn></msub><mo>+</mo><msub><mi>β</mi><mn>1</mn></msub><mi>t</mi></mrow><annotation encoding="application/x-tex">
 \widehat{y}_t = \beta_0 + \beta_1 t
 </annotation></semantics></math></p>
-<p>ajustada <strong>de uma vez</strong> a um bloco de semanas (ou, no
-walk-forward, ao passado disponível naquela origem). Os coeficientes
-saem do critério clássico: minimizar a soma dos resíduos ao
+<p>ajustada <strong>de uma vez</strong> ao bloco de semanas. Os
+coeficientes saem do critério clássico: minimizar a soma dos resíduos ao
 quadrado.</p>
-<p>Esta aula mantém a <strong>mesma família de funções</strong> — uma
-reta no tempo — e muda o <strong>modo de chegar aos pesos</strong>. Em
-vez de resolver o lote de uma só vez, a regra LMS (ADALINE)
-<strong>atualiza</strong> (w_0) e (w_1) a cada exemplo, guiada pelo erro
-contínuo (y_t - \widehat{y}_t). Na série curta do marketplace, esse
-caminho iterativo aproxima a mesma reta que o ajuste em lote.</p>
+<p>Esta aula mantém a mesma forma — uma reta no tempo — e muda o
+<strong>modo de chegar aos pesos</strong>. A regra passo a passo
+(ADALINE / LMS) <strong>atualiza</strong> (w_0) e (w_1) a cada exemplo,
+guiada pelo erro contínuo (y_t - \widehat{y}_t). Na série curta do
+marketplace, esse caminho itera até aproximar a mesma reta do ajuste em
+lote.</p>
 <p><img src="../material/imagens/mq-lote-vs-lms.png"
-alt="Mesma reta; caminho em lote versus passo a passo." /></p>
-<p><em>Figura 1 — MQ resolve o bloco de uma vez; LMS corrige os pesos a
-cada exemplo. A perda continua quadrática.</em></p>
-<h2 id="2-história-curta-do-modelo-linear-adaptativo">2. História curta
+alt="Dois caminhos até a mesma reta: ajuste de uma vez versus correção semana a semana." /></p>
+<p><em>Figura 2 — À esquerda, o bloco inteiro de uma vez. À direita, um
+empurrão nos pesos depois de cada semana. Em ambos os casos o erro é
+contínuo: contagem observada menos palpite.</em></p>
+<h2 id="3-história-curta-do-modelo-linear-adaptativo">3. História curta
 do modelo linear adaptativo</h2>
 <p>A ideia de “somar entradas, atravessar um limiar ou uma saída
 contínua e corrigir pesos com o erro” tem nome e data. O caminho curto
 abaixo basta para saber <strong>por que</strong> falamos de perceptron e
 de LMS na mesma aula de demanda.</p>
-<h3 id="21-neurônio-formal-e-limiar">2.1 Neurônio formal e limiar</h3>
+<h3 id="31-neurônio-formal-e-limiar">3.1 Neurônio formal e limiar</h3>
 <p>Nos anos 1940, <strong>Warren McCulloch</strong> e <strong>Walter
 Pitts</strong> propuseram um modelo simples de neurônio formal: combinar
 sinais de entrada e produzir uma saída ligada a um limiar. O desenho é
 lógico e abstrato — uma peça fundadora da ideia de rede — e ainda não é
 o algoritmo de treino que usaremos na planilha de demanda. Ele prepara o
 terreno: <strong>unidade linear (ou limiar) + composição</strong>.</p>
-<h3 id="22-perceptron-de-rosenblatt">2.2 Perceptron de Rosenblatt</h3>
+<h3 id="32-perceptron-de-rosenblatt">3.2 Perceptron de Rosenblatt</h3>
 <p>No fim dos anos 1950, <strong>Frank Rosenblatt</strong> descreveu o
 <strong>perceptron</strong>: um classificador que separa classes com um
 hiperplano e <strong>atualiza pesos</strong> quando o rótulo previsto
@@ -129,19 +156,17 @@ discorda do rótulo verdadeiro. O erro que guia o passo é o erro de
 <p>O perceptron clássico responde bem a perguntas do tipo “a peça sai ou
 não sai?”. A demanda semanal desta loja pergunta outra coisa:
 <strong>quantas</strong> linhas de pedido tendem a aparecer.</p>
-<h3 id="23-widrowhoff-adaline-e-lms">2.3 Widrow–Hoff, ADALINE e LMS</h3>
+<h3 id="33-widrowhoff-adaline-e-lms">3.3 Widrow–Hoff, ADALINE e LMS</h3>
 <p><strong>Bernard Widrow</strong> e <strong>Marcian Hoff</strong>
 formularam a regra <strong>LMS</strong> (<em>least mean squares</em>),
 associada ao ADALINE (<em>adaptive linear neuron</em>): a saída é
 <strong>contínua</strong>, a perda é <strong>quadrática</strong>, e a
-atualização dos pesos segue o erro (y - \widehat{y}) a cada exemplo (ou
-em passos estocásticos equivalentes).</p>
-<p>É o mesmo espírito de “corrigir o modelo com o residual”, agora
-alinhado ao critério dos mínimos quadrados que você já viu em lote. A
-diferença operacional é o <strong>caminho</strong>: passo a passo, com
-taxa de aprendizado (\eta), em vez de uma única solução fechada do
-sistema normal.</p>
-<h3 id="24-contagem-da-loja-não-bit-de-prateleira">2.4 Contagem da loja,
+atualização dos pesos segue o erro (y - \widehat{y}) a cada exemplo.</p>
+<p>É o mesmo espírito de “corrigir o modelo com o residual” dos mínimos
+quadrados, agora <strong>passo a passo</strong>, com uma taxa de
+aprendizado (\eta), em vez de uma única solução fechada do sistema
+normal.</p>
+<h3 id="34-contagem-da-loja-não-bit-de-prateleira">3.4 Contagem da loja,
 não bit de prateleira</h3>
 <table>
 <thead>
@@ -163,47 +188,7 @@ não bit de prateleira</h3>
 </table>
 <p>A demanda semanal pede o segundo quadro: um número, não um
 sim/não.</p>
-<h3 id="25-corrigir-o-palpite-semana-a-semana">2.5 Corrigir o palpite
-semana a semana</h3>
-<p>Imagine que a loja já tem um palpite linear para o Jarro: “cerca de
-tantas linhas nesta semana”. Fecha a semana, conta o observado, e vê o
-quanto o palpite errou. Em vez de refazer a conta do zero com todas as
-semanas de uma só vez, a regra LMS <strong>empurra</strong> os pesos um
-pouco na direção que reduziria aquele erro — e passa à semana
-seguinte.</p>
-<h3 id="26-nomes-do-passo-lms">2.6 Nomes do passo LMS</h3>
-<ul>
-<li>(\widehat{y}_t): palpite contínuo para a semana (t).</li>
-<li>(y_t - \widehat{y}_t): erro contínuo (observado menos palpite).</li>
-<li>(\eta): taxa de aprendizado — o tamanho do empurrão.</li>
-<li>(x_t): vetor de entrada daquele exemplo; aqui, (x_t = (1,\
-t/\mathrm{escala})).</li>
-<li>(w = (w_0, w_1)): bias e peso do tempo normalizado.</li>
-</ul>
-<h3 id="27-a-atualização-em-uma-linha">2.7 A atualização em uma
-linha</h3>
-<p>A unidade LMS prevê</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>t</mi></msub><mo>=</mo><msub><mi>w</mi><mn>0</mn></msub><mo>+</mo><msub><mi>w</mi><mn>1</mn></msub><mo>⋅</mo><mfrac><mi>t</mi><mrow><mi mathvariant="normal">e</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">a</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">
-\widehat{y}_t = w_0 + w_1 \cdot \frac{t}{\mathrm{escala}}
-</annotation></semantics></math></p>
-<p>(com tempo normalizado no treino para estabilizar o passo) e
-atualiza</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>w</mi><mo>←</mo><mi>w</mi><mo>+</mo><mi>η</mi><mspace width="0.167em"></mspace><mo stretchy="false" form="prefix">(</mo><msub><mi>y</mi><mi>t</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>t</mi></msub><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><msub><mi>x</mi><mi>t</mi></msub><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>x</mi><mi>t</mi></msub><mo>=</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><mn>1</mn><mo>,</mo><mspace width="0.222em"></mspace><mi>t</mi><mi>/</mi><mrow><mi mathvariant="normal">e</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">a</mi></mrow><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
-w \leftarrow w + \eta\,(y_t - \widehat{y}_t)\,x_t,
-\quad x_t = \bigl(1,\ t/\mathrm{escala}\bigr).
-</annotation></semantics></math></p>
-<p>É o espírito do perceptron (atualização local pelo erro), com perda
-quadrática. O treino abaixo é <strong>uma</strong> unidade linear
-adaptativa — o ponto de partida histórico das redes mais profundas, sem
-ainda ser backprop de uma rede multilcamada. Nos exemplos trabalhados
-(<code>p01</code>, <code>p03</code>), esse laço roda com (\eta = 0{,}05)
-e 200 épocas sobre as 12 primeiras semanas.</p>
-<p><img src="../material/imagens/fluxo-lms-treino.png"
-alt="Laço: época → exemplo → erro → atualização → MSE." /></p>
-<p><em>Figura 2 — Dentro de cada época, todos os pares ((t, y_t)) do
-bloco de treino passam pela regra LMS; o MSE da época resume o
-ajuste.</em></p>
-<h2 id="3-separabilidade-linear-no-plano">3. Separabilidade linear no
+<h2 id="4-separabilidade-linear-no-plano">4. Separabilidade linear no
 plano</h2>
 <p>Antes de voltar à série semanal, um laboratório mínimo de
 classificação mostra o alcance — e o limite — de <strong>uma</strong>
@@ -298,11 +283,51 @@ da loja</h3>
 <p>O quadro booleano fixa o vocabulário de <strong>separabilidade
 linear</strong>. Na demanda semanal, o alvo é uma
 <strong>contagem</strong> — quantas linhas de pedido — não um bit de
-classe. A reta LMS desta aula resume um <strong>nível</strong> no tempo;
-ela não precisa cortar classes no plano (x_1 \times x_2). O laboratório
-de AND/OR/XOR fica como mapa histórico do perceptron; o trabalho com
+classe. A reta desta aula resume um <strong>nível</strong> no tempo; ela
+não precisa cortar classes no plano (x_1 \times x_2). O laboratório de
+AND/OR/XOR fica como mapa histórico do perceptron; o trabalho com
 <code>p01</code> e <code>p03</code> volta à série de contagens.</p>
-<h2 id="4-exemplo-trabalhado-1--jarro-p01">4. Exemplo trabalhado 1 —
+<h2 id="5-corrigir-o-palpite-semana-a-semana">5. Corrigir o palpite
+semana a semana</h2>
+<p>Imagine que a loja já tem um palpite linear para o Jarro: “cerca de
+tantas linhas nesta semana”. Fecha a semana, conta o observado, e vê o
+quanto o palpite errou. Em vez de refazer a conta do zero com todas as
+semanas de uma só vez, a regra LMS <strong>empurra</strong> os pesos um
+pouco na direção que reduziria aquele erro — e passa à semana
+seguinte.</p>
+<h3 id="nomes-do-passo">Nomes do passo</h3>
+<ul>
+<li>(\widehat{y}_t): palpite contínuo para a semana (t).</li>
+<li>(y_t - \widehat{y}_t): erro contínuo (observado menos palpite).</li>
+<li>(\eta): taxa de aprendizado — o tamanho do empurrão.</li>
+<li>(x_t): vetor de entrada daquele exemplo; aqui, (x_t = (1,\
+t/\mathrm{escala})).</li>
+<li>(w = (w_0, w_1)): bias e peso do tempo normalizado.</li>
+</ul>
+<h3 id="a-atualização-em-uma-linha">A atualização em uma linha</h3>
+<p>A unidade LMS prevê</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>t</mi></msub><mo>=</mo><msub><mi>w</mi><mn>0</mn></msub><mo>+</mo><msub><mi>w</mi><mn>1</mn></msub><mo>⋅</mo><mfrac><mi>t</mi><mrow><mi mathvariant="normal">e</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">a</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+\widehat{y}_t = w_0 + w_1 \cdot \frac{t}{\mathrm{escala}}
+</annotation></semantics></math></p>
+<p>(com tempo normalizado no treino para estabilizar o passo) e
+atualiza</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>w</mi><mo>←</mo><mi>w</mi><mo>+</mo><mi>η</mi><mspace width="0.167em"></mspace><mo stretchy="false" form="prefix">(</mo><msub><mi>y</mi><mi>t</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>t</mi></msub><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><msub><mi>x</mi><mi>t</mi></msub><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>x</mi><mi>t</mi></msub><mo>=</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><mn>1</mn><mo>,</mo><mspace width="0.222em"></mspace><mi>t</mi><mi>/</mi><mrow><mi mathvariant="normal">e</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">a</mi></mrow><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
+w \leftarrow w + \eta\,(y_t - \widehat{y}_t)\,x_t,
+\quad x_t = \bigl(1,\ t/\mathrm{escala}\bigr).
+</annotation></semantics></math></p>
+<p>É o espírito do perceptron (atualização local pelo erro), com perda
+quadrática. O treino abaixo é <strong>uma</strong> unidade linear
+adaptativa — o ponto de partida histórico das redes mais profundas, sem
+ainda ser backprop de uma rede multilcamada. Nos exemplos trabalhados
+(<code>p01</code>, <code>p03</code>), esse laço roda com (\eta = 0{,}05)
+e 200 voltas completas (<em>épocas</em>) sobre as 12 primeiras
+semanas.</p>
+<p><img src="../material/imagens/fluxo-lms-treino.png"
+alt="Laço: volta completa → uma semana → palpite e erro → empurrão nos pesos → erro médio." /></p>
+<p><em>Figura 4 — Dentro de cada volta, todas as semanas do bloco de
+treino passam pela correção; o erro médio da volta resume o
+ajuste.</em></p>
+<h2 id="6-exemplo-trabalhado-1--jarro-p01">6. Exemplo trabalhado 1 —
 Jarro (<code>p01</code>)</h2>
 <p>Gere o painel e os pesos (na raiz do repositório):</p>
 <div class="sourceCode" id="cb1"><pre
@@ -311,9 +336,9 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="
 <code>material/bi-demanda-perceptron/pesos_p01.json</code> (e também
 <code>pesos_p03.json</code>), além de <code>dados.js</code> do
 explorador. O tempo entra <strong>normalizado</strong>
-(<code>t / (n−1)</code> no treino) para o passo LMS ficar estável.</p>
-<p>Hiperparâmetros deste material: <strong>200 épocas</strong>, (\eta =
-0{,}05), treino nas <strong>12 primeiras semanas</strong>. Para Jarro
+(<code>t / (n−1)</code> no treino) para o passo ficar estável.</p>
+<p>Números deste material: <strong>200 épocas</strong>, (\eta = 0{,}05),
+treino nas <strong>12 primeiras semanas</strong>. Para Jarro
 (<code>p01</code>):</p>
 <table>
 <thead>
@@ -336,18 +361,17 @@ explorador. O tempo entra <strong>normalizado</strong>
 <td style="text-align: right;">11</td>
 </tr>
 <tr>
-<td>MSE da última época</td>
+<td>Erro quadrático médio na última época</td>
 <td style="text-align: right;">1,307</td>
 </tr>
 <tr>
-<td>Previsão LMS em <code>t = 16</code> (piso ≥ 0)</td>
+<td>Previsão em <code>t = 16</code> (piso ≥ 0)</td>
 <td style="text-align: right;">2,390</td>
 </tr>
 </tbody>
 </table>
-<p>A reta LMS aproxima a de mínimos quadrados em lote nesta série curta
-(MQ em <code>p01</code> previa cerca de 2,425 na mesma
-extrapolação).</p>
+<p>A reta passo a passo aproxima a de mínimos quadrados em lote nesta
+série curta (aquela previa cerca de 2,425 na mesma extrapolação).</p>
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Mesma lógica de scripts/lms_demanda.py — caminho feliz, comentado</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
@@ -370,15 +394,19 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a hr
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>proxima <span class="op">=</span> previsao_nao_negativa(w, <span class="bu">float</span>(<span class="bu">len</span>(valores)), escala)</span>
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;bias=</span><span class="sc">{</span>w[<span class="dv">0</span>]<span class="sc">:.4f}</span><span class="ss">  inclinacao=</span><span class="sc">{</span>w[<span class="dv">1</span>]<span class="sc">:.4f}</span><span class="ss">  escala=</span><span class="sc">{</span>escala<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;MSE última época=</span><span class="sc">{</span>hist_mse[<span class="op">-</span><span class="dv">1</span>]<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;erro quadrático médio (última época)=</span><span class="sc">{</span>hist_mse[<span class="op">-</span><span class="dv">1</span>]<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
 <span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;previsão t=</span><span class="sc">{</span><span class="bu">len</span>(valores)<span class="sc">}</span><span class="ss"> → </span><span class="sc">{</span>proxima<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span></code></pre></div>
-<p>A curva de MSE por época deve cair e estabilizar. Se não cair, revise
-(\eta) ou o número de épocas.</p>
+<p>A curva de erro médio por época deve cair e estabilizar. Se não cair,
+revise (\eta) ou o número de épocas.</p>
 <p><img src="../material/imagens/bi-demanda-perc-serie-p01.png"
-alt="Série p01 com ajuste LMS." /></p>
+alt="Série semanal do Jarro com ajuste LMS e previsão da próxima semana." /></p>
+<p><em>Figura 5 — Observações e reta ajustada nas 12 primeiras semanas;
+o ponto terracota extrapola a semana seguinte.</em></p>
 <p><img src="../material/imagens/bi-demanda-perc-mse-p01.png"
-alt="MSE por época no treino LMS (p01)." /></p>
-<h2 id="5-exemplo-trabalhado-2--boneca-p03">5. Exemplo trabalhado 2 —
+alt="Erro médio por época no treino LMS do Jarro." /></p>
+<p><em>Figura 6 — A curva deve descer e estabilizar ao longo das 200
+épocas.</em></p>
+<h2 id="7-exemplo-trabalhado-2--boneca-p03">7. Exemplo trabalhado 2 —
 Boneca (<code>p03</code>)</h2>
 <p>Com os mesmos hiperparâmetros nas 12 primeiras semanas de Boneca de
 barro:</p>
@@ -403,35 +431,41 @@ barro:</p>
 <td style="text-align: right;">11</td>
 </tr>
 <tr>
-<td>MSE da última época</td>
+<td>Erro quadrático médio na última época</td>
 <td style="text-align: right;">0,164</td>
 </tr>
 <tr>
-<td>Previsão LMS em <code>t = 16</code> (piso ≥ 0)</td>
+<td>Previsão em <code>t = 16</code> (piso ≥ 0)</td>
 <td style="text-align: right;">0,700</td>
 </tr>
 </tbody>
 </table>
-<p>No walk-forward das quatro semanas finais, o MAE LMS de
-<code>p03</code> fica em torno de <strong>0,636</strong> (produto
-isolado). A reta MQ em lote para o mesmo produto previa
-<strong>0,800</strong> em <code>t = 16</code>; LMS e MQ permanecem na
-mesma família, com caminhos diferentes até os pesos.</p>
+<p>Nas quatro semanas finais, prevendo <strong>só com o
+passado</strong>, o erro absoluto médio desta reta para <code>p03</code>
+fica em torno de <strong>0,636</strong> (produto isolado). A reta de
+mínimos quadrados em lote para o mesmo produto previa
+<strong>0,800</strong> em <code>t = 16</code>; os dois caminhos
+permanecem na mesma família, com rotas diferentes até os pesos.</p>
 <p>Os pesos gravados estão em <a
 href="../material/bi-demanda-perceptron/pesos_p03.json"><code>material/bi-demanda-perceptron/pesos_p03.json</code></a>.</p>
 <p><img src="../material/imagens/bi-demanda-perc-serie-p03.png"
-alt="Série p03 com ajuste LMS." /></p>
+alt="Série semanal da Boneca com ajuste LMS." /></p>
+<p><em>Figura 7 — Mesmo ritual do Jarro; outro produto, outros
+pesos.</em></p>
 <p><img src="../material/imagens/bi-demanda-perc-mse-p03.png"
-alt="MSE por época no treino LMS (p03)." /></p>
-<h2 id="6-avaliar-no-tempo">6. Avaliar no tempo</h2>
+alt="Erro médio por época no treino LMS da Boneca." /></p>
+<p><em>Figura 8 — Curva de treino de <code>p03</code> nas mesmas 200
+épocas.</em></p>
+<h2 id="8-avaliar-no-tempo">8. Avaliar no tempo</h2>
 <p>Nas quatro últimas semanas, a cada origem o modelo <strong>re-treina
 só com o passado</strong> e prevê a semana seguinte (piso em zero).
-Compare MAE com ingênua, MA(4) e MQ em lote — mesmas 48 previsões:</p>
+Compare o erro absoluto médio com a previsão ingênua, a média móvel de
+quatro semanas e os mínimos quadrados em lote — mesmas 48 previsões:</p>
 <table>
 <thead>
 <tr>
 <th>Método</th>
-<th style="text-align: right;">MAE agregado</th>
+<th style="text-align: right;">Erro absoluto médio agregado</th>
 </tr>
 </thead>
 <tbody>
@@ -440,33 +474,35 @@ Compare MAE com ingênua, MA(4) e MQ em lote — mesmas 48 previsões:</p>
 <td style="text-align: right;">0,667</td>
 </tr>
 <tr>
-<td>MA(4)</td>
+<td>Média móvel (4 semanas)</td>
 <td style="text-align: right;">0,490</td>
 </tr>
 <tr>
-<td>MQ (lote)</td>
+<td>Mínimos quadrados (lote)</td>
 <td style="text-align: right;">0,485</td>
 </tr>
 <tr>
-<td>LMS / ADALINE</td>
+<td>Reta passo a passo (LMS)</td>
 <td style="text-align: right;">0,496</td>
 </tr>
 </tbody>
 </table>
-<p>Nesta amostra sintética curta, LMS fica perto do MQ em lote — o
-esperado quando a família de funções é a mesma e o treino online
-converge.</p>
-<h2 id="7-explorador-bi">7. Explorador BI</h2>
+<p>Nesta amostra sintética curta, a reta passo a passo fica perto do
+ajuste em lote — o esperado quando a família de funções é a mesma e o
+treino online converge.</p>
+<h2 id="9-explorador-no-painel">9. Explorador no painel</h2>
 <p>O <a
 href="../material/bi-demanda-perceptron/index.html">explorador</a>
-mostra série, MSE por época, MAE agregado e tabela. Selecione
-<strong>Jarro (<code>p01</code>)</strong> e <strong>Boneca
-(<code>p03</code>)</strong> no painel — os dois exemplos deste tutorial.
-Guia curto em <a
+mostra série, curva de treino, erro absoluto médio agregado e tabela.
+Selecione <strong>Jarro (<code>p01</code>)</strong> e <strong>Boneca
+(<code>p03</code>)</strong> — os dois exemplos deste tutorial. Guia
+curto em <a
 href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-demanda-perceptron/README.md"><code>bi-demanda-perceptron/README.md</code></a>.</p>
 <p><img src="../material/imagens/bi-demanda-perc-mae.png"
-alt="MAE agregado: baselines e LMS." /></p>
-<h2 id="8-endpoint-bentoml">8. Endpoint BentoML</h2>
+alt="Erro absoluto médio agregado: baselines e reta passo a passo." /></p>
+<p><em>Figura 9 — Mesmas 48 previsões para todos os métodos. Menor valor
+é melhor nesta métrica.</em></p>
+<h2 id="10-endpoint-bentoml">10. Endpoint BentoML</h2>
 <p>Com os pesos gerados para <code>p01</code> (serviço de
 demonstração):</p>
 <div class="sourceCode" id="cb3"><pre
@@ -487,6 +523,74 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a hr
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">max</span>(<span class="fl">0.0</span>, bruto))</span></code></pre></div>
 <p>Os dois caminhos devem coincidir. Para Boneca, leia
 <code>pesos_p03.json</code> com a mesma fórmula.</p>
+<h2 id="glossário">Glossário</h2>
+<table>
+<thead>
+<tr>
+<th>Termo</th>
+<th>Leitura nesta aula</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Perceptron</strong></td>
+<td>Classificador de Rosenblatt: atualiza pesos quando erra o lado da
+classe (alvo 0/1).</td>
+</tr>
+<tr>
+<td><strong>ADALINE / LMS</strong></td>
+<td>Unidade linear adaptativa: saída contínua; atualiza pesos com o erro
+(y - \widehat{y}) (<em>least mean squares</em>).</td>
+</tr>
+<tr>
+<td><strong>Separabilidade linear</strong></td>
+<td>Classes que um único traço reto consegue separar no plano.</td>
+</tr>
+<tr>
+<td><strong>Época</strong></td>
+<td>Uma volta completa por todos os exemplos do bloco de treino.</td>
+</tr>
+<tr>
+<td><strong>Taxa de aprendizado (\eta)</strong></td>
+<td>Tamanho do empurrão nos pesos a cada exemplo.</td>
+</tr>
+<tr>
+<td><strong>Bias (w_0)</strong></td>
+<td>Termo constante da reta (intercepto no espaço normalizado).</td>
+</tr>
+<tr>
+<td><strong>Inclinação (w_1)</strong></td>
+<td>Peso do tempo normalizado.</td>
+</tr>
+<tr>
+<td><strong>Escala</strong></td>
+<td>Fator que divide (t) no treino para estabilizar o passo (aqui,
+(n_{\mathrm{treino}}-1)).</td>
+</tr>
+<tr>
+<td><strong>Erro contínuo / resíduo</strong></td>
+<td>Observado menos palpite, (y_t - \widehat{y}_t).</td>
+</tr>
+<tr>
+<td><strong>Erro absoluto médio (MAE)</strong></td>
+<td>Média de (\lvert y - \widehat{y}\rvert) nas previsões de teste.</td>
+</tr>
+<tr>
+<td><strong>Erro quadrático médio (MSE)</strong></td>
+<td>Média de ((y - \widehat{y})^2); no treino LMS, resume cada
+época.</td>
+</tr>
+<tr>
+<td><strong>Prever só com o passado</strong></td>
+<td>Ritual temporal: treina sem ver a semana de teste, prevê, só então
+incorpora o observado (às vezes chamado <em>walk-forward</em>).</td>
+</tr>
+<tr>
+<td><strong>Mínimos quadrados em lote</strong></td>
+<td>Ajuste da reta ao bloco inteiro de uma vez (tutorial irmão).</td>
+</tr>
+</tbody>
+</table>
 <h2 id="referência">Referência</h2>
 <ul>
 <li>ADALINE / LMS: atualização pelo erro contínuo (Widrow–Hoff).</li>
