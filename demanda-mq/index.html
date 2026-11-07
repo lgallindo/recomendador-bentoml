@@ -223,6 +223,15 @@ y_t - \widehat{y}_t
 <p>é o <strong>resíduo</strong>: positivo se a reta ficou abaixo do
 observado, negativo se ficou acima. A unidade continua sendo linhas de
 pedido por produto por semana.</p>
+<p>No gráfico, cada segmento terracota é essa distância
+<strong>vertical</strong> — do ponto observado até a reta, na mesma
+semana (t). Mínimos quadrados escolhe a reta que deixa a soma desses
+segmentos (ao quadrado) a menor possível.</p>
+<p><img src="../material/imagens/residuos-minimos-quadrados-p01.png"
+alt="Pontos observados, reta de mínimos quadrados e segmentos verticais dos resíduos para Jarro (p01)." /></p>
+<p><em>Figura 2 — Cada haste liga (y_t) a (\widehat{y}_t) na semana (t).
+A reta verde é o ajuste em lote de Jarro (<code>p01</code>); o critério
+soma o quadrado dessas distâncias.</em></p>
 <h3 id="por-que-elevar-ao-quadrado">Por que elevar ao quadrado</h3>
 <p>Somar resíduos crus misturaria acertos para cima e para baixo até
 quase se anularem. Elevar cada resíduo ao quadrado faz duas coisas úteis
@@ -249,7 +258,7 @@ prever: decisão prática de pós-processamento, distinta do critério de
 mínimos quadrados em si.</p>
 <p><img src="../material/imagens/mq-lote-por-produto.png"
 alt="Uma série por produto; ajuste em lote no bloco; walk-forward reajusta só com o passado." /></p>
-<p><em>Figura 2 — Cada <code>product_id</code> tem a própria reta. O
+<p><em>Figura 3 — Cada <code>product_id</code> tem a própria reta. O
 critério Σ(y−ŷ)² é o mesmo; o que muda entre “ajuste completo” e
 walk-forward é <strong>quais semanas</strong> entram no lote.</em></p>
 <h2 id="4-exemplo-trabalhado-1--jarro-p01">4. Exemplo trabalhado 1 —
@@ -316,7 +325,7 @@ descreve a reta que melhor ajusta esta amostra sintética; não demonstra
 uma queda real de demanda.</p>
 <p><img src="../material/imagens/regressao-minimos-quadrados-p01.png"
 alt="Série sintética semanal de Jarro, reta ajustada por mínimos quadrados e previsão extrapolada para a semana seguinte." /></p>
-<p><em>Figura 3 — A reta resume a tendência linear ajustada ao histórico
+<p><em>Figura 4 — A reta resume a tendência linear ajustada ao histórico
 de <code>p01</code>. O segmento futuro é uma extrapolação, não um valor
 observado.</em></p>
 <h3 id="previsões-para-todos-os-produtos">Previsões para todos os
@@ -465,7 +474,7 @@ Ainda assim, é só o resumo linear deste CSV — não uma tendência
 comercial observada.</p>
 <p><img src="../material/imagens/regressao-minimos-quadrados-p03.png"
 alt="Série e reta MQ para Boneca de barro (p03)." /></p>
-<p><em>Figura 4 — Mesmo método do Jarro; outro produto, outra
+<p><em>Figura 5 — Mesmo método do Jarro; outro produto, outra
 reta.</em></p>
 <p>Nas quatro semanas finais, com walk-forward <strong>só com o
 passado</strong>, o MAE de mínimos quadrados para <code>p03</code> fica
@@ -474,7 +483,7 @@ mesmas origens, fica em torno de <strong>0,600</strong>. Os dois números
 são próximos nesta série curta.</p>
 <p><img src="../material/imagens/bi-demanda-mq-serie-p03.png"
 alt="Painel BI: série e reta de p03." /></p>
-<p><em>Figura 5 — O explorador permite selecionar Boneca e ler
+<p><em>Figura 6 — O explorador permite selecionar Boneca e ler
 intercepto, inclinação e erros do teste no mesmo layout usado para o
 Jarro.</em></p>
 <h2 id="6-avaliar-respeitando-o-tempo">6. Avaliar respeitando o
@@ -603,16 +612,16 @@ href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/bi-de
 <p>As figuras abaixo espelham o painel na versão Markdown.</p>
 <p><img src="../material/imagens/bi-demanda-mq-serie-p01.png"
 alt="Série sintética do Jarro p01 com reta de mínimos quadrados, faixa de teste e previsão da próxima semana." /></p>
-<p><em>Figura 6 — Observações e reta do ajuste completo; o ponto
+<p><em>Figura 7 — Observações e reta do ajuste completo; o ponto
 terracota extrapola a semana seguinte. O MAE do teste, no painel, refaz
 o ajuste só com o passado.</em></p>
 <p><img src="../material/imagens/bi-demanda-mq-erros-p01.png"
 alt="Barras de erro absoluto da regressão nas quatro semanas de teste de p01." /></p>
-<p><em>Figura 7 — Erros walk-forward de mínimos quadrados em
+<p><em>Figura 8 — Erros walk-forward de mínimos quadrados em
 <code>p01</code>.</em></p>
 <p><img src="../material/imagens/bi-demanda-mq-mae.png"
 alt="MAE agregado da previsão ingênua, MA(4), MA(5) e mínimos quadrados." /></p>
-<p><em>Figura 8 — Mesmas 48 previsões para todos os métodos. Menor MAE é
+<p><em>Figura 9 — Mesmas 48 previsões para todos os métodos. Menor MAE é
 melhor nesta métrica; a diferença neste conjunto sintético é
 pequena.</em></p>
 <h2 id="referência-e-reprodução">Referência e reprodução</h2>
