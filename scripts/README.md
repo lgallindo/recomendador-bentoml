@@ -9,12 +9,15 @@ turma roda com `uv run python scripts/…`.
 | [`arvore_credito.py`](arvore_credito.py) | Aprende duas árvores; seleciona no desenvolvimento; `--avaliar-teste` revela a avaliação final |
 | [`gerar_figuras_credito.py`](gerar_figuras_credito.py) | Reproduz oito figuras com contagens e PDF imprimível de cartões |
 | [`test_credito.py`](test_credito.py) | Verifica contagens manuais, integridade dos dados e isolamento do teste |
+| [`gerar_bi_credito.py`](gerar_bi_credito.py) | Reproduz `dados.js` do explorador de crédito e as figuras `bi-credito-*.png`; confere contra `relatorio.json` |
 | [`minerar_logs_autenticacao.py`](minerar_logs_autenticacao.py) | Reconstrói sessões e exporta regras e avaliação fixa; `--cenario validacao` seleciona a base separada |
 | [`gerar_logs_autenticacao.py`](gerar_logs_autenticacao.py) | Reproduz os logs fictícios independentes do marketplace |
 | [`test_logs_autenticacao.py`](test_logs_autenticacao.py) | Confere fixtures, métricas, duplicatas e diagnósticos do parser |
+| [`gerar_bi_logs.py`](gerar_bi_logs.py) | Reproduz `dados.js` do explorador de logs; confere as regras contra os CSVs |
+| [`gerar_figuras_logs.py`](gerar_figuras_logs.py) | Figuras do tutorial de logs: pipeline, matriz de sessões, dispersão e descoberta vs validação |
+| [`gerar_figuras_poisson.py`](gerar_figuras_poisson.py) | Figuras do tutorial de Poisson: formas da PMF, ligação log, cauda de estoque, log-perda e PIT |
 | [`gerar_bi_associacao.py`](gerar_bi_associacao.py) | Reproduz dados do [explorador BI](../material/bi/README.md) e três figuras: dispersão, matriz e rede |
 | [`gerar_bi_demanda.py`](gerar_bi_demanda.py) | Reproduz `dados.js` do [explorador de demanda](../material/bi-demanda/README.md) e figuras `bi-demanda-*.png` |
-| [`gerar_site_tutorial.py`](gerar_site_tutorial.py) | Gera Pages: associação (`index.html`) e demanda (`demanda/index.html`) com exploradores |
 | [`gerar_figuras_associacao.py`](gerar_figuras_associacao.py) | Reproduz o diagrama de inclusão IA/ML, a matriz de cestas e a comparação de descoberta com avaliação separada |
 | [`minerar_regras_associacao.py`](minerar_regras_associacao.py) | Minera as cestas e gera o CSV da [aula de regras de associação](../material/tutorial-regras-associacao-20261017.md), sem dependências externas |
 | [`validar_vendas_semanais.py`](validar_vendas_semanais.py) | Confere a série sintética semanal contra os totais do catálogo |

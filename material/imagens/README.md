@@ -86,6 +86,18 @@ gráficos e o PDF de cartões; execute antes a avaliação padrão com
 | [credito-arvore-profunda.png](credito-arvore-profunda.png) | Início da árvore profunda; ramos omitidos são explicitamente marcados |
 | [credito-comparacao.png](credito-comparacao.png) | Acertos no treino e desenvolvimento para as duas árvores |
 | [credito-matriz-teste.png](credito-matriz-teste.png) | Contagens de previsão versus resultado no teste final da árvore selecionada |
+| [bi-credito-grade.png](bi-credito-grade.png) | Espelho do explorador: acertos no treino e no desenvolvimento por profundidade e folha mínima |
+| [bi-credito-profundidade.png](bi-credito-profundidade.png) | Espelho do explorador: acertos por profundidade, com o baseline da maioria |
+| [poisson-formas-lambda.png](poisson-formas-lambda.png) | Formas da distribuição de Poisson para diferentes λ |
+| [poisson-ligacao-log.png](poisson-ligacao-log.png) | Ligação log: η linear no tempo e λ = e^η para `p01` |
+| [poisson-cauda-estoque.png](poisson-cauda-estoque.png) | Probabilidade de quebra como área da cauda acima do estoque |
+| [poisson-log-perda-semanas.png](poisson-log-perda-semanas.png) | Log-perda por semana de teste: regressão de Poisson vs média constante |
+| [poisson-pit.png](poisson-pit.png) | Histograma PIT das 48 previsões de teste |
+| [logs-pipeline.png](logs-pipeline.png) | De linhas de log a sessões e itens de transação |
+| [logs-matriz-sessoes.png](logs-matriz-sessoes.png) | Presença de eventos por sessão na base de descoberta |
+| [logs-dispersao-regras.png](logs-dispersao-regras.png) | Suporte e confiança das regras mineradas |
+| [logs-descoberta-validacao.png](logs-descoberta-validacao.png) | Métricas da regra fixa na descoberta e na validação |
+| [bi-logs-padroes.png](bi-logs-padroes.png) | Espelho do explorador: padrões frequentes nas sessões |
 | [treino-redes-mapa.png](treino-redes-mapa.png) | Onde uma rede rasa se situa: IA, ML, aprendizado supervisionado e previsão de demanda |
 | [treino-redes-fluxo.png](treino-redes-fluxo.png) | Loop de treino: dados, modelo, perda e otimizador |
 | [treino-redes-neuronio.png](treino-redes-neuronio.png) | Anatomia de um neurônio e de um passo de gradiente com números |

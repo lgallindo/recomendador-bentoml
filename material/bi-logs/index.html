@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore sessões reconstruídas de logs sintéticos de autenticação, regras de associação e a avaliação de uma regra fixa em sessões separadas.">
+  <title>Logs de autenticação · regras de associação</title>
+  <link rel="stylesheet" href="painel.css">
+  <script src="dados.js" defer></script>
+  <script src="painel.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para os resultados</a>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Laboratório de associação em logs</p>
+      <h1>Linhas viram sessões,<br>sessões viram regras.</h1>
+      <p>Reconstrua uma sessão a partir das linhas do log, veja as regras que passam nos filtros e acompanhe uma regra da descoberta para sessões separadas. Os registros são sintéticos.</p>
+      <nav>
+        <a href="../tutorial-regras-associacao-logs-autenticacao-20261017.md">Tutorial completo</a>
+        <a href="README.md">Como explorar</a>
+      </nav>
+    </div>
+    <img src="../imagens/logs-pipeline.png" alt="Fluxo em cinco etapas: ler e validar 5901 linhas, remover uma reentrega, agrupar 5900 eventos em 2000 sessões, guardar o conjunto de eventos de cada sessão e contar regras com suporte de pelo menos 20%, confiança de pelo menos 60% e lift maior que 1, obtendo 27 regras.">
+  </header>
+  <div class="layout">
+    <aside class="filters" aria-label="Controles do relatório">
+      <p class="eyebrow">01 · Escolha o recorte</p>
+      <h2>Base e regras</h2>
+      <label for="base">Base exibida</label>
+      <select id="base">
+        <option value="descoberta">Descoberta · 2000 sessões</option>
+        <option value="validacao">Validação · 1000 sessões</option>
+      </select>
+      <label for="contem">Mostrar regras que contêm</label>
+      <select id="contem"></select>
+      <label for="sessao">Sessão do bloco-base</label>
+      <select id="sessao"></select>
+      <button id="reset" type="button">Restaurar regra fixa</button>
+      <div class="note"><strong>Base sintética.</strong> As métricas descrevem co-presença de eventos nas sessões; não indicam causa, ordem nem ataque.</div>
+    </aside>
+    <main id="conteudo">
+      <section class="summary" aria-label="Resumo">
+        <div><span id="n-sessoes">—</span><p>sessões na base</p></div>
+        <div><span id="n-regras">—</span><p>regras que passam nos filtros</p></div>
+        <div><span id="lift-fixa">—</span><p>lift da regra fixa nesta base</p></div>
+      </section>
+
+      <section class="panel detail" aria-labelledby="titulo-sessao">
+        <p class="eyebrow">02 · Reconstruir uma sessão</p>
+        <h2 id="titulo-sessao">Das linhas à transação</h2>
+        <p id="regra-sessao">Agrupe as linhas pelo <code>session_id</code>, descarte reentregas (mesmo <code>event_id</code>) e guarde apenas quais categorias aparecem.</p>
+        <div class="table-scroll">
+          <table id="linhas">
+            <caption>Linhas do arquivo para a sessão escolhida.</caption>
+            <thead><tr><th>Linha</th><th>event_id</th><th>timestamp</th><th>evento</th><th>Leitura</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p>Transação usada na mineração: <strong id="cesta">—</strong></p>
+        <p id="tipo-sessao"></p>
+      </section>
+
+      <section class="panel" aria-labelledby="titulo-padroes">
+        <p class="eyebrow">03 · Tipos de sessão</p>
+        <h2 id="titulo-padroes">Quantas sessões têm cada conjunto</h2>
+        <p>Cada barra é um conjunto de eventos e a fração de sessões com exatamente esse conjunto. Terra: contém falha de senha e desafio MFA.</p>
+        <div class="plot-scroll"><svg id="padroes" viewBox="0 0 780 330" role="img" aria-label="Frações de sessões por conjunto de eventos"></svg></div>
+        <button type="button" class="secondary export" data-svg="padroes">Baixar tipos de sessão PNG</button>
+      </section>
+
+      <section class="panel" aria-labelledby="titulo-dispersao">
+        <p class="eyebrow">04 · Dispersão</p>
+        <h2 id="titulo-dispersao">Suporte × confiança</h2>
+        <p>Cada círculo reúne as regras com o mesmo suporte e a mesma confiança; o número indica quantas. Selecione um círculo para ver suas regras na tabela. As linhas tracejadas marcam os critérios.</p>
+        <div class="plot-scroll"><svg id="dispersao" viewBox="0 0 780 360" role="img" aria-label="Dispersão de suporte e confiança das regras"></svg></div>
+        <button type="button" class="secondary export" data-svg="dispersao">Baixar dispersão PNG</button>
+      </section>
+
+      <section class="panel detail" aria-labelledby="titulo-regra">
+        <p class="eyebrow">05 · Regra selecionada</p>
+        <h2 id="titulo-regra">Regra</h2>
+        <p id="conta"></p>
+        <div class="table-scroll">
+          <table id="comparacao">
+            <caption>A mesma regra recontada nas duas bases, passe ou não nos filtros.</caption>
+            <thead><tr><th>Base</th><th>N</th><th>n(A)</th><th>n(B)</th><th>Juntos</th><th>Suporte</th><th>Confiança</th><th>Lift</th><th>Passa?</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="titulo-tabela">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">06 · Auditoria</p>
+            <h2 id="titulo-tabela">Regras da base exibida</h2>
+          </div>
+          <button id="csv" type="button">Baixar CSV</button>
+        </div>
+        <p id="estado" role="status"></p>
+        <div class="table-scroll">
+          <table id="tabela">
+            <caption>Ordem do relatório: lift, confiança, suporte e IDs. Selecione uma linha para detalhar.</caption>
+            <thead><tr><th>Antecedente</th><th>Consequente</th><th>n(A)</th><th>n(B)</th><th>Juntos</th><th>Suporte</th><th>Confiança</th><th>Lift</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p id="export-status" role="status"></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
