@@ -52,6 +52,17 @@ $$
 P(Y=k\mid\lambda)=\frac{e^{-\lambda}\lambda^k}{k!}
 $$
 
+![Quatro gráficos de barras da distribuição de Poisson. Com λ = 0,5, zero tem probabilidade de 61%; com λ = 1, 37%; com λ = 2, 14%; com λ = 4, 2%. A linha tracejada marca a média λ, e a massa se espalha à medida que λ cresce.](imagens/poisson-formas-lambda.png)
+
+*Figura 1 — A mesma fórmula com quatro taxas. Para λ pequeno, o zero domina e a
+distribuição é assimétrica; para λ maior, ela se espalha e fica mais simétrica.
+A largura acompanha a média porque, em Poisson, a variância também vale λ.*
+
+Leia a figura da esquerda para a direita: uma peça que vende em média meia
+linha por semana passa a maior parte das semanas sem venda, enquanto uma peça
+com média 4 raramente zera. Quando você estima `λ`, escolhe qual desses
+formatos descreve a próxima semana.
+
 Na distribuição de Poisson, a média e a variância são ambas `λ`. Esse vínculo
 é uma hipótese importante, não uma verdade sobre todo marketplace. Demanda
 com variância muito maior que a média (sobredispersão), dependência temporal,
@@ -69,6 +80,25 @@ que `λ` previsto permaneça positivo. Neste exemplo, a regressão agrupa produt
 usa indicadores de produto e compartilha uma tendência temporal. O ajuste
 regularizado reduz a instabilidade, mas não cria informação que o histórico
 curto não contém.
+
+No ajuste da seção 3 com as 16 semanas, os coeficientes para o Jarro (`p01`)
+são $\beta_0 \approx 0{,}406$, $\alpha_{p01} \approx 0{,}458$ e
+$\beta_1 \approx -0{,}184$ por unidade de $t/10$. Na escala do log, isso é uma
+reta; na escala das contagens, vira um fator multiplicativo:
+
+$$
+\lambda_{p01,t} = e^{0{,}406 + 0{,}458 - 0{,}184\,t/10}
+\approx 2{,}374 \times 0{,}982^{\,t}.
+$$
+
+Cada semana multiplica a taxa por cerca de 0,982, uma queda de 1,8% por semana.
+Em $t = 16$, $\lambda \approx 2{,}374 \times 0{,}745 \approx 1{,}768$.
+
+![Dois gráficos. À esquerda, η = log λ decresce em linha reta de 0,86 na semana 0 para cerca de 0,57 na semana 16. À direita, as dezesseis contagens observadas de p01, entre 1 e 4, e a curva λ = e^η, que cai suavemente de 2,37 para 1,768 na semana 16, marcada com um losango.](imagens/poisson-ligacao-log.png)
+
+*Figura 2 — A função de ligação log. O modelo é linear em η (esquerda) e
+multiplicativo em λ (direita). Por mais negativo que η fique, $e^\eta$ continua
+positivo, então nenhuma taxa prevista sai abaixo de zero.*
 
 ## 3. Ajustar o modelo com scikit-learn
 
@@ -180,7 +210,7 @@ Para os parâmetros e dados deste tutorial, obtemos aproximadamente:
 
 ![Gráfico de barras da distribuição de Poisson prevista para Jarro: probabilidades de zero, uma, duas e mais linhas de pedido; a média estimada é aproximadamente 1,768 e o intervalo preditivo central de 95% vai de zero a cinco.](imagens/distribuicao-poisson-p01.png)
 
-*Figura 1 — A distribuição mostra vários resultados possíveis para uma previsão.
+*Figura 3 — A distribuição mostra vários resultados possíveis para uma previsão.
 O intervalo é condicional ao modelo de Poisson ajustado e não é uma garantia de
 que a demanda ficará dentro dos limites.*
 
@@ -189,6 +219,12 @@ probabilidade modelada de a demanda exceder esse nível é cerca de 26,1%. Isso
 não é automaticamente uma recomendação de estoque: uma decisão também depende
 de custos de falta e sobra, lead time, unidades por linha, capacidade de
 produção e outras informações não presentes neste conjunto.
+
+![Barras da distribuição prevista para p01 com λ = 1,768. As contagens 0, 1 e 2 aparecem em verde, com 17,1%, 30,2% e 26,7%, somando 73,9%. As contagens de 3 em diante aparecem em terracota, com 15,7%, 6,9%, 2,5%, 0,7% e 0,2%, somando 26,1%. Uma linha pontilhada separa as duas regiões entre 2 e 3.](imagens/poisson-cauda-estoque.png)
+
+*Figura 4 — O risco de passar de duas linhas é a área da cauda à direita da
+linha pontilhada: $P(Y > 2) = 1 - P(Y \le 2) \approx 1 - 0{,}739 = 0{,}261$.
+Mudar a capacidade move a linha; mudar o modelo muda a altura das barras.*
 
 ## 4. Avaliar probabilidades em semanas futuras
 
@@ -273,6 +309,52 @@ de quase quatro contagens. Intervalos muito amplos podem cobrir observações
 sem oferecer informação útil. Avalie **cobertura e largura em conjunto**,
 idealmente em muitos períodos reais ainda não usados na modelagem.
 
+### Comparar com uma referência simples
+
+Uma log-perda de 1,169 só ganha sentido ao lado de uma alternativa. A
+referência mais simples é uma Poisson sem regressão: para cada produto, use
+como $\lambda$ a média das semanas anteriores à origem e pontue as mesmas 48
+semanas de teste.
+
+![Barras agrupadas por semana de teste. Regressão de Poisson: 1,198, 1,218, 1,181 e 1,080. Poisson com a média do passado por produto: 1,124, 1,161, 1,170 e 1,046. A referência tem log-perda menor nas quatro semanas; médias 1,169 e 1,125.](imagens/poisson-log-perda-semanas.png)
+
+*Figura 5 — Log-perda média dos 12 produtos em cada semana de teste. Menor é
+melhor. A referência sem tendência vence nas quatro semanas: média 1,125
+contra 1,169 da regressão.*
+
+Nesta série, a tendência comum não ajuda a pontuar a semana seguinte. Isso
+não condena a regressão de Poisson em geral: mostra que, com 16 semanas
+sintéticas, um modelo mais rico precisa provar valor contra a referência
+**antes** de ir para o relato. O mesmo cuidado vale para qualquer métrica
+probabilística.
+
+### Calibração: onde caem as observações?
+
+A cobertura de 100% com intervalos largos sugere distribuições mais espalhadas
+que os dados. O **PIT** (*probability integral transform*) mede isso
+observação por observação: onde o valor observado $y$ cai dentro da
+distribuição prevista. Para contagens, usa-se o PIT médio
+
+$$
+\mathrm{PIT} = P(Y \le y - 1) + \tfrac{1}{2}\,P(Y = y).
+$$
+
+Se as distribuições estiverem calibradas, os PITs se espalham por igual entre
+0 e 1. Uma corcova no meio indica previsões espalhadas demais; um formato de U
+indica previsões estreitas demais.
+
+![Histograma de 48 valores de PIT em cinco faixas: 6, 7, 21, 11 e 3 previsões. Uma linha tracejada marca 9,6 previsões por faixa, o esperado com calibração. A faixa central, de 0,4 a 0,6, tem mais que o dobro do esperado. O título informa variância sobre média de aproximadamente 0,30.](imagens/poisson-pit.png)
+
+*Figura 6 — PIT das 48 previsões walk-forward. A corcova no meio mostra que os
+valores observados caem perto do centro das distribuições previstas com mais
+frequência do que deveriam.*
+
+A causa aparece nos próprios dados: em todos os 12 produtos, a variância
+semanal é menor que a média, com razão média de cerca de 0,30. Poisson supõe
+razão 1. A série varia **menos** do que o modelo admite (subdispersão), por
+isso os intervalos de 95% sobram e cobrem tudo. Com 48 previsões e dados
+sintéticos, leia o histograma como diagnóstico qualitativo, sem teste formal.
+
 ## 5. Como BI ajuda você a visualizar a distribuição
 
 O explorador em [`bi-demanda-poisson/index.html`](bi-demanda-poisson/index.html)
@@ -281,9 +363,10 @@ intervalo central de 95% e a cobertura no walk-forward das quatro últimas
 semanas. Use-o para conferir o exercício do Jarro e para comparar produtos
 sem reexecutar o notebook à mão.
 
-![PMF Poisson no explorador — Jarro](imagens/bi-demanda-poisson-p01.png)
+![Espelho estático do explorador para o Jarro (p01): barras da distribuição de Poisson prevista para a semana seguinte, com média λ ≈ 1,768 e intervalo central de 95% de 0 a 5 linhas.](imagens/bi-demanda-poisson-p01.png)
 
-*Figura — mesma lógica da distribuição do tutorial, materializada no painel.*
+*Figura 7 — A mesma distribuição da Figura 3, desenhada pelo explorador. No
+painel, troque o produto para comparar formatos de distribuição e coberturas.*
 
 Para regenerar dados e figura:
 
@@ -304,6 +387,8 @@ incorpora o explorador quando o site estiver atualizado.
 3. Poisson supõe média igual à variância e contagens condicionalmente
    independentes. Se os dados reais forem sobredispersos ou tiverem padrão de
    zeros diferente, a distribuição poderá subestimar ou distorcer o risco.
+   Nesta série ocorre o inverso: a variância é menor que a média (Figura 6),
+   e o modelo superestima a incerteza.
 4. A regressão aqui usa indicadores de produto e uma inclinação temporal comum.
    Com apenas 16 semanas artificiais, não há base para estimar sazonalidade
    anual, feriados ou efeitos promocionais.
@@ -326,6 +411,21 @@ uma linha pode conter quantidades diferentes. A decisão também requer, por
 exemplo, unidades em cada linha, custos de excesso e falta, estoque disponível
 e prazo de reposição.
 
+### Para ir além: a referência e a calibração
+
+Responda em três frases: (a) qual modelo teve menor log-perda nas semanas de
+teste, a regressão ou a Poisson com a média do passado (Figura 5)? (b) O que a
+corcova do PIT (Figura 6) diz sobre os intervalos de 95%? (c) Por que a
+cobertura de 100% não basta para chamar o modelo de bem calibrado?
+
+**Resolução comentada.** (a) A referência: 1,125 contra 1,169, e vence nas
+quatro semanas. (b) Os valores observados caem no centro das distribuições com
+frequência excessiva (21 de 48 na faixa 0,4–0,6, contra 9,6 esperados): as
+distribuições estão espalhadas demais, e os intervalos ficam largos. (c)
+Intervalos largos demais cobrem quase tudo; calibração exige que as
+observações se distribuam como a previsão diz, inclusive nas caudas. A razão
+variância/média de cerca de 0,30 explica o excesso de largura.
+
 ## Referências
 
 1. SCIKIT-LEARN. `PoissonRegressor`: modelo generalizado de regressão de Poisson.
@@ -333,9 +433,26 @@ e prazo de reposição.
 2. SCI-PY. `scipy.stats.poisson`: função de massa de probabilidade, quantis e
    funções de sobrevivência para a distribuição de Poisson.
    [Documentação](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.poisson.html).
+3. CZADO, Claudia; GNEITING, Tilmann; HELD, Leonhard. **Predictive model
+   assessment for count data**. *Biometrics*, v. 65, n. 4, p. 1254–1261, 2009.
+   DOI: 10.1111/j.1541-0420.2009.01191.x.
+   **Para aprofundar:** PIT para contagens e diagnóstico de calibração.
+4. GNEITING, Tilmann; RAFTERY, Adrian E. **Strictly proper scoring rules,
+   prediction, and estimation**. *Journal of the American Statistical
+   Association*, v. 102, n. 477, p. 359–378, 2007. DOI: 10.1198/016214506000001437.
+   **Para aprofundar:** por que a log-perda recompensa previsões honestas.
+5. CAMERON, A. Colin; TRIVEDI, Pravin K. **Regression analysis of count data**.
+   2. ed. Cambridge: Cambridge University Press, 2013.
+   **Para aprofundar:** sobredispersão, subdispersão e alternativas à Poisson.
 
-As duas figuras de previsão podem ser recriadas a partir da raiz do repositório:
+A distribuição do Jarro (Figura 3) pode ser recriada a partir da raiz do repositório:
 
 ```bash
 uv run --with scikit-learn python scripts/gerar_figuras_demanda.py
+```
+
+As Figuras 1, 2, 4, 5 e 6 vêm de um script que repete o mesmo ajuste:
+
+```bash
+uv run python scripts/gerar_figuras_poisson.py
 ```
