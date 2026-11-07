@@ -29,7 +29,7 @@ CSV_PATH = RAIZ / "dados" / "vendas_semanais.csv"
 CATALOGO = RAIZ / "dados" / "catalogo.json"
 PAINEL = RAIZ / "material" / "bi-demanda-perceptron"
 IMAGENS = RAIZ / "material" / "imagens"
-PESOS = RAIZ / "material" / "bi-demanda-perceptron" / "pesos_p01.json"
+PESOS_DIR = RAIZ / "material" / "bi-demanda-perceptron"
 AZUL, VERDE, BARRO = "#18374b", "#157c80", "#b65432"
 EPOCAS, LR = 200, 0.05
 METODOS = ("ingenua", "ma4", "mq_batch", "lms")
@@ -181,44 +181,49 @@ def salvar_fig(fig: plt.Figure, nome: str) -> None:
     plt.close(fig)
 
 
-def figura_serie(dados: dict) -> None:
-    p01 = next(p for p in dados["produtos"] if p["id"] == "p01")
-    datas = [date.fromisoformat(r["week_start"]) for r in p01["serie"]]
-    obs = [r["observado"] for r in p01["serie"]]
-    aj = [r["ajustado_lms"] for r in p01["serie"]]
+def figura_serie(dados: dict, product_id: str = "p01") -> None:
+    produto = next(p for p in dados["produtos"] if p["id"] == product_id)
+    datas = [date.fromisoformat(r["week_start"]) for r in produto["serie"]]
+    obs = [r["observado"] for r in produto["serie"]]
+    aj = [r["ajustado_lms"] for r in produto["serie"]]
     fig, ax = plt.subplots(figsize=(11, 5.5))
     ax.plot(datas, obs, marker="o", color=AZUL, linewidth=2.4, label="Observado")
     ax.plot(datas, aj, marker="s", color=VERDE, linewidth=2, linestyle="--",
             label="LMS (treino nas 12 primeiras)")
-    prox = p01["metodos"]["lms"]["proxima"]
+    prox = produto["metodos"]["lms"]["proxima"]
     proxima = date.fromisoformat(dados["semanas"][-1]) + timedelta(days=7)
     ax.scatter([proxima], [prox], s=120, color=BARRO, zorder=5,
                label=f"Próxima LMS = {prox:.2f}".replace(".", ","))
     ax.axvspan(date.fromisoformat(dados["inicio_teste"]), datas[-1],
                alpha=0.12, color=BARRO, label="Janela de teste")
-    ax.set_title("Série e LMS/ADALINE — Jarro (p01)", fontsize=18, color=AZUL, weight="bold")
+    ax.set_title(
+        f"Série e LMS/ADALINE — {produto['nome']} ({product_id})",
+        fontsize=18, color=AZUL, weight="bold",
+    )
     ax.set_ylabel("Linhas de pedido")
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m"))
     ax.grid(axis="y", alpha=0.25)
     ax.spines[["top", "right"]].set_visible(False)
     ax.legend(frameon=False, loc="upper left")
     fig.tight_layout()
-    salvar_fig(fig, "bi-demanda-perc-serie-p01.png")
+    salvar_fig(fig, f"bi-demanda-perc-serie-{product_id}.png")
 
 
-def figura_mse(dados: dict) -> None:
-    p01 = next(p for p in dados["produtos"] if p["id"] == "p01")
-    mse = p01["mse_epocas"]
+def figura_mse(dados: dict, product_id: str = "p01") -> None:
+    produto = next(p for p in dados["produtos"] if p["id"] == product_id)
+    mse = produto["mse_epocas"]
     fig, ax = plt.subplots(figsize=(9, 5))
     ax.plot(range(1, len(mse) + 1), mse, color=VERDE, linewidth=2)
-    ax.set_title("MSE por época (LMS, 12 semanas de treino) — p01",
-                 fontsize=16, color=AZUL, weight="bold")
+    ax.set_title(
+        f"MSE por época (LMS, 12 semanas de treino) — {product_id}",
+        fontsize=16, color=AZUL, weight="bold",
+    )
     ax.set_xlabel("Época")
     ax.set_ylabel("MSE")
     ax.spines[["top", "right"]].set_visible(False)
     ax.grid(axis="y", alpha=0.25)
     fig.tight_layout()
-    salvar_fig(fig, "bi-demanda-perc-mse-p01.png")
+    salvar_fig(fig, f"bi-demanda-perc-mse-{product_id}.png")
 
 
 def figura_mae(dados: dict) -> None:
@@ -248,30 +253,32 @@ def main() -> None:
         "window.DEMANDA_PERC = " + json.dumps(dados, ensure_ascii=False, indent=2) + ";\n",
         encoding="utf-8",
     )
-    p01 = next(p for p in dados["produtos"] if p["id"] == "p01")
-    PESOS.write_text(
-        json.dumps(
-            {
-                "product_id": "p01",
-                "bias": p01["bias"],
-                "inclinacao": p01["inclinacao"],
-                "escala": float(max(INICIO_TESTE - 1, 1)),
-                "epocas": EPOCAS,
-                "lr": LR,
-                "treino_semanas": INICIO_TESTE,
-                "n_semanas": len(semanas),
-            },
-            ensure_ascii=False,
-            indent=2,
+    for product_id in ("p01", "p03"):
+        produto = next(p for p in dados["produtos"] if p["id"] == product_id)
+        pesos_path = PESOS_DIR / f"pesos_{product_id}.json"
+        pesos_path.write_text(
+            json.dumps(
+                {
+                    "product_id": product_id,
+                    "bias": produto["bias"],
+                    "inclinacao": produto["inclinacao"],
+                    "escala": float(max(INICIO_TESTE - 1, 1)),
+                    "epocas": EPOCAS,
+                    "lr": LR,
+                    "treino_semanas": INICIO_TESTE,
+                    "n_semanas": len(semanas),
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
         )
-        + "\n",
-        encoding="utf-8",
-    )
-    figura_serie(dados)
-    figura_mse(dados)
+        figura_serie(dados, product_id)
+        figura_mse(dados, product_id)
+        print(f"pesos → {pesos_path}")
     figura_mae(dados)
     print(f"dados.js → {PAINEL / 'dados.js'}")
-    print(f"pesos → {PESOS}")
     print("MAE agregado:", {k: round(v, 3) for k, v in dados["mae_agregado"].items()})
 
 

@@ -173,52 +173,57 @@ def salvar_fig(fig: plt.Figure, nome: str) -> None:
     plt.close(fig)
 
 
-def figura_serie(dados: dict) -> None:
-    p01 = next(p for p in dados["produtos"] if p["id"] == "p01")
-    datas = [date.fromisoformat(r["week_start"]) for r in p01["serie"]]
-    obs = [r["observado"] for r in p01["serie"]]
-    aj = [r["ajustado_mq"] for r in p01["serie"]]
+def figura_serie(dados: dict, product_id: str = "p01") -> None:
+    produto = next(p for p in dados["produtos"] if p["id"] == product_id)
+    datas = [date.fromisoformat(r["week_start"]) for r in produto["serie"]]
+    obs = [r["observado"] for r in produto["serie"]]
+    aj = [r["ajustado_mq"] for r in produto["serie"]]
     fig, ax = plt.subplots(figsize=(11, 5.5))
     ax.plot(datas, obs, marker="o", color=AZUL, linewidth=2.4, label="Observado")
     ax.plot(datas, aj, marker="s", color=VERDE, linewidth=2,
             linestyle="--", label="Reta MQ (ajuste completo)")
-    prox = p01["metodos"]["mq"]["proxima"]
+    prox = produto["metodos"]["mq"]["proxima"]
     proxima_data = date.fromisoformat(dados["semanas"][-1]) + timedelta(days=7)
     ax.scatter([proxima_data], [prox], s=120, color=BARRO, zorder=5,
                label=f"Próxima semana MQ = {prox:.2f}".replace(".", ","))
     ax.axvspan(date.fromisoformat(dados["inicio_teste"]), datas[-1],
                alpha=0.12, color=BARRO, label="Janela de teste")
-    ax.set_title("Série e mínimos quadrados — Jarro (p01)",
-                 fontsize=18, color=AZUL, weight="bold")
+    ax.set_title(
+        f"Série e mínimos quadrados — {produto['nome']} ({product_id})",
+        fontsize=18, color=AZUL, weight="bold",
+    )
     ax.set_ylabel("Linhas de pedido")
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m"))
     ax.grid(axis="y", alpha=0.25)
     ax.spines[["top", "right"]].set_visible(False)
     ax.legend(frameon=False, loc="upper left")
     fig.tight_layout()
-    salvar_fig(fig, "bi-demanda-mq-serie-p01.png")
+    salvar_fig(fig, f"bi-demanda-mq-serie-{product_id}.png")
 
 
-def figura_erros(dados: dict) -> None:
-    p01 = next(p for p in dados["produtos"] if p["id"] == "p01")
-    teste = p01["metodos"]["mq"]["teste"]
+def figura_erros(dados: dict, product_id: str = "p01") -> None:
+    produto = next(p for p in dados["produtos"] if p["id"] == product_id)
+    teste = produto["metodos"]["mq"]["teste"]
     semanas = [r["week_start"][5:] for r in teste]
     erros = [r["erro_abs"] for r in teste]
     fig, ax = plt.subplots(figsize=(9, 5))
     bars = ax.bar(semanas, erros, color=VERDE, edgecolor="white")
-    mae_val = p01["metodos"]["mq"]["mae"]
+    mae_val = produto["metodos"]["mq"]["mae"]
     ax.axhline(mae_val, color=BARRO, linestyle="--", linewidth=2,
                label=f"MAE MQ = {mae_val:.2f}".replace(".", ","))
     for bar, err in zip(bars, erros):
         ax.text(bar.get_x() + bar.get_width() / 2, err + 0.03,
                 f"{err:.2f}".replace(".", ","), ha="center", color=AZUL, fontsize=11)
-    ax.set_title("Erros absolutos MQ no teste — p01", fontsize=18, color=AZUL, weight="bold")
+    ax.set_title(
+        f"Erros absolutos MQ no teste — {product_id}",
+        fontsize=18, color=AZUL, weight="bold",
+    )
     ax.set_ylabel("|observado − previsão|")
     ax.set_ylim(0, max(erros) * 1.35)
     ax.legend(frameon=False)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
-    salvar_fig(fig, "bi-demanda-mq-erros-p01.png")
+    salvar_fig(fig, f"bi-demanda-mq-erros-{product_id}.png")
 
 
 def figura_mae(dados: dict) -> None:
@@ -249,8 +254,9 @@ def main() -> None:
         "window.DEMANDA_MQ = " + json.dumps(dados, ensure_ascii=False, indent=2) + ";\n",
         encoding="utf-8",
     )
-    figura_serie(dados)
-    figura_erros(dados)
+    for product_id in ("p01", "p03"):
+        figura_serie(dados, product_id)
+        figura_erros(dados, product_id)
     figura_mae(dados)
     print(f"dados.js → {PAINEL / 'dados.js'}")
     print("MAE agregado:", {k: round(v, 3) for k, v in dados["mae_agregado"].items()})

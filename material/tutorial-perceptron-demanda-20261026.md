@@ -9,17 +9,8 @@ no mesmo walk-forward, e conferir a previsão num endpoint BentoML mínimo.
 
 Os dados de demanda são **sintéticos** (`dados/vendas_semanais.csv`).
 
-### Roteiro
-
-| Tempo | Atividade |
-| --- | --- |
-| 15 min | Da reta de MQ à história do modelo linear adaptativo |
-| 10 min | Separabilidade linear em AND / OR / XOR |
-| 10 min | Formatar entradas e a regra LMS |
-| 15 min | Treinar na série, ver MSE por época |
-| 15 min | Walk-forward e comparar com MA / MQ |
-| 15 min | Explorador BI |
-| 15 min | Endpoint BentoML mínimo |
+Leitura em ritmo próprio: os exemplos trabalhados usam Jarro (`p01`) e Boneca
+(`p03`); o painel BI e o JSON de pesos espelham os mesmos números.
 
 ## 1. A reta que já conhecemos
 
@@ -38,6 +29,11 @@ Esta aula mantém a **mesma família de funções** — uma reta no tempo — e 
 LMS (ADALINE) **atualiza** \(w_0\) e \(w_1\) a cada exemplo, guiada pelo erro
 contínuo \(y_t - \widehat{y}_t\). Na série curta do marketplace, esse caminho
 iterativo aproxima a mesma reta que o ajuste em lote.
+
+![Mesma reta; caminho em lote versus passo a passo.](imagens/mq-lote-vs-lms.png)
+
+*Figura 1 — MQ resolve o bloco de uma vez; LMS corrige os pesos a cada
+exemplo. A perda continua quadrática.*
 
 ## 2. Camadas históricas do modelo linear adaptativo
 
@@ -86,14 +82,14 @@ critério dos mínimos quadrados que você já viu em lote. A diferença operaci
 A unidade LMS prevê
 
 $$
-\widehat{y}_t = w_0 + w_1 t
+\widehat{y}_t = w_0 + w_1 \cdot \frac{t}{\mathrm{escala}}
 $$
 
-e atualiza
+(com tempo normalizado no treino para estabilizar o passo) e atualiza
 
 $$
 w \leftarrow w + \eta\,(y_t - \widehat{y}_t)\,x_t,
-\quad x_t = (1,\ t).
+\quad x_t = \bigl(1,\ t/\mathrm{escala}\bigr).
 $$
 
 É o espírito do perceptron (atualização local pelo erro), com perda
@@ -101,7 +97,12 @@ quadrática. O treino abaixo é **uma** unidade linear adaptativa — o ponto de
 partida histórico das redes mais profundas, sem ainda ser backprop de uma
 rede multilcamada.
 
-## 3. Separabilidade linear (booleanos)
+![Laço: época → exemplo → erro → atualização → MSE.](imagens/fluxo-lms-treino.png)
+
+*Figura 2 — Dentro de cada época, todos os pares \((t, y_t)\) do bloco de
+treino passam pela regra LMS; o MSE da época resume o ajuste.*
+
+## 3. Exemplo ilustrado — separabilidade linear (booleanos)
 
 Antes de voltar à série semanal, um laboratório mínimo de classificação mostra
 o alcance — e o limite — de **uma** reta (ou hiperplano) no plano.
@@ -109,80 +110,151 @@ o alcance — e o limite — de **uma** reta (ou hiperplano) no plano.
 Em classificação binária, um perceptron clássico traça um hiperplano. Com duas
 entradas 0/1:
 
-| Função | Separável? |
-| --- | --- |
-| AND | Sim |
-| OR | Sim |
-| XOR | Não |
+| Função | Separável por uma reta? | Leitura rápida |
+| --- | --- | --- |
+| AND | Sim | Os três pontos “falsos” ficam de um lado; o `(1,1)` do outro |
+| OR | Sim | Só `(0,0)` fica do lado “falso” |
+| XOR | Não | Os dois “verdadeiros” não compartilham um semiplano limpo |
 
-Desenhe os quatro pontos no plano e argumente. XOR exige uma fronteira que uma
-única reta não realiza; daí o interesse posterior por redes com mais de uma
-camada. Na demanda, o alvo contínuo não pede essa fronteira booleana — o quadro
-serve para fixar o vocabulário de **separabilidade linear** que a história do
-perceptron tornou clássico.
+XOR exige uma fronteira que uma única reta não realiza; daí o interesse
+posterior por redes com mais de uma camada. Na demanda, o alvo contínuo não
+pede essa fronteira booleana — o quadro fixa o vocabulário de **separabilidade
+linear** que a história do perceptron tornou clássico.
 
-## 4. Treinar nas 12 primeiras semanas
+## 4. Exemplo trabalhado 1 — Jarro (`p01`)
+
+Gere o painel e os pesos (na raiz do repositório):
 
 ```bash
 uv run python scripts/gerar_bi_demanda_perceptron.py
 ```
 
-O script grava `material/bi-demanda-perceptron/pesos_p01.json` e o painel. O tempo entra **normalizado** (t / (n−1) no treino) para o passo LMS ficar
-estável. Para Jarro (`p01`), 200 épocas com η = 0,05 nas 12 primeiras semanas
-aproximam a reta de mínimos quadrados em lote nesta série curta.
+O script grava `material/bi-demanda-perceptron/pesos_p01.json` (e também
+`pesos_p03.json`), além de `dados.js` do explorador. O tempo entra
+**normalizado** (`t / (n−1)` no treino) para o passo LMS ficar estável.
 
-A curva de MSE por época deve cair e estabilizar. Se não cair, revise η ou o
-número de épocas.
+Hiperparâmetros deste material: **200 épocas**, \(\eta = 0{,}05\), treino nas
+**12 primeiras semanas**. Para Jarro (`p01`):
 
-## 5. Avaliar no tempo
+| Quantidade | Valor aproximado |
+| --- | ---: |
+| Bias \(w_0\) | 2,782 |
+| Inclinação (espaço normalizado) | −0,269 |
+| Escala | 11 |
+| MSE da última época | 1,307 |
+| Previsão LMS em `t = 16` (piso ≥ 0) | 2,390 |
 
-Nas quatro últimas semanas, a cada origem o modelo **re-treina só com o
-passado** e prevê a semana seguinte (piso em zero). Compare MAE com ingênua,
-MA(4) e MQ em lote — mesmas 48 previsões.
+A reta LMS aproxima a de mínimos quadrados em lote nesta série curta (MQ em
+`p01` previa cerca de 2,425 na mesma extrapolação).
 
-## 6. Explorador BI
+```python
+# Mesma lógica de scripts/lms_demanda.py — caminho feliz, comentado
+from pathlib import Path
+import sys
 
-O [explorador](bi-demanda-perceptron/index.html) mostra série, MSE por época,
-MAE agregado e tabela.
+sys.path.insert(0, "scripts")
+from lms_demanda import treinar_lms, previsao_nao_negativa
+
+import csv
+
+# Série de um produto a partir do CSV
+valores = []
+with Path("dados/vendas_semanais.csv").open(encoding="utf-8", newline="") as fh:
+    for row in csv.DictReader(fh):
+        if row["product_id"] == "p01":
+            valores.append(int(row["order_line_count"]))
+
+# Treino só nas 12 primeiras semanas
+w, hist_mse, escala = treinar_lms(valores, epocas=200, lr=0.05, ate=12)
+proxima = previsao_nao_negativa(w, float(len(valores)), escala)
+
+print(f"bias={w[0]:.4f}  inclinacao={w[1]:.4f}  escala={escala}")
+print(f"MSE última época={hist_mse[-1]:.4f}")
+print(f"previsão t={len(valores)} → {proxima:.4f}")
+```
+
+A curva de MSE por época deve cair e estabilizar. Se não cair, revise \(\eta\)
+ou o número de épocas.
 
 ![Série p01 com ajuste LMS.](imagens/bi-demanda-perc-serie-p01.png)
 
-![MSE por época no treino LMS.](imagens/bi-demanda-perc-mse-p01.png)
+![MSE por época no treino LMS (p01).](imagens/bi-demanda-perc-mse-p01.png)
+
+## 5. Exemplo trabalhado 2 — Boneca (`p03`)
+
+Com os mesmos hiperparâmetros nas 12 primeiras semanas de Boneca de barro:
+
+| Quantidade | Valor aproximado |
+| --- | ---: |
+| Bias \(w_0\) | 1,538 |
+| Inclinação (espaço normalizado) | −0,576 |
+| Escala | 11 |
+| MSE da última época | 0,164 |
+| Previsão LMS em `t = 16` (piso ≥ 0) | 0,700 |
+
+No walk-forward das quatro semanas finais, o MAE LMS de `p03` fica em torno de
+**0,636** (produto isolado). A reta MQ em lote para o mesmo produto previa
+**0,800** em `t = 16`; LMS e MQ permanecem na mesma família, com caminhos
+diferentes até os pesos.
+
+Os pesos gravados estão em
+[`material/bi-demanda-perceptron/pesos_p03.json`](bi-demanda-perceptron/pesos_p03.json).
+
+![Série p03 com ajuste LMS.](imagens/bi-demanda-perc-serie-p03.png)
+
+![MSE por época no treino LMS (p03).](imagens/bi-demanda-perc-mse-p03.png)
+
+## 6. Avaliar no tempo
+
+Nas quatro últimas semanas, a cada origem o modelo **re-treina só com o
+passado** e prevê a semana seguinte (piso em zero). Compare MAE com ingênua,
+MA(4) e MQ em lote — mesmas 48 previsões:
+
+| Método | MAE agregado |
+| --- | ---: |
+| Ingênua | 0,667 |
+| MA(4) | 0,490 |
+| MQ (lote) | 0,485 |
+| LMS / ADALINE | 0,496 |
+
+Nesta amostra sintética curta, LMS fica perto do MQ em lote — o esperado quando
+a família de funções é a mesma e o treino online converge.
+
+## 7. Explorador BI
+
+O [explorador](bi-demanda-perceptron/index.html) mostra série, MSE por época,
+MAE agregado e tabela. Selecione **Jarro (`p01`)** e **Boneca (`p03`)** no
+painel — os dois exemplos deste tutorial. Guia curto em
+[`bi-demanda-perceptron/README.md`](bi-demanda-perceptron/README.md).
 
 ![MAE agregado: baselines e LMS.](imagens/bi-demanda-perc-mae.png)
 
-## 7. Endpoint BentoML
+## 8. Endpoint BentoML
 
-Com os pesos gerados:
+Com os pesos gerados para `p01` (serviço de demonstração):
 
 ```bash
 uv run bentoml serve service_perceptron_demanda:PrevisaoLmsDemanda --reload
 ```
 
 Chame a API `prever` com `indice_semana` (por exemplo `16` para a semana após o
-histórico). O mesmo cálculo local:
+histórico). O mesmo cálculo local — **com a escala** gravada no JSON:
 
 ```python
 import json
 from pathlib import Path
 
-pesos = json.loads(Path("material/bi-demanda-perceptron/pesos_p01.json").read_text())
+pesos = json.loads(
+    Path("material/bi-demanda-perceptron/pesos_p01.json").read_text(encoding="utf-8")
+)
 t = 16
-bruto = pesos["bias"] + pesos["inclinacao"] * t
+escala = float(pesos["escala"])
+bruto = pesos["bias"] + pesos["inclinacao"] * (t / escala)
 print(max(0.0, bruto))
 ```
 
-Os dois caminhos devem coincidir.
-
-## 8. Exercício
-
-1. Em uma frase cada: Legendre/Gauss (MQ em lote) versus Widrow–Hoff (LMS passo
-   a passo) — o que muda no *caminho* até a reta?
-2. Marque AND, OR e XOR como separáveis ou não.
-3. Formate uma tabela t → y para um produto (cinco linhas bastam).
-4. Descreva o split: 12 treino / 4 teste, sem embaralhar.
-5. Rode o gerador e anote o MSE da última época e o MAE LMS de `p01`.
-6. Suba o serviço e compare a previsão para `t = 16` com o JSON de pesos.
+Os dois caminhos devem coincidir. Para Boneca, leia `pesos_p03.json` com a
+mesma fórmula.
 
 ## Referência
 

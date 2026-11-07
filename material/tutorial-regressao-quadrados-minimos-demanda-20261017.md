@@ -11,16 +11,8 @@ Os dados são **sintéticos**: as 16 semanas distribuem os totais do catálogo e
 não são vendas observadas. Resultados numéricos servem para reproduzir o método,
 não para afirmar que existe tendência real.
 
-### Roteiro
-
-| Tempo sugerido | Atividade |
-| --- | --- |
-| 12 min | Pergunta da loja e camadas históricas até o ML |
-| 10 min | Entender o ajuste por mínimos quadrados |
-| 10 min | Ajustar uma reta e prever demanda |
-| 12 min | Avaliar com origem temporal deslizante |
-| 15 min | Explorar a série com BI e exportar uma evidência |
-| 10 min | Interpretar resultados, limitações e exercício |
+Leitura em ritmo próprio: acompanhe os dois exemplos trabalhados (Jarro `p01` e
+Boneca `p03`) e o explorador BI quando quiser ver a mesma reta no painel.
 
 ## 1. A pergunta da loja no tempo
 
@@ -38,6 +30,11 @@ usamos essa reta para olhar um passo à frente.
 O protocolo de avaliação continua temporal: treinar só com o passado, prever a
 próxima semana, só então incorporar o valor observado. O que muda é o **modelo**
 dentro desse ritual.
+
+![Fluxo CSV → reta MQ → walk-forward → métricas → BI.](imagens/fluxo-mq-demanda.png)
+
+*Figura 0 — Do arquivo semanal ao painel: a reta é o modelo; o walk-forward é o
+ritual de avaliação; o BI espelha os mesmos números.*
 
 ## 2. Camadas: da medida à previsão aprendida
 
@@ -138,7 +135,13 @@ contagens não possam ser negativas. Neste tutorial, aplicamos um limite inferio
 de zero **após** prever: decisão prática de pós-processamento, distinta do
 critério de mínimos quadrados em si.
 
-## 4. Carregar a série e ajustar um produto
+![Uma série por produto; ajuste em lote no bloco; walk-forward reajusta só com o passado.](imagens/mq-lote-por-produto.png)
+
+*Figura 2 — Cada `product_id` tem a própria reta. O critério Σ(y−ŷ)² é o mesmo;
+o que muda entre “ajuste completo” e walk-forward é **quais semanas** entram no
+lote.*
+
+## 4. Exemplo trabalhado 1 — Jarro (`p01`)
 
 O arquivo tem 16 semanas, de 2026-06-22 a 2026-10-05, para 12 produtos. A
 coluna `order_line_count` conta linhas de pedido semanais, não unidades físicas.
@@ -149,12 +152,11 @@ presentes e que os totais reconciliam:
 uv run python scripts/validar_vendas_semanais.py
 ```
 
-O código a seguir reaproveita pandas para organizar a tabela e
-`LinearRegression` do scikit-learn para ajustar a reta. Na raiz do repositório,
-execute com:
+O código abaixo organiza a tabela com pandas e ajusta a reta com
+`LinearRegression` do scikit-learn. Na raiz do repositório:
 
 ```bash
-uv run --with pandas python
+uv run --with pandas --with scikit-learn python
 ```
 
 ```python
@@ -164,6 +166,7 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 
+# Tabela longa → matriz semana × produto
 vendas = pd.read_csv(
     Path("dados/vendas_semanais.csv"),
     parse_dates=["week_start"],
@@ -174,14 +177,21 @@ matriz = vendas.pivot(
     values="order_line_count",
 ).sort_index()
 
+# Exemplo 1: Jarro barro Tracunhaém
 produto = "p01"
 serie = matriz[produto]
-semanas = np.arange(len(serie)).reshape(-1, 1)
 
-modelo = LinearRegression().fit(semanas, serie.to_numpy())
+# t = 0, 1, …, 15  (índice da semana no CSV)
+semanas = np.arange(len(serie)).reshape(-1, 1)
+alvos = serie.to_numpy()
+
+# Ajuste em lote: uma reta para todo o histórico deste produto
+modelo = LinearRegression().fit(semanas, alvos)
+
+# Extrapolação um passo à frente (t = 16)
 semana_seguinte = np.array([[len(serie)]])
 previsao_bruta = float(modelo.predict(semana_seguinte)[0])
-previsao = max(0.0, previsao_bruta)
+previsao = max(0.0, previsao_bruta)  # piso prático para contagem
 
 print(f"Intercepto: {modelo.intercept_:.4f}")
 print(f"Inclinação: {modelo.coef_[0]:.4f} linhas/semana")
@@ -202,7 +212,7 @@ não demonstra uma queda real de demanda.
 
 ![Série sintética semanal de Jarro, reta ajustada por mínimos quadrados e previsão extrapolada para a semana seguinte.](imagens/regressao-minimos-quadrados-p01.png)
 
-*Figura 2 — A reta resume a tendência linear ajustada ao histórico de `p01`.
+*Figura 3 — A reta resume a tendência linear ajustada ao histórico de `p01`.
 O segmento futuro é uma extrapolação, não um valor observado.*
 
 ### Previsões para todos os produtos
@@ -229,7 +239,42 @@ mas não garante uma distribuição válida nem corrige o modelo. Com alvos de
 contagem, considere um modelo cuja saída respeite a escala e o domínio do
 problema; também registre sempre qualquer pós-processamento.
 
-## 5. Avaliar respeitando o tempo
+## 5. Exemplo trabalhado 2 — Boneca (`p03`)
+
+Repita o mesmo ritual com Boneca de barro (`p03`): troque `produto = "p03"` no
+bloco anterior (ou filtre a coluna correspondente na matriz).
+
+Com as 16 semanas:
+
+$$
+\widehat{y}_t = 1{,}5294 - 0{,}0456t
+$$
+
+| Quantidade | Valor |
+| --- | ---: |
+| Intercepto | 1,529 |
+| Inclinação (linhas/semana) | −0,046 |
+| Previsão bruta em `t = 16` | 0,800 |
+| Após limite em zero | 0,800 |
+
+A inclinação é mais íngreme que a do Jarro nesta amostra sintética. Ainda assim,
+é só o resumo linear deste CSV — não uma tendência comercial observada.
+
+![Série e reta MQ para Boneca de barro (p03).](imagens/regressao-minimos-quadrados-p03.png)
+
+*Figura 4 — Mesmo método do Jarro; outro produto, outra reta.*
+
+Nas quatro semanas finais, com walk-forward **só com o passado**, o MAE de
+mínimos quadrados para `p03` fica em torno de **0,614**; a média móvel de cinco
+semanas, nas mesmas origens, fica em torno de **0,600**. Os dois números são
+próximos nesta série curta.
+
+![Painel BI: série e reta de p03.](imagens/bi-demanda-mq-serie-p03.png)
+
+*Figura 5 — O explorador permite selecionar Boneca e ler intercepto, inclinação
+e erros do teste no mesmo layout usado para o Jarro.*
+
+## 6. Avaliar respeitando o tempo
 
 Usaremos as 12 primeiras semanas como histórico inicial e as quatro últimas
 como teste, tal como no tutorial da média móvel. Em cada semana de teste,
@@ -252,13 +297,16 @@ em linhas de pedido por produto por semana.
 inicio_teste = len(matriz) - 4
 erros = []
 
+# Mesmas 48 previsões: 12 produtos × 4 semanas de teste
 for produto in matriz.columns:
     serie = matriz[produto]
     for posicao in range(inicio_teste, len(matriz)):
+        # Treino: só o passado (t = 0 … posicao-1)
         x_treino = np.arange(posicao).reshape(-1, 1)
         y_treino = serie.iloc[:posicao].to_numpy()
         modelo = LinearRegression().fit(x_treino, y_treino)
 
+        # Previsão da semana atual; piso em zero após o ajuste
         bruto = float(modelo.predict([[posicao]])[0])
         previsto = max(0.0, bruto)
         observado = float(serie.iloc[posicao])
@@ -296,7 +344,7 @@ Isso não estabelece um vencedor: são apenas quatro semanas sintéticas de test
 O RMSE é apresentado para a regressão, mas só deve ser comparado com RMSE das
 outras abordagens, não diretamente com os MAEs.
 
-## 6. Interpretar o resultado
+## 7. Interpretar o resultado
 
 - Uma inclinação positiva ou negativa é a tendência **linear estimada no
   histórico usado**; não é causa nem garantia de continuidade.
@@ -316,56 +364,30 @@ observados, com datas, quantidades consistentes, estado dos pedidos, estoque e
 contexto de promoções ou rupturas. Faça a avaliação em ordem temporal e compare
 com baselines antes de implantar um modelo.
 
-## 7. Como BI ajuda você a visualizar a reta
+## 8. Como BI ajuda você a visualizar a reta
 
 O [explorador de mínimos quadrados](bi-demanda-mq/index.html) mostra a série,
 a reta ajustada, os erros no teste e o MAE ao lado da média móvel e da
-previsão ingênua. Consulte o [roteiro](bi-demanda-mq/README.md).
+previsão ingênua. No seletor de produto, abra **Jarro (`p01`)** e **Boneca
+(`p03`)** — os dois exemplos deste tutorial — e compare intercepto, inclinação
+e a tabela de teste. Detalhes de painéis em
+[`bi-demanda-mq/README.md`](bi-demanda-mq/README.md).
 
 As figuras abaixo espelham o painel na versão Markdown.
 
 ![Série sintética do Jarro p01 com reta de mínimos quadrados, faixa de teste e previsão da próxima semana.](imagens/bi-demanda-mq-serie-p01.png)
 
-*Figura 3 — Observações e reta do ajuste completo; o ponto terracota extrapola
+*Figura 6 — Observações e reta do ajuste completo; o ponto terracota extrapola
 a semana seguinte. O MAE do teste, no painel, refaz o ajuste só com o passado.*
 
 ![Barras de erro absoluto da regressão nas quatro semanas de teste de p01.](imagens/bi-demanda-mq-erros-p01.png)
 
-*Figura 4 — Erros walk-forward de mínimos quadrados em `p01`.*
+*Figura 7 — Erros walk-forward de mínimos quadrados em `p01`.*
 
 ![MAE agregado da previsão ingênua, MA(4), MA(5) e mínimos quadrados.](imagens/bi-demanda-mq-mae.png)
 
-*Figura 5 — Mesmas 48 previsões para todos os métodos. Menor MAE é melhor nesta
+*Figura 8 — Mesmas 48 previsões para todos os métodos. Menor MAE é melhor nesta
 métrica; a diferença neste conjunto sintético é pequena.*
-
-### Atividade rápida no painel
-
-1. Abra Jarro (`p01`) com mínimos quadrados. Anote intercepto, inclinação e a
-   previsão da próxima semana.
-2. Na tabela do teste, confira uma semana à mão (ajuste só com o passado).
-3. Troque para MA(5) e diga o que muda no MAE do produto.
-4. Exporte um PNG ou o CSV do teste.
-
-## 8. Exercício: inclinação da Boneca
-
-Ajuste uma regressão linear para Boneca de barro (`p03`) e responda:
-
-1. Qual é a inclinação estimada em linhas por semana? É positiva ou negativa?
-2. Qual é a previsão para a semana seguinte, antes e depois do limite em zero?
-3. Qual o MAE de `p03` nas quatro semanas finais usando ajuste walk-forward?
-4. Como a previsão de regressão se compara à média móvel de cinco semanas?
-5. Por que a inclinação não prova uma tendência real do marketplace?
-
-### Resolução comentada
-
-Com as 16 semanas, `p03` tem intercepto aproximado 1,5294, inclinação
-−0,0456 linha por semana e previsão bruta 0,8 para `t = 16`. Ela permanece
-0,8 após o limite em zero.
-
-Nas quatro semanas finais, a regressão por produto tem MAE aproximado **0,614**
-para `p03`; a média móvel de cinco semanas tem MAE **0,600** no mesmo produto
-e nas mesmas semanas. Os resultados são quase iguais e vêm de uma série
-sintética curta; não demonstram qual método preverá melhor vendas futuras reais.
 
 ## Referência e reprodução
 
@@ -373,13 +395,13 @@ sintética curta; não demonstram qual método preverá melhor vendas futuras re
    linear.
    [Documentação](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html).
 
-## Gerar a figura
+## Gerar as figuras do painel
 
 Na raiz do repositório, execute:
 
 ```bash
-uv run --with scikit-learn python scripts/gerar_figuras_demanda.py
+uv run --with scikit-learn python scripts/gerar_bi_demanda_mq.py
 ```
 
-O script lê a série em `dados/vendas_semanais.csv` e atualiza as ilustrações
-dos tutoriais de demanda em `material/imagens/`.
+O script atualiza `material/bi-demanda-mq/dados.js` e as ilustrações
+`bi-demanda-mq-*.png` (incluindo `p01` e `p03`) em `material/imagens/`.
