@@ -34,6 +34,8 @@ texto-fonte permanece em Markdown sob `material/`.
   ([Markdown](../material/tutorial-open-webui-20261026.md))
 - [LiteLLM](https://lgallindo.github.io/recomendador-bentoml/litellm/) —
   ([Markdown](../material/tutorial-litellm-20261026.md))
+- [Crédito (árvores)](https://lgallindo.github.io/recomendador-bentoml/credito/) —
+  ([Markdown](../material/tutorial-arvore-decisao-credito-20261017.md))
 
 As fórmulas convertem-se para MathML; o navegador dispensa biblioteca externa
 para as renderizar. Os gráficos e os exploradores operam na própria página;
@@ -41,25 +43,17 @@ cumpre ampliar o painel pelo controle de tela cheia ou abri-lo em nova aba.
 Os vínculos para código e documentação complementar apontam aos respectivos
 arquivos deste repositório.
 
-## Reproduzir o site
+## Atualizar os exploradores
 
-Com Python 3 e Pandoc instalados, execute na raiz:
-
-```bash
-python3 scripts/gerar_site_tutorial.py
-```
-
-Abra `.local/pages-build/index.html`, `demanda/` e `demanda-mq/` no navegador,
-ou sirva essa pasta localmente. Os exploradores também ficam em
-`material/bi/`, `material/bi-demanda/` e `material/bi-demanda-mq/`. A saída de
-publicação contém somente os arquivos necessários aos tutoriais; backups em
-`.local/pages-backups/` não integram essa saída.
-
-Antes de gerar, atualize os painéis se necessário:
+As páginas HTML são montadas pelo autor fora do repositório. Os dados dos
+exploradores, por outro lado, são reproduzíveis daqui:
 
 ```bash
 uv run python scripts/gerar_bi_demanda.py
 uv run --with scikit-learn python scripts/gerar_bi_demanda_mq.py
+uv run python scripts/gerar_bi_demanda_poisson.py
+uv run python scripts/gerar_bi_credito.py
+uv run python scripts/gerar_bi_logs.py
 ```
 
 ## Publicação
@@ -75,7 +69,7 @@ CLI e Pandoc disponíveis, você pode atualizar a publicação pela raiz:
 python3 scripts/publicar_site_tutorial.py
 ```
 
-O comando gera o site, clona `gh-pages` em uma pasta local, acrescenta uma
+O comando usa o gerador local do autor (fora do Git), gera o site, clona `gh-pages` em uma pasta local, acrescenta uma
 revisão no histórico do branch e solicita a publicação no Pages. Você precisa
 de permissão no `origin` e autenticação no GitHub CLI. Confira o estado final
 com:

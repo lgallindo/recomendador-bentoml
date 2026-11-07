@@ -1,6 +1,7 @@
 """Publique os tutoriais pré-construídos no branch gh-pages, preservando o histórico.
 
-Runbook do autor (fora de pages/README): gerar com ``scripts/gerar_site_tutorial.py``
+Runbook do autor (fora de pages/README): gerar com ``.local/scripts/gerar_site_tutorial.py``
+(local, fora do Git)
 após atualizar os painéis BI se preciso; em seguida executar este módulo na raiz.
 Pré-requisitos: Pandoc, Git, GitHub CLI autenticado, permissão no origin.
 Confirme o deploy com
@@ -18,7 +19,9 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from gerar_site_tutorial import TUTORIAIS, gerar
+# O gerador do site é material local do autor (.local/scripts/, fora do Git).
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / ".local" / "scripts"))
+from gerar_site_tutorial import TUTORIAIS, gerar  # noqa: E402
 
 RAIZ = Path(__file__).resolve().parent.parent
 
