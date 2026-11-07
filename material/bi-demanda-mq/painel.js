@@ -109,13 +109,18 @@
       fill: terra, opacity: 0.08,
     }, plot);
 
-    let dObs = "";
-    ys.forEach((v, idx) => {
-      const x = xScale(idx), y = yScale(v);
-      dObs += (idx ? "L" : "M") + x + " " + y + " ";
-      svg("circle", { cx: x, cy: y, r: 4.5, fill: ink }, plot);
-    });
-    svg("path", { d: dObs.trim(), fill: "none", stroke: ink, "stroke-width": 2.4 }, plot);
+    // Resíduos verticais (estilo least squares): ponto → reta MQ
+    if (chave === "mq") {
+      previsoes.forEach((v, idx) => {
+        if (v === null) return;
+        const x = xScale(idx);
+        svg("line", {
+          x1: x, y1: yScale(ys[idx]), x2: x, y2: yScale(v),
+          stroke: terra, "stroke-width": 1.8, "stroke-linecap": "round",
+          opacity: 0.9,
+        }, plot);
+      });
+    }
 
     let dPrev = "", started = false;
     previsoes.forEach((v, idx) => {
@@ -128,9 +133,17 @@
     if (dPrev) {
       svg("path", {
         d: dPrev.trim(), fill: "none", stroke: teal, "stroke-width": 2,
-        "stroke-dasharray": "6 4",
+        "stroke-dasharray": chave === "mq" ? "none" : "6 4",
       }, plot);
     }
+
+    let dObs = "";
+    ys.forEach((v, idx) => {
+      const x = xScale(idx), y = yScale(v);
+      dObs += (idx ? "L" : "M") + x + " " + y + " ";
+      svg("circle", { cx: x, cy: y, r: 4.5, fill: ink }, plot);
+    });
+    svg("path", { d: dObs.trim(), fill: "none", stroke: ink, "stroke-width": 2.4 }, plot);
     const xn = xScale(serie.length - 0.15);
     const yn = yScale(prox);
     svg("circle", { cx: xn, cy: yn, r: 7, fill: terra }, plot);
