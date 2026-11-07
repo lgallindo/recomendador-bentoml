@@ -138,6 +138,16 @@ $$
 é o **resíduo**: positivo se a reta ficou abaixo do observado, negativo se
 ficou acima. A unidade continua sendo linhas de pedido por produto por semana.
 
+No gráfico, cada segmento terracota é essa distância **vertical** — do ponto
+observado até a reta, na mesma semana \(t\). Mínimos quadrados escolhe a reta
+que deixa a soma desses segmentos (ao quadrado) a menor possível.
+
+![Pontos observados, reta de mínimos quadrados e segmentos verticais dos resíduos para Jarro (p01).](imagens/residuos-minimos-quadrados-p01.png)
+
+*Figura 2 — Cada haste liga \(y_t\) a \(\widehat{y}_t\) na semana \(t\). A
+reta verde é o ajuste em lote de Jarro (`p01`); o critério soma o quadrado
+dessas distâncias.*
+
 ### Por que elevar ao quadrado
 
 Somar resíduos crus misturaria acertos para cima e para baixo até quase se
@@ -167,7 +177,7 @@ critério de mínimos quadrados em si.
 
 ![Uma série por produto; ajuste em lote no bloco; walk-forward reajusta só com o passado.](imagens/mq-lote-por-produto.png)
 
-*Figura 2 — Cada `product_id` tem a própria reta. O critério Σ(y−ŷ)² é o mesmo;
+*Figura 3 — Cada `product_id` tem a própria reta. O critério Σ(y−ŷ)² é o mesmo;
 o que muda entre “ajuste completo” e walk-forward é **quais semanas** entram no
 lote.*
 
@@ -242,7 +252,7 @@ não demonstra uma queda real de demanda.
 
 ![Série sintética semanal de Jarro, reta ajustada por mínimos quadrados e previsão extrapolada para a semana seguinte.](imagens/regressao-minimos-quadrados-p01.png)
 
-*Figura 3 — A reta resume a tendência linear ajustada ao histórico de `p01`.
+*Figura 4 — A reta resume a tendência linear ajustada ao histórico de `p01`.
 O segmento futuro é uma extrapolação, não um valor observado.*
 
 ### Previsões para todos os produtos
@@ -292,7 +302,7 @@ A inclinação é mais íngreme que a do Jarro nesta amostra sintética. Ainda a
 
 ![Série e reta MQ para Boneca de barro (p03).](imagens/regressao-minimos-quadrados-p03.png)
 
-*Figura 4 — Mesmo método do Jarro; outro produto, outra reta.*
+*Figura 5 — Mesmo método do Jarro; outro produto, outra reta.*
 
 Nas quatro semanas finais, com walk-forward **só com o passado**, o MAE de
 mínimos quadrados para `p03` fica em torno de **0,614**; a média móvel de cinco
@@ -301,7 +311,7 @@ próximos nesta série curta.
 
 ![Painel BI: série e reta de p03.](imagens/bi-demanda-mq-serie-p03.png)
 
-*Figura 5 — O explorador permite selecionar Boneca e ler intercepto, inclinação
+*Figura 6 — O explorador permite selecionar Boneca e ler intercepto, inclinação
 e erros do teste no mesmo layout usado para o Jarro.*
 
 ## 6. Avaliar respeitando o tempo
@@ -413,16 +423,16 @@ As figuras abaixo espelham o painel na versão Markdown.
 
 ![Série sintética do Jarro p01 com reta de mínimos quadrados, faixa de teste e previsão da próxima semana.](imagens/bi-demanda-mq-serie-p01.png)
 
-*Figura 6 — Observações e reta do ajuste completo; o ponto terracota extrapola
+*Figura 7 — Observações e reta do ajuste completo; o ponto terracota extrapola
 a semana seguinte. O MAE do teste, no painel, refaz o ajuste só com o passado.*
 
 ![Barras de erro absoluto da regressão nas quatro semanas de teste de p01.](imagens/bi-demanda-mq-erros-p01.png)
 
-*Figura 7 — Erros walk-forward de mínimos quadrados em `p01`.*
+*Figura 8 — Erros walk-forward de mínimos quadrados em `p01`.*
 
 ![MAE agregado da previsão ingênua, MA(4), MA(5) e mínimos quadrados.](imagens/bi-demanda-mq-mae.png)
 
-*Figura 8 — Mesmas 48 previsões para todos os métodos. Menor MAE é melhor nesta
+*Figura 9 — Mesmas 48 previsões para todos os métodos. Menor MAE é melhor nesta
 métrica; a diferença neste conjunto sintético é pequena.*
 
 ## Referência e reprodução
