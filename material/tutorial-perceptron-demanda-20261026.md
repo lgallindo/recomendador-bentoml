@@ -35,10 +35,10 @@ iterativo aproxima a mesma reta que o ajuste em lote.
 *Figura 1 — MQ resolve o bloco de uma vez; LMS corrige os pesos a cada
 exemplo. A perda continua quadrática.*
 
-## 2. Camadas históricas do modelo linear adaptativo
+## 2. História curta do modelo linear adaptativo
 
 A ideia de “somar entradas, atravessar um limiar ou uma saída contínua e
-corrigir pesos com o erro” tem nome e data. As camadas abaixo bastam para
+corrigir pesos com o erro” tem nome e data. O caminho curto abaixo basta para
 saber **por que** falamos de perceptron e de LMS na mesma aula de demanda.
 
 ### 2.1 Neurônio formal e limiar
@@ -72,12 +72,33 @@ critério dos mínimos quadrados que você já viu em lote. A diferença operaci
 é o **caminho**: passo a passo, com taxa de aprendizado \(\eta\), em vez de uma
 única solução fechada do sistema normal.
 
-### 2.4 Por que a demanda da loja pede LMS
+### 2.4 Contagem da loja, não bit de prateleira
 
 | Alvo | Família natural nesta aula |
 | --- | --- |
 | Bit / classe (saiu / não saiu) | Perceptron clássico (erro 0/1) |
 | Contagem / nível contínuo (linhas na semana) | ADALINE / LMS (erro contínuo) |
+
+A demanda semanal pede o segundo quadro: um número, não um sim/não.
+
+### 2.5 Corrigir o palpite semana a semana
+
+Imagine que a loja já tem um palpite linear para o Jarro: “cerca de tantas
+linhas nesta semana”. Fecha a semana, conta o observado, e vê o quanto o
+palpite errou. Em vez de refazer a conta do zero com todas as semanas de uma
+só vez, a regra LMS **empurra** os pesos um pouco na direção que reduziria
+aquele erro — e passa à semana seguinte.
+
+### 2.6 Nomes do passo LMS
+
+- \(\widehat{y}_t\): palpite contínuo para a semana \(t\).
+- \(y_t - \widehat{y}_t\): erro contínuo (observado menos palpite).
+- \(\eta\): taxa de aprendizado — o tamanho do empurrão.
+- \(x_t\): vetor de entrada daquele exemplo; aqui,
+  \(x_t = (1,\ t/\mathrm{escala})\).
+- \(w = (w_0, w_1)\): bias e peso do tempo normalizado.
+
+### 2.7 A atualização em uma linha
 
 A unidade LMS prevê
 
@@ -95,31 +116,77 @@ $$
 É o espírito do perceptron (atualização local pelo erro), com perda
 quadrática. O treino abaixo é **uma** unidade linear adaptativa — o ponto de
 partida histórico das redes mais profundas, sem ainda ser backprop de uma
-rede multilcamada.
+rede multilcamada. Nos exemplos trabalhados (`p01`, `p03`), esse laço roda
+com \(\eta = 0{,}05\) e 200 épocas sobre as 12 primeiras semanas.
 
 ![Laço: época → exemplo → erro → atualização → MSE.](imagens/fluxo-lms-treino.png)
 
 *Figura 2 — Dentro de cada época, todos os pares \((t, y_t)\) do bloco de
 treino passam pela regra LMS; o MSE da época resume o ajuste.*
 
-## 3. Exemplo ilustrado — separabilidade linear (booleanos)
+## 3. Separabilidade linear no plano
 
 Antes de voltar à série semanal, um laboratório mínimo de classificação mostra
-o alcance — e o limite — de **uma** reta (ou hiperplano) no plano.
+o alcance — e o limite — de **uma** reta no plano. O vocabulário nasce da
+história do perceptron; a demanda depois pede outra coisa.
 
-Em classificação binária, um perceptron clássico traça um hiperplano. Com duas
-entradas 0/1:
+### Quatro cantos no plano
 
-| Função | Separável por uma reta? | Leitura rápida |
-| --- | --- | --- |
-| AND | Sim | Os três pontos “falsos” ficam de um lado; o `(1,1)` do outro |
-| OR | Sim | Só `(0,0)` fica do lado “falso” |
-| XOR | Não | Os dois “verdadeiros” não compartilham um semiplano limpo |
+Com duas entradas que só valem 0 ou 1, há exatamente quatro combinações:
 
-XOR exige uma fronteira que uma única reta não realiza; daí o interesse
-posterior por redes com mais de uma camada. Na demanda, o alvo contínuo não
-pede essa fronteira booleana — o quadro fixa o vocabulário de **separabilidade
-linear** que a história do perceptron tornou clássico.
+| \(x_1\) | \(x_2\) | Canto |
+| ---: | ---: | --- |
+| 0 | 0 | canto inferior esquerdo |
+| 0 | 1 | canto superior esquerdo |
+| 1 | 0 | canto inferior direito |
+| 1 | 1 | canto superior direito |
+
+Pense nesses quatro pontos como peças sobre uma mesa. Uma função booleana
+pinta cada peça de “verdadeiro” ou “falso”. A pergunta geométrica é simples:
+existe um **traço reto** que deixa todos os verdadeiros de um lado e todos os
+falsos do outro?
+
+### AND e OR: um traço basta
+
+No **AND**, só o canto `(1,1)` é verdadeiro; os outros três são falsos. Um
+único traço isola aquele canto — os verdadeiros ficam juntos de um lado da
+reta.
+
+No **OR**, só o canto `(0,0)` é falso; os outros três são verdadeiros. De
+novo, um traço basta: o falso fica sozinho de um lado.
+
+Quando isso acontece, dizemos que a função é **linearmente separável**: existe
+uma reta (em dimensão maior, um hiperplano) que separa as duas classes.
+
+### XOR: o X que uma reta não corta
+
+No **XOR**, os verdadeiros são `(0,1)` e `(1,0)` — cantos opostos na
+diagonal. Os falsos ocupam a outra diagonal. Qualquer reta que tente deixar os
+dois verdadeiros do mesmo lado acaba puxando consigo ao menos um falso, ou
+deixa um verdadeiro do lado errado.
+
+Uma única reta **não** realiza o XOR. Daí o interesse histórico por redes com
+mais de uma camada: compor fronteiras que um só traço não desenha.
+
+![AND e OR separados por uma reta; XOR sem separação linear.](imagens/separabilidade-and-or-xor.png)
+
+*Figura 3 — Verde: alvo 1; terracota: alvo 0. AND e OR admitem um traço; XOR
+pede outra geometria.*
+
+| Função | Separável por uma reta? |
+| --- | --- |
+| AND | Sim |
+| OR | Sim |
+| XOR | Não |
+
+### Da classificação à contagem da loja
+
+O quadro booleano fixa o vocabulário de **separabilidade linear**. Na demanda
+semanal, o alvo é uma **contagem** — quantas linhas de pedido — não um bit de
+classe. A reta LMS desta aula resume um **nível** no tempo; ela não precisa
+cortar classes no plano \(x_1 \times x_2\). O laboratório de AND/OR/XOR fica
+como mapa histórico do perceptron; o trabalho com `p01` e `p03` volta à série
+de contagens.
 
 ## 4. Exemplo trabalhado 1 — Jarro (`p01`)
 

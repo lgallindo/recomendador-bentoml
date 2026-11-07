@@ -36,12 +36,12 @@ dentro desse ritual.
 *Figura 0 — Do arquivo semanal ao painel: a reta é o modelo; o walk-forward é o
 ritual de avaliação; o BI espelha os mesmos números.*
 
-## 2. Camadas: da medida à previsão aprendida
+## 2. Da medida à previsão aprendida
 
 A reta por mínimos quadrados chegou à demanda semanal depois de atravessar
-séculos de medida, estatística e, mais tarde, aprendizado de máquina. As
-camadas abaixo são o caminho curto dessa história — o suficiente para saber
-**de onde veio** a soma dos quadrados antes de digitá-la.
+séculos de medida, estatística e, mais tarde, aprendizado de máquina. O
+caminho curto abaixo basta para saber **de onde veio** a soma dos quadrados
+antes de digitá-la.
 
 ### 2.1 Mínimos quadrados no século XIX
 
@@ -104,8 +104,15 @@ continua sintético.
 
 ## 3. O que significa “mínimos quadrados”
 
-Para um produto, associe a semana `t` à contagem observada `y_t`. Uma reta
-prevê:
+### A reta que resume as semanas
+
+Para um produto, cada semana traz um ponto: no eixo horizontal o índice `t`
+(0, 1, 2, …); no vertical, a contagem observada `y_t` em linhas de pedido. Os
+pontos raramente se alinham como um colar perfeito. Ainda assim, a loja pode
+pedir um **resumo reto** — uma única reta que acompanhe o histórico e sirva
+para olhar um passo à frente.
+
+Essa reta escreve-se
 
 $$
 \widehat{y}_t = \beta_0 + \beta_1 t
@@ -115,19 +122,38 @@ $$
 - `β₁` é a inclinação: variação média ajustada em linhas de pedido por semana.
 - `ŷ_t` é a previsão do modelo para a semana `t`.
 
-Os dados raramente ficam todos exatamente numa reta. Para ajustar os
-coeficientes, mínimos quadrados escolhe a reta que minimiza a soma dos
-**resíduos ao quadrado** — o mesmo espírito de Legendre e Gauss, agora com a
-semana no eixo horizontal:
+### Resíduo: o que a reta errou
+
+Em cada semana, compare o que a loja contou com o que a reta disse. A
+diferença
+
+$$
+y_t - \widehat{y}_t
+$$
+
+é o **resíduo**: positivo se a reta ficou abaixo do observado, negativo se
+ficou acima. A unidade continua sendo linhas de pedido por produto por semana.
+
+### Por que elevar ao quadrado
+
+Somar resíduos crus misturaria acertos para cima e para baixo até quase se
+anularem. Elevar cada resíduo ao quadrado faz duas coisas úteis ao mesmo
+tempo: erros grandes pesam mais que erros pequenos, e sinais opostos deixam de
+se cancelar na soma. É o mesmo espírito de Legendre e Gauss — e o mesmo
+espírito de perda \(L_2\) que aparece no tutorial da média móvel — agora como
+**critério de escolha** da reta.
+
+### O critério em uma linha
+
+Mínimos quadrados escolhe o par \((\beta_0, \beta_1)\) que **minimiza** a
+soma dos resíduos ao quadrado, com a semana no eixo horizontal:
 
 $$
 \min_{\beta_0,\beta_1}\ \sum_{t=0}^{n-1}
 \left(y_t - (\beta_0+\beta_1t)\right)^2
 $$
 
-Um resíduo é observado menos previsto. Elevar ao quadrado penaliza erros
-grandes mais fortemente e evita que resíduos positivos e negativos se cancelem
-na soma.
+### Depois de prever: o piso em zero
 
 O ajuste é uma aproximação linear cuja utilidade se examina em semanas futuras
 reservadas para teste. Uma reta pode ainda produzir previsões negativas, embora
@@ -276,11 +302,15 @@ e erros do teste no mesmo layout usado para o Jarro.*
 
 ## 6. Avaliar respeitando o tempo
 
+### Só o passado, uma semana de cada vez
+
 Usaremos as 12 primeiras semanas como histórico inicial e as quatro últimas
-como teste, tal como no tutorial da média móvel. Em cada semana de teste,
-ajustamos a reta novamente usando **somente** semanas anteriores e prevemos o
-próximo ponto. Após observar o resultado real daquela semana, ela pode entrar
-no histórico da previsão seguinte.
+como teste, tal como no tutorial da média móvel. Em cada semana de teste a
+loja **ainda não viu** aquele número: ajusta a reta só com o que já fechou,
+prevê o próximo ponto, e só então incorpora o observado ao histórico da
+origem seguinte.
+
+### Duas réguas de erro
 
 Para comparar escalas de erro:
 
@@ -292,6 +322,8 @@ $$
 
 RMSE penaliza erros grandes mais fortemente que MAE. Ambas as métricas estão
 em linhas de pedido por produto por semana.
+
+### O laço walk-forward no código
 
 ```python
 inicio_teste = len(matriz) - 4
