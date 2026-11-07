@@ -85,7 +85,7 @@ linear na história da medida e do aprendizado com dados, ajustar uma
 reta por <strong>mínimos quadrados</strong> à série semanal de um
 produto, extrapolar a semana seguinte com piso em zero quando preciso, e
 comparar o método com médias móveis e uma previsão ingênua no mesmo
-protocolo walk-forward da <a
+ritual de treinar só com o passado da <a
 href="https://github.com/lgallindo/recomendador-bentoml/blob/main/material/tutorial-media-movel-demanda-20261017.md"><code>média móvel</code></a>.</p>
 <p>Os dados são <strong>sintéticos</strong>: as 16 semanas distribuem os
 totais do catálogo e não são vendas observadas. Resultados numéricos
@@ -110,10 +110,10 @@ reta para olhar um passo à frente.</p>
 prever a próxima semana, só então incorporar o valor observado. O que
 muda é o <strong>modelo</strong> dentro desse ritual.</p>
 <p><img src="../material/imagens/fluxo-mq-demanda.png"
-alt="Fluxo CSV → reta MQ → walk-forward → métricas → BI." /></p>
-<p><em>Figura 0 — Do arquivo semanal ao painel: a reta é o modelo; o
-walk-forward é o ritual de avaliação; o BI espelha os mesmos
-números.</em></p>
+alt="Do arquivo semanal ao painel: contagens, reta por peça, prever só com o passado, medir o erro, ver no painel." /></p>
+<p><em>Figura 0 — Caminho desta aula: ler as contagens, ajustar uma reta
+por peça, prever a semana seguinte só com o que já fechou, medir o erro
+frente a outros métodos e conferir os mesmos números no painel.</em></p>
 <h2 id="2-da-medida-à-previsão-aprendida">2. Da medida à previsão
 aprendida</h2>
 <p>A reta por mínimos quadrados chegou à demanda semanal depois de
