@@ -127,7 +127,7 @@ $$
 O gradiente descendente move cada parâmetro um passo contra o gradiente:
 
 $$
-w \leftarrow w - \eta\,\frac{\partial L}{\partial w}.
+w \leftarrow w - \eta\ \frac{\partial L}{\partial w}.
 $$
 
 O **Adam** segue a mesma ideia, mas ajusta o tamanho do passo de cada parâmetro
@@ -143,10 +143,10 @@ neurônio de saída linear**, sem camada escondida, para que as derivadas fiquem
 curtas:
 
 $$
-\widehat{y} = w_1 x_1 + w_2 x_2 + b, \qquad L = \tfrac{1}{2}\,e^2, \quad e = y - \widehat{y}.
+\widehat{y} = w_1 x_1 + w_2 x_2 + b, \qquad L = \tfrac{1}{2}\ e^2, \quad e = y - \widehat{y}.
 $$
 
-As derivadas são $\partial L/\partial w_1 = -e\,x_1$, $\partial L/\partial w_2 = -e\,x_2$
+As derivadas são $\partial L/\partial w_1 = -e\ x_1$, $\partial L/\partial w_2 = -e\ x_2$
 e $\partial L/\partial b = -e$. Tome a semana 3 de `p01`: $x_1 = 3/15 = 0{,}2$,
 atraso $x_2 = 3$ (demanda da semana 2) e alvo $y = 4$. Comece com
 $w_1 = w_2 = 0{,}5$, $b = 0$ e $\eta = 0{,}05$.

@@ -73,13 +73,13 @@ ajuste. Se o tronco está congelado, só $w$ e $b$ recebem gradiente. Para a
 perda $L = \frac{1}{2n}\sum_i (y_i - \widehat{y}_i)^2$,
 
 $$
-\frac{\partial L}{\partial w} = -\frac{1}{n}\sum_{i=1}^{n} e_i\,h_i,
+\frac{\partial L}{\partial w} = -\frac{1}{n}\sum_{i=1}^{n} e_i\ h_i,
 \qquad
 \frac{\partial L}{\partial b} = -\frac{1}{n}\sum_{i=1}^{n} e_i,
 \qquad e_i = y_i - \widehat{y}_i ,
 $$
 
-e a atualização é $w \leftarrow w - \eta\,\partial L/\partial w$. Com o tronco
+e a atualização é $w \leftarrow w - \eta\ \partial L/\partial w$. Com o tronco
 fixo, a cabeça resolve uma regressão linear sobre atributos $h_i$ que o
 pré-treino aprendeu.
 
@@ -118,8 +118,8 @@ $$
 W' = W + B A, \qquad B \in \mathbb{R}^{d \times r},\; A \in \mathbb{R}^{r \times k},\; r \ll \min(d, k).
 $$
 
-Os parâmetros treináveis passam de $d \cdot k$ para $r\,(d + k)$. Com
-$d = k = 4096$ e $r = 8$: de $16\,777\,216$ para $8 \cdot 8192 = 65\,536$, cerca
+Os parâmetros treináveis passam de $d \cdot k$ para $r\ (d + k)$. Com
+$d = k = 4096$ e $r = 8$: de $16\ 777\ 216$ para $8 \cdot 8192 = 65\ 536$, cerca
 de 0,39%. É por isso que se ajustam modelos de linguagem grandes em uma única
 GPU. Este laboratório não aplica LoRA; a fórmula está aqui para você
 reconhecer o termo e fazer a conta.
@@ -279,7 +279,7 @@ mas perdeu para o treino do zero: o Jarro tem tantas semanas quanto cada
 produto do pré-treino, e o tronco representa o produto médio do catálogo.
 
 **5.** $r(d + k) = 4 \cdot 1536 = 6144$ parâmetros, contra
-$768 \cdot 768 = 589\,824$ no ajuste completo: cerca de 1,04%.
+$768 \cdot 768 = 589\ 824$ no ajuste completo: cerca de 1,04%.
 
 **6.** Exemplo: sobreajuste — com 12 semanas, muitas épocas na cabeça fariam o
 modelo seguir o ruído; mitigação: poucas épocas e um período de validação

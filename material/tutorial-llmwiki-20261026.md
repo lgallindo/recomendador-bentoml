@@ -165,8 +165,8 @@ O **BM25** (*Best Matching 25*) soma, para cada termo da consulta $q$, uma
 contribuição que combina as três ideias:
 
 $$
-\mathrm{BM25}(q,d) = \sum_{t \in q} \mathrm{idf}(t)\,
-\frac{\mathrm{tf}(t,d)\,(k_1+1)}{\mathrm{tf}(t,d) + k_1\left(1 - b + b\,\dfrac{|d|}{\overline{|d|}}\right)}.
+\mathrm{BM25}(q,d) = \sum_{t \in q} \mathrm{idf}(t)\ 
+\frac{\mathrm{tf}(t,d)\ (k_1+1)}{\mathrm{tf}(t,d) + k_1\left(1 - b + b\ \dfrac{|d|}{\overline{|d|}}\right)}.
 $$
 
 - $|d|$ é o número de tokens do documento e $\overline{|d|}$ a média do corpus
@@ -188,7 +188,7 @@ deste tutorial.
 | $\mathrm{df}$ | 3 | frete, atendimento, inicio |
 | $\mathrm{idf}$ | $\ln(1 + 5{,}5/3{,}5) = \ln 2{,}5714 = 0{,}9445$ | fórmula |
 | $\lvert d\rvert / \overline{\lvert d\rvert}$ | $38/36 = 1{,}0556$ | contagem de tokens |
-| denominador | $6 + 1{,}2\,(0{,}25 + 0{,}75 \cdot 1{,}0556) = 6 + 1{,}25 = 7{,}25$ | |
+| denominador | $6 + 1{,}2\ (0{,}25 + 0{,}75 \cdot 1{,}0556) = 6 + 1{,}25 = 7{,}25$ | |
 | contribuição | $0{,}9445 \cdot 6 \cdot 2{,}2 / 7{,}25 = 1{,}7196$ | |
 
 Para a consulta `frete Tracunhaém`, some a contribuição de `tracunhaém` em

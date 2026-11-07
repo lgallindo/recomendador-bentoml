@@ -87,8 +87,8 @@ $\beta_1 \approx -0{,}184$ por unidade de $t/10$. Na escala do log, isso é uma
 reta; na escala das contagens, vira um fator multiplicativo:
 
 $$
-\lambda_{p01,t} = e^{0{,}406 + 0{,}458 - 0{,}184\,t/10}
-\approx 2{,}374 \times 0{,}982^{\,t}.
+\lambda_{p01,t} = e^{0{,}406 + 0{,}458 - 0{,}184\ t/10}
+\approx 2{,}374 \times 0{,}982^{\ t}.
 $$
 
 Cada semana multiplica a taxa por cerca de 0,982, uma queda de 1,8% por semana.
@@ -336,7 +336,7 @@ observação por observação: onde o valor observado $y$ cai dentro da
 distribuição prevista. Para contagens, usa-se o PIT médio
 
 $$
-\mathrm{PIT} = P(Y \le y - 1) + \tfrac{1}{2}\,P(Y = y).
+\mathrm{PIT} = P(Y \le y - 1) + \tfrac{1}{2}\ P(Y = y).
 $$
 
 Se as distribuições estiverem calibradas, os PITs se espalham por igual entre
