@@ -1,0 +1,9 @@
+# Sobreposição opcional: publica a API do Ollama só no host local (127.0.0.1:11434).
+# Use quando um processo FORA do Docker (curl, LiteLLM via uv) precisa falar com o Ollama.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.ollama-host.yml up -d
+
+services:
+  ollama:
+    ports:
+      - "127.0.0.1:11434:11434"

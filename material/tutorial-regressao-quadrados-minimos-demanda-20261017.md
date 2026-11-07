@@ -1,13 +1,11 @@
 # Previsão de demanda com regressão por mínimos quadrados
 
-[Leia a versão web com o explorador interativo incorporado](https://lgallindo.github.io/recomendador-bentoml/demanda-mq/).
-
-Este tutorial parte da série semanal sintética do marketplace e do protocolo
-walk-forward apresentado em
-[`tutorial-media-movel-demanda-20261017.md`](tutorial-media-movel-demanda-20261017.md).
-Você vai ajustar uma reta para cada produto usando regressão linear por mínimos
-quadrados, extrapolar a tendência para a próxima semana e comparar o resultado
-com médias móveis e uma previsão ingênua.
+Ao concluir este tutorial, você deverá conseguir situar a regressão linear na
+história da medida e do aprendizado com dados, ajustar uma reta por **mínimos
+quadrados** à série semanal de um produto, extrapolar a semana seguinte com
+piso em zero quando preciso, e comparar o método com médias móveis e uma
+previsão ingênua no mesmo protocolo walk-forward da
+[`média móvel`](tutorial-media-movel-demanda-20261017.md).
 
 Os dados são **sintéticos**: as 16 semanas distribuem os totais do catálogo e
 não são vendas observadas. Resultados numéricos servem para reproduzir o método,
@@ -17,37 +15,97 @@ não para afirmar que existe tendência real.
 
 | Tempo sugerido | Atividade |
 | --- | --- |
-| 8 min | Relacionar regressão, aprendizado de máquina e previsão |
+| 12 min | Pergunta da loja e camadas históricas até o ML |
 | 10 min | Entender o ajuste por mínimos quadrados |
 | 10 min | Ajustar uma reta e prever demanda |
 | 12 min | Avaliar com origem temporal deslizante |
 | 15 min | Explorar a série com BI e exportar uma evidência |
 | 10 min | Interpretar resultados, limitações e exercício |
 
-## 1. Onde a regressão se situa
+## 1. A pergunta da loja no tempo
 
-Na média móvel, a regra de previsão é definida diretamente como a média das
-últimas observações. Aqui, ajustaremos os coeficientes de uma reta a partir de
-exemplos históricos. Essa é uma forma simples de **aprendizado supervisionado**:
-cada semana fornece uma entrada (o tempo) e um alvo conhecido (a demanda
-observada).
+A loja fecha a semana e já pensa na seguinte: quantas **linhas de pedido** cada
+peça tende a gerar? A unidade é a mesma da média móvel — contagens por produto
+por semana em
+[`dados/vendas_semanais.csv`](../dados/vendas_semanais.csv).
 
-**Inteligência artificial (IA)** é o campo amplo de sistemas que executam
-tarefas como aprender, raciocinar e apoiar decisões; **aprendizado de máquina
-(ML)** é uma área da IA em que algoritmos ajustam modelos a partir de dados.
-Regressão linear é uma técnica estatística que também é usada como modelo de
-ML quando seus parâmetros são aprendidos dos exemplos.
+Na média móvel, a previsão é a média das últimas \(N\) observações: a regra vem
+pronta; o que se aprende, quando se aprende, é sobretudo **qual \(N\)** medir.
+Aqui a pergunta muda de forma: em vez de uma média local, pedimos uma **reta**
+que resuma a relação entre o índice da semana \(t\) e a contagem \(y_t\), e
+usamos essa reta para olhar um passo à frente.
+
+O protocolo de avaliação continua temporal: treinar só com o passado, prever a
+próxima semana, só então incorporar o valor observado. O que muda é o **modelo**
+dentro desse ritual.
+
+## 2. Camadas: da medida à previsão aprendida
+
+A reta por mínimos quadrados chegou à demanda semanal depois de atravessar
+séculos de medida, estatística e, mais tarde, aprendizado de máquina. As
+camadas abaixo são o caminho curto dessa história — o suficiente para saber
+**de onde veio** a soma dos quadrados antes de digitá-la.
+
+### 2.1 Mínimos quadrados no século XIX
+
+No início do século XIX, astrônomos e geodesistas precisavam combinar muitas
+observações imperfeitas numa única curva ou posição. **Adrien-Marie Legendre**
+(1805) e **Carl Friedrich Gauss** (com trabalhos que se entrelaçam nessa época)
+formulariam o critério que ainda usamos: escolher os parâmetros que **minimizam
+a soma dos quadrados dos resíduos** — a diferença entre o medido e o previsto
+pelo modelo.
+
+A escolha do quadrado não é cosmética. Erros grandes pesam mais que erros
+pequenos; erros de sinais opostos deixam de se anular na soma. A mesma ideia de
+perda \(L_2\) aparece no tutorial da média móvel quando se fala do preço do
+erro; aqui ela vira o **critério de ajuste** da reta.
+
+### 2.2 “Regressão” como nome e gesto
+
+Décadas depois, a estatística anglo-saxônica popularizou a palavra
+**regressão** no estudo de relações entre variáveis medidas — o gesto de
+descrever como uma grandeza acompanha outra. O nome ficou; o núcleo operativo
+deste tutorial é mais estreito e mais antigo: **ajustar uma família simples de
+funções** (aqui, retas) aos pares \((t, y_t)\) pelo critério dos mínimos
+quadrados.
+
+Na loja, a “outra variável” é o tempo discreto da semana. A demanda observada é
+o alvo. A reta é o resumo linear desse histórico sintético.
+
+### 2.3 Entrada no aprendizado supervisionado
+
+**Inteligência artificial (IA)** é o campo amplo de sistemas que apoiam ou
+automatizam tarefas como perceber, prever e decidir. **Aprendizado de máquina
+(ML)** é a família de métodos em que o comportamento do sistema **depende de
+dados** — parâmetros ou estruturas ajustados a exemplos.
+
+Quando cada exemplo traz uma entrada e um alvo conhecido, falamos de
+**aprendizado supervisionado**. Nesta aula:
+
+| Peça | Papel |
+| --- | --- |
+| Entrada | índice da semana \(t\) (e, se quiser, um vetor que a represente) |
+| Alvo | contagem observada \(y_t\) |
+| Modelo | reta \(\widehat{y}_t = \beta_0 + \beta_1 t\) |
+| Aprendizado | escolher \(\beta_0,\beta_1\) pelos mínimos quadrados nos exemplos |
+
+A regressão linear é uma técnica estatística clássica; vira modelo de ML no
+sentido operacional de **parâmetros estimados a partir dos dados** e depois
+usados para prever.
+
+### 2.4 Mapa deste tutorial
 
 ![Diagrama conceitual: IA contém ML; regressão linear aprendida por mínimos quadrados é um modelo supervisionado que pode resolver o problema de previsão de demanda.](imagens/mapa-ia-regressao-demanda.png)
 
 *Figura 1 — A regressão linear liga exemplos de entrada e alvo a uma função
 ajustada. As relações são conceituais, não uma medida de tamanho das áreas.*
 
-O problema de negócio continua o mesmo: estimar **linhas de pedido por produto
-por semana**. Regressão não muda a unidade nem transforma os dados sintéticos
-em histórico real.
+Leia de fora para dentro: a loja formula uma previsão; o ML oferece o ritual de
+ajustar parâmetros a exemplos; os mínimos quadrados escolhem a reta. A unidade
+permanece **linhas de pedido por produto por semana**. O arquivo sintético
+continua sintético.
 
-## 2. O que significa “mínimos quadrados”
+## 3. O que significa “mínimos quadrados”
 
 Para um produto, associe a semana `t` à contagem observada `y_t`. Uma reta
 prevê:
@@ -62,7 +120,8 @@ $$
 
 Os dados raramente ficam todos exatamente numa reta. Para ajustar os
 coeficientes, mínimos quadrados escolhe a reta que minimiza a soma dos
-**resíduos ao quadrado**:
+**resíduos ao quadrado** — o mesmo espírito de Legendre e Gauss, agora com a
+semana no eixo horizontal:
 
 $$
 \min_{\beta_0,\beta_1}\ \sum_{t=0}^{n-1}
@@ -73,14 +132,13 @@ Um resíduo é observado menos previsto. Elevar ao quadrado penaliza erros
 grandes mais fortemente e evita que resíduos positivos e negativos se cancelem
 na soma.
 
-O ajuste não prova que a demanda siga uma tendência linear. É uma aproximação
-cuja utilidade deve ser examinada em semanas futuras reservadas para teste.
-Além disso, uma reta pode produzir previsões negativas, embora contagens não
-possam ser negativas. Neste tutorial, aplicaremos um limite inferior de zero
-após prever; isso é uma decisão prática de pós-processamento, não parte do
-ajuste por mínimos quadrados.
+O ajuste é uma aproximação linear cuja utilidade se examina em semanas futuras
+reservadas para teste. Uma reta pode ainda produzir previsões negativas, embora
+contagens não possam ser negativas. Neste tutorial, aplicamos um limite inferior
+de zero **após** prever: decisão prática de pós-processamento, distinta do
+critério de mínimos quadrados em si.
 
-## 3. Carregar a série e ajustar um produto
+## 4. Carregar a série e ajustar um produto
 
 O arquivo tem 16 semanas, de 2026-06-22 a 2026-10-05, para 12 produtos. A
 coluna `order_line_count` conta linhas de pedido semanais, não unidades físicas.
@@ -171,7 +229,7 @@ mas não garante uma distribuição válida nem corrige o modelo. Com alvos de
 contagem, considere um modelo cuja saída respeite a escala e o domínio do
 problema; também registre sempre qualquer pós-processamento.
 
-## 4. Avaliar respeitando o tempo
+## 5. Avaliar respeitando o tempo
 
 Usaremos as 12 primeiras semanas como histórico inicial e as quatro últimas
 como teste, tal como no tutorial da média móvel. Em cada semana de teste,
@@ -238,7 +296,7 @@ Isso não estabelece um vencedor: são apenas quatro semanas sintéticas de test
 O RMSE é apresentado para a regressão, mas só deve ser comparado com RMSE das
 outras abordagens, não diretamente com os MAEs.
 
-## 5. Interpretar o resultado
+## 6. Interpretar o resultado
 
 - Uma inclinação positiva ou negativa é a tendência **linear estimada no
   histórico usado**; não é causa nem garantia de continuidade.
@@ -258,13 +316,11 @@ observados, com datas, quantidades consistentes, estado dos pedidos, estoque e
 contexto de promoções ou rupturas. Faça a avaliação em ordem temporal e compare
 com baselines antes de implantar um modelo.
 
-## 6. Como BI ajuda você a visualizar a reta
+## 7. Como BI ajuda você a visualizar a reta
 
 O [explorador de mínimos quadrados](bi-demanda-mq/index.html) mostra a série,
 a reta ajustada, os erros no teste e o MAE ao lado da média móvel e da
-previsão ingênua. Você pode usá-lo na
-[versão web deste tutorial](https://lgallindo.github.io/recomendador-bentoml/demanda-mq/#explorador-interativo)
-ou abrir o HTML local. Consulte o [roteiro](bi-demanda-mq/README.md).
+previsão ingênua. Consulte o [roteiro](bi-demanda-mq/README.md).
 
 As figuras abaixo espelham o painel na versão Markdown.
 
@@ -290,7 +346,7 @@ métrica; a diferença neste conjunto sintético é pequena.*
 3. Troque para MA(5) e diga o que muda no MAE do produto.
 4. Exporte um PNG ou o CSV do teste.
 
-## 7. Exercício: inclinação da Boneca
+## 8. Exercício: inclinação da Boneca
 
 Ajuste uma regressão linear para Boneca de barro (`p03`) e responda:
 

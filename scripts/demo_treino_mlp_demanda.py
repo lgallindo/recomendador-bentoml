@@ -24,6 +24,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.neural_network import MLPRegressor
 
+from lms_demanda import walk_forward_lms
+
 RAIZ = Path(__file__).resolve().parent.parent
 CSV_PATH = RAIZ / "dados" / "vendas_semanais.csv"
 SAIDA = RAIZ / "material" / "redes"
@@ -116,15 +118,17 @@ def rodar_knob(
         "mae_teste": mae(y_te, pred_te),
         "mse_final_treino": perdas[-1],
         "perda_epocas": perdas,
+        "n_iter": int(modelo.n_iter_),
+        "pred_teste": [float(v) for v in pred_te],
     }
 
 
 def figura_perda(perdas: list[float], nome: str) -> None:
     fig, ax = plt.subplots(figsize=(8, 4.5))
     ax.plot(range(1, len(perdas) + 1), perdas, color=VERDE, linewidth=2)
-    ax.set_title("MSE no treino por época — MLP rasa (p01)", color=AZUL, weight="bold")
+    ax.set_title("Perda de treino por época — MLP rasa (p01)", color=AZUL, weight="bold")
     ax.set_xlabel("Época")
-    ax.set_ylabel("MSE")
+    ax.set_ylabel("perda de treino (½·MSE + L2)")
     ax.spines[["top", "right"]].set_visible(False)
     ax.grid(axis="y", alpha=0.25)
     fig.tight_layout()
@@ -158,6 +162,22 @@ def figura_fluxo() -> None:
     fig.savefig(IMAGENS / "treino-redes-fluxo.png", dpi=160, bbox_inches="tight",
                 facecolor="white")
     plt.close(fig)
+
+
+def baselines_teste(valores: list[int]) -> dict[str, dict]:
+    """Referências no mesmo teste (semanas 12–15): média do treino, ingênua, MA(4), LMS."""
+    teste = valores[INICIO_TESTE:]
+    media = sum(valores[:INICIO_TESTE]) / INICIO_TESTE
+    prev = {
+        "media_treino": [media] * len(teste),
+        "ingenua": [float(valores[i - 1]) for i in range(INICIO_TESTE, len(valores))],
+        "ma4": [sum(valores[i - 4 : i]) / 4 for i in range(INICIO_TESTE, len(valores))],
+        "lms": [r["previsao"] for r in walk_forward_lms(valores)],
+    }
+    return {
+        k: {"pred_teste": v, "mae_teste": float(np.mean(np.abs(np.asarray(teste) - v)))}
+        for k, v in prev.items()
+    }
 
 
 def main() -> None:
@@ -214,6 +234,31 @@ def main() -> None:
     (SAIDA / "resultado_mlp_p01.json").write_text(
         json.dumps(resumo, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
+    )
+    curvas = {
+        "produto": PRODUTO,
+        "semanas_observadas": valores,
+        "inicio_teste": INICIO_TESTE,
+        "features": ["t_norm = t/15", "atraso = y_{t-1}"],
+        "x_treino": x_tr.tolist(),
+        "x_teste": x_te.tolist(),
+        "perda": "loss_curve_ do scikit-learn: ½·MSE + penalidade L2 (alpha=1e-4)",
+        "knobs": {
+            k: {
+                "epocas": v["epocas"],
+                "lr": v["lr"],
+                "largura": v["largura"],
+                "n_iter": v["n_iter"],
+                "perda_epocas": [round(p, 5) for p in v["perda_epocas"]],
+                "pred_teste": [round(p, 4) for p in v["pred_teste"]],
+                "mae_teste": round(v["mae_teste"], 4),
+            }
+            for k, v in knobs.items()
+        },
+        "baselines": baselines_teste(valores),
+    }
+    (SAIDA / "curvas_mlp_p01.json").write_text(
+        json.dumps(curvas, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     print(json.dumps(resumo, ensure_ascii=False, indent=2))
 

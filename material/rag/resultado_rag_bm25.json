@@ -1,0 +1,33 @@
+{
+  "pergunta": "Qual o prazo de devolução e o frete para Tracunhaém?",
+  "hits": [
+    {
+      "path": "frete.md",
+      "title": "Frete — polos de Pernambuco",
+      "score": 2.9721,
+      "snippet": ">>>Tracunhaém<<< e Alto do Moura: >>>frete<<< calculado por CEP na finalização do pedido."
+    },
+    {
+      "path": "atendimento.md",
+      "title": "Atendimento e canais",
+      "score": 2.9682,
+      "snippet": "Chat das 9h às 18h (horário de Brasília), dias úteis. O bot responde >>>frete<<<,"
+    },
+    {
+      "path": "devolucao.md",
+      "title": "Política de devolução",
+      "score": 2.4377,
+      "snippet": "O cliente tem **7 dias corridos** após o recebimento para solicitar >>>devolução<<<"
+    }
+  ],
+  "resposta_ancorada": "Com base em frete.md, atendimento.md, devolucao.md:\n- (frete.md) >>>Tracunhaém<<< e Alto do Moura: >>>frete<<< calculado por CEP na finalização do pedido.\n- (atendimento.md) Chat das 9h às 18h (horário de Brasília), dias úteis. O bot responde >>>frete<<<,\n- (devolucao.md) O cliente tem **7 dias corridos** após o recebimento para solicitar >>>devolução<<<",
+  "recuperador": "bm25",
+  "k": 3,
+  "subperguntas": [],
+  "prompt_aumentado": "INSTRUÇÃO: Responda em português usando SOMENTE os trechos abaixo. Cite o arquivo de cada fato entre parênteses. Se os trechos não contiverem a resposta, diga que a informação não está no corpus.\n\nTRECHOS:\n[1] (frete.md) >>>Tracunhaém<<< e Alto do Moura: >>>frete<<< calculado por CEP na finalização do pedido.\n[2] (atendimento.md) Chat das 9h às 18h (horário de Brasília), dias úteis. O bot responde >>>frete<<<,\n[3] (devolucao.md) O cliente tem **7 dias corridos** após o recebimento para solicitar >>>devolução<<<\n\nPERGUNTA: Qual o prazo de devolução e o frete para Tracunhaém?",
+  "citacoes_existem": {
+    "frete.md": true,
+    "atendimento.md": true,
+    "devolucao.md": true
+  }
+}

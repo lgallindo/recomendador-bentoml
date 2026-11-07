@@ -1,0 +1,28 @@
+{
+  "aviso": "Exemplo ILUSTRATIVO do formato da API nativa do Ollama, montado a partir da documentação. Os textos marcados com «…» variam a cada execução e não vêm de uma execução registrada.",
+  "listar_modelos": {
+    "pedido": "GET http://127.0.0.1:11434/api/tags",
+    "resposta": {"models": [{"name": "qwen2.5:0.5b", "size": "…", "details": {"parameter_size": "494M", "quantization_level": "Q4_K_M"}}]}
+  },
+  "conversar": {
+    "pedido": {
+      "metodo": "POST http://127.0.0.1:11434/api/chat",
+      "corpo": {
+        "model": "qwen2.5:0.5b",
+        "messages": [
+          {"role": "system", "content": "Responda só com base na política: o cliente tem 7 dias corridos após o recebimento para solicitar devolução de peça sem uso."},
+          {"role": "user", "content": "Qual o prazo de devolução?"}
+        ],
+        "stream": false
+      }
+    },
+    "resposta": {
+      "model": "qwen2.5:0.5b",
+      "message": {"role": "assistant", "content": "…"},
+      "done": true,
+      "total_duration": "…",
+      "eval_count": "…",
+      "eval_duration": "…"
+    }
+  }
+}

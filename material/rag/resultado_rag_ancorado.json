@@ -17,5 +17,14 @@
       "snippet": "…O bot responde >>>frete<<<,\n>>>prazo<<< e >>>devolução<<< a partir deste corpus. Pedidos de troca por defeito sobem\npara humano com…"
     }
   ],
-  "resposta_ancorada": "Com base em frete.md, catalogo-p01.md, atendimento.md:\n- (frete.md) \n# >>>Frete<<<\n\n>>>Tracunhaém<<< e Alto do Moura: >>>frete<<< calculado por CEP na finalização do pedido.\nComunidade do Pilar: pedidos acima de…\n- (catalogo-p01.md) \n# p01 — Jarro barro >>>Tracunhaém<<<\n\nTécnica: cerâmica. Região: >>>Tracunhaém<<<. É o exemplo padrão dos `curl` da aula\n(`just curl-exemplo`). Combina…\n- (atendimento.md) …O bot responde >>>frete<<<,\n>>>prazo<<< e >>>devolução<<< a partir deste corpus. Pedidos de troca por defeito sobem\npara humano com…"
+  "resposta_ancorada": "Com base em frete.md, catalogo-p01.md, atendimento.md:\n- (frete.md) \n# >>>Frete<<<\n\n>>>Tracunhaém<<< e Alto do Moura: >>>frete<<< calculado por CEP na finalização do pedido.\nComunidade do Pilar: pedidos acima de…\n- (catalogo-p01.md) \n# p01 — Jarro barro >>>Tracunhaém<<<\n\nTécnica: cerâmica. Região: >>>Tracunhaém<<<. É o exemplo padrão dos `curl` da aula\n(`just curl-exemplo`). Combina…\n- (atendimento.md) …O bot responde >>>frete<<<,\n>>>prazo<<< e >>>devolução<<< a partir deste corpus. Pedidos de troca por defeito sobem\npara humano com…",
+  "recuperador": "fts",
+  "k": 3,
+  "subperguntas": [],
+  "prompt_aumentado": "INSTRUÇÃO: Responda em português usando SOMENTE os trechos abaixo. Cite o arquivo de cada fato entre parênteses. Se os trechos não contiverem a resposta, diga que a informação não está no corpus.\n\nTRECHOS:\n[1] (frete.md) # >>>Frete<<<\n\n>>>Tracunhaém<<< e Alto do Moura: >>>frete<<< calculado por CEP na finalização do pedido.\nComunidade do Pilar: pedidos acima de…\n[2] (catalogo-p01.md) # p01 — Jarro barro >>>Tracunhaém<<<\n\nTécnica: cerâmica. Região: >>>Tracunhaém<<<. É o exemplo padrão dos `curl` da aula\n(`just curl-exemplo`). Combina…\n[3] (atendimento.md) …O bot responde >>>frete<<<,\n>>>prazo<<< e >>>devolução<<< a partir deste corpus. Pedidos de troca por defeito sobem\npara humano com…\n\nPERGUNTA: Qual o prazo de devolução e o frete para Tracunhaém?",
+  "citacoes_existem": {
+    "frete.md": true,
+    "catalogo-p01.md": true,
+    "atendimento.md": true
+  }
 }

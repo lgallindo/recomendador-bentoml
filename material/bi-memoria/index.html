@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Percorra turno a turno um store de memória de usuário: add, search, update e delete, com escopos de usuário e sessão.">
+  <title>Memória da loja · turno a turno</title>
+  <link rel="stylesheet" href="painel.css">
+  <script src="dados.js" defer></script>
+  <script src="painel.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para a linha do tempo</a>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Laboratório de memória de agentes</p>
+      <h1>Quem lembra<br>é o store.</h1>
+      <p>Avance pelos 16 turnos gravados pelo script da aula, veja o store mudar e faça sua própria busca sobre o estado de qualquer turno.</p>
+      <nav>
+        <a href="../tutorial-memoria-agentes-mem0-20261026.md">Tutorial completo</a>
+        <a href="README.md">Como explorar</a>
+      </nav>
+    </div>
+    <img src="../imagens/memoria-linha-tempo.png" alt="Linha do tempo com 16 turnos em duas faixas, aluno_demo e outra_cliente, marcando add, search, update e delete.">
+  </header>
+  <div class="layout">
+    <aside class="filters" aria-label="Controles da busca">
+      <p class="eyebrow">01 · Faça uma busca</p>
+      <h2>Sobre o turno atual</h2>
+      <p>A busca usa o store <strong>depois</strong> do turno selecionado e a mesma pontuação do script: tokens da consulta contidos no texto.</p>
+      <label for="usuario">user_id</label>
+      <select id="usuario"></select>
+      <label for="sessao">session_id</label>
+      <select id="sessao">
+        <option value="">(nenhuma)</option>
+        <option value="s1">s1</option>
+        <option value="s2">s2</option>
+      </select>
+      <label for="consulta">Consulta</label>
+      <input id="consulta" type="text" value="frete Recife" autocomplete="off">
+      <button id="reset" type="button">Restaurar turno 11 · “frete Recife”</button>
+      <div class="note"><strong>Store local.</strong> Mesma forma de <code>add / search / update / delete</code> do Mem0, sem LLM nem embeddings.</div>
+    </aside>
+    <main id="conteudo">
+      <section class="summary" aria-label="Resumo">
+        <div><span id="k-turno">—</span><p>turno</p></div>
+        <div><span id="k-store">—</span><p>memórias no store</p></div>
+        <div><span id="k-hits">—</span><p>resultados da sua busca</p></div>
+      </section>
+      <section class="panel detail" aria-labelledby="titulo-linha">
+        <p class="eyebrow">02 · Linha do tempo</p>
+        <h2 id="titulo-linha">Turno a turno</h2>
+        <div class="plot-scroll"><svg id="linha" viewBox="0 0 780 170" role="img" aria-label="Linha do tempo dos 16 turnos com o turno atual em destaque"></svg></div>
+        <div class="stepper">
+          <button id="anterior" type="button" class="secondary">← Turno anterior</button>
+          <button id="proximo" type="button">Próximo turno →</button>
+          <span id="posicao" role="status"></span>
+        </div>
+        <p id="descricao"></p>
+        <pre class="carga" id="resultado"></pre>
+        <button type="button" class="secondary export" data-svg="linha">Baixar linha do tempo PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-store">
+        <p class="eyebrow">03 · Store</p>
+        <h2 id="titulo-store">Store depois do turno</h2>
+        <div class="table-scroll">
+          <table id="store">
+            <thead><tr><th>id</th><th>user_id</th><th>sessão</th><th>memória</th><th>histórico</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="panel" aria-labelledby="titulo-busca">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">04 · Busca ao vivo</p>
+            <h2 id="titulo-busca">Pontuação por sobreposição de tokens</h2>
+          </div>
+          <button id="csv" type="button">Baixar CSV</button>
+        </div>
+        <p id="explica"></p>
+        <div class="plot-scroll"><svg id="scores" viewBox="0 0 780 220" role="img" aria-label="Score de cada memória visível para a consulta"></svg></div>
+        <button type="button" class="secondary export" data-svg="scores">Baixar scores PNG</button>
+        <div class="table-scroll">
+          <table id="hits">
+            <caption>Memórias visíveis ao escopo escolhido, com os tokens que casaram.</caption>
+            <thead><tr><th>id</th><th>score</th><th>tokens que casaram</th><th>memória</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p id="export-status" role="status"></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

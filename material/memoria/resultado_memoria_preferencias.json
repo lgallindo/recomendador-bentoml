@@ -2,50 +2,50 @@
   "user_id": "aluno_demo",
   "adds": [
     {
-      "id": "b801c3d4",
+      "id": "e75cb1b0",
       "user_id": "aluno_demo",
       "memory": "Cliente prefere frete para Recife.",
-      "created_at": "2026-10-26T17:57:26Z"
+      "created_at": "2026-11-07T11:57:55Z"
     },
     {
-      "id": "004f9c1a",
+      "id": "de373721",
       "user_id": "aluno_demo",
       "memory": "Não gosta de peças de palha.",
-      "created_at": "2026-10-26T17:57:26Z"
+      "created_at": "2026-11-07T11:57:55Z"
     },
     {
-      "id": "cfcc361e",
+      "id": "8247cc39",
       "user_id": "aluno_demo",
       "memory": "Orçamento máximo cerca de R$ 150.",
-      "created_at": "2026-10-26T17:57:26Z"
+      "created_at": "2026-11-07T11:57:55Z"
     }
   ],
   "search_frete_recife_antes": [
     {
-      "id": "b801c3d4",
+      "id": "e75cb1b0",
       "user_id": "aluno_demo",
       "memory": "Cliente prefere frete para Recife.",
-      "created_at": "2026-10-26T17:57:26Z",
+      "created_at": "2026-11-07T11:57:55Z",
       "score": 2
     }
   ],
   "search_frete_recife_depois_update": [
     {
-      "id": "b801c3d4",
+      "id": "e75cb1b0",
       "user_id": "aluno_demo",
       "memory": "Cliente prefere frete para Olinda (mudou de Recife).",
-      "created_at": "2026-10-26T17:57:26Z",
-      "updated_at": "2026-10-26T17:57:26Z",
+      "created_at": "2026-11-07T11:57:55Z",
+      "updated_at": "2026-11-07T11:57:55Z",
       "score": 2
     }
   ],
   "search_frete_olinda_depois": [
     {
-      "id": "b801c3d4",
+      "id": "e75cb1b0",
       "user_id": "aluno_demo",
       "memory": "Cliente prefere frete para Olinda (mudou de Recife).",
-      "created_at": "2026-10-26T17:57:26Z",
-      "updated_at": "2026-10-26T17:57:26Z",
+      "created_at": "2026-11-07T11:57:55Z",
+      "updated_at": "2026-11-07T11:57:55Z",
       "score": 2
     }
   ],

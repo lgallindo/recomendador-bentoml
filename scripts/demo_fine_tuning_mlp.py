@@ -150,7 +150,7 @@ def figura_caixas() -> None:
 def figura_ft(perdas: list[float]) -> None:
     fig, ax = plt.subplots(figsize=(8, 4.5))
     ax.plot(range(1, len(perdas) + 1), perdas, color=VERDE, lw=2)
-    ax.set_title("MSE no adaptação (cabeça) — p01", color=AZUL, weight="bold")
+    ax.set_title("MSE na adaptação (cabeça) — p01", color=AZUL, weight="bold")
     ax.set_xlabel("Época de fine-tune")
     ax.set_ylabel("MSE")
     ax.spines[["top", "right"]].set_visible(False)
@@ -159,6 +159,24 @@ def figura_ft(perdas: list[float]) -> None:
     fig.savefig(IMAGENS / "fine-tuning-curva-p01.png", dpi=160, bbox_inches="tight",
                 facecolor="white")
     plt.close(fig)
+
+
+def contar_params(modelo: MLPRegressor) -> dict[str, int]:
+    total = int(sum(c.size for c in modelo.coefs_) + sum(b.size for b in modelo.intercepts_))
+    cabeca = int(modelo.coefs_[-1].size + modelo.intercepts_[-1].size)
+    return {"total": total, "cabeca": cabeca, "tronco": total - cabeca}
+
+
+def mae_outros(modelo: MLPRegressor, series: dict[str, list[int]]) -> dict[str, float]:
+    """MAE no teste (semanas 12–15) de cada produto diferente do alvo."""
+    saida = {}
+    for pid in sorted(series):
+        if pid == ALVO:
+            continue
+        x, y = montar_xy(series[pid])
+        pred = np.maximum(0.0, modelo.predict(x[INICIO_TESTE:]))
+        saida[pid] = round(mae(y[INICIO_TESTE:], pred), 4)
+    return saida
 
 
 def main() -> None:
@@ -188,6 +206,8 @@ def main() -> None:
 
     figura_caixas()
     figura_ft(perdas)
+    outros_antes = mae_outros(pre, series)
+    outros_depois = mae_outros(ft, series)
 
     resumo = {
         "alvo": ALVO,
@@ -209,6 +229,21 @@ def main() -> None:
             "split temporal frágil (só 4 semanas de teste)",
         ],
         "mitigacao_usada": "congelar tronco; poucas épocas na cabeça; piso em zero na previsão",
+        "parametros": contar_params(pre),
+        "esquecimento": {
+            "pergunta": "A adaptação a p01 piorou a previsão dos outros produtos?",
+            "mae_teste_outros_antes_ft": outros_antes,
+            "mae_teste_outros_depois_ft": outros_depois,
+            "media_antes": round(float(np.mean(list(outros_antes.values()))), 4),
+            "media_depois": round(float(np.mean(list(outros_depois.values()))), 4),
+        },
+        "perda_ft_epocas": [round(v, 5) for v in perdas],
+        "pred_teste_p01": {
+            "observado": [float(v) for v in y_te],
+            "pretreino": [round(float(v), 4) for v in np.maximum(0.0, pre.predict(x_te))],
+            "fine_tune": [round(float(v), 4) for v in np.maximum(0.0, ft.predict(x_te))],
+            "do_zero": [round(float(v), 4) for v in np.maximum(0.0, scratch.predict(x_te))],
+        },
     }
     (SAIDA / "resultado_fine_tuning_p01.json").write_text(
         json.dumps(resumo, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

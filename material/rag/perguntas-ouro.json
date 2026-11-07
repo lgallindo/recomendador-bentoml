@@ -1,0 +1,48 @@
+{
+  "descricao": "Conjunto-ouro pequeno da mini-wiki: para cada pergunta, as páginas que contêm o fato pedido. Lista vazia = o corpus não responde (o sistema deve se abster).",
+  "corpus": "material/mini-wiki-rag/",
+  "perguntas": [
+    {
+      "id": "q1",
+      "pergunta": "Qual o prazo de devolução e o frete para Tracunhaém?",
+      "relevantes": ["devolucao.md", "frete.md"],
+      "subperguntas": ["prazo de devolução", "frete para Tracunhaém"],
+      "fato_esperado": "7 dias corridos para devolução; frete de Tracunhaém calculado por CEP"
+    },
+    {
+      "id": "q2",
+      "pergunta": "Tem frete grátis para Olinda?",
+      "relevantes": ["frete.md"],
+      "subperguntas": ["Tem frete grátis para Olinda?"],
+      "fato_esperado": "Comunidade do Pilar: pedidos acima de R$ 200 têm frete grátis para Recife e Olinda"
+    },
+    {
+      "id": "q3",
+      "pergunta": "Quanto tempo leva uma encomenda de cerâmica?",
+      "relevantes": ["prazos.md"],
+      "subperguntas": ["Quanto tempo leva uma encomenda de cerâmica?"],
+      "fato_esperado": "até 15 dias úteis"
+    },
+    {
+      "id": "q4",
+      "pergunta": "Qual o horário do chat?",
+      "relevantes": ["atendimento.md"],
+      "subperguntas": ["Qual o horário do chat?"],
+      "fato_esperado": "9h às 18h (horário de Brasília), dias úteis"
+    },
+    {
+      "id": "q5",
+      "pergunta": "Como o recomendador escolhe as sugestões?",
+      "relevantes": ["recomendador.md"],
+      "subperguntas": ["Como o recomendador escolhe as sugestões?"],
+      "fato_esperado": "popularidade (pedidos) e co-ocorrência nas cestas, com score e reason"
+    },
+    {
+      "id": "q6",
+      "pergunta": "Vocês aceitam pagamento por Pix?",
+      "relevantes": [],
+      "subperguntas": ["Vocês aceitam pagamento por Pix?"],
+      "fato_esperado": "ausente do corpus — abster-se"
+    }
+  ]
+}

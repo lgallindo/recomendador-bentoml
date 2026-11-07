@@ -1,0 +1,1577 @@
+{
+  "corpus": "material/mini-wiki-rag/",
+  "n_paginas": 8,
+  "comprimento_medio_tokens": 36.0,
+  "bm25": {
+    "k1": 1.2,
+    "b": 0.75
+  },
+  "llmwiki_versao": "llmwiki 0.2.1",
+  "fts": "SQLite FTS5, tokenize='porter unicode61', termos unidos por OR, ORDER BY rank",
+  "perguntas": [
+    {
+      "id": "q1",
+      "pergunta": "Qual o prazo de devolução e o frete para Tracunhaém?",
+      "relevantes": [
+        "devolucao.md",
+        "frete.md"
+      ],
+      "subperguntas": [
+        "prazo de devolução",
+        "frete para Tracunhaém"
+      ],
+      "recuperadores": {
+        "fts": {
+          "inteira": {
+            "ranking": [
+              {
+                "path": "frete.md",
+                "score": null,
+                "snippet": "\n# >>>Frete<<<\n\n>>>Tracunhaém<<< e Alto do Moura: >>>frete<<< calculado por CEP na finalização do pedido.\nComunidade do Pilar: pedidos acima de…"
+              },
+              {
+                "path": "catalogo-p01.md",
+                "score": null,
+                "snippet": "\n# p01 — Jarro barro >>>Tracunhaém<<<\n\nTécnica: cerâmica. Região: >>>Tracunhaém<<<. É o exemplo padrão dos `curl` da aula\n(`just curl-exemplo`). Combina…"
+              },
+              {
+                "path": "atendimento.md",
+                "score": null,
+                "snippet": "…O bot responde >>>frete<<<,\n>>>prazo<<< e >>>devolução<<< a partir deste corpus. Pedidos de troca por defeito sobem\npara humano com…"
+              },
+              {
+                "path": "inicio.md",
+                "score": null,
+                "snippet": "…As páginas irmãs descrevem >>>frete<<<, >>>devolução<<<, >>>prazos<<< e o papel do recomendador.\nUse busca por palavra-chave ou híbrida depois…"
+              },
+              {
+                "path": "devolucao.md",
+                "score": null,
+                "snippet": "\n# >>>Devolução<<<\n\nO cliente tem **7 dias corridos** após o recebimento para solicitar >>>devolução<<<\nde peça sem uso, com embalagem original…"
+              },
+              {
+                "path": "prazos.md",
+                "score": null,
+                "snippet": "…combinar >>>prazo<<< no chat antes de pagar.\n"
+              }
+            ],
+            "recall@1": 0.5,
+            "precisao@1": 1.0,
+            "recall@3": 0.5,
+            "precisao@3": 0.3333
+          },
+          "subperguntas": {
+            "ranking": [
+              {
+                "path": "devolucao.md",
+                "score": null,
+                "snippet": "\n# >>>Devolução<<<\n\nO cliente tem **7 dias corridos** após o recebimento para solicitar >>>devolução<<<\nde peça sem uso, com embalagem original…"
+              },
+              {
+                "path": "frete.md",
+                "score": null,
+                "snippet": "\n# >>>Frete<<<\n\n>>>Tracunhaém<<< e Alto do Moura: >>>frete<<< calculado por CEP na finalização do pedido.\nComunidade do Pilar: pedidos acima de…"
+              },
+              {
+                "path": "atendimento.md",
+                "score": null,
+                "snippet": "…O bot responde frete,\n>>>prazo<<< e >>>devolução<<< a partir deste corpus. Pedidos de troca por defeito sobem\npara humano com…"
+              },
+              {
+                "path": "catalogo-p01.md",
+                "score": null,
+                "snippet": "\n# p01 — Jarro barro >>>Tracunhaém<<<\n\nTécnica: cerâmica. Região: >>>Tracunhaém<<<. É o exemplo padrão dos `curl` da aula\n(`just curl-exemplo`). Combina…"
+              },
+              {
+                "path": "inicio.md",
+                "score": null,
+                "snippet": "…As páginas irmãs descrevem frete, >>>devolução<<<, >>>prazos<<< e o papel do recomendador.\nUse busca por palavra-chave ou híbrida depois…"
+              },
+              {
+                "path": "prazos.md",
+                "score": null,
+                "snippet": "…combinar >>>prazo<<< no chat antes de pagar.\n"
+              }
+            ],
+            "recall@1": 0.5,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.6667
+          }
+        },
+        "bm25": {
+          "inteira": {
+            "ranking": [
+              {
+                "path": "frete.md",
+                "score": 2.9721,
+                "termos": {
+                  "frete": {
+                    "tf": 6,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 38,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.7196
+                  },
+                  "tracunhaém": {
+                    "tf": 1,
+                    "df": 2,
+                    "idf": 1.2809,
+                    "comprimento": 38,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.2525
+                  }
+                }
+              },
+              {
+                "path": "atendimento.md",
+                "score": 2.9682,
+                "termos": {
+                  "prazo": {
+                    "tf": 1,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 32,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.9894
+                  },
+                  "devolução": {
+                    "tf": 1,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 32,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.9894
+                  },
+                  "frete": {
+                    "tf": 1,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 32,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.9894
+                  }
+                }
+              },
+              {
+                "path": "devolucao.md",
+                "score": 2.4377,
+                "termos": {
+                  "prazo": {
+                    "tf": 1,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 42,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.8842
+                  },
+                  "devolução": {
+                    "tf": 4,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 42,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.5535
+                  }
+                }
+              },
+              {
+                "path": "catalogo-p01.md",
+                "score": 2.0495,
+                "termos": {
+                  "tracunhaém": {
+                    "tf": 3,
+                    "df": 2,
+                    "idf": 1.2809,
+                    "comprimento": 33,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 2.0495
+                  }
+                }
+              },
+              {
+                "path": "inicio.md",
+                "score": 1.8676,
+                "termos": {
+                  "devolução": {
+                    "tf": 1,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 37,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.9338
+                  },
+                  "frete": {
+                    "tf": 1,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 37,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.9338
+                  }
+                }
+              },
+              {
+                "path": "prazos.md",
+                "score": 1.0014,
+                "termos": {
+                  "prazo": {
+                    "tf": 1,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 31,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.0014
+                  }
+                }
+              }
+            ],
+            "recall@1": 0.5,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.6667
+          },
+          "subperguntas": {
+            "ranking": [
+              {
+                "path": "devolucao.md",
+                "score": 2.4377,
+                "termos": {
+                  "prazo": {
+                    "tf": 1,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 42,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.8842
+                  },
+                  "devolução": {
+                    "tf": 4,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 42,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.5535
+                  }
+                }
+              },
+              {
+                "path": "frete.md",
+                "score": 2.9721,
+                "termos": {
+                  "frete": {
+                    "tf": 6,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 38,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.7196
+                  },
+                  "tracunhaém": {
+                    "tf": 1,
+                    "df": 2,
+                    "idf": 1.2809,
+                    "comprimento": 38,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.2525
+                  }
+                }
+              },
+              {
+                "path": "atendimento.md",
+                "score": 1.9788,
+                "termos": {
+                  "prazo": {
+                    "tf": 1,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 32,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.9894
+                  },
+                  "devolução": {
+                    "tf": 1,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 32,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.9894
+                  }
+                }
+              },
+              {
+                "path": "catalogo-p01.md",
+                "score": 2.0495,
+                "termos": {
+                  "tracunhaém": {
+                    "tf": 3,
+                    "df": 2,
+                    "idf": 1.2809,
+                    "comprimento": 33,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 2.0495
+                  }
+                }
+              },
+              {
+                "path": "prazos.md",
+                "score": 1.0014,
+                "termos": {
+                  "prazo": {
+                    "tf": 1,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 31,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.0014
+                  }
+                }
+              },
+              {
+                "path": "inicio.md",
+                "score": 0.9338,
+                "termos": {
+                  "devolução": {
+                    "tf": 1,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 37,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.9338
+                  }
+                }
+              }
+            ],
+            "recall@1": 0.5,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.6667
+          }
+        },
+        "llmwiki": {
+          "inteira": {
+            "ranking": [
+              {
+                "path": "devolucao.md",
+                "score": 13.9
+              },
+              {
+                "path": "atendimento.md",
+                "score": 11.93
+              },
+              {
+                "path": "frete.md",
+                "score": 10.17
+              },
+              {
+                "path": "recomendador.md",
+                "score": 5.72
+              },
+              {
+                "path": "catalogo-p01.md",
+                "score": 4.98
+              },
+              {
+                "path": "inicio.md",
+                "score": 4.5
+              },
+              {
+                "path": "prazos.md",
+                "score": 2.75
+              },
+              {
+                "path": "catalogo-p04.md",
+                "score": 0.92
+              }
+            ],
+            "recall@1": 0.5,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.6667
+          },
+          "subperguntas": {
+            "ranking": [
+              {
+                "path": "devolucao.md",
+                "score": 7.92
+              },
+              {
+                "path": "frete.md",
+                "score": 7.78
+              },
+              {
+                "path": "prazos.md",
+                "score": 2.75
+              },
+              {
+                "path": "catalogo-p01.md",
+                "score": 3.58
+              },
+              {
+                "path": "atendimento.md",
+                "score": 2.57
+              },
+              {
+                "path": "inicio.md",
+                "score": 2.21
+              },
+              {
+                "path": "catalogo-p04.md",
+                "score": 0.55
+              },
+              {
+                "path": "recomendador.md",
+                "score": 0.27
+              }
+            ],
+            "recall@1": 0.5,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.6667
+          }
+        }
+      }
+    },
+    {
+      "id": "q2",
+      "pergunta": "Tem frete grátis para Olinda?",
+      "relevantes": [
+        "frete.md"
+      ],
+      "subperguntas": [
+        "Tem frete grátis para Olinda?"
+      ],
+      "recuperadores": {
+        "fts": {
+          "inteira": {
+            "ranking": [
+              {
+                "path": "frete.md",
+                "score": null,
+                "snippet": "…pedidos acima de R$ 200 >>>têm<<< >>>frete<<< >>>grátis<<< para Recife e\n>>>Olinda<<<.\n\nPrazos estimados (dias úteis): Grande Recife 3–5…"
+              },
+              {
+                "path": "devolucao.md",
+                "score": null,
+                "snippet": "\n# Devolução\n\nO cliente >>>tem<<< **7 dias corridos** após o recebimento para solicitar devolução\nde peça sem uso, com embalagem original…"
+              },
+              {
+                "path": "atendimento.md",
+                "score": null,
+                "snippet": "…O bot responde >>>frete<<<,\nprazo e devolução a partir deste corpus. Pedidos de troca por defeito sobem\npara humano com…"
+              },
+              {
+                "path": "inicio.md",
+                "score": null,
+                "snippet": "…As páginas irmãs descrevem >>>frete<<<, devolução, prazos e o papel do recomendador.\nUse busca por palavra-chave ou híbrida depois…"
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          },
+          "subperguntas": {
+            "ranking": [
+              {
+                "path": "frete.md",
+                "score": null,
+                "snippet": "…pedidos acima de R$ 200 >>>têm<<< >>>frete<<< >>>grátis<<< para Recife e\n>>>Olinda<<<.\n\nPrazos estimados (dias úteis): Grande Recife 3–5…"
+              },
+              {
+                "path": "devolucao.md",
+                "score": null,
+                "snippet": "\n# Devolução\n\nO cliente >>>tem<<< **7 dias corridos** após o recebimento para solicitar devolução\nde peça sem uso, com embalagem original…"
+              },
+              {
+                "path": "atendimento.md",
+                "score": null,
+                "snippet": "…O bot responde >>>frete<<<,\nprazo e devolução a partir deste corpus. Pedidos de troca por defeito sobem\npara humano com…"
+              },
+              {
+                "path": "inicio.md",
+                "score": null,
+                "snippet": "…As páginas irmãs descrevem >>>frete<<<, devolução, prazos e o papel do recomendador.\nUse busca por palavra-chave ou híbrida depois…"
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          }
+        },
+        "bm25": {
+          "inteira": {
+            "ranking": [
+              {
+                "path": "frete.md",
+                "score": 5.8973,
+                "termos": {
+                  "frete": {
+                    "tf": 6,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 38,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.7196
+                  },
+                  "grátis": {
+                    "tf": 2,
+                    "df": 1,
+                    "idf": 1.7918,
+                    "comprimento": 38,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 2.4258
+                  },
+                  "olinda": {
+                    "tf": 1,
+                    "df": 1,
+                    "idf": 1.7918,
+                    "comprimento": 38,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.7519
+                  }
+                }
+              },
+              {
+                "path": "devolucao.md",
+                "score": 1.6774,
+                "termos": {
+                  "tem": {
+                    "tf": 1,
+                    "df": 1,
+                    "idf": 1.7918,
+                    "comprimento": 42,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.6774
+                  }
+                }
+              },
+              {
+                "path": "atendimento.md",
+                "score": 0.9894,
+                "termos": {
+                  "frete": {
+                    "tf": 1,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 32,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.9894
+                  }
+                }
+              },
+              {
+                "path": "inicio.md",
+                "score": 0.9338,
+                "termos": {
+                  "frete": {
+                    "tf": 1,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 37,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.9338
+                  }
+                }
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          },
+          "subperguntas": {
+            "ranking": [
+              {
+                "path": "frete.md",
+                "score": 5.8973,
+                "termos": {
+                  "frete": {
+                    "tf": 6,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 38,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.7196
+                  },
+                  "grátis": {
+                    "tf": 2,
+                    "df": 1,
+                    "idf": 1.7918,
+                    "comprimento": 38,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 2.4258
+                  },
+                  "olinda": {
+                    "tf": 1,
+                    "df": 1,
+                    "idf": 1.7918,
+                    "comprimento": 38,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.7519
+                  }
+                }
+              },
+              {
+                "path": "devolucao.md",
+                "score": 1.6774,
+                "termos": {
+                  "tem": {
+                    "tf": 1,
+                    "df": 1,
+                    "idf": 1.7918,
+                    "comprimento": 42,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.6774
+                  }
+                }
+              },
+              {
+                "path": "atendimento.md",
+                "score": 0.9894,
+                "termos": {
+                  "frete": {
+                    "tf": 1,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 32,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.9894
+                  }
+                }
+              },
+              {
+                "path": "inicio.md",
+                "score": 0.9338,
+                "termos": {
+                  "frete": {
+                    "tf": 1,
+                    "df": 3,
+                    "idf": 0.9445,
+                    "comprimento": 37,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.9338
+                  }
+                }
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          }
+        },
+        "llmwiki": {
+          "inteira": {
+            "ranking": [
+              {
+                "path": "frete.md",
+                "score": 11.65
+              },
+              {
+                "path": "devolucao.md",
+                "score": 2.33
+              },
+              {
+                "path": "atendimento.md",
+                "score": 1.96
+              },
+              {
+                "path": "inicio.md",
+                "score": 0.96
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          },
+          "subperguntas": {
+            "ranking": [
+              {
+                "path": "frete.md",
+                "score": 11.65
+              },
+              {
+                "path": "devolucao.md",
+                "score": 2.33
+              },
+              {
+                "path": "atendimento.md",
+                "score": 1.96
+              },
+              {
+                "path": "inicio.md",
+                "score": 0.96
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          }
+        }
+      }
+    },
+    {
+      "id": "q3",
+      "pergunta": "Quanto tempo leva uma encomenda de cerâmica?",
+      "relevantes": [
+        "prazos.md"
+      ],
+      "subperguntas": [
+        "Quanto tempo leva uma encomenda de cerâmica?"
+      ],
+      "recuperadores": {
+        "fts": {
+          "inteira": {
+            "ranking": [
+              {
+                "path": "prazos.md",
+                "score": null,
+                "snippet": "…>>>Encomendas<<< de >>>cerâmica<<< podem levar\naté 15 dias úteis. Renda sob medida: combinar prazo no chat antes de pagar.\n"
+              },
+              {
+                "path": "catalogo-p01.md",
+                "score": null,
+                "snippet": "\n# p01 — Jarro barro Tracunhaém\n\nTécnica: >>>cerâmica<<<. Região: Tracunhaém. É o exemplo padrão dos `curl` da aula\n(`just curl-exemplo`). Combina…"
+              },
+              {
+                "path": "inicio.md",
+                "score": null,
+                "snippet": "\n# Loja didática\n\nCatálogo sintético de peças pernambucanas (>>>cerâmica<<<, renda, xilo, palha).\nAs páginas irmãs descrevem frete, devolução, prazos e o…"
+              },
+              {
+                "path": "devolucao.md",
+                "score": null,
+                "snippet": "…solicitar devolução\nde peça sem uso, com embalagem original.\n\n>>>Cerâmica<<< frágil: foto da caixa na entrega ajuda se houver avaria…"
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          },
+          "subperguntas": {
+            "ranking": [
+              {
+                "path": "prazos.md",
+                "score": null,
+                "snippet": "…>>>Encomendas<<< de >>>cerâmica<<< podem levar\naté 15 dias úteis. Renda sob medida: combinar prazo no chat antes de pagar.\n"
+              },
+              {
+                "path": "catalogo-p01.md",
+                "score": null,
+                "snippet": "\n# p01 — Jarro barro Tracunhaém\n\nTécnica: >>>cerâmica<<<. Região: Tracunhaém. É o exemplo padrão dos `curl` da aula\n(`just curl-exemplo`). Combina…"
+              },
+              {
+                "path": "inicio.md",
+                "score": null,
+                "snippet": "\n# Loja didática\n\nCatálogo sintético de peças pernambucanas (>>>cerâmica<<<, renda, xilo, palha).\nAs páginas irmãs descrevem frete, devolução, prazos e o…"
+              },
+              {
+                "path": "devolucao.md",
+                "score": null,
+                "snippet": "…solicitar devolução\nde peça sem uso, com embalagem original.\n\n>>>Cerâmica<<< frágil: foto da caixa na entrega ajuda se houver avaria…"
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          }
+        },
+        "bm25": {
+          "inteira": {
+            "ranking": [
+              {
+                "path": "prazos.md",
+                "score": 2.6346,
+                "termos": {
+                  "tempo": {
+                    "tf": 1,
+                    "df": 1,
+                    "idf": 1.7918,
+                    "comprimento": 31,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.8997
+                  },
+                  "cerâmica": {
+                    "tf": 1,
+                    "df": 4,
+                    "idf": 0.6931,
+                    "comprimento": 31,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.7349
+                  }
+                }
+              },
+              {
+                "path": "catalogo-p01.md",
+                "score": 0.976,
+                "termos": {
+                  "cerâmica": {
+                    "tf": 2,
+                    "df": 4,
+                    "idf": 0.6931,
+                    "comprimento": 33,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.976
+                  }
+                }
+              },
+              {
+                "path": "inicio.md",
+                "score": 0.6854,
+                "termos": {
+                  "cerâmica": {
+                    "tf": 1,
+                    "df": 4,
+                    "idf": 0.6931,
+                    "comprimento": 37,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.6854
+                  }
+                }
+              },
+              {
+                "path": "devolucao.md",
+                "score": 0.6489,
+                "termos": {
+                  "cerâmica": {
+                    "tf": 1,
+                    "df": 4,
+                    "idf": 0.6931,
+                    "comprimento": 42,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.6489
+                  }
+                }
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          },
+          "subperguntas": {
+            "ranking": [
+              {
+                "path": "prazos.md",
+                "score": 2.6346,
+                "termos": {
+                  "tempo": {
+                    "tf": 1,
+                    "df": 1,
+                    "idf": 1.7918,
+                    "comprimento": 31,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.8997
+                  },
+                  "cerâmica": {
+                    "tf": 1,
+                    "df": 4,
+                    "idf": 0.6931,
+                    "comprimento": 31,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.7349
+                  }
+                }
+              },
+              {
+                "path": "catalogo-p01.md",
+                "score": 0.976,
+                "termos": {
+                  "cerâmica": {
+                    "tf": 2,
+                    "df": 4,
+                    "idf": 0.6931,
+                    "comprimento": 33,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.976
+                  }
+                }
+              },
+              {
+                "path": "inicio.md",
+                "score": 0.6854,
+                "termos": {
+                  "cerâmica": {
+                    "tf": 1,
+                    "df": 4,
+                    "idf": 0.6931,
+                    "comprimento": 37,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.6854
+                  }
+                }
+              },
+              {
+                "path": "devolucao.md",
+                "score": 0.6489,
+                "termos": {
+                  "cerâmica": {
+                    "tf": 1,
+                    "df": 4,
+                    "idf": 0.6931,
+                    "comprimento": 42,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 0.6489
+                  }
+                }
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          }
+        },
+        "llmwiki": {
+          "inteira": {
+            "ranking": [
+              {
+                "path": "prazos.md",
+                "score": 4.08
+              },
+              {
+                "path": "catalogo-p01.md",
+                "score": 2.8
+              },
+              {
+                "path": "inicio.md",
+                "score": 1.95
+              },
+              {
+                "path": "devolucao.md",
+                "score": 1.85
+              },
+              {
+                "path": "frete.md",
+                "score": 1.32
+              },
+              {
+                "path": "catalogo-p04.md",
+                "score": 0.55
+              },
+              {
+                "path": "recomendador.md",
+                "score": 0.27
+              },
+              {
+                "path": "atendimento.md",
+                "score": 0.26
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          },
+          "subperguntas": {
+            "ranking": [
+              {
+                "path": "prazos.md",
+                "score": 4.08
+              },
+              {
+                "path": "catalogo-p01.md",
+                "score": 2.8
+              },
+              {
+                "path": "inicio.md",
+                "score": 1.95
+              },
+              {
+                "path": "devolucao.md",
+                "score": 1.85
+              },
+              {
+                "path": "frete.md",
+                "score": 1.32
+              },
+              {
+                "path": "catalogo-p04.md",
+                "score": 0.55
+              },
+              {
+                "path": "recomendador.md",
+                "score": 0.27
+              },
+              {
+                "path": "atendimento.md",
+                "score": 0.26
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          }
+        }
+      }
+    },
+    {
+      "id": "q4",
+      "pergunta": "Qual o horário do chat?",
+      "relevantes": [
+        "atendimento.md"
+      ],
+      "subperguntas": [
+        "Qual o horário do chat?"
+      ],
+      "recuperadores": {
+        "fts": {
+          "inteira": {
+            "ranking": [
+              {
+                "path": "atendimento.md",
+                "score": null,
+                "snippet": "\n# Atendimento\n\n>>>Chat<<< das 9h às 18h (>>>horário<<< de Brasília), dias úteis. O bot responde frete,\nprazo e devolução a partir…"
+              },
+              {
+                "path": "prazos.md",
+                "score": null,
+                "snippet": "…combinar prazo no >>>chat<<< antes de pagar.\n"
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          },
+          "subperguntas": {
+            "ranking": [
+              {
+                "path": "atendimento.md",
+                "score": null,
+                "snippet": "\n# Atendimento\n\n>>>Chat<<< das 9h às 18h (>>>horário<<< de Brasília), dias úteis. O bot responde frete,\nprazo e devolução a partir…"
+              },
+              {
+                "path": "prazos.md",
+                "score": null,
+                "snippet": "…combinar prazo no >>>chat<<< antes de pagar.\n"
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          }
+        },
+        "bm25": {
+          "inteira": {
+            "ranking": [
+              {
+                "path": "atendimento.md",
+                "score": 4.3612,
+                "termos": {
+                  "horário": {
+                    "tf": 2,
+                    "df": 1,
+                    "idf": 1.7918,
+                    "comprimento": 32,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 2.5431
+                  },
+                  "chat": {
+                    "tf": 2,
+                    "df": 2,
+                    "idf": 1.2809,
+                    "comprimento": 32,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.8181
+                  }
+                }
+              },
+              {
+                "path": "prazos.md",
+                "score": 1.3581,
+                "termos": {
+                  "chat": {
+                    "tf": 1,
+                    "df": 2,
+                    "idf": 1.2809,
+                    "comprimento": 31,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.3581
+                  }
+                }
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          },
+          "subperguntas": {
+            "ranking": [
+              {
+                "path": "atendimento.md",
+                "score": 4.3612,
+                "termos": {
+                  "horário": {
+                    "tf": 2,
+                    "df": 1,
+                    "idf": 1.7918,
+                    "comprimento": 32,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 2.5431
+                  },
+                  "chat": {
+                    "tf": 2,
+                    "df": 2,
+                    "idf": 1.2809,
+                    "comprimento": 32,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.8181
+                  }
+                }
+              },
+              {
+                "path": "prazos.md",
+                "score": 1.3581,
+                "termos": {
+                  "chat": {
+                    "tf": 1,
+                    "df": 2,
+                    "idf": 1.2809,
+                    "comprimento": 31,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.3581
+                  }
+                }
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          }
+        },
+        "llmwiki": {
+          "inteira": {
+            "ranking": [
+              {
+                "path": "atendimento.md",
+                "score": 9.14
+              },
+              {
+                "path": "catalogo-p04.md",
+                "score": 2.81
+              },
+              {
+                "path": "recomendador.md",
+                "score": 2.58
+              },
+              {
+                "path": "devolucao.md",
+                "score": 2.47
+              },
+              {
+                "path": "prazos.md",
+                "score": 1.9
+              },
+              {
+                "path": "inicio.md",
+                "score": 1.51
+              },
+              {
+                "path": "catalogo-p01.md",
+                "score": 1.02
+              },
+              {
+                "path": "frete.md",
+                "score": 0.76
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          },
+          "subperguntas": {
+            "ranking": [
+              {
+                "path": "atendimento.md",
+                "score": 9.14
+              },
+              {
+                "path": "catalogo-p04.md",
+                "score": 2.81
+              },
+              {
+                "path": "recomendador.md",
+                "score": 2.58
+              },
+              {
+                "path": "devolucao.md",
+                "score": 2.47
+              },
+              {
+                "path": "prazos.md",
+                "score": 1.9
+              },
+              {
+                "path": "inicio.md",
+                "score": 1.51
+              },
+              {
+                "path": "catalogo-p01.md",
+                "score": 1.02
+              },
+              {
+                "path": "frete.md",
+                "score": 0.76
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          }
+        }
+      }
+    },
+    {
+      "id": "q5",
+      "pergunta": "Como o recomendador escolhe as sugestões?",
+      "relevantes": [
+        "recomendador.md"
+      ],
+      "subperguntas": [
+        "Como o recomendador escolhe as sugestões?"
+      ],
+      "recuperadores": {
+        "fts": {
+          "inteira": {
+            "ranking": [
+              {
+                "path": "recomendador.md",
+                "score": null,
+                "snippet": "\n# >>>Recomendador<<<\n\nDado um `product_id` (ex.: jarro `p01`), a API devolve outros ids com `score`\ne `reason` (`mesma_tecnica`, `complemento…"
+              },
+              {
+                "path": "inicio.md",
+                "score": null,
+                "snippet": "…As páginas irmãs descrevem frete, devolução, prazos e o papel do >>>recomendador<<<.\nUse busca por palavra-chave ou híbrida depois…"
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          },
+          "subperguntas": {
+            "ranking": [
+              {
+                "path": "recomendador.md",
+                "score": null,
+                "snippet": "\n# >>>Recomendador<<<\n\nDado um `product_id` (ex.: jarro `p01`), a API devolve outros ids com `score`\ne `reason` (`mesma_tecnica`, `complemento…"
+              },
+              {
+                "path": "inicio.md",
+                "score": null,
+                "snippet": "…As páginas irmãs descrevem frete, devolução, prazos e o papel do >>>recomendador<<<.\nUse busca por palavra-chave ou híbrida depois…"
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          }
+        },
+        "bm25": {
+          "inteira": {
+            "ranking": [
+              {
+                "path": "recomendador.md",
+                "score": 2.8077,
+                "termos": {
+                  "como": {
+                    "tf": 1,
+                    "df": 2,
+                    "idf": 1.2809,
+                    "comprimento": 45,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.1621
+                  },
+                  "recomendador": {
+                    "tf": 2,
+                    "df": 2,
+                    "idf": 1.2809,
+                    "comprimento": 45,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.6456
+                  }
+                }
+              },
+              {
+                "path": "inicio.md",
+                "score": 1.2665,
+                "termos": {
+                  "recomendador": {
+                    "tf": 1,
+                    "df": 2,
+                    "idf": 1.2809,
+                    "comprimento": 37,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.2665
+                  }
+                }
+              },
+              {
+                "path": "devolucao.md",
+                "score": 1.1992,
+                "termos": {
+                  "como": {
+                    "tf": 1,
+                    "df": 2,
+                    "idf": 1.2809,
+                    "comprimento": 42,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.1992
+                  }
+                }
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          },
+          "subperguntas": {
+            "ranking": [
+              {
+                "path": "recomendador.md",
+                "score": 2.8077,
+                "termos": {
+                  "como": {
+                    "tf": 1,
+                    "df": 2,
+                    "idf": 1.2809,
+                    "comprimento": 45,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.1621
+                  },
+                  "recomendador": {
+                    "tf": 2,
+                    "df": 2,
+                    "idf": 1.2809,
+                    "comprimento": 45,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.6456
+                  }
+                }
+              },
+              {
+                "path": "inicio.md",
+                "score": 1.2665,
+                "termos": {
+                  "recomendador": {
+                    "tf": 1,
+                    "df": 2,
+                    "idf": 1.2809,
+                    "comprimento": 37,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.2665
+                  }
+                }
+              },
+              {
+                "path": "devolucao.md",
+                "score": 1.1992,
+                "termos": {
+                  "como": {
+                    "tf": 1,
+                    "df": 2,
+                    "idf": 1.2809,
+                    "comprimento": 42,
+                    "comprimento_medio": 36.0,
+                    "contribuicao": 1.1992
+                  }
+                }
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          }
+        },
+        "llmwiki": {
+          "inteira": {
+            "ranking": [
+              {
+                "path": "recomendador.md",
+                "score": 6.68
+              },
+              {
+                "path": "devolucao.md",
+                "score": 3.77
+              },
+              {
+                "path": "inicio.md",
+                "score": 3.62
+              },
+              {
+                "path": "atendimento.md",
+                "score": 2.18
+              },
+              {
+                "path": "catalogo-p01.md",
+                "score": 0.54
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          },
+          "subperguntas": {
+            "ranking": [
+              {
+                "path": "recomendador.md",
+                "score": 6.68
+              },
+              {
+                "path": "devolucao.md",
+                "score": 3.77
+              },
+              {
+                "path": "inicio.md",
+                "score": 3.62
+              },
+              {
+                "path": "atendimento.md",
+                "score": 2.18
+              },
+              {
+                "path": "catalogo-p01.md",
+                "score": 0.54
+              }
+            ],
+            "recall@1": 1.0,
+            "precisao@1": 1.0,
+            "recall@3": 1.0,
+            "precisao@3": 0.3333
+          }
+        }
+      }
+    },
+    {
+      "id": "q6",
+      "pergunta": "Vocês aceitam pagamento por Pix?",
+      "relevantes": [],
+      "subperguntas": [
+        "Vocês aceitam pagamento por Pix?"
+      ],
+      "recuperadores": {
+        "fts": {
+          "inteira": {
+            "ranking": [],
+            "absteve@1": true,
+            "absteve@3": true
+          },
+          "subperguntas": {
+            "ranking": [],
+            "absteve@1": true,
+            "absteve@3": true
+          }
+        },
+        "bm25": {
+          "inteira": {
+            "ranking": [],
+            "absteve@1": true,
+            "absteve@3": true
+          },
+          "subperguntas": {
+            "ranking": [],
+            "absteve@1": true,
+            "absteve@3": true
+          }
+        },
+        "llmwiki": {
+          "inteira": {
+            "ranking": [
+              {
+                "path": "frete.md",
+                "score": 2.09
+              },
+              {
+                "path": "prazos.md",
+                "score": 1.4
+              },
+              {
+                "path": "atendimento.md",
+                "score": 0.98
+              },
+              {
+                "path": "inicio.md",
+                "score": 0.96
+              }
+            ],
+            "absteve@1": false,
+            "absteve@3": false
+          },
+          "subperguntas": {
+            "ranking": [
+              {
+                "path": "frete.md",
+                "score": 2.09
+              },
+              {
+                "path": "prazos.md",
+                "score": 1.4
+              },
+              {
+                "path": "atendimento.md",
+                "score": 0.98
+              },
+              {
+                "path": "inicio.md",
+                "score": 0.96
+              }
+            ],
+            "absteve@1": false,
+            "absteve@3": false
+          }
+        }
+      }
+    }
+  ],
+  "resumo": {
+    "fts/inteira": {
+      "recall@1_medio": 0.9,
+      "recall@3_medio": 0.9,
+      "abstencoes_corretas@3": 1
+    },
+    "fts/subperguntas": {
+      "recall@1_medio": 0.9,
+      "recall@3_medio": 1.0,
+      "abstencoes_corretas@3": 1
+    },
+    "bm25/inteira": {
+      "recall@1_medio": 0.9,
+      "recall@3_medio": 1.0,
+      "abstencoes_corretas@3": 1
+    },
+    "bm25/subperguntas": {
+      "recall@1_medio": 0.9,
+      "recall@3_medio": 1.0,
+      "abstencoes_corretas@3": 1
+    },
+    "llmwiki/inteira": {
+      "recall@1_medio": 0.9,
+      "recall@3_medio": 1.0,
+      "abstencoes_corretas@3": 0
+    },
+    "llmwiki/subperguntas": {
+      "recall@1_medio": 0.9,
+      "recall@3_medio": 1.0,
+      "abstencoes_corretas@3": 0
+    }
+  }
+}

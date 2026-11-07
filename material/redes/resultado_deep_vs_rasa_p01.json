@@ -19,5 +19,5 @@
     "mae_teste": 0.8945,
     "mse_final_treino": 0.5739
   },
-  "nota": "Com n_treino=12, mais parâmetros não garantem melhor teste. Compare com MA/MQ/LMS das aulas anteriores."
+  "nota": "Com n_treino=12, mais parâmetros não garantem melhor teste. Compare com média móvel, mínimos quadrados e LMS no mesmo teste."
 }

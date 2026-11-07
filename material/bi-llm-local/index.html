@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Siga um pedido de chat salto a salto: Open WebUI, Ollama, LiteLLM, provedor; portas, credenciais e status.">
+  <title>Caminho do pedido · LLM local</title>
+  <link rel="stylesheet" href="painel.css">
+  <script src="dados.js" defer></script>
+  <script src="painel.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para os resultados</a>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Laboratório de LLM local</p>
+      <h1>Quem fala<br>com quem.</h1>
+      <p>Escolha um cenário e siga o pedido de chat salto a salto: porta, rota, credencial que viaja e status que volta. Os cenários de erro reproduzem respostas registradas de um proxy LiteLLM real.</p>
+      <nav>
+        <a href="../tutorial-open-webui-20261026.md">Tutorial Open WebUI</a>
+        <a href="../tutorial-litellm-20261026.md">Tutorial LiteLLM</a>
+        <a href="README.md">Como explorar</a>
+      </nav>
+    </div>
+    <img src="../imagens/open-webui-camadas.png" alt="Quatro camadas empilhadas: interface (Open WebUI), gateway opcional (LiteLLM), runtime (Ollama) e pesos em volume Docker.">
+  </header>
+  <div class="layout">
+    <aside class="filters" aria-label="Controles do explorador">
+      <p class="eyebrow">01 · Escolha o cenário</p>
+      <h2>Siga o pedido</h2>
+      <p>Oito cenários com o mesmo elenco de serviços. Os nós apagados não participam do cenário escolhido.</p>
+      <label for="cenario">Cenário</label>
+      <select id="cenario"></select>
+      <label for="salto">Salto em detalhe</label>
+      <select id="salto"></select>
+      <button id="reset" type="button">Voltar ao chat no Open WebUI</button>
+      <div class="note"><strong>Payloads ilustrativos.</strong> O conteúdo «…» marca o texto gerado, que varia a cada execução. Linhas marcadas como <em>registrado</em> vêm de <code>material/litellm/respostas-registradas.json</code>.</div>
+    </aside>
+    <main id="conteudo">
+      <section class="summary" aria-label="Resumo">
+        <div><span id="status-final">—</span><p>status que o cliente recebe</p></div>
+        <div><span id="n-saltos">—</span><p>saltos no caminho</p></div>
+        <div><span id="chave-provedor">—</span><p>chave do provedor viaja?</p></div>
+      </section>
+      <section class="panel detail" aria-labelledby="titulo-caminho">
+        <p class="eyebrow">02 · Caminho</p>
+        <h2 id="titulo-caminho">Caminho do pedido</h2>
+        <p id="resumo"></p>
+        <div class="plot-scroll"><svg id="caminho" viewBox="0 0 920 340" role="img" aria-label="Diagrama do caminho do pedido"></svg></div>
+        <button type="button" class="secondary export" data-svg="caminho">Baixar caminho PNG</button>
+      </section>
+      <section class="panel" aria-labelledby="titulo-salto">
+        <p class="eyebrow">03 · Um salto</p>
+        <h2 id="titulo-salto">Pedido e resposta</h2>
+        <p id="nota-salto"></p>
+        <div class="pair">
+          <div><h3>Pedido</h3><pre id="pedido"></pre></div>
+          <div><h3>Resposta</h3><pre id="resposta"></pre></div>
+        </div>
+      </section>
+      <section class="panel" aria-labelledby="titulo-tabela">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">04 · Auditoria</p>
+            <h2 id="titulo-tabela">Tabela de saltos</h2>
+          </div>
+          <button id="csv" type="button">Baixar CSV</button>
+        </div>
+        <div class="table-scroll">
+          <table id="tabela">
+            <caption>Cada linha é um trecho de rede (ou de disco) do cenário escolhido.</caption>
+            <thead>
+              <tr><th>#</th><th>De → para</th><th>Rota</th><th>Porta</th><th>Credencial</th><th>Status</th><th>Origem</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p id="export-status" role="status"></p>
+      </section>
+      <section class="panel" aria-labelledby="titulo-licao">
+        <p class="eyebrow">05 · Leitura</p>
+        <h2 id="titulo-licao">O que este cenário ensina</h2>
+        <p id="licao"></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

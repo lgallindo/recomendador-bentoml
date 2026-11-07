@@ -18,28 +18,31 @@ aula** — tutoriais, BI e figuras para ler e projetar ao lado do código.
 | [Versão web · demanda (LMS)](https://lgallindo.github.io/recomendador-bentoml/demanda-perc/) | Perceptron/ADALINE na série semanal |
 | [`tutorial-perceptron-demanda-20261026.md`](tutorial-perceptron-demanda-20261026.md) | Separabilidade, LMS, walk-forward, BI e endpoint BentoML |
 | [`bi-demanda-perceptron/index.html`](bi-demanda-perceptron/index.html) | Explorador: série, MSE por época, MAE vs baselines |
-| [`tutorial-treino-redes-neurais-20261026.md`](tutorial-treino-redes-neurais-20261026.md) | Loop de treino (época, batch, loss, otimizador) + MLP rasa |
-| [`tutorial-deep-learning-visao-geral-20261026.md`](tutorial-deep-learning-visao-geral-20261026.md) | Profundidade, três famílias, MLP rasa vs mais funda |
-| [`tutorial-fine-tuning-20261026.md`](tutorial-fine-tuning-20261026.md) | Pré-treino → congelar tronco → adaptar cabeça (toy MLP) |
-| [`tutorial-langchain-20261026.md`](tutorial-langchain-20261026.md) | Chain mínima (prompt → lookup → “modelo” → JSON); stub ou langchain-core |
-| [`langchain/`](langchain/) | Saída JSON do demo de chain (`resultado_chain_loja.json`) |
-| [`tutorial-llmwiki-20261026.md`](tutorial-llmwiki-20261026.md) | Indexar mini-wiki Markdown com `llmwiki` |
+| [`tutorial-treino-redes-neurais-20261026.md`](tutorial-treino-redes-neurais-20261026.md) | Loop de treino com um passo de gradiente à mão, MLP rasa, baselines e corridas variando um fator por vez |
+| [`tutorial-deep-learning-visao-geral-20261026.md`](tutorial-deep-learning-visao-geral-20261026.md) | Profundidade, contagem de parâmetros, capacidade vs dados, três famílias e varredura de 1 a 4 camadas |
+| [`tutorial-fine-tuning-20261026.md`](tutorial-fine-tuning-20261026.md) | Do zero, pré-treino e fine-tune da cabeça; esquecimento, LoRA e plano de congelamento |
+| [`tutorial-langchain-20261026.md`](tutorial-langchain-20261026.md) | Chain como composição de etapas, rastro por etapa, falhas e decisão framework vs script |
+| [`langchain/`](langchain/) | Saídas do demo de chain (`resultado_chain_loja.json`, `rastros.json`) |
+| [`tutorial-llmwiki-20261026.md`](tutorial-llmwiki-20261026.md) | Índice invertido e BM25 à mão; indexar a mini-wiki com `llmwiki` e experimento do erro de digitação |
 | [`mini-wiki-rag/`](mini-wiki-rag/) | Corpus Markdown (frete, devolução, catálogo) para llmwiki/RAG |
-| [`tutorial-rag-20261026.md`](tutorial-rag-20261026.md) | Loop retrieve→augment→generate + ladder FTS/llmwiki |
-| [`rag/`](rag/) | FTS local + JSON da resposta ancorada |
-| [`tutorial-memoria-agentes-mem0-20261026.md`](tutorial-memoria-agentes-mem0-20261026.md) | Preferências entre turnos (padrão Mem0, store JSON) |
-| [`memoria/`](memoria/) | Resultado do demo de memória |
-| [`tutorial-open-webui-20261026.md`](tutorial-open-webui-20261026.md) | Open WebUI + Ollama: Compose CPU, ancoragem e divergentes |
-| [`open-webui/`](open-webui/) | `docker-compose.yml` do lab |
-| [`tutorial-litellm-20261026.md`](tutorial-litellm-20261026.md) | LiteLLM: SDK + proxy :4000 neste clone |
-| [`redes/`](redes/) | JSON dos demos MLP / deep / fine-tune (`resultado_*.json`) |
-| [Versão web · demanda (Poisson)](https://lgallindo.github.io/recomendador-bentoml/demanda-poisson/) | Tutorial probabilístico com explorador de PMF e cobertura |
+| [`tutorial-rag-20261026.md`](tutorial-rag-20261026.md) | Recuperar, enriquecer e gerar com citações; falha real de recall, duas correções e conjunto-ouro |
+| [`rag/`](rag/) | Respostas ancoradas, conjunto-ouro e avaliação de recall |
+| [`tutorial-memoria-agentes-mem0-20261026.md`](tutorial-memoria-agentes-mem0-20261026.md) | Memória entre turnos: escopos, add/search/update/delete, token obsoleto, LGPD e fronteira com RAG |
+| [`memoria/`](memoria/) | Resultado do demo de memória e linha do tempo turno a turno |
+| [`tutorial-open-webui-20261026.md`](tutorial-open-webui-20261026.md) | Open WebUI + Ollama em Compose: arquitetura, memória dos modelos, API do runtime, runbook e falhas |
+| [`open-webui/`](open-webui/) | Compose do Open WebUI + Ollama e variante que publica a API do Ollama |
+| [`tutorial-litellm-20261026.md`](tutorial-litellm-20261026.md) | LiteLLM: duas chaves, aliases, SDK, proxy (uv ou Docker), caminho Ollama sem chave paga e falhas |
+| [`redes/`](redes/) | JSON dos demos MLP, profundidade e fine-tune (resultados e curvas) |
+| [`bi-redes/index.html`](bi-redes/index.html) | Explorador: curvas de perda, profundidade e fine-tune contra baselines |
+| [`bi-chain/index.html`](bi-chain/index.html) | Explorador: rastro da chain etapa por etapa |
+| [`bi-rag/index.html`](bi-rag/index.html) | Explorador: BM25 termo a termo, prompt aumentado, citações e recall@k |
+| [`bi-memoria/index.html`](bi-memoria/index.html) | Explorador: memória turno a turno, escopos e busca |
+| [`bi-llm-local/index.html`](bi-llm-local/index.html) | Explorador: caminho da requisição (Open WebUI, Ollama, LiteLLM), portas e chaves |
+| [`litellm/`](litellm/README.md) | Config, Compose e `.env.example` do proxy LiteLLM |
+| [Versões web · redes e LLMs](https://lgallindo.github.io/recomendador-bentoml/treino-redes/) | Rotas `treino-redes/`, `deep-learning/`, `fine-tuning/`, `langchain/`, `llmwiki/`, `rag/`, `memoria/`, `open-webui/`, `litellm/` |
 | [`tutorial-previsao-probabilistica-demanda-20261017.md`](tutorial-previsao-probabilistica-demanda-20261017.md) | Prever distribuição de contagens com regressão de Poisson |
-| [`bi-demanda-poisson/index.html`](bi-demanda-poisson/index.html) | Explorador: λ, PMF, intervalo 95% e walk-forward |
-| [`planilha-minimos-quadrados-demanda.xlsx`](planilha-minimos-quadrados-demanda.xlsx) | Planilha de sala: ajuste MQ, resíduos e erros de teste |
 | [`bi-demanda/index.html`](bi-demanda/index.html) | Explorador local: série, erros, MAE por janela e exportações |
 | [`planilha-media-movel-demanda.xlsx`](planilha-media-movel-demanda.xlsx) | Planilha de sala: uma aba por produto para contas de média móvel |
-| [Versão web · associação (logs)](https://lgallindo.github.io/recomendador-bentoml/logs-auth/) | Tutorial de associação em sessões de autenticação sintéticas |
 | [`tutorial-regras-associacao-logs-autenticacao-20261017.md`](tutorial-regras-associacao-logs-autenticacao-20261017.md) | Variante independente: logs sintéticos, reconstrução de sessões, associação e validação |
 | [`logs-autenticacao/`](logs-autenticacao/) | Sessões auditáveis e CSVs reproduzíveis de descoberta e validação |
 | [`tutorial-regras-associacao-20261017.md`](tutorial-regras-associacao-20261017.md) | Estudo de 75 minutos: IA, aprendizado de máquina, sistemas especialistas, mineração, generalização, validação, BI e marketing |
@@ -48,6 +51,10 @@ aula** — tutoriais, BI e figuras para ler e projetar ao lado do código.
 | [`cestas-validacao-20261017.json`](cestas-validacao-20261017.json) | Cenário sintético adicional para avaliar uma regra fixa, separado das dez cestas originais |
 | [`imagens/`](imagens/README.md) | Diagrama de Venn, matriz de transações, comparação de métricas e ilustração da loja |
 | [`calculos-trabalhados.md`](calculos-trabalhados.md) | Contas passo a passo do exemplo do jarro (`p01`), alinhadas ao que `just curl-exemplo` deve devolver |
+| [Versão web · demanda (Poisson)](https://lgallindo.github.io/recomendador-bentoml/demanda-poisson/) | Tutorial probabilístico com explorador de PMF e cobertura |
+| [`bi-demanda-poisson/index.html`](bi-demanda-poisson/index.html) | Explorador: λ, PMF, intervalo 95% e walk-forward |
+| [`planilha-minimos-quadrados-demanda.xlsx`](planilha-minimos-quadrados-demanda.xlsx) | Planilha de sala: ajuste MQ, resíduos e erros de teste |
+| [Versão web · associação (logs)](https://lgallindo.github.io/recomendador-bentoml/logs-auth/) | Tutorial de associação em sessões de autenticação sintéticas |
 
 ## Como usar na sala
 

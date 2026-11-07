@@ -1,0 +1,26 @@
+# Cópia de trabalho (não versionada):
+#   cp material/litellm/config.example.yaml material/litellm/config.yaml
+# Segredos e endereços vêm do ambiente (os.environ/...). Nenhuma chave real neste arquivo.
+
+model_list:
+  # Alias que os clientes pedem → modelo local no Ollama (sem chave paga).
+  - model_name: loja-chat
+    litellm_params:
+      model: ollama_chat/qwen2.5:0.5b
+      api_base: os.environ/OLLAMA_API_BASE
+
+  # Opcional: o mesmo contrato apontando para um provedor em nuvem.
+  # Só funciona com OPENAI_API_KEY válida no ambiente do proxy.
+  - model_name: loja-chat-nuvem
+    litellm_params:
+      model: openai/gpt-4o-mini
+      api_key: os.environ/OPENAI_API_KEY
+
+litellm_settings:
+  drop_params: true
+  # Opcional: se loja-chat falhar, tentar loja-chat-nuvem.
+  # fallbacks: [{"loja-chat": ["loja-chat-nuvem"]}]
+
+general_settings:
+  # Chave que os *clientes* apresentam ao proxy. Começa com sk-.
+  master_key: os.environ/LITELLM_MASTER_KEY

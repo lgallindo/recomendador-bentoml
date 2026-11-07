@@ -21,6 +21,7 @@ IMAGENS = RAIZ / "material" / "imagens"
 AZUL, VERDE, BARRO = "#18374b", "#157c80", "#b65432"
 INICIO_TESTE = 12
 PRODUTO = "p01"
+SEMENTES = (0, 1, 2, 3, 4)
 
 
 def carregar_serie(pid: str) -> list[int]:
@@ -46,14 +47,16 @@ def contar_params(modelo: MLPRegressor) -> int:
     return int(sum(c.size for c in modelo.coefs_) + sum(b.size for b in modelo.intercepts_))
 
 
-def treinar(x_tr, y_tr, *, hidden: tuple[int, ...], epocas: int = 80, lr: float = 0.05):
+def treinar(
+    x_tr, y_tr, *, hidden: tuple[int, ...], epocas: int = 80, lr: float = 0.05, semente: int = 0
+):
     modelo = MLPRegressor(
         hidden_layer_sizes=hidden,
         activation="relu",
         solver="adam",
         learning_rate_init=lr,
         max_iter=epocas,
-        random_state=0,
+        random_state=semente,
         tol=0.0,
         n_iter_no_change=epocas,
         alpha=1e-4,
@@ -71,9 +74,9 @@ def figura_curvas(rasa: list[float], funda: list[float]) -> None:
     fig, ax = plt.subplots(figsize=(8.5, 4.8))
     ax.plot(range(1, len(rasa) + 1), rasa, color=VERDE, lw=2, label="Rasa (1×8)")
     ax.plot(range(1, len(funda) + 1), funda, color=BARRO, lw=2, label="Mais funda (8-8-8)")
-    ax.set_title("MSE no treino — profundidade na mesma série p01", color=AZUL, weight="bold")
+    ax.set_title("Perda de treino — profundidade na mesma série p01", color=AZUL, weight="bold")
     ax.set_xlabel("Época")
-    ax.set_ylabel("MSE")
+    ax.set_ylabel("perda de treino (½·MSE + L2)")
     ax.legend(frameon=False)
     ax.spines[["top", "right"]].set_visible(False)
     ax.grid(axis="y", alpha=0.25)
@@ -104,6 +107,30 @@ def figura_profundidade() -> None:
     fig.savefig(IMAGENS / "deep-learning-profundidade.png", dpi=160, bbox_inches="tight",
                 facecolor="white")
     plt.close(fig)
+
+
+def varredura_profundidade(x_tr, y_tr, x_te, y_te, *, largura: int = 8) -> list[dict]:
+    """1 a 4 camadas escondidas de mesma largura: parâmetros, MAE de treino e de teste."""
+    linhas = []
+    for camadas in range(1, 5):
+        hidden = (largura,) * camadas
+        modelo, perdas = treinar(x_tr, y_tr, hidden=hidden)
+        linhas.append({
+            "camadas": camadas,
+            "hidden": list(hidden),
+            "n_params": contar_params(modelo),
+            "mae_treino": round(mae(y_tr, np.maximum(0.0, modelo.predict(x_tr))), 4),
+            "mae_teste": round(mae(y_te, np.maximum(0.0, modelo.predict(x_te))), 4),
+            "perda_final": round(perdas[-1], 4),
+            "perda_epocas": [round(v, 5) for v in perdas],
+            "pred_teste": [round(float(v), 4) for v in np.maximum(0.0, modelo.predict(x_te))],
+            "mae_teste_sementes": [
+                round(mae(y_te, np.maximum(0.0, treinar(
+                    x_tr, y_tr, hidden=hidden, semente=s)[0].predict(x_te))), 4)
+                for s in SEMENTES
+            ],
+        })
+    return linhas
 
 
 def main() -> None:
@@ -141,11 +168,25 @@ def main() -> None:
         },
         "nota": (
             "Com n_treino=12, mais parâmetros não garantem melhor teste. "
-            "Compare com MA/MQ/LMS das aulas anteriores."
+            "Compare com média móvel, mínimos quadrados e LMS no mesmo teste."
         ),
     }
     (SAIDA / "resultado_deep_vs_rasa_p01.json").write_text(
         json.dumps(resumo, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    varredura = {
+        "produto": PRODUTO,
+        "largura": 8,
+        "epocas": 80,
+        "lr": 0.05,
+        "perda": "loss_curve_ do scikit-learn: ½·MSE + penalidade L2 (alpha=1e-4)",
+        "y_teste": y_te.tolist(),
+        "mae_baseline_media": round(mae_base, 4),
+        "sementes": list(SEMENTES),
+        "profundidades": varredura_profundidade(x_tr, y_tr, x_te, y_te),
+    }
+    (SAIDA / "profundidade_p01.json").write_text(
+        json.dumps(varredura, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     print(json.dumps(resumo, ensure_ascii=False, indent=2))
 

@@ -8,28 +8,28 @@
   ],
   "dtype_y": "float64 (linhas de pedido)",
   "mae_baseline_media": 0.8333333333333333,
-  "mae_mlp_base": 1.4925574630899512,
+  "mae_mlp_base": 1.473782676806515,
   "knobs": {
     "base": {
       "epocas": 40,
       "lr": 0.01,
       "largura": 8,
-      "mae_teste": 1.4926,
-      "mse_final_treino": 0.7682
+      "mae_teste": 1.4738,
+      "mse_final_treino": 0.7616
     },
     "mais_epocas": {
       "epocas": 80,
       "lr": 0.01,
       "largura": 8,
-      "mae_teste": 1.4926,
-      "mse_final_treino": 0.7682
+      "mae_teste": 1.1623,
+      "mse_final_treino": 0.6201
     },
     "lr_maior": {
       "epocas": 40,
       "lr": 0.05,
       "largura": 8,
-      "mae_teste": 0.7887,
-      "mse_final_treino": 0.7024
+      "mae_teste": 0.9643,
+      "mse_final_treino": 0.648
     },
     "mais_larga": {
       "epocas": 40,

@@ -1,0 +1,42 @@
+{
+  "origem": "Proxy LiteLLM 1.108.2 rodando com material/litellm/config.example.yaml, sem banco de dados e sem Ollama no ar. Registrado em 2026-11-07.",
+  "aviso": "Mensagens de erro e códigos mudam entre versões do LiteLLM. Use como referência de forma, não como contrato.",
+  "respostas": [
+    {
+      "cenario": "liveliness",
+      "pedido": "GET /health/liveliness",
+      "status": 200,
+      "corpo": "\"I'm alive!\""
+    },
+    {
+      "cenario": "listar aliases com a master key",
+      "pedido": "GET /v1/models  ·  Authorization: Bearer <master key>",
+      "status": 200,
+      "corpo": {"data": [{"id": "loja-chat", "object": "model", "owned_by": "openai"}, {"id": "loja-chat-nuvem", "object": "model", "owned_by": "openai", "mode": "chat"}], "object": "list"}
+    },
+    {
+      "cenario": "chave diferente da master key (proxy sem banco)",
+      "pedido": "GET /v1/models  ·  Authorization: Bearer sk-errada",
+      "status": 400,
+      "corpo": {"error": {"message": "No connected db.", "type": "no_db_connection", "code": "400"}}
+    },
+    {
+      "cenario": "alias inexistente",
+      "pedido": "POST /v1/chat/completions  ·  model=nao-existe",
+      "status": 400,
+      "corpo": {"error": {"message": "/chat/completions: Invalid model name passed in model=nao-existe. Call `/v1/models` to view available models for your key.", "type": "invalid_request_error", "code": "400"}}
+    },
+    {
+      "cenario": "Ollama fora do ar",
+      "pedido": "POST /v1/chat/completions  ·  model=loja-chat",
+      "status": 500,
+      "corpo": {"error": {"message": "litellm.APIConnectionError: Ollama_chatException - Cannot connect to host REDACTED:11434 [...] LiteLLM: model group 'loja-chat' failed with the error above. No fallback was attempted."}}
+    },
+    {
+      "cenario": "alias de nuvem sem chave do provedor",
+      "pedido": "POST /v1/chat/completions  ·  model=loja-chat-nuvem",
+      "status": 500,
+      "corpo": {"error": {"message": "litellm.InternalServerError: InternalServerError: OpenAIException - Missing credentials. [...] LiteLLM: model group 'loja-chat-nuvem' failed with the error above."}}
+    }
+  ]
+}

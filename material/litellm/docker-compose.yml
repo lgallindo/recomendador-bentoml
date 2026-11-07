@@ -1,0 +1,29 @@
+# Proxy LiteLLM em contêiner, na mesma rede do stack Open WebUI + Ollama.
+#
+# Pré-requisitos:
+#   1. stack de material/open-webui no ar (cria a rede open-webui_default);
+#   2. cp .env.example .env  e  cp config.example.yaml config.yaml  nesta pasta.
+#
+# Suba nesta pasta: docker compose up -d     ·  API: http://127.0.0.1:4000/v1
+
+services:
+  litellm:
+    # Para reprodutibilidade, troque main-latest por uma tag de versão fixa.
+    image: ghcr.io/berriai/litellm:main-latest
+    ports:
+      - "127.0.0.1:4000:4000"
+    env_file:
+      - .env
+    environment:
+      # Dentro da rede Docker, o Ollama atende pelo nome do serviço.
+      - OLLAMA_API_BASE=http://ollama:11434
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    networks:
+      - loja
+
+networks:
+  loja:
+    name: open-webui_default
+    external: true

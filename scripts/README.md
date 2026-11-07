@@ -18,14 +18,22 @@ turma roda com `uv run python scripts/…`.
 | [`gerar_figuras_associacao.py`](gerar_figuras_associacao.py) | Reproduz o diagrama de inclusão IA/ML, a matriz de cestas e a comparação de descoberta com avaliação separada |
 | [`minerar_regras_associacao.py`](minerar_regras_associacao.py) | Minera as cestas e gera o CSV da [aula de regras de associação](../material/tutorial-regras-associacao-20261017.md), sem dependências externas |
 | [`validar_vendas_semanais.py`](validar_vendas_semanais.py) | Confere a série sintética semanal contra os totais do catálogo |
-| [`demo_treino_mlp_demanda.py`](demo_treino_mlp_demanda.py) | MLP rasa + knobs; JSON em `material/redes/` |
-| [`demo_deep_vs_rasa.py`](demo_deep_vs_rasa.py) | Compara MLP rasa vs mais funda na série p01 |
-| [`demo_fine_tuning_mlp.py`](demo_fine_tuning_mlp.py) | Pré-treino multi-produto + fine-tune da cabeça em p01 |
-| [`demo_langchain_loja.py`](demo_langchain_loja.py) | Chain mínima no catálogo (puro ou `--with langchain-core`) |
+| [`demo_treino_mlp_demanda.py`](demo_treino_mlp_demanda.py) | MLP rasa e corridas variando um fator; JSON e curvas em `material/redes/` |
+| [`demo_deep_vs_rasa.py`](demo_deep_vs_rasa.py) | Compara profundidades (1–4 camadas, 5 sementes) na série p01 |
+| [`demo_fine_tuning_mlp.py`](demo_fine_tuning_mlp.py) | Pré-treino multi-produto, fine-tune da cabeça em p01 e checagem de esquecimento |
+| [`demo_langchain_loja.py`](demo_langchain_loja.py) | Chain mínima no catálogo (puro ou `--with langchain-core`); `--lote` grava os rastros |
 | [`demo_rag_fts.py`](demo_rag_fts.py) | Índice FTS5 da mini-wiki |
-| [`demo_rag_ancorar.py`](demo_rag_ancorar.py) | Resposta ancorada (template sobre hits FTS) |
-| [`gerar_figuras_rag.py`](gerar_figuras_rag.py) | Figuras do loop RAG e da ladder |
-| [`demo_mem0_preferencias.py`](demo_mem0_preferencias.py) | add/search/update de preferências (store JSON) |
+| [`demo_rag_ancorar.py`](demo_rag_ancorar.py) | Resposta ancorada com escolha de recuperador, k e subperguntas |
+| [`gerar_figuras_rag.py`](gerar_figuras_rag.py) | Figuras do RAG e do llmwiki (loop, escada, índice invertido, recall) |
+| [`demo_mem0_preferencias.py`](demo_mem0_preferencias.py) | add/search/update/delete de preferências (store JSON); `--roteiro` grava a linha do tempo |
+| [`avaliar_rag.py`](avaliar_rag.py) | Recall@k e precisão@k de FTS5 e BM25 no conjunto-ouro da mini-wiki |
+| [`demo_litellm_sdk.py`](demo_litellm_sdk.py) | Uma completion via SDK LiteLLM (`uv run --with litellm`) |
+| [`demo_litellm_proxy.py`](demo_litellm_proxy.py) | Cliente stdlib do proxy LiteLLM; `--offline` mostra a requisição |
+| [`gerar_bi_redes.py`](gerar_bi_redes.py) · [`gerar_bi_chain.py`](gerar_bi_chain.py) · [`gerar_bi_rag.py`](gerar_bi_rag.py) · [`gerar_bi_memoria.py`](gerar_bi_memoria.py) · [`gerar_bi_llm_local.py`](gerar_bi_llm_local.py) | Reproduzem `dados.js` dos exploradores correspondentes em `material/bi-*/` |
+
+Geradores de **figuras/diagramas** das aulas novas de redes, LangChain, memória,
+Open WebUI e LiteLLM ficam no `.local/scripts/` do instrutor (git exclude), não
+neste diretório versionado. As PNGs já publicadas estão em `material/imagens/`.
 
 **Como rodar os scripts:** na raiz do repo, prefira
 `uv run python scripts/<nome>.py` (mesmo interpretador do projeto). Testes que
