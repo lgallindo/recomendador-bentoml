@@ -14,3 +14,6 @@ uv run python scripts/gerar_bi_demanda_perceptron.py
 Abra `index.html` ou a rota Pages `demanda-perc/` quando publicada. O script
 também regenera `bi-demanda-perc-serie-*.png` e `bi-demanda-perc-mse-*.png` para
 `p01` e `p03`.
+
+Laboratório geométrico (fronteira, AND/OR/XOR, PLA): pasta `lab/`
+(`lab/index.html`), publicada junto com este explorador.

@@ -49,6 +49,15 @@ entradas com pesos, soma um viés e aplica uma função não linear. Uma rede
 **MLP** (*multilayer perceptron*) é o nome usual dessas redes de camadas
 densas.
 
+O tutorial de
+[perceptron / LMS](tutorial-perceptron-demanda-20261026.md) mostrou uma
+**única** unidade linear (classificador com PLA ou reta LMS na demanda) e o
+limite do XOR com uma só reta. Aqui entram **várias** unidades e uma função de
+ativação suave: o erro de saída propaga-se pelas camadas (*backpropagation*) e
+a descida de gradiente atualiza todos os pesos. O
+[laboratório geométrico](bi-demanda-perceptron/lab/index.html) do Caderno fica
+como lembrete visual da fronteira linear que a MLP generaliza.
+
 ![Diagrama de conjuntos encaixados: inteligência artificial contém aprendizado de máquina, que contém aprendizado supervisionado, que contém a rede neural rasa MLP com pesos ajustados por gradiente. Uma seta leva à tarefa de prever linhas de pedido da próxima semana; ao lado, as referências média do treino, MA(4) e LMS.](imagens/treino-redes-mapa.png)
 
 *Figura 1 — A rede rasa é um modelo supervisionado dentro do aprendizado de

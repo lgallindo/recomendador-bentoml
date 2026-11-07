@@ -49,6 +49,13 @@ ImageNet de classificação de imagens, treinada em aproximadamente 1,2 milhão
 de fotos rotuladas. A loja tem 12 semanas de treino por produto. Guarde essa
 diferença de escala: ela volta na seção 5.
 
+Antes da profundidade “de escala”, o Caderno já percorreu o fio curto: neurônio
+formal e Perceptron, LMS na demanda,
+[rede rasa](tutorial-treino-redes-neurais-20261026.md). O marco de 1969 na
+figura 1 (limite do XOR) é o mesmo que o
+[laboratório geométrico](bi-demanda-perceptron/lab/index.html) deixa ver no
+plano: uma reta não basta; camadas compostas passam a importar.
+
 ## 2. O que “profundo” significa
 
 Uma rede densa transforma a entrada camada a camada. Com $L$ camadas, cada

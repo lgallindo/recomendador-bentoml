@@ -3,6 +3,8 @@
 [Versão web com explorador](https://lgallindo.github.io/recomendador-bentoml/demanda-perc/).
 Explorador no repositório:
 [`bi-demanda-perceptron/index.html`](bi-demanda-perceptron/index.html).
+Laboratório geométrico (fronteira, portas, PLA):
+[`bi-demanda-perceptron/lab/index.html`](bi-demanda-perceptron/lab/index.html).
 
 A loja já sabe pedir uma **reta** para resumir a demanda semanal — isso foi a
 aula de
@@ -11,8 +13,13 @@ Aqui a reta é a **mesma família**; o que muda é o caminho até os pesos: em v
 de ajustar o bloco de uma vez, a regra **corrige o palpite a cada semana**,
 guiada pelo erro contínuo (observado menos previsto).
 
+Antes de voltar às contagens, um **laboratório no plano** mostra o primo
+classificador: o Perceptron de Rosenblatt, a fronteira linear e o algoritmo PLA.
+Os dois usam a mesma soma ponderada; muda a saída (lado da classe versus nível
+contínuo).
+
 Os dados continuam **sintéticos** (`dados/vendas_semanais.csv`). Os exemplos
-trabalhados são Jarro (`p01`) e Boneca (`p03`).
+trabalhados de demanda são Jarro (`p01`) e Boneca (`p03`).
 
 Leitura em ritmo próprio. Termos técnicos reunidos no
 [glossário](#glossário) ao final.
@@ -66,27 +73,45 @@ observada menos palpite.*
 ## 3. História curta do modelo linear adaptativo
 
 A ideia de “somar entradas, atravessar um limiar ou uma saída contínua e
-corrigir pesos com o erro” tem nome e data. O caminho curto abaixo basta para
-saber **por que** falamos de perceptron e de LMS na mesma aula de demanda.
+corrigir pesos com o erro” tem nome e data. O caminho abaixo prepara o
+laboratório no plano e o LMS na loja.
 
 ### 3.1 Neurônio formal e limiar
 
-Nos anos 1940, **Warren McCulloch** e **Walter Pitts** propuseram um modelo
-simples de neurônio formal: combinar sinais de entrada e produzir uma saída
-ligada a um limiar. O desenho é lógico e abstrato — uma peça fundadora da ideia
-de rede — e ainda não é o algoritmo de treino que usaremos na planilha de
-demanda. Ele prepara o terreno: **unidade linear (ou limiar) + composição**.
+Nos anos 1940, **Warren McCulloch** e **Walter Pitts** propuseram um neurônio
+formal: entradas binárias, estímulos excitatórios (e, se houver, inibitórios) e
+um limiar \(\theta\). O neurônio dispara quando a soma dos estímulos ativos
+ultrapassa o limiar.
+
+Com duas entradas e limiar 2, o desenho realiza um **AND** lógico (precisam
+estar as duas ativas). Com limiar 1, basta uma — um **OR**. Com uma entrada
+inibitória, dá para negar. O modelo é lógico e abstrato: ainda não há algoritmo
+de treino. Ele prepara o terreno: **unidade + limiar + composição**.
 
 ### 3.2 Perceptron de Rosenblatt
 
-No fim dos anos 1950, **Frank Rosenblatt** descreveu o **perceptron**: um
-classificador que separa classes com um hiperplano e **atualiza pesos** quando
-o rótulo previsto discorda do rótulo verdadeiro. O erro que guia o passo é o
-erro de **classificação** (acerto ou erro de lado), típico de alvos 0/1.
+No fim dos anos 1950, **Frank Rosenblatt** descreveu o **perceptron**: entradas
+reais, cada uma com um **peso**, bias (o truque \(x_0 = 1\)) e ativação
+\(\mathrm{sinal}\):
+
+$$
+\widehat{y} = \mathrm{sinal}(\theta_0 + \theta_1 x_1 + \theta_2 x_2),\qquad
+\mathrm{sinal}(z)=\begin{cases}+1 & z\ge 0\\ -1 & z< 0\end{cases}.
+$$
+
+Quando o rótulo previsto discorda do verdadeiro, a regra PLA (*Perceptron
+Learning Algorithm*) atualiza
+
+$$
+\theta \leftarrow \theta + \eta\, y\, x
+$$
+
+(com \(x = (1, x_1, x_2)\) e \(y\in\{-1,+1\}\)). O erro que guia o passo é o
+erro de **classificação** (lado certo ou errado).
 
 O perceptron clássico responde bem a perguntas do tipo “a peça sai ou não
-sai?”. A demanda semanal desta loja pergunta outra coisa: **quantas** linhas de
-pedido tendem a aparecer.
+sai?”. A demanda semanal pergunta outra coisa: **quantas** linhas de pedido
+tendem a aparecer.
 
 ### 3.3 Widrow–Hoff, ADALINE e LMS
 
@@ -103,59 +128,28 @@ vez de uma única solução fechada do sistema normal.
 
 | Alvo | Família natural nesta aula |
 | --- | --- |
-| Bit / classe (saiu / não saiu) | Perceptron clássico (erro 0/1) |
-| Contagem / nível contínuo (linhas na semana) | ADALINE / LMS (erro contínuo) |
+| Bit / classe (saiu / não saiu) | Perceptron clássico + PLA |
+| Contagem / nível contínuo (linhas na semana) | ADALINE / LMS |
 
-A demanda semanal pede o segundo quadro: um número, não um sim/não.
+A demanda semanal pede o segundo quadro. O laboratório das seções 4–5 fixa o
+primeiro.
 
-## 4. Separabilidade linear no plano
+## 4. Laboratório: uma reta no plano
 
-Antes de voltar à série semanal, um laboratório mínimo de classificação mostra
-o alcance — e o limite — de **uma** reta no plano. O vocabulário nasce da
-história do perceptron; a demanda depois pede outra coisa.
+Abra o
+[laboratório geométrico](bi-demanda-perceptron/lab/index.html)
+e percorra os três painéis na ordem.
 
-### Quatro cantos no plano
+### 4.1 Fronteira e vetor de pesos
 
-Com duas entradas que só valem 0 ou 1, há exatamente quatro combinações:
+Com duas entradas, a fronteira é a reta \(\theta_0 + \theta_1 x_1 + \theta_2 x_2 = 0\).
+O vetor \((\theta_1, \theta_2)\) é **perpendicular** à reta e aponta para o
+semiplano da classe \(+1\). Mover só \(\theta_0\) translada a reta; mudar
+\(\theta_1\) e \(\theta_2\) gira a normal.
 
-| \(x_1\) | \(x_2\) | Canto |
-| ---: | ---: | --- |
-| 0 | 0 | canto inferior esquerdo |
-| 0 | 1 | canto superior esquerdo |
-| 1 | 0 | canto inferior direito |
-| 1 | 1 | canto superior direito |
+### 4.2 AND, OR e XOR
 
-Pense nesses quatro pontos como peças sobre uma mesa. Uma função booleana
-pinta cada peça de “verdadeiro” ou “falso”. A pergunta geométrica é simples:
-existe um **traço reto** que deixa todos os verdadeiros de um lado e todos os
-falsos do outro?
-
-### AND e OR: um traço basta
-
-No **AND**, só o canto `(1,1)` é verdadeiro; os outros três são falsos. Um
-único traço isola aquele canto — os verdadeiros ficam juntos de um lado da
-reta.
-
-No **OR**, só o canto `(0,0)` é falso; os outros três são verdadeiros. De
-novo, um traço basta: o falso fica sozinho de um lado.
-
-Quando isso acontece, dizemos que a função é **linearmente separável**: existe
-uma reta (em dimensão maior, um hiperplano) que separa as duas classes.
-
-### XOR: o X que uma reta não corta
-
-No **XOR**, os verdadeiros são `(0,1)` e `(1,0)` — cantos opostos na
-diagonal. Os falsos ocupam a outra diagonal. Qualquer reta que tente deixar os
-dois verdadeiros do mesmo lado acaba puxando consigo ao menos um falso, ou
-deixa um verdadeiro do lado errado.
-
-Uma única reta **não** realiza o XOR. Daí o interesse histórico por redes com
-mais de uma camada: compor fronteiras que um só traço não desenha.
-
-![AND e OR separados por uma reta; XOR sem separação linear.](imagens/separabilidade-and-or-xor.png)
-
-*Figura 3 — Verde: alvo 1; terracota: alvo 0. AND e OR admitem um traço; XOR
-pede outra geometria.*
+Codificando falso como \(-1\) e verdadeiro como \(+1\):
 
 | Função | Separável por uma reta? |
 | --- | --- |
@@ -163,16 +157,72 @@ pede outra geometria.*
 | OR | Sim |
 | XOR | Não |
 
-### Da classificação à contagem da loja
+No **AND**, só o canto \((+1,+1)\) é verdadeiro. No **OR**, só \((-1,-1)\) é
+falso. No **XOR**, os verdadeiros ocupam cantos opostos na diagonal: qualquer
+reta que tente juntá-los puxa um falso ou deixa um verdadeiro do lado errado.
 
-O quadro booleano fixa o vocabulário de **separabilidade linear**. Na demanda
-semanal, o alvo é uma **contagem** — quantas linhas de pedido — não um bit de
-classe. A reta desta aula resume um **nível** no tempo; ela não precisa cortar
-classes no plano \(x_1 \times x_2\). O laboratório de AND/OR/XOR fica como mapa
-histórico do perceptron; o trabalho com `p01` e `p03` volta à série de
-contagens.
+![AND e OR separados por uma reta; XOR sem separação linear.](imagens/separabilidade-and-or-xor.png)
 
-## 5. Corrigir o palpite semana a semana
+*Figura 3 — Verde: alvo 1; terracota: alvo 0 (na figura estática). AND e OR
+admitem um traço; XOR pede outra geometria. No laboratório a codificação é
+±1.*
+
+Uma rede com **duas** unidades na primeira camada e uma na saída consegue
+realizar o XOR compondo fronteiras. O PLA sozinho, em uma unidade, não sobe
+essa escada — daí a ponte para MLP e backpropagation no
+[tutorial de redes](tutorial-treino-redes-neurais-20261026.md).
+
+### 4.3 PLA ao vivo
+
+No terceiro painel, o algoritmo procura um ponto mal classificado e aplica
+\(\theta \leftarrow \theta + \eta\, y\, x\). No modo **separável**, a curva de
+erros chega a zero. No **não separável**, ela oscila: não há garantia de
+convergência.
+
+## 5. Exemplo numérico do PLA
+
+Quatro pontos no plano (OR com codificação ±1), bias com \(x_0 = 1\):
+
+| \(x_1\) | \(x_2\) | \(y\) |
+| ---: | ---: | ---: |
+| 1 | 1 | \(+1\) |
+| −1 | 1 | \(+1\) |
+| 1 | −1 | \(+1\) |
+| −1 | −1 | \(−1\) |
+
+Comece com \(\theta^\top = (-1,-1,-1)\) e \(\eta = 1\). O ponto
+\((-1,1)\) com alvo \(+1\) está do lado errado:
+
+$$
+(-1) + (-1)(-1) + (-1)(1) = -1 < 0 \Rightarrow \widehat{y}=-1 \neq +1.
+$$
+
+Atualização:
+
+$$
+\theta \leftarrow (-1,-1,-1) + (+1)\,(1,-1,1) = (0,-2,0).
+$$
+
+Repita até não restar erro (no laboratório, use **Um passo** e acompanhe a
+curva). A intuição geométrica: somar \(y\,x\) gira o vetor de pesos na direção
+que alinha melhor o semiplano com o ponto corrigido.
+
+## 6. Da classificação à contagem: PLA e LMS
+
+A mesma soma \(w^\top x\) aparece nos dois mundos.
+
+| | Perceptron + PLA | ADALINE + LMS |
+| --- | --- | --- |
+| Saída | \(\mathrm{sinal}(w^\top x)\) | \(w^\top x\) (contínua) |
+| Erro que guia | lado da classe | \(y - \widehat{y}\) |
+| Atualização típica | \(w \leftarrow w + \eta\, y\, x\) (se errou) | \(w \leftarrow w + \eta\,(y-\widehat{y})\, x\) |
+| Pergunta da loja | “sai / não sai?” | “quantas linhas nesta semana?” |
+
+Na demanda semanal, \(x_t = (1,\ t/\mathrm{escala})\) e o alvo é a contagem
+\(y_t\). O LMS é o primo **regressivo** do PLA: mesma geometria linear, perda
+quadrática, saída contínua.
+
+## 7. Corrigir o palpite semana a semana
 
 Imagine que a loja já tem um palpite linear para o Jarro: “cerca de tantas
 linhas nesta semana”. Fecha a semana, conta o observado, e vê o quanto o
@@ -207,7 +257,7 @@ $$
 É o espírito do perceptron (atualização local pelo erro), com perda
 quadrática. O treino abaixo é **uma** unidade linear adaptativa — o ponto de
 partida histórico das redes mais profundas, sem ainda ser backprop de uma
-rede multilcamada. Nos exemplos trabalhados (`p01`, `p03`), esse laço roda
+rede multicamada. Nos exemplos trabalhados (`p01`, `p03`), esse laço roda
 com \(\eta = 0{,}05\) e 200 voltas completas (*épocas*) sobre as 12 primeiras
 semanas.
 
@@ -216,7 +266,7 @@ semanas.
 *Figura 4 — Dentro de cada volta, todas as semanas do bloco de treino passam
 pela correção; o erro médio da volta resume o ajuste.*
 
-## 6. Exemplo trabalhado 1 — Jarro (`p01`)
+## 8. Exemplo trabalhado 1 — Jarro (`p01`)
 
 Gere o painel e os pesos (na raiz do repositório):
 
@@ -280,7 +330,7 @@ terracota extrapola a semana seguinte.*
 
 *Figura 6 — A curva deve descer e estabilizar ao longo das 200 épocas.*
 
-## 7. Exemplo trabalhado 2 — Boneca (`p03`)
+## 9. Exemplo trabalhado 2 — Boneca (`p03`)
 
 Com os mesmos hiperparâmetros nas 12 primeiras semanas de Boneca de barro:
 
@@ -309,7 +359,7 @@ Os pesos gravados estão em
 
 *Figura 8 — Curva de treino de `p03` nas mesmas 200 épocas.*
 
-## 8. Avaliar no tempo
+## 10. Avaliar no tempo
 
 Nas quatro últimas semanas, a cada origem o modelo **re-treina só com o
 passado** e prevê a semana seguinte (piso em zero). Compare o erro absoluto
@@ -327,19 +377,22 @@ Nesta amostra sintética curta, a reta passo a passo fica perto do ajuste em
 lote — o esperado quando a família de funções é a mesma e o treino online
 converge.
 
-## 9. Explorador no painel
+## 11. Explorador no painel
 
 O [explorador](bi-demanda-perceptron/index.html) mostra série, curva de treino,
 erro absoluto médio agregado e tabela. Selecione **Jarro (`p01`)** e **Boneca
 (`p03`)** — os dois exemplos deste tutorial. Guia curto em
 [`bi-demanda-perceptron/README.md`](bi-demanda-perceptron/README.md).
 
+O [laboratório geométrico](bi-demanda-perceptron/lab/index.html) fica ao lado:
+fronteira, portas e PLA, antes de voltar às contagens.
+
 ![Erro absoluto médio agregado: baselines e reta passo a passo.](imagens/bi-demanda-perc-mae.png)
 
 *Figura 9 — Mesmas 48 previsões para todos os métodos. Menor valor é melhor
 nesta métrica.*
 
-## 10. Endpoint BentoML
+## 12. Endpoint BentoML
 
 Com os pesos gerados para `p01` (serviço de demonstração):
 
@@ -370,8 +423,10 @@ mesma fórmula.
 
 | Termo | Leitura nesta aula |
 | --- | --- |
-| **Perceptron** | Classificador de Rosenblatt: atualiza pesos quando erra o lado da classe (alvo 0/1). |
-| **ADALINE / LMS** | Unidade linear adaptativa: saída contínua; atualiza pesos com o erro \(y - \widehat{y}\) (*least mean squares*). |
+| **Neurônio MP** | Modelo de McCulloch–Pitts: entradas binárias e limiar. |
+| **Perceptron** | Classificador de Rosenblatt: \(\mathrm{sinal}(w^\top x)\); atualiza com PLA. |
+| **PLA** | Algoritmo de aprendizado do Perceptron: \(\theta \leftarrow \theta + \eta\, y\, x\) nos erros. |
+| **ADALINE / LMS** | Unidade linear adaptativa: saída contínua; atualiza com \(y - \widehat{y}\). |
 | **Separabilidade linear** | Classes que um único traço reto consegue separar no plano. |
 | **Época** | Uma volta completa por todos os exemplos do bloco de treino. |
 | **Taxa de aprendizado \(\eta\)** | Tamanho do empurrão nos pesos a cada exemplo. |
@@ -387,6 +442,11 @@ mesma fórmula.
 ## Referência
 
 - ADALINE / LMS: atualização pelo erro contínuo (Widrow–Hoff).
-- Perceptron: Rosenblatt; neurônio formal: McCulloch–Pitts (contexto histórico).
-- Código: `scripts/lms_demanda.py`, `scripts/gerar_bi_demanda_perceptron.py`,
+- Perceptron / PLA: Rosenblatt; neurônio formal: McCulloch–Pitts.
+- Laboratório interativo do Caderno: `material/bi-demanda-perceptron/lab/`
+  (pedagogia de fronteira/portas/PLA alinhada a materiais abertos pt-BR, entre
+  eles o curso de Deep Learning de L. S. Kupssinskü, CC BY-SA 4.0).
+- Leituras CESAR ingeridas: `wiki/leituras/ads032/` (Kup, Minicurso RNAs,
+  Harpya).
+- Código LMS: `scripts/lms_demanda.py`, `scripts/gerar_bi_demanda_perceptron.py`,
   `service_perceptron_demanda.py`.
