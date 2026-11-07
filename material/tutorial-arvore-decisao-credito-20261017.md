@@ -1,5 +1,7 @@
 # Crédito orientado por dados: como aprender, interpretar e avaliar uma árvore de decisão
 
+[Leia a versão web com o explorador interativo incorporado](https://lgallindo.github.io/recomendador-bentoml/credito/).
+
 Uma loja de móveis recebe uma solicitação de compra parcelada. A atendente
 conhece a renda informada, as prestações já assumidas, a nova parcela e o
 histórico anterior de pagamentos. Ela ainda não sabe como esse novo contrato
@@ -41,6 +43,7 @@ as atividades antes de consultar a resolução ao final.
 | 2 | 10 min | Reconstruir um caminho e suas contagens |
 | 2 | 15 min | Executar a aprendizagem automática e ler a árvore curta |
 | 2 | 15 min | Comparar árvores no desenvolvimento |
+| 2 | 15 min | Explorar configurações no painel, ainda sem abrir o teste (seção 12) |
 | 2 | 15 min | Fixar o modelo e avaliar o teste separado |
 | 2 | 10 min | Interpretar os dois tipos de erro |
 | 2 | 10 min | Aplicar uma política fictícia e produzir um relato |
@@ -555,6 +558,97 @@ pois a folha tem menos de cinco exemplos. Na curta, seriam duas perguntas e
 uma folha com 85 exemplos. O acerto isolado não prova qual árvore será melhor
 para outras solicitações.
 
+## 12. Explorar a árvore no painel
+
+O [explorador de árvores de crédito](bi-credito/index.html) reúne, numa só
+tela, as etapas das seções 6 a 8: comparar configurações no desenvolvimento,
+ler a árvore escolhida, percorrer um contrato pelas perguntas e, só no fim,
+abrir o teste. Você pode usá-lo incorporado à
+[versão web deste tutorial](https://lgallindo.github.io/recomendador-bentoml/credito/#explorador-interativo)
+ou abrir o HTML numa cópia local do repositório. Consulte o
+[roteiro de exploração](bi-credito/README.md). Use o painel depois da seção 7
+e antes de executar `--avaliar-teste`.
+
+O painel traz 35 árvores aprendidas previamente nos mesmos 240 contratos de
+treino: sete limites de profundidade (1, 2, 3, 4, 6, 8 e sem limite) combinados
+com cinco mínimos de contratos por folha (1, 5, 12, 20 e 40). Trocar a
+configuração não retreina nada; o navegador percorre a árvore já aprendida com
+as entradas de cada contrato e confere se reproduz as contagens calculadas em
+Python. O teste fica bloqueado até você clicar em **Fixar configuração e
+revelar teste**. Depois disso, o painel mostra somente o teste da configuração
+fixada.
+
+![Grade de acertos no desenvolvimento em 80 contratos. Profundidades 1, 2 e 3 acertam 54 em todos os mínimos por folha. Com profundidade 4 e mínimo 5, ou sem limite e mínimo 1, chegam a 60. Mínimo 40 fica em 54 em todas as profundidades.](imagens/bi-credito-grade.png)
+
+*Figura 10 — Cada célula é uma árvore aprendida no treino e contada no
+desenvolvimento. A referência que sempre prevê sem atraso acerta 55 de 80. A
+cor organiza a leitura; não indica que diferenças de um ou dois acertos sejam
+estáveis em outros contratos.*
+
+![Proporção de acertos por profundidade máxima, com mínimo de um contrato por folha. No treino, sobe de 179/240 para 212/240. No desenvolvimento, fica em 54/80 até a profundidade 3, sobe para 59/80 na profundidade 4 e oscila entre 58 e 60 até a árvore sem limite. Uma linha tracejada marca a referência de 55/80.](imagens/bi-credito-profundidade.png)
+
+*Figura 11 — Mais perguntas sempre ajudam no treino, onde a árvore já viu as
+respostas. No desenvolvimento o ganho para na profundidade 4. A distância entre
+as duas linhas cresce: é o sinal de sobreajuste discutido na seção 7.*
+
+A grade amplia a comparação da seção 7, que tinha só duas candidatas. Com 35,
+duas configurações empatam com 60 acertos no desenvolvimento: a árvore
+profunda do tutorial (10 níveis, 67 folhas) e a de profundidade 4 com mínimo
+de 5 contratos por folha (4 níveis, 15 folhas). Pelo mesmo critério fixado
+antes do teste (mais acertos; empate → menor profundidade; persistindo, menos
+folhas), a escolha passa a ser a de profundidade 4. Comparar muitas
+configurações no mesmo desenvolvimento também aumenta a chance de premiar uma
+coincidência: com 80 contratos, um acerto a mais é um contrato.
+
+### Atividade no painel
+
+1. Clique em **Árvore curta do tutorial**. Confira os acertos no treino e no
+   desenvolvimento e compare com a referência de 55/80.
+2. Selecione o contrato D001 e percorra-o na árvore curta e na profunda. Anote
+   o número de perguntas, as contagens da folha, a previsão e a ação da
+   política fictícia em cada uma.
+3. Na grade, encontre as configurações com mais acertos no desenvolvimento.
+   Aplique o critério de desempate e diga qual escolheria.
+4. Com mínimo de um contrato por folha, leia a Figura 11 ou percorra as
+   profundidades no painel. Descreva o que acontece com treino e
+   desenvolvimento.
+5. Escreva sua escolha e o motivo em uma frase. Só então revele o teste e
+   relate acertos, os dois tipos de erro e a referência nos mesmos 80 contratos.
+
+### Resolução comentada
+
+**Árvore curta:** acerta 179 de 240 no treino e 54 de 80 no desenvolvimento,
+um acerto abaixo da referência. No desenvolvimento, previu sem atraso quatro
+contratos que tiveram atraso e previu com atraso 22 que não tiveram.
+
+**D001:** renda de R$2.000, dívidas de R$90 e parcela de R$250 dão
+comprometimento de 17%; não há atrasos anteriores. Na árvore curta, duas
+perguntas (`17 ≤ 35,5` → sim; `0 ≤ 1,5` → sim) levam à folha com 79 sem e
+6 com atraso: prevê sem atraso, e a política simulada aprova. Na profunda, são
+seis perguntas, até uma folha com 15 sem e nenhum com atraso; a previsão e a
+ação são as mesmas. O resultado observado é sem atraso nos dois casos. Uma
+folha “pura” com 15 exemplos parece mais convincente, mas é sustentada por
+menos contratos que a folha de 85 da árvore curta.
+
+**Grade:** 60 de 80 é o máximo, alcançado pela profunda e pela profundidade 4
+com mínimo 5. O desempate por profundidade escolhe a de 4 níveis e 15 folhas.
+Com as duas candidatas da seção 7, a escolha foi a profunda; com 35, mudou.
+Nenhuma das duas escolhas é “a certa”: cada uma segue o critério sobre o
+conjunto de candidatas comparado.
+
+**Profundidade:** com mínimo de um contrato por folha, o treino sobe de 179
+para 212 acertos em 240. O desenvolvimento fica em 54 até a profundidade 3,
+salta para 59 na profundidade 4 e depois oscila (58, 59, 60). A árvore continua
+melhorando nos exemplos que já viu, sem melhora correspondente nos que não viu.
+
+**Teste:** se fixou a árvore profunda, o painel mostra 55 acertos em 80, contra
+50 da referência, com 15 contratos previstos sem atraso que tiveram atraso e 10
+previstos com atraso que não tiveram, os mesmos números da seção 8 e de
+[`previsoes-teste.csv`](credito/previsoes-teste.csv). Se fixou outra
+configuração, relate o seu número ao lado da referência de 50/80. Em nenhum
+caso use o teste para trocar a escolha: por isso o painel não mostra o teste
+das outras configurações.
+
 ## Referências e reprodução
 
 As referências técnicas abaixo são de consulta: você pode concluir a atividade
@@ -574,6 +668,8 @@ Arquivos deste exercício:
 - [Aprendizagem e avaliação](../scripts/arvore_credito.py).
 - [Gerador de diagramas, gráficos e cartões](../scripts/gerar_figuras_credito.py).
 - [Cartões e artefatos de referência](credito/README.md).
+- [Explorador interativo](bi-credito/README.md) e o
+  [gerador de seus dados](../scripts/gerar_bi_credito.py).
 - [Origem das figuras e prompt da ilustração](imagens/README.md#figuras-do-tutorial-de-crédito).
 
 Para reproduzir o material publicado, com o ambiente do projeto instalado:
@@ -582,6 +678,7 @@ Para reproduzir o material publicado, com o ambiente do projeto instalado:
 uv run python scripts/gerar_dados_credito.py
 uv run python scripts/arvore_credito.py --avaliar-teste --saida material/credito
 uv run python scripts/gerar_figuras_credito.py
+uv run python scripts/gerar_bi_credito.py
 uv run python -m unittest discover -s scripts -p 'test_credito.py'
 ```
 
